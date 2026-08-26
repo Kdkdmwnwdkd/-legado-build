@@ -1,0 +1,14 @@
+name = "legado-download-gate"
+main = "src/index.ts"
+compatibility_date = "2026-06-29"
+workers_dev = true
+preview_urls = false
+
+[vars]
+APP_TITLE = "Legado ARM64 Private Release"
+R2_APK_KEY = "legado-arm64-v8a.apk"
+R2_METADATA_KEY = "latest.json"
+
+[[r2_buckets]]
+binding = "APK_BUCKET"
+bucket_name = "mybugget"

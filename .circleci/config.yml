@@ -1,0 +1,328 @@
+version: 2.1
+
+jobs:
+  build-arm64-github-release:
+    docker:
+      - image: cimg/android:2024.11
+    resource_class: large
+    environment:
+      GRADLE_OPTS: -Dorg.gradle.daemon=true -Dorg.gradle.parallel=true -Dorg.gradle.caching=true
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - gradle-v2-{{ arch }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "gradle/libs.versions.toml" }}
+            - gradle-v2-{{ arch }}-
+
+      - run:
+          name: Install Android SDK 36
+          command: |
+            yes | sdkmanager --licenses >/dev/null || true
+            sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"
+
+      - run:
+          name: Configure CI debug signing
+          command: |
+            test -n "$CI_DEBUG_STORE_PASSWORD"
+            test -n "$CI_DEBUG_KEY_PASSWORD"
+            {
+              echo
+              echo "RELEASE_KEY_ALIAS=legado-ci-debug"
+              echo "RELEASE_KEY_PASSWORD=$CI_DEBUG_KEY_PASSWORD"
+              echo "RELEASE_STORE_PASSWORD=$CI_DEBUG_STORE_PASSWORD"
+              echo "RELEASE_STORE_FILE=./ci-debug.keystore"
+            } >> gradle.properties
+
+      - run:
+          name: Prepare release metadata
+          command: |
+            VERSION_NAME="3.$(TZ=Asia/Shanghai date +%y.%m%d%H%M)"
+            VERSION_CODE=$(($(date -u +%s) / 60))
+            TAG_NAME="private-armv8-${VERSION_NAME}"
+            RELEASE_NAME="Legado private arm64-v8a ${VERSION_NAME}"
+            {
+              echo "export VERSION_NAME=${VERSION_NAME}"
+              echo "export VERSION_CODE=${VERSION_CODE}"
+              echo "export TAG_NAME=${TAG_NAME}"
+              echo "export RELEASE_NAME=\"${RELEASE_NAME}\""
+            } >> "$BASH_ENV"
+            cat > release-notes.md \<<'EOF'
+            阅读 Archive 私有 arm64-v8a 更新
+
+            本次更新集中处理底栏管理、应用主题实时应用、列表展示、快速滑动条、目录性能和封面图集管理等问题，并继续修正私有构建发布链路。
+
+            新增：
+            - 新增底栏按钮管理，可在底栏管理中调整书架、发现、订阅、统计、设置等入口顺序，并支持隐藏可选入口。
+            - 新增封面图集详情页长按图片删除，删除前会弹出确认框，删除后自动刷新图集列表。
+            - 新增搜索、发现等带封面列表的书籍预览卡片长按入口，书架保持原有行为。
+            - 新增关于页内测版更新设置，可配置内测密钥和地址后参与内测更新检测。
+
+            修复：
+            - 修复应用主题保存后没有重新应用关联的界面主题、顶栏、底栏等配置的问题。
+            - 修复界面主题编辑保存后部分主界面样式刷新不及时的问题。
+            - 修复详情页换源弹窗关闭后仍收到列表更新，可能触发 Fragment viewLifecycleOwner 崩溃的问题。
+            - 修复列表和搜索结果中简介信息被挤掉、useWeb 简介没有提取主要文字的问题。
+            - 修复设置页在系统字体较大时，部分按钮文字下半部分被裁剪的问题。
+            - 修复悬浮底栏从玻璃材质切换到常规材质后，不透明度 100 仍偏透明的问题。
+            - 修复书籍预览卡片收回时出现白色覆盖形状的问题。
+
+            调整：
+            - 优化快速滑动条常态手感，固定触控热区，减少布局动画，降低滚动时的顿挫感。
+            - 优化快速滑动条进度计算，列表使用可见项平均高度，网格使用可见行高度，减少不同高度条目导致的跳动。
+            - 优化目录页加载与列表渲染，降低大目录或低性能设备上的卡顿。
+            - 优化正文日间/夜间切换后的页面刷新，减少部分已加载页面仍保留旧字体颜色的问题。
+            - 调整搜索、发现和书架相关列表的简介展示密度，使主要简介内容更容易看到。
+
+            EOF
+
+      - run:
+          name: Build arm64-v8a release APK
+          command: |
+            source "$BASH_ENV"
+            chmod +x gradlew
+            rm -rf release-apks app/build/outputs/apk/app/release
+            mkdir -p release-apks
+            ./gradlew :app:assembleAppRelease \
+              -Pabi=arm64-v8a \
+              -PVERSION_NAME="$VERSION_NAME" \
+              -PVERSION_CODE="$VERSION_CODE" \
+              --build-cache \
+              --parallel \
+              --daemon \
+              --stacktrace
+            APK_PATH=$(find app/build/outputs/apk/app/release -type f -name '*.apk' | head -n 1)
+            test -n "$APK_PATH"
+            cp "$APK_PATH" "release-apks/legado-arm64-v8a_app_${VERSION_NAME}_${VERSION_CODE}.apk"
+
+      - run:
+          name: Verify APK signing certificate
+          command: |
+            APK_PATH=$(find release-apks -type f -name '*.apk' | head -n 1)
+            APKSIGNER=$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)
+            test -n "$APKSIGNER"
+            "$APKSIGNER" verify --print-certs "$APK_PATH" | tee apk-cert.txt
+            grep -Eqi 'd6:?44:?1f:?18:?d3:?41:?3a:?81:?c0:?e8:?2e:?51:?f5:?50:?c5:?58:?c5:?d7:?92:?13:?e9:?21:?b0:?2d:?ec:?30:?bd:?34:?73:?d4:?f2:?b6' apk-cert.txt
+
+      - save_cache:
+          key: gradle-v2-{{ arch }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "gradle/libs.versions.toml" }}-{{ epoch }}
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+            - .gradle
+            - .kotlin
+            - build
+            - app/build
+            - modules/book/build
+            - modules/rhino/build
+
+      - store_artifacts:
+          path: release-apks
+          destination: release-apks
+
+      - run:
+          name: Publish latest APK to Cloudflare R2
+          command: |
+            source "$BASH_ENV"
+            if [ -z "${R2_ACCESS_KEY_ID:-}" ] || [ -z "${R2_SECRET_ACCESS_KEY:-}" ] || [ -z "${R2_ENDPOINT:-}" ] || [ -z "${R2_BUCKET:-}" ]; then
+              echo "Skipping R2 upload: R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_ENDPOINT or R2_BUCKET is missing."
+              exit 0
+            fi
+            APK_PATH=$(find release-apks -type f -name '*.apk' | head -n 1)
+            test -n "$APK_PATH"
+            R2_APK_KEY="${R2_APK_KEY:-legado-arm64-v8a.apk}"
+            R2_METADATA_KEY="${R2_METADATA_KEY:-latest.json}"
+            export APK_PATH R2_APK_KEY R2_METADATA_KEY
+            python3 - \<<'PY'
+            import datetime
+            import hashlib
+            import hmac
+            import json
+            import os
+            import sys
+            import urllib.parse
+            import urllib.request
+            from pathlib import Path
+
+            access_key = os.environ["R2_ACCESS_KEY_ID"]
+            secret_key = os.environ["R2_SECRET_ACCESS_KEY"]
+            endpoint = os.environ["R2_ENDPOINT"].rstrip("/")
+            bucket = os.environ["R2_BUCKET"]
+            apk_key = os.environ["R2_APK_KEY"]
+            metadata_key = os.environ["R2_METADATA_KEY"]
+            apk_path = Path(os.environ["APK_PATH"])
+            region = "auto"
+            service = "s3"
+
+            parsed = urllib.parse.urlparse(endpoint)
+            if parsed.scheme != "https" or not parsed.netloc:
+                raise SystemExit("R2_ENDPOINT must be an https URL")
+
+            def sha256_hex(data: bytes) -> str:
+                return hashlib.sha256(data).hexdigest()
+
+            def sign(key_bytes: bytes, msg: str) -> bytes:
+                return hmac.new(key_bytes, msg.encode("utf-8"), hashlib.sha256).digest()
+
+            def signing_key(date_stamp: str) -> bytes:
+                return sign(
+                    sign(
+                        sign(
+                            sign(("AWS4" + secret_key).encode("utf-8"), date_stamp),
+                            region,
+                        ),
+                        service,
+                    ),
+                    "aws4_request",
+                )
+
+            def r2_put(key: str, body: bytes, content_type: str) -> None:
+                now = datetime.datetime.utcnow()
+                amz_date = now.strftime("%Y%m%dT%H%M%SZ")
+                date_stamp = now.strftime("%Y%m%d")
+                canonical_uri = "/" + "/".join(
+                    urllib.parse.quote(part, safe="")
+                    for part in f"{bucket}/{key}".split("/")
+                )
+                payload_hash = sha256_hex(body)
+                headers = {
+                    "content-type": content_type,
+                    "host": parsed.netloc,
+                    "x-amz-content-sha256": payload_hash,
+                    "x-amz-date": amz_date,
+                }
+                signed_headers = ";".join(sorted(headers))
+                canonical_headers = "".join(f"{name}:{headers[name]}\n" for name in sorted(headers))
+                canonical_request = "\n".join([
+                    "PUT",
+                    canonical_uri,
+                    "",
+                    canonical_headers,
+                    signed_headers,
+                    payload_hash,
+                ])
+                credential_scope = f"{date_stamp}/{region}/{service}/aws4_request"
+                string_to_sign = "\n".join([
+                    "AWS4-HMAC-SHA256",
+                    amz_date,
+                    credential_scope,
+                    sha256_hex(canonical_request.encode("utf-8")),
+                ])
+                signature = hmac.new(signing_key(date_stamp), string_to_sign.encode("utf-8"), hashlib.sha256).hexdigest()
+                headers["Authorization"] = (
+                    "AWS4-HMAC-SHA256 "
+                    f"Credential={access_key}/{credential_scope}, "
+                    f"SignedHeaders={signed_headers}, Signature={signature}"
+                )
+                request = urllib.request.Request(endpoint + canonical_uri, data=body, method="PUT", headers=headers)
+                try:
+                    with urllib.request.urlopen(request, timeout=300) as response:
+                        status = response.status
+                except Exception as exc:
+                    print(f"R2 upload failed for {key}: {exc}", file=sys.stderr)
+                    raise
+                if status < 200 or status >= 300:
+                    raise SystemExit(f"R2 upload failed for {key} with HTTP {status}")
+
+            apk_body = apk_path.read_bytes()
+            apk_sha256 = sha256_hex(apk_body)
+            metadata = {
+                "tagName": os.environ["TAG_NAME"],
+                "versionName": os.environ["VERSION_NAME"],
+                "versionCode": int(os.environ["VERSION_CODE"]),
+                "updateLog": f"CircleCI arm64-v8a release build. {os.environ['TAG_NAME']}",
+                "fileName": apk_key.split("/")[-1],
+                "size": len(apk_body),
+                "sha256": apk_sha256,
+                "contentType": "application/vnd.android.package-archive",
+                "updatedAt": datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
+            }
+            r2_put(apk_key, apk_body, "application/vnd.android.package-archive")
+            r2_put(
+                metadata_key,
+                json.dumps(metadata, ensure_ascii=False, separators=(",", ":")).encode("utf-8"),
+                "application/json; charset=utf-8",
+            )
+            print(f"Uploaded {apk_path.name} to R2 object {bucket}/{apk_key}")
+            print(f"Uploaded metadata to R2 object {bucket}/{metadata_key}")
+            PY
+            echo "Uploaded latest APK and metadata to R2: ${R2_BUCKET}/${R2_APK_KEY}, ${R2_BUCKET}/${R2_METADATA_KEY}"
+
+      - run:
+          name: Publish APK to GitHub release
+          command: |
+            source "$BASH_ENV"
+            test -n "$GITHUB_TOKEN"
+            python3 - \<<'PY'
+            import json
+            import mimetypes
+            import os
+            import urllib.error
+            import urllib.parse
+            import urllib.request
+            from pathlib import Path
+
+            token = os.environ["GITHUB_TOKEN"]
+            owner = os.environ.get("CIRCLE_PROJECT_USERNAME") or "Rimchars"
+            repo = os.environ.get("CIRCLE_PROJECT_REPONAME") or "legado-private-armv8-release"
+            tag = os.environ["TAG_NAME"]
+            name = os.environ["RELEASE_NAME"]
+            sha = os.environ.get("CIRCLE_SHA1") or "main"
+            apk = next(Path("release-apks").glob("*.apk"))
+            body = Path("release-notes.md").read_text(encoding="utf-8")
+            api = f"https://api.github.com/repos/{owner}/{repo}"
+
+            def request(method, url, data=None, headers=None):
+                headers = {
+                    "Accept": "application/vnd.github+json",
+                    "Authorization": f"Bearer {token}",
+                    "X-GitHub-Api-Version": "2022-11-28",
+                    "User-Agent": "legado-circleci-release",
+                    **(headers or {}),
+                }
+                raw = None
+                if data is not None:
+                    raw = data if isinstance(data, bytes) else json.dumps(data).encode("utf-8")
+                    headers.setdefault("Content-Type", "application/json")
+                req = urllib.request.Request(url, data=raw, headers=headers, method=method)
+                try:
+                    with urllib.request.urlopen(req, timeout=300) as res:
+                        payload = res.read()
+                except urllib.error.HTTPError as err:
+                    detail = err.read().decode("utf-8", errors="replace")
+                    raise RuntimeError(f"{method} {url} failed: {err.code} {detail}") from err
+                return json.loads(payload.decode("utf-8")) if payload else None
+
+            try:
+                release = request("GET", f"{api}/releases/tags/{urllib.parse.quote(tag)}")
+                for asset in release.get("assets") or []:
+                    if str(asset.get("name", "")).endswith(".apk"):
+                        request("DELETE", f"{api}/releases/assets/{asset['id']}")
+            except RuntimeError as err:
+                if "failed: 404" not in str(err):
+                    raise
+                release = request("POST", f"{api}/releases", {
+                    "tag_name": tag,
+                    "target_commitish": sha,
+                    "name": name,
+                    "body": body,
+                    "draft": False,
+                    "prerelease": False,
+                    "make_latest": "true",
+                })
+
+            upload_url = release["upload_url"].split("{", 1)[0]
+            params = urllib.parse.urlencode({"name": apk.name})
+            mime = mimetypes.guess_type(apk.name)[0] or "application/octet-stream"
+            request("POST", f"{upload_url}?{params}", apk.read_bytes(), {"Content-Type": mime})
+            print(f"Published GitHub release {tag}: {apk.name}")
+            PY
+
+workflows:
+  arm64-github-release:
+    jobs:
+      - build-arm64-github-release:
+          filters:
+            branches:
+              only:
+                - feature/discovery-suite-select
