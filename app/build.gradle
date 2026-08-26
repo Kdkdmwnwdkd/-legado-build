@@ -45,6 +45,13 @@ android {
     }
 
     signingConfigs {
+        // 固定 debug 签名，确保每次编译的 APK 可以互相覆盖
+        modDebug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'legadoMod'
+            keyPassword 'android'
+        }
         if (project.hasProperty("RELEASE_STORE_FILE")) {
             myConfig {
                 storeFile file(RELEASE_STORE_FILE)
@@ -105,9 +112,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'cronet-proguard-rules.pro'
         }
         debug {
-            if (project.hasProperty("RELEASE_STORE_FILE")) {
-                signingConfig signingConfigs.myConfig
-            }
+            // 使用固定签名，确保每次编译的 APK 可以互相覆盖
+            signingConfig signingConfigs.modDebug
             manifestPlaceholders.put("app_name", "@string/app_launcher_name")
 
             applicationIdSuffix '.debug'

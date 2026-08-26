@@ -101,30 +101,28 @@ abstract class BaseActivity<VB : ViewBinding>(
         lastNightMode = AppConfig.isNightTheme
         applyPreferredRefreshRate()
         setupSystemBar()
-        if (!shouldSkipBinding()) {
-            setContentView(binding.root)
-            LiveEventBus.get(EventBus.MAIN_THEME_BACKGROUND_CHANGED, Boolean::class.java)
-                .observe(this) { isNightTheme ->
-                    if (isNightTheme == AppConfig.isNightTheme) {
-                        lastNightMode = isNightTheme
-                        lastThemeValuesChanged = ThemeStore.valuesChanged(this)
-                        applyRootBackgroundPolicy()
-                        upBackgroundImage()
-                    }
+        setContentView(binding.root)
+        LiveEventBus.get(EventBus.MAIN_THEME_BACKGROUND_CHANGED, Boolean::class.java)
+            .observe(this) { isNightTheme ->
+                if (isNightTheme == AppConfig.isNightTheme) {
+                    lastNightMode = isNightTheme
+                    lastThemeValuesChanged = ThemeStore.valuesChanged(this)
+                    applyRootBackgroundPolicy()
+                    upBackgroundImage()
                 }
-            lastThemeValuesChanged = ThemeStore.valuesChanged(this)
-            // 延迟字体应用和背景加载到首帧后，避免阻塞 onCreate
-            binding.root.post {
-                if (!AppConfig.isEInkMode) {
-                    binding.root.applyUiBodyTypefaceDeep(uiTypeface())
-                }
-                applyRootBackgroundPolicy()
-                upBackgroundImage()
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                findViewById<TitleBar>(R.id.title_bar)
-                    ?.onMultiWindowModeChanged(isInMultiWindowMode, fullScreen)
+        lastThemeValuesChanged = ThemeStore.valuesChanged(this)
+        // 延迟字体应用和背景加载到首帧后，避免阻塞 onCreate
+        binding.root.post {
+            if (!AppConfig.isEInkMode) {
+                binding.root.applyUiBodyTypefaceDeep(uiTypeface())
             }
+            applyRootBackgroundPolicy()
+            upBackgroundImage()
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            findViewById<TitleBar>(R.id.title_bar)
+                ?.onMultiWindowModeChanged(isInMultiWindowMode, fullScreen)
         }
         onBackPressedDispatcher.addCallback(this) {
             finish()
@@ -132,11 +130,6 @@ abstract class BaseActivity<VB : ViewBinding>(
         observeLiveBus()
         onActivityCreated(savedInstanceState)
     }
-
-    /**
-     * 当返回 true 时跳过布局渲染，适用于仅做跳转的中间 Activity
-     */
-    protected open fun shouldSkipBinding(): Boolean = false
 
     override fun onResume() {
         super.onResume()
