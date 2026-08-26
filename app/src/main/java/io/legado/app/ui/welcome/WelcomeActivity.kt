@@ -27,21 +27,29 @@ open class WelcomeActivity : BaseActivity<ActivityWelcomeBinding>(imageBg = fals
         setTheme(R.style.AppTheme_Welcome)
     }
 
+    // 默认配置(welcomeShowTime=0)时跳过布局渲染，直接跳转，避免用户看到两次页面切换
+    override fun shouldSkipBinding(): Boolean {
+        if (intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT != 0) return false
+        return getPrefInt(PreferKey.welcomeShowTime, 0) == 0
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         if (intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT != 0) {
             // 避免从桌面启动程序后，会重新实例化入口类的activity
             finish()
-        } else {
-            val welcomeShowTime = getPrefInt(PreferKey.welcomeShowTime, 0)
-            if (welcomeShowTime == 0) {
-                startMainActivity()
-            } else {
-                binding.root.postDelayed(welcomeShowTime.toLong()) { startMainActivity() }
-            }
+            return
         }
-        binding.tvLegado.visibility = View.GONE
-        binding.ivBook.visibility = View.GONE
-        binding.tvGzh.visibility = View.GONE
+        val welcomeShowTime = getPrefInt(PreferKey.welcomeShowTime, 0)
+        if (welcomeShowTime == 0) {
+            // 直接跳转，不显示欢迎页
+            startMainActivity()
+        } else {
+            // 延迟显示欢迎页后再跳转
+            binding.root.postDelayed(welcomeShowTime.toLong()) { startMainActivity() }
+            binding.tvLegado.visibility = View.GONE
+            binding.ivBook.visibility = View.GONE
+            binding.tvGzh.visibility = View.GONE
+        }
     }
 
     override fun setupSystemBar() {
