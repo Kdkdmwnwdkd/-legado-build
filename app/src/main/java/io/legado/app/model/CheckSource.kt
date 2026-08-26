@@ -15,7 +15,7 @@ object CheckSource {
 
     //校验设置
     var timeout = CacheManager.getLong("checkSourceTimeout") ?: 180000L
-    var threadCount = CacheManager.getInt("checkSourceThreadCount") ?: 8
+    var threadCount = CacheManager.getInt("checkSourceThreadCount") ?: 16
     var quickMode = CacheManager.get("checkSourceQuickMode")?.toBoolean() ?: false
     var wSourceComment = CacheManager.get("wSourceComment")?.toBoolean() ?: true
     var checkDomain = CacheManager.get("checkDomain")?.toBoolean() ?: false

@@ -369,4 +369,31 @@ interface BookSourceDao {
             dealGroups(list)
         }.flowOn(IO)
     }
+
+    // 查重：找出URL重复的书源
+    @Query(
+        """select * from book_sources_part where bookSourceUrl in (
+            select bookSourceUrl from book_sources 
+            group by bookSourceUrl having count(*) > 1
+        ) order by bookSourceUrl, customOrder asc"""
+    )
+    fun getDuplicateByUrl(): List<BookSourcePart>
+
+    // 查重：找出名称重复的书源
+    @Query(
+        """select * from book_sources_part where bookSourceName in (
+            select bookSourceName from book_sources 
+            group by bookSourceName having count(*) > 1
+        ) order by bookSourceName, customOrder asc"""
+    )
+    fun getDuplicateByName(): List<BookSourcePart>
+
+    // 查重：找出URL和名称都重复的书源
+    @Query(
+        """select * from book_sources_part where (bookSourceUrl, bookSourceName) in (
+            select bookSourceUrl, bookSourceName from book_sources 
+            group by bookSourceUrl, bookSourceName having count(*) > 1
+        ) order by bookSourceUrl, customOrder asc"""
+    )
+    fun getDuplicateByUrlAndName(): List<BookSourcePart>
 }

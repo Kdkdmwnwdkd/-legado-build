@@ -46,9 +46,11 @@ import kotlinx.coroutines.withTimeout
 import org.mozilla.javascript.WrappedException
 import splitties.init.appCtx
 import splitties.systemservices.notificationManager
+import java.net.HttpURLConnection
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.URI
+import java.net.URL
 import java.util.concurrent.Executors
 
 /**
@@ -153,6 +155,8 @@ class CheckSourceService : BaseService() {
             if (CheckSource.wSourceComment) {
                 source.addErrorComment(it)
             }
+            // 检测失败的书源自动禁用
+            source.enabled = false
             Debug.updateFinalMessage(source.bookSourceUrl, "校验失败:${it.localizedMessage}")
         }
         source.respondTime = Debug.getRespondTime(source.bookSourceUrl)
@@ -160,12 +164,24 @@ class CheckSourceService : BaseService() {
 
     private suspend fun isDomainReachable(domain: String): Boolean {
         return kotlin.runCatching {
-            withTimeout(2000) {
+            withTimeout(5000) {
                 val url = URI(domain.substringBefore("#"))
-                val port = url.port.takeIf { it > 0 } ?: 80
-                Socket().use { socket ->
-                    socket.connect(InetSocketAddress(url.host, port), 1600)
-                    true
+                val port = url.port.takeIf { it > 0 } ?: if (url.scheme.equals("https", true)) 443 else 80
+                // 优先用 HTTP 检测，比 Socket 更准确反映书源可用性
+                kotlin.runCatching {
+                    val connection = (URL(url.toString()).openConnection() as HttpURLConnection).apply {
+                        connectTimeout = 3000
+                        readTimeout = 3000
+                        instanceFollowRedirects = true
+                        requestMethod = "HEAD"
+                    }
+                    connection.responseCode in 200..499
+                }.getOrElse {
+                    // HTTP 失败时回退到 Socket 检测
+                    Socket().use { socket ->
+                        socket.connect(InetSocketAddress(url.host, port), 3000)
+                        true
+                    }
                 }
             }
         }.getOrDefault(false)

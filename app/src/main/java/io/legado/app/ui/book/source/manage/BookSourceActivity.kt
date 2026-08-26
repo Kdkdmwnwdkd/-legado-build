@@ -99,6 +99,7 @@ import io.legado.app.utils.toastOnUi
 import io.legado.app.utils.transaction
 import io.legado.app.utils.viewbindingdelegate.viewBinding
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
@@ -108,6 +109,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * 书源管理界面
@@ -521,6 +523,9 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
             AppManagementMenuAction(getString(R.string.import_by_qr_code)) {
                 qrResult.launch()
             },
+            AppManagementMenuAction(getString(R.string.duplicate_check)) {
+                showDuplicateCheckDialog()
+            },
             AppManagementMenuAction(getString(R.string.group_sources_by_domain)) {
                 setGroupSourcesByDomain(!groupSourcesByDomain)
             },
@@ -528,6 +533,61 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
                 showHelp("SourceMBookHelp")
             }
         )
+    }
+
+    private fun showDuplicateCheckDialog() {
+        showComposeActionListDialog(
+            title = getString(R.string.duplicate_check),
+            items = listOf(
+                getString(R.string.duplicate_by_url),
+                getString(R.string.duplicate_by_name),
+                getString(R.string.duplicate_by_url_and_name)
+            ),
+            onItemSelect = { index ->
+                when (index) {
+                    0 -> doDuplicateCheck { appDb.bookSourceDao.getDuplicateByUrl() }
+                    1 -> doDuplicateCheck { appDb.bookSourceDao.getDuplicateByName() }
+                    2 -> doDuplicateCheck { appDb.bookSourceDao.getDuplicateByUrlAndName() }
+                }
+            }
+        )
+    }
+
+    private fun doDuplicateCheck(query: () -> List<BookSourcePart>) {
+        lifecycleScope.launch(IO) {
+            val duplicates = query()
+            val groups = duplicates.groupBy { it.bookSourceUrl }
+            val totalExtra = duplicates.size - groups.size
+            withContext(Dispatchers.Main) {
+                if (duplicates.isEmpty()) {
+                    toastOnUi(R.string.duplicate_none_found)
+                    return@withContext
+                }
+                showComposeConfirmDialog(
+                    title = getString(R.string.duplicate_result),
+                    message = getString(
+                        R.string.duplicate_summary,
+                        groups.size.toString(),
+                        totalExtra.toString()
+                    ),
+                    confirmText = getString(R.string.duplicate_delete_extra),
+                    onConfirm = {
+                        lifecycleScope.launch(IO) {
+                            val toDelete = mutableListOf<BookSourcePart>()
+                            groups.forEach { (_, list) ->
+                                list.sortedByDescending { it.customOrder }
+                                    .drop(1)
+                                    .let { toDelete.addAll(it) }
+                            }
+                            appDb.bookSourceDao.delete(toDelete)
+                            withContext(Dispatchers.Main) {
+                                toastOnUi(getString(R.string.duplicate_deleted, toDelete.size.toString()))
+                            }
+                        }
+                    }
+                )
+            }
+        }
     }
 
     private fun setSort(next: BookSourceSort) {

@@ -1421,6 +1421,15 @@
     <string name="read_aloud_by_media_button_title">耳机按键启动朗读</string>
     <string name="read_aloud_by_media_button_summary">通过耳机按键来启动朗读</string>
     <string name="group_sources_by_domain">按域名分组显示</string>
+    <string name="duplicate_check">查重书源</string>
+    <string name="duplicate_by_url">按URL查重</string>
+    <string name="duplicate_by_name">按名称查重</string>
+    <string name="duplicate_by_url_and_name">按URL+名称查重</string>
+    <string name="duplicate_result">查重结果</string>
+    <string name="duplicate_summary">发现 %1$s 组重复，共 %2$s 个多余书源</string>
+    <string name="duplicate_delete_extra">删除重复项</string>
+    <string name="duplicate_deleted">已删除 %1$s 个重复书源</string>
+    <string name="duplicate_none_found">未发现重复书源</string>
     <string name="theme_config">主题配置</string>
     <string name="show_manga_ui">漫画浏览</string>
     <string name="disable_manga_scale">禁用漫画缩放</string>
