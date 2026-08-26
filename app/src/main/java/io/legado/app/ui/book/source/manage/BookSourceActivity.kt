@@ -98,8 +98,8 @@ import io.legado.app.utils.startActivity
 import io.legado.app.utils.toastOnUi
 import io.legado.app.utils.transaction
 import io.legado.app.utils.viewbindingdelegate.viewBinding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
@@ -570,7 +570,7 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
             val duplicates = query()
             val groups = duplicates.groupBy(groupKey)
             val totalExtra = duplicates.size - groups.size
-            withContext(Main) {
+            withContext(Dispatchers.Main) {
                 if (duplicates.isEmpty()) {
                     toastOnUi(R.string.duplicate_none_found)
                     return@withContext
@@ -592,7 +592,7 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
                                     .let { toDelete.addAll(it) }
                             }
                             appDb.bookSourceDao.delete(toDelete)
-                            withContext(Main) {
+                            withContext(Dispatchers.Main) {
                                 toastOnUi(getString(R.string.duplicate_deleted, toDelete.size.toString()))
                             }
                         }
