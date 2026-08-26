@@ -101,8 +101,6 @@ class App : Application() {
             LogUtils.init(this@App)
             LogUtils.d("App", "onCreate")
             LogUtils.logDeviceInfo()
-            //预下载Cronet so
-            Cronet.preDownload()
             createNotificationChannels()
             LiveEventBus.config()
                 .lifecycleObserverAlwaysActive(true)
@@ -113,10 +111,8 @@ class App : Application() {
             AppFreezeMonitor.init(this@App)
             DispatchersMonitor.init()
             URL.setURLStreamHandlerFactory(ObsoleteUrlFactory(okHttpClient))
+            //延迟非关键初始化，避免抢占启动资源
             launch { installGmsTlsProvider(appCtx) }
-            initRhino()
-            //初始化封面
-            BookCover.toString()
             //清除过期数据
             appDb.cacheDao.clearDeadline(System.currentTimeMillis())
             if (getPrefBoolean(PreferKey.autoClearExpired, true)) {
@@ -128,7 +124,16 @@ class App : Application() {
             BookHelp.clearInvalidCache()
             Backup.clearCache()
             ReadBookConfig.clearBgAndCache()
-//            ThemeConfig.clearBg() //每次手动切换主题时清理多余图片
+            //调整排序序号
+            SourceHelp.adjustSortNumber()
+        }
+        //重型初始化放更低优先级，延迟到主初始化完成后
+        Coroutine.async {
+            //预下载Cronet so
+            Cronet.preDownload()
+            initRhino()
+            //初始化封面
+            BookCover.toString()
             //初始化简繁转换引擎
             when (AppConfig.chineseConverterType) {
                 1 -> {
@@ -138,8 +143,6 @@ class App : Application() {
 
                 2 -> ChineseUtils.preLoad(true, TransType.SIMPLE_TO_TRADITIONAL)
             }
-            //调整排序序号
-            SourceHelp.adjustSortNumber()
             //同步阅读记录
             if (AppConfig.syncBookProgress) {
                 AppCloudStorage.downloadAllBookProgress()

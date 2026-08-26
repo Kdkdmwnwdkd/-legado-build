@@ -503,7 +503,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
         val initialPage = resolveHomePagePosition()
         pagePosition = initialPage
         viewPagerMain.setEdgeEffectColor(primaryColor)
-        viewPagerMain.offscreenPageLimit = (bottomMenuCount - 1).coerceAtLeast(1)
+        viewPagerMain.offscreenPageLimit = 1
         viewPagerMain.adapter = adapter
         viewPagerMain.setCurrentItem(initialPage, false)
         viewPagerMain.addOnPageChangeListener(PageChangeCallback())
@@ -537,7 +537,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             true
         }
         syncLiquidGlassSampleBackground()
-        scheduleLiquidGlassWarmup()
+        // Liquid Glass 预热延迟到首帧后，避免阻塞 initView
         contentContainer.doOnPreDraw {
             liquidGlassReady = true
             scheduleLiquidGlassWarmup()

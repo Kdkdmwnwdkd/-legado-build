@@ -111,12 +111,15 @@ abstract class BaseActivity<VB : ViewBinding>(
                     upBackgroundImage()
                 }
             }
-        if (!AppConfig.isEInkMode) {
-            binding.root.applyUiBodyTypefaceDeep(uiTypeface())
-        }
-        applyRootBackgroundPolicy()
-        upBackgroundImage()
         lastThemeValuesChanged = ThemeStore.valuesChanged(this)
+        // 延迟字体应用和背景加载到首帧后，避免阻塞 onCreate
+        binding.root.post {
+            if (!AppConfig.isEInkMode) {
+                binding.root.applyUiBodyTypefaceDeep(uiTypeface())
+            }
+            applyRootBackgroundPolicy()
+            upBackgroundImage()
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             findViewById<TitleBar>(R.id.title_bar)
                 ?.onMultiWindowModeChanged(isInMultiWindowMode, fullScreen)
