@@ -21,9 +21,9 @@ object AppUpdateGitHub : AppUpdate.AppUpdateInterface {
 
     private suspend fun getLatestRelease(): List<AppReleaseInfo> {
         val lastReleaseUrl = if (checkVariant.isBeta()) {
-            "https://api.github.com/repos/Rimchars/legado/releases/tags/latest-arm64-debug"
+            "https://api.github.com/repos/Kdkdmwnwdkd/-legado-build/releases/tags/latest-arm64-debug"
         } else {
-            "https://api.github.com/repos/Rimchars/legado/releases?per_page=10"
+            "https://api.github.com/repos/Kdkdmwnwdkd/-legado-build/releases?per_page=10"
         }
         val res = okHttpClient.newCallResponse {
             url(AppUpdateConfig.applyGithubProxy(lastReleaseUrl))

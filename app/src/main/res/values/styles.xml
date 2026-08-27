@@ -18,10 +18,11 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
-    <!-- Welcome主题 -->
+    <!-- Welcome主题（透明，无启动画面） -->
     <style name="AppTheme.Welcome" parent="Base.AppTheme">
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@drawable/bg_welcome_preview</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
         <item name="android:colorBackground">@color/background</item>
     </style>
 

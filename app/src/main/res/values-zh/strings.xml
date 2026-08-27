@@ -1,10 +1,10 @@
 <resources>
     <!--App-->
-    <string name="app_name">阅读Archive</string>
+    <string name="app_name">阅读Shimmer</string>
     <string name="app_launcher_name">阅读</string>
-    <string name="app_name_a">阅读Archive·A</string>
-    <string name="app_name_s">阅读ArchivePlus</string>
-    <string name="receiving_shared_label">阅读Archive·搜索</string>
+    <string name="app_name_a">阅读Shimmer·A</string>
+    <string name="app_name_s">阅读ShimmerPlus</string>
+    <string name="receiving_shared_label">阅读Shimmer·搜索</string>
     <string name="tip_perm_request_storage">阅读需要访问存储卡权限，请前往“设置”—“应用权限”，打开所需权限</string>
 
     <!--Other-->
@@ -108,7 +108,7 @@
         \u3000\u3000这是一款使用 Kotlin 全新开发的开源的阅读软件，欢迎您的加入。
     </string>
     <string name="app_share_description">
-        阅读 3.0 下载地址：\nhttps://gitee.com/zziji/legado/releases\nGitHub 备用：\nhttps://github.com/Rimchars/legado/releases
+        阅读Shimmer 下载地址（由阅读Archive改版）：\nhttps://github.com/Kdkdmwnwdkd/-legado-build/releases
     </string>
     <string name="version_name">版本 %s</string>
     <string name="pt_background_verification">后台校验书源</string>
@@ -1654,7 +1654,7 @@
     <string name="discover_group_other">其他</string>
     <string name="ai_view_log">查看日志</string>
     <string name="change_book_source_action">更换书源</string>
-    <string name="ai_import_default_skill">安装默认 阅读Archive Skill</string>
+    <string name="ai_import_default_skill">安装默认 阅读Shimmer Skill</string>
     <string name="ai_import_default_skill_summary">从 DandanLLab/legadoSkill 下载真实 SKILL.md</string>
     <string name="ai_skill_prompt">管理 Skill</string>
     <string name="ai_skill_prompt_hint">粘贴 SKILL.md 内容</string>
@@ -2053,11 +2053,11 @@ bookUrl：%7$s
     <string name="video_setting">&#35270;&#39057;&#35774;&#32622;</string>
     <string name="video_setting_summary">&#33258;&#21160;&#25773;&#25918;&#12289;&#20840;&#23631;&#25773;&#25918;&#31561;&#37197;&#32622;</string>
     <string name="history">&#21382;&#21490;&#35760;&#24405;</string>
-    <string name="app_name_sigma">&#38405;&#35835;Archive</string>
-    <string name="about_description_sigma">\u3000\u3000&#38405;&#35835;Archive &#22522;&#20110; Legado &#25345;&#32493;&#23450;&#21046;&#65292;&#19987;&#27880;&#38405;&#35835;&#20307;&#39564;&#12289;&#20070;&#28304;&#24037;&#20855;&#19982; AI &#36741;&#21161;&#33021;&#21147;&#12290;</string>
-    <string name="contributors_summary_sigma">当前维护仓库：Rimchars/legado，详情请在 GitHub 中查看</string>
+    <string name="app_name_sigma">阅读Shimmer</string>
+    <string name="about_description_sigma">\u3000\u3000阅读Shimmer 基于 阅读Archive 改版，源自 Legado 持续定制，专注阅读体验、书源工具与 AI 辅助能力。</string>
+    <string name="contributors_summary_sigma">当前维护仓库：Kdkdmwnwdkd/-legado-build（由阅读Archive改版），详情请在 GitHub 中查看</string>
     <string name="app_share_description_sigma">
-        阅读Archive 下载地址：\nhttps://gitee.com/zziji/legado/releases\nGitHub 备用：\nhttps://github.com/Rimchars/legado/releases
+        阅读Shimmer 下载地址（由阅读Archive改版）：\nhttps://github.com/Kdkdmwnwdkd/-legado-build/releases
     </string>
     <string name="non_printable_set">&#19981;&#21487;&#35270;&#23383;&#31526;&#35774;&#23450;</string>
     <string name="whitespace_leading">&#34892;&#39318;</string>
