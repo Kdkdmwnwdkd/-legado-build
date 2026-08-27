@@ -5,14 +5,21 @@
 </a>
 
 <div align="center">
-<img width="125" height="125" src="docs/archive_icon.svg" alt="阅读Archive"/>
+<img width="125" height="125" src="docs/shimmer_icon.png" alt="阅读Shimmer"/>
 <br>
-阅读Archive
+阅读Shimmer
 <br>
-阅读Archive继承自 Lyc 维护的 Legado 分支，并延续 <a href="https://github.com/gedoor/legado" target="_blank">Legado</a> 的开源阅读体验，在其基础上继续增强界面、AI、EPUB、漫画、视频和主题能力。
+<span style="font-size:14px;color:#666;">由阅读Archive 改版</span>
+<br><br>
+阅读Shimmer 基于 <a href="https://github.com/Kdkdmwnwdkd/-legado-build" target="_blank">阅读Archive</a> 改版，源自 <a href="https://github.com/gedoor/legado" target="_blank">Legado</a> 开源阅读，在此基础上增强界面、AI、EPUB、漫画、视频和主题能力。
 </div>
 
-## 阅读Archive特色
+## 阅读Shimmer特色（相对于原版）
+- 全新水墨风格启动图标与应用图标。
+- 去除启动白屏，应用启动直达。
+- 书源查重支持**分组多选**，可看到"哪些源互重复"，逐条勾选决定保留或删除。
+
+## 阅读Archive原有特色
 - 重做主题管理，支持日间/夜间主题、背景图、界面颜色、主题导入导出和云端同步。
 - 深化 EPUB 原生阅读，持续补全图片、注解、分页缓存、复杂样式和大文件导入体验。
 - 增强 AI 助手，支持工具调用、书源搜索、书籍与章节读取、阅读记录查询和联网搜索。
@@ -78,7 +85,7 @@
 ## 版本说明
 - 测试版(beta)：包名与原版相同，可覆盖更新，版本更新频繁
 - 正式版(plus)：新的共存包名，安装后是一个新软件，不会覆盖原版，每到一个稳定阶段进行一次更新
-#### 找不到下载地址可以去这里 [下载软件](https://gitee.com/lyc486/legado/releases)
+#### 找不到下载地址可以去这里 [下载软件](https://github.com/Kdkdmwnwdkd/-legado-build/releases)
 
 [![](https://img.shields.io/badge/-Contents:-696969.svg)](#contents) [![](https://img.shields.io/badge/-Function-F5F5F5.svg)](#Function-主要功能-) [![](https://img.shields.io/badge/-Community-F5F5F5.svg)](#Community-交流社区-) [![](https://img.shields.io/badge/-API-F5F5F5.svg)](#API-) [![](https://img.shields.io/badge/-Other-F5F5F5.svg)](#Other-其他-) [![](https://img.shields.io/badge/-Grateful-F5F5F5.svg)](#Grateful-感谢-) [![](https://img.shields.io/badge/-Interface-F5F5F5.svg)](#Interface-界面-)
 
