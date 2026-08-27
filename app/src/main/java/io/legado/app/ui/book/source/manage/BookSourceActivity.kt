@@ -78,6 +78,7 @@ import io.legado.app.ui.widget.compose.replaceFirst
 import io.legado.app.ui.widget.compose.replaceMatching
 import io.legado.app.ui.widget.compose.showComposeActionListDialog
 import io.legado.app.ui.widget.compose.showComposeConfirmDialog
+import io.legado.app.ui.widget.compose.showComposeDuplicateBookSourcesDialog
 import io.legado.app.ui.widget.compose.showComposeSuggestionTextInputDialog
 import io.legado.app.ui.widget.compose.showComposeTextInputDialog
 import io.legado.app.ui.widget.compose.toMiuixPalette
@@ -568,28 +569,135 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
     ) {
         lifecycleScope.launch(IO) {
             val duplicates = query()
-            val groups = duplicates.groupBy(groupKey)
+            val groups: Map<K, List<BookSourcePart>> = duplicates.groupBy(groupKey)
+                .filterValues { it.size >= 2 }
+                .toSortedMap(compareBy { it?.toString() })
             val totalExtra = duplicates.size - groups.size
             withContext(Dispatchers.Main) {
-                if (duplicates.isEmpty()) {
+                if (duplicates.isEmpty() || groups.isEmpty()) {
                     toastOnUi(R.string.duplicate_none_found)
                     return@withContext
                 }
-                showComposeConfirmDialog(
+
+                // ---------- 构造扁平化行（Header + Item 交替）----------
+                val rowLabels = mutableListOf<String>()
+                val rowSubs = mutableListOf<String>()
+                val headerPositions = linkedSetOf<Int>()
+                // 每个 item 行按顺序保存对应 BookSourcePart 的 URL（用于删除时定位）
+                val itemRowToSource = mutableListOf<BookSourcePart>()
+
+                var groupIndex = 1
+                groups.forEach { (key, list) ->
+                    // 按 customOrder 降序排列：最前 = 最新 = 默认保留
+                    val sortedList = list.sortedByDescending { it.customOrder }
+                    val keepIndex = 0  // sortedList[0] 是 customOrder 最大的，默认不删
+
+                    // Header 行
+                    headerPositions.add(rowLabels.size)
+                    rowLabels.add(buildString {
+                        append("第 ")
+                        append(groupIndex)
+                        append(" 组 · 重复 ")
+                        append(when {
+                            listOf(sortedList[0]).all { it.bookSourceUrl == key.toString()
+                                    || key.toString().startsWith("${it.bookSourceUrl}|") } -> "URL"
+                            key.toString() == sortedList[0].bookSourceName -> "名称"
+                            else -> "URL+名称"
+                        })
+                        append("：共 ")
+                        append(sortedList.size)
+                        append(" 条")
+                    })
+                    rowSubs.add(key.toString())
+
+                    // Item 行（对应组内的书源，按 customOrder 新→旧）
+                    sortedList.forEachIndexed { idxInGroup, src ->
+                        rowLabels.add(src.bookSourceName)
+                        rowSubs.add(buildString {
+                            append(if (src.enabled) "●启用" else "○禁用")
+                            append(" · customOrder:")
+                            append(src.customOrder)
+                            if (idxInGroup == keepIndex) append(" · 【推荐保留】最新")
+                            append('\n')
+                            append(src.bookSourceUrl)
+                        })
+                        itemRowToSource.add(src)
+                    }
+                    groupIndex++
+                }
+
+                // 默认勾选：每组除 sortedList[keepIndex] 以外全部标记为待删除
+                // 遍历 itemRowToSource 并映射回 组内序号，设置 checked
+                val flatChecked = BooleanArray(rowLabels.size) { false }
+                var pos = 0
+                groups.values.forEach { srcs ->
+                    val sortedList = srcs.sortedByDescending { it.customOrder }
+                    sortedList.forEachIndexed { idxInGroup, _ ->
+                        val rowIdx = (0 until rowLabels.size).firstOrNull { ri ->
+                            ri !in headerPositions &&
+                                    (itemRowToSource.getOrNull(pos) === sortedList[idxInGroup]
+                                            || itemRowToSource.getOrNull(pos)?.bookSourceUrl == sortedList[idxInGroup].bookSourceUrl
+                                            && itemRowToSource.getOrNull(pos)?.bookSourceName == sortedList[idxInGroup].bookSourceName)
+                        }
+                        // 直接用顺序匹配：itemRowToSource 与我们遍历顺序一致追加
+                        // 所以当前第 pos 个 itemRow 对应的行号 = 第 header+item 中第一个非 header 的下一个...
+                        // 更简单：我们直接按顺序匹配
+                        pos++
+                    }
+                }
+
+                // 更简洁稳妥的方式：重新扫描 rowLabels；非 header 的位置按序对应 itemRowToSource
+                var itemCursor = 0
+                for (ri in rowLabels.indices) {
+                    if (ri in headerPositions) continue
+                    val src = itemRowToSource.getOrNull(itemCursor)
+                    if (src != null) {
+                        // 该条在组内是否应被默认勾选（非 customOrder 最大者即选）
+                        val groupOfSrc = groups.entries.firstOrNull { entry ->
+                            groupKey(src) == entry.key
+                        }?.value?.sortedByDescending { it.customOrder }.orEmpty()
+                        val idxInGroup = groupOfSrc.indexOfFirst {
+                            it.bookSourceUrl == src.bookSourceUrl && it.bookSourceName == src.bookSourceName
+                        }
+                        if (groupOfSrc.size > 1 && idxInGroup != 0) {
+                            flatChecked[ri] = true
+                        }
+                    }
+                    itemCursor++
+                }
+
+                val summaryMsg = getString(
+                    R.string.duplicate_summary,
+                    groups.size.toString(),
+                    totalExtra.toString()
+                ) + "\n（建议保留每组 customOrder 最新的 1 条，其余已自动勾选，您可自行调整）"
+
+                val deletePattern = "确认删除所选（%d 条）"
+                showComposeDuplicateBookSourcesDialog(
                     title = getString(R.string.duplicate_result),
-                    message = getString(
-                        R.string.duplicate_summary,
-                        groups.size.toString(),
-                        totalExtra.toString()
-                    ),
-                    positiveText = getString(R.string.duplicate_delete_extra),
-                    onPositive = {
+                    rowLabels = rowLabels,
+                    rowSubs = rowSubs,
+                    headerPositions = headerPositions,
+                    checked = flatChecked,
+                    message = summaryMsg,
+                    positiveText = deletePattern,
+                    negativeText = getString(R.string.cancel),
+                    onPositive = { result ->
                         lifecycleScope.launch(IO) {
                             val toDelete = mutableListOf<BookSourcePart>()
-                            groups.forEach { (_, list) ->
-                                list.sortedByDescending { it.customOrder }
-                                    .drop(1)
-                                    .let { toDelete.addAll(it) }
+                            var ic = 0
+                            for (ri in rowLabels.indices) {
+                                if (ri in headerPositions) continue
+                                if (result.getOrNull(ri) == true) {
+                                    itemRowToSource.getOrNull(ic)?.let { toDelete.add(it) }
+                                }
+                                ic++
+                            }
+                            if (toDelete.isEmpty()) {
+                                withContext(Dispatchers.Main) {
+                                    toastOnUi("未选择任何要删除的书源")
+                                }
+                                return@launch
                             }
                             appDb.bookSourceDao.delete(toDelete)
                             withContext(Dispatchers.Main) {
