@@ -21,27 +21,26 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.legado.app.R
-import io.legado.app.help.compose.DisposableCompositionStrategy
 
 /**
  * 书源查重结果对话框：按组展示重复的书源条目，每行可单独勾选。
  * Header 行（组标题）不可勾选；Item 行可勾选。
- * 返回值 BooleanArray 与扁平化行列表对齐，调用方过滤 header 对应的位置即可。
  */
 class ComposeDuplicateBookSourcesDialog : ComposeDialogFragment() {
 
@@ -62,12 +61,12 @@ class ComposeDuplicateBookSourcesDialog : ComposeDialogFragment() {
     ): View {
         val args = arguments ?: Bundle()
         return ComposeView(requireContext()).apply {
-            DisposableCompositionStrategy.installAndTrack(this, viewLifecycleOwner)
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                DismissWhenCallbackMissing(
-                    missing = onPositive == null,
-                    dismiss = ::dismissAllowingStateLoss
-                )
+                val callbacksMissing = onPositive == null
+                if (callbacksMissing) {
+                    LaunchedEffect(Unit) { dismissAllowingStateLoss() }
+                }
                 val style = rememberAppDialogStyle()
                 val rowLabels = remember {
                     args.getStringArrayList(ARG_ROW_LABELS)?.toList().orEmpty()
@@ -84,20 +83,13 @@ class ComposeDuplicateBookSourcesDialog : ComposeDialogFragment() {
                         if (idx in headerPositions) false else arr.getOrNull(idx) ?: false
                     }
                 }
-                val saveCheckedState = rowLabels.size <= MAX_SAVEABLE_MULTI_CHOICE_ITEMS
-                val saveableChecked = if (saveCheckedState) {
+                val saveCheckedState = rowLabels.size <= 500
+                val checkState = if (saveCheckedState) {
                     rememberSaveable(rowLabels) { mutableStateOf(initialChecked) }
                 } else {
-                    null
+                    mutableStateOf(initialChecked)
                 }
-                val localChecked = if (saveCheckedState) {
-                    null
-                } else {
-                    remember(rowLabels) {
-                        mutableStateListOf<Boolean>().apply { addAll(initialChecked) }
-                    }
-                }
-                val positiveTextTemplate = args.getString(ARG_POSITIVE_TEXT)
+                val posTemplate = args.getString(ARG_POSITIVE_TEXT)
                     .orEmpty()
                     .ifBlank { stringResource(R.string.ok) }
                 val negativeText = args.getString(ARG_NEGATIVE_TEXT)
@@ -105,19 +97,16 @@ class ComposeDuplicateBookSourcesDialog : ComposeDialogFragment() {
                     .ifBlank { stringResource(R.string.cancel) }
                 val canSubmit = onPositive != null
 
-                @Composable
-                fun currentCheckedList(): List<Boolean> {
-                    return saveableChecked?.value ?: localChecked ?: initialChecked
+                fun currentCheckedList(): List<Boolean> = checkState.value
+
+                val checkedCount = derivedStateOf {
+                    currentCheckedList().filterIndexed { i, v -> i !in headerPositions && v }.size
                 }
 
-                val checkedCount = currentCheckedList().filterIndexed { i, v ->
-                    i !in headerPositions && v
-                }.size
-
-                val positiveText = if ("%d" in positiveTextTemplate) {
-                    String.format(positiveTextTemplate, checkedCount)
-                } else {
-                    "$positiveText ($checkedCount)"
+                val positiveText = derivedStateOf {
+                    val count = checkedCount.value
+                    if ("%d" in posTemplate) String.format(posTemplate, count)
+                    else "$posTemplate ($count)"
                 }
 
                 AppDialogFrame(
@@ -150,18 +139,8 @@ class ComposeDuplicateBookSourcesDialog : ComposeDialogFragment() {
                                         onClick = {
                                             if (index in rowLabels.indices) {
                                                 val next = !checked
-                                                val state = saveableChecked
-                                                if (state != null) {
-                                                    state.value = state.value.toMutableList().apply {
-                                                        this[index] = next
-                                                    }
-                                                } else {
-                                                    localChecked?.let { list ->
-                                                        if (index in list.indices) {
-                                                            list[index] = next
-                                                        }
-                                                    }
-                                                }
+                                                checkState.value = checkState.value.toMutableList()
+                                                    .apply { this[index] = next }
                                             }
                                         },
                                         minHeight = 52.dp
@@ -181,17 +160,18 @@ class ComposeDuplicateBookSourcesDialog : ComposeDialogFragment() {
                         if (canSubmit) {
                             Spacer(modifier = Modifier.width(8.dp))
                             LegadoMiuixActionButton(
-                                text = positiveText,
+                                text = positiveText.value,
                                 palette = palette,
                                 onClick = {
+                                    val snapshot = checkState.value
                                     val result = BooleanArray(rowLabels.size) { index ->
                                         if (index in headerPositions) false
-                                        else currentCheckedList().getOrNull(index) ?: false
+                                        else snapshot.getOrNull(index) ?: false
                                     }
                                     dismissAllowingStateLoss()
                                     onPositive?.invoke(result)
                                 },
-                                primary = checkedCount > 0,
+                                primary = checkedCount.value > 0,
                                 cornerRadius = style.actionRadius,
                                 danger = true
                             )
@@ -239,8 +219,6 @@ class ComposeDuplicateBookSourcesDialog : ComposeDialogFragment() {
         private const val ARG_MESSAGE = "message"
         private const val ARG_POSITIVE_TEXT = "positiveText"
         private const val ARG_NEGATIVE_TEXT = "negativeText"
-
-        private const val MAX_SAVEABLE_MULTI_CHOICE_ITEMS = 500
     }
 }
 
@@ -258,8 +236,7 @@ private fun GroupHeader(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(10.dp))
                 .background(
-                    androidx.compose.material3.MaterialTheme.colorScheme
-                        .surfaceVariant.copy(alpha = 0.5f)
+                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                 )
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
@@ -275,8 +252,7 @@ private fun GroupHeader(
                     Text(
                         text = subTitle,
                         fontSize = 12.sp,
-                        color = androidx.compose.material3.MaterialTheme.colorScheme
-                            .onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )

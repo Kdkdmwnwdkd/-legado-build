@@ -587,6 +587,34 @@ fun Fragment.showComposeDuplicateBookSourcesDialog(
     )
 }
 
+fun AppCompatActivity.showComposeDuplicateBookSourcesDialog(
+    title: CharSequence,
+    rowLabels: List<CharSequence>,
+    rowSubs: List<CharSequence>,
+    headerPositions: Set<Int>,
+    checked: BooleanArray,
+    message: CharSequence? = null,
+    positiveText: CharSequence = getString(R.string.ok),
+    negativeText: CharSequence = getString(R.string.cancel),
+    onDismissAction: (() -> Unit)? = null,
+    onPositive: (BooleanArray) -> Unit
+) {
+    showDialogFragment(
+        ComposeDuplicateBookSourcesDialog.create(
+            title = title.toString(),
+            rowLabels = rowLabels.map { it.toString() },
+            rowSubs = rowSubs.map { it.toString() },
+            headerPositions = headerPositions,
+            checked = checked,
+            message = message?.toString(),
+            positiveText = positiveText.toString(),
+            negativeText = negativeText.toString(),
+            onDismissAction = onDismissAction,
+            onPositive = onPositive
+        )
+    )
+}
+
 private tailrec fun Context.findAppCompatActivity(): AppCompatActivity? {
     return when (this) {
         is AppCompatActivity -> this
