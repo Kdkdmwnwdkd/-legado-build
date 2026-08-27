@@ -224,13 +224,6 @@ class MoreConfigDialog : BasePrefDialogFragment() {
                                 title = getString(R.string.no_anim_scroll_page),
                                 defaultValue = false
                             ),
-                            SettingSwitchSpec(
-                                key = PreferKey.inkShimmer,
-                                title = getString(R.string.ink_shimmer),
-                                summary = getString(R.string.ink_shimmer_summary),
-                                checked = booleanSetting(PreferKey.inkShimmer, true),
-                                onCheckedChange = { updateBooleanSetting(PreferKey.inkShimmer, it) }
-                            ),
                             choice(
                                 key = PreferKey.clickImgWay,
                                 title = getString(R.string.click_image_way),

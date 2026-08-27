@@ -2489,10 +2489,4 @@ Selected text or question:
     <string name="shibboleth_invalid">Invalid import code</string>
     <string name="shibboleth_expired">This import code has expired</string>
     <string name="shibboleth_import_confirm">The import code will download configuration from the Internet. Continue only if you trust its source.</string>
-    <string name="ink_shimmer">水墨翻页微光</string>
-    <string name="ink_shimmer_summary">翻页时边缘浮现淡墨渐变，不遮挡文字</string>
-    <string name="welcome_style_choice">启动页风格</string>
-    <string name="welcome_style_choice_summary">白屏直达或水墨晕染</string>
-    <string name="welcome_style_title_blank">白屏直达</string>
-    <string name="welcome_style_title_ink">水墨晕染</string>
 </resources>

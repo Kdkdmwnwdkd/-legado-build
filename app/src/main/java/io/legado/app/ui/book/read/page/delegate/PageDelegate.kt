@@ -45,9 +45,6 @@ abstract class PageDelegate(protected val readView: ReadView) {
         Scroller(readView.context, scrollInterpolator())
     }
 
-    /** 翻页动画是否正在进行（Shimmer 水墨微光判断用） */
-    open fun isAnimating(): Boolean = !scroller.isFinished
-
     private val snackBar: Snackbar by lazy {
         Snackbar.make(readView, "", Snackbar.LENGTH_SHORT)
     }

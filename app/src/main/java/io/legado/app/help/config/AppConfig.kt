@@ -2786,21 +2786,5 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
             appCtx.putPrefBoolean(PreferKey.welcomeShowIconDark, value)
         }
 
-
-    // ---------- Shimmer 专属 ----------
-    /** 水墨翻页微光（默认开启） */
-    var inkShimmerEnabled: Boolean
-        get() = appCtx.getPrefBoolean(PreferKey.inkShimmer, true)
-        set(value) = appCtx.putPrefBoolean(PreferKey.inkShimmer, value)
-
-    /** 启动页风格：0=白屏直达 1=水墨晕染（默认 1） */
-    var welcomeStyle: Int
-        get() = appCtx.getPrefInt(PreferKey.welcomeStyle, 1)
-        set(value) = appCtx.putPrefInt(PreferKey.welcomeStyle, value)
-
-    /** 查重后自动给保留的书源打「重复-xxx」标签（默认开启） */
-    var duplicateAutoTag: Boolean
-        get() = appCtx.getPrefBoolean(PreferKey.duplicateAutoTag, true)
-        set(value) = appCtx.putPrefBoolean(PreferKey.duplicateAutoTag, value)
     val autoUpdateVariant get() = appCtx.getPrefBoolean("autoUpdateVariant", true)
 }
