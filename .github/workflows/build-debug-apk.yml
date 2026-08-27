@@ -74,7 +74,7 @@ jobs:
           echo "$NOTES"
 
       - name: Publish APK to GitHub Releases (public direct download)
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: debug-${{ github.run_number }}
           name: 阅读Shimmer Debug #${{ github.run_number }}
