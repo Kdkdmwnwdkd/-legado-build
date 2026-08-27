@@ -294,4 +294,14 @@
         <item>core</item>
     </string-array>
 
+    <string-array name="welcome_style_title">
+        <item>白屏直达</item>
+        <item>水墨晕染</item>
+    </string-array>
+
+    <string-array name="welcome_style_value">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
 </resources>

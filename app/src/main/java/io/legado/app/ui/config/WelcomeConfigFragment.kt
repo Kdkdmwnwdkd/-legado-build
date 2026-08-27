@@ -12,6 +12,8 @@ import io.legado.app.model.BookCover
 import io.legado.app.model.analyzeRule.AnalyzeUrl
 import io.legado.app.ui.config.compose.ComposeSettingFragment
 import io.legado.app.ui.config.compose.SettingActionSpec
+import io.legado.app.ui.config.compose.SettingChoiceOption
+import io.legado.app.ui.config.compose.SettingChoiceSpec
 import io.legado.app.ui.config.compose.SettingPageSpec
 import io.legado.app.ui.config.compose.SettingSectionSpec
 import io.legado.app.ui.config.compose.SettingSliderSpec
@@ -61,6 +63,23 @@ class WelcomeConfigFragment : ComposeSettingFragment() {
             sections = listOf(
                 SettingSectionSpec(
                     items = listOf(
+                        SettingChoiceSpec(
+                            key = PreferKey.welcomeStyle,
+                            title = getString(R.string.welcome_style_choice),
+                            summary = getString(R.string.welcome_style_choice_summary),
+                            options = listOf(
+                                SettingChoiceOption(
+                                    value = "0",
+                                    label = getString(R.string.welcome_style_title_blank)
+                                ),
+                                SettingChoiceOption(
+                                    value = "1",
+                                    label = getString(R.string.welcome_style_title_ink)
+                                )
+                            ),
+                            selectedValue = intSetting(PreferKey.welcomeStyle, 1).toString(),
+                            onSelected = { updateIntSetting(PreferKey.welcomeStyle, it.toInt()) }
+                        ),
                         SettingSliderSpec(
                             key = PreferKey.welcomeShowTime,
                             title = getString(R.string.welcome_show_time),
