@@ -60,13 +60,29 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Extract release notes from updateLog.md
+        id: notes
+        run: |
+          NOTES=$(sed -n '/^## 阅读Shimmer/,/^## /{ /^## /! p }' app/src/main/assets/updateLog.md | sed '/^$/N;/^\n$/d' | head -80)
+          if [ -z "$NOTES" ]; then
+            NOTES="自动构建"
+          fi
+          echo "notes<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$NOTES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "=== Release notes ==="
+          echo "$NOTES"
+
       - name: Publish APK to GitHub Releases (public direct download)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: debug-${{ github.run_number }}
-          name: 阅读Archive Debug #${{ github.run_number }} (含听书跟随翻页)
+          name: 阅读Shimmer Debug #${{ github.run_number }}
           body: |
-            自动构建 · 含"听书跟随翻页"功能 (arm64-v8a, 默认 debug 签名)
+            ${{ steps.notes.outputs.notes }}
+
+            ---
+            自动构建 · arm64-v8a · 默认 debug 签名
             Commit: ${{ github.sha }}
           files: ${{ steps.apk.outputs.path }}
           prerelease: true
