@@ -435,4 +435,8 @@ object PreferKey {
     const val editAutoWrap = "editAutoWrap"
     const val editAutoComplete = "editAutoComplete"
     const val showBoardLine = "showBoardLine"
+    // Shimmer 专属配置
+    const val inkShimmer = "inkShimmer"
+    const val welcomeStyle = "welcomeStyle"
+    const val duplicateAutoTag = "duplicateAutoTag"
 }

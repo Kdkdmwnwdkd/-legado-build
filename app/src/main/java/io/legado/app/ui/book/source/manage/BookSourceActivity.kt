@@ -47,7 +47,9 @@ import io.legado.app.constant.AppLog
 import io.legado.app.constant.EventBus
 import io.legado.app.data.AppDatabase
 import io.legado.app.data.appDb
+import io.legado.app.data.entities.BookSource
 import io.legado.app.data.entities.BookSourcePart
+import io.legado.app.help.config.AppConfig
 import io.legado.app.databinding.ActivityBookSourceBinding
 import io.legado.app.help.DirectLinkUpload
 import io.legado.app.help.config.LocalConfig
@@ -685,14 +687,47 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
                     onPositive = { result ->
                         lifecycleScope.launch(IO) {
                             val toDelete = mutableListOf<BookSourcePart>()
+                            val toKeep = mutableListOf<BookSourcePart>()
                             var ic = 0
                             for (ri in rowLabels.indices) {
                                 if (ri in headerPositions) continue
-                                if (result.getOrNull(ri) == true) {
-                                    itemRowToSource.getOrNull(ic)?.let { toDelete.add(it) }
+                                val src = itemRowToSource.getOrNull(ic)
+                                if (src != null) {
+                                    if (result.getOrNull(ri) == true) {
+                                        toDelete.add(src)
+                                    } else {
+                                        toKeep.add(src)
+                                    }
                                 }
                                 ic++
                             }
+
+                            // ====== Shimmer：查重后自动给保留的书源打「重复-xxx」标签 ======
+                            if (AppConfig.duplicateAutoTag && toDelete.isNotEmpty() && toKeep.isNotEmpty()) {
+                                val tagSuffix = when {
+                                    key.toString().all { it.isDigit() } -> ""
+                                    sortedListOf(toKeep.firstOrNull()?.bookSourceUrl, toKeep.firstOrNull()?.bookSourceName)
+                                        .any { it == key.toString() || key.toString().startsWith("${it}|") } -> "URL"
+                                    key.toString() == toKeep.firstOrNull()?.bookSourceName -> "名称"
+                                    else -> "URL+名称"
+                                }
+                                val tag = "重复" + (if (tagSuffix.isNotEmpty()) "-$tagSuffix" else "")
+                                val updatedCount = toKeep.distinctBy { it.bookSourceUrl to it.bookSourceName }
+                                    .mapNotNull { part ->
+                                        val full = appDb.bookSourceDao.getBookSource(part.bookSourceUrl)
+                                            ?: return@mapNotNull null
+                                        if (full.bookSourceGroup?.contains(tag) == true) {
+                                            full to false  // 已打标签，跳过
+                                        } else {
+                                            full.addGroup(tag)
+                                            full to true
+                                        }
+                                    }.filter { it.second }.map { it.first }
+                                if (updatedCount.isNotEmpty()) {
+                                    appDb.bookSourceDao.update(*updatedCount.toTypedArray())
+                                }
+                            }
+
                             if (toDelete.isEmpty()) {
                                 withContext(Dispatchers.Main) {
                                     toastOnUi("未选择任何要删除的书源")
@@ -701,7 +736,8 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
                             }
                             appDb.bookSourceDao.delete(toDelete)
                             withContext(Dispatchers.Main) {
-                                toastOnUi(getString(R.string.duplicate_deleted, toDelete.size.toString()))
+                                val tagHint = if (AppConfig.duplicateAutoTag && toKeep.isNotEmpty()) "，已给保留的书源打上「重复-xxx」标签" else ""
+                                toastOnUi(getString(R.string.duplicate_deleted, toDelete.size.toString()) + tagHint)
                             }
                         }
                     }

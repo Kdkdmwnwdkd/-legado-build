@@ -18,8 +18,15 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
-    <!-- Welcome主题（透明，无启动画面） -->
+    <!-- Welcome主题（默认：水墨晕染 · Shimmer风） -->
     <style name="AppTheme.Welcome" parent="Base.AppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/splash_ink</item>
+        <item name="android:colorBackground">@color/launcher_background</item>
+    </style>
+
+    <!-- Welcome主题（白屏直达，无任何启动画面） -->
+    <style name="AppTheme.Welcome.Blank" parent="Base.AppTheme">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>

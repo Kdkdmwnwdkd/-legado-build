@@ -3,7 +3,10 @@ package io.legado.app.ui.book.read.page
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.LinearGradient
+import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.Shader
 import android.os.Build
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -119,6 +122,15 @@ class ReadView(context: Context, attrs: AttributeSet) :
     val autoPager = AutoPager(this)
     val isAutoPage get() = autoPager.isRunning
 
+    // Shimmer 水墨翻页微光
+    private val inkShimmerPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.DITHER_FLAG).apply {
+        isFilterBitmap = true
+    }
+    private var inkShimmerShader: Shader? = null
+    // 记录上次 view 宽高，尺寸变化时重建 shader
+    private var inkShaderWidth = 0
+    private var inkShaderHeight = 0
+
     init {
         if (!isInEditMode) {
             upBg()
@@ -162,6 +174,54 @@ class ReadView(context: Context, attrs: AttributeSet) :
         super.dispatchDraw(canvas)
         pageDelegate?.onDraw(canvas)
         autoPager.onDraw(canvas)
+        drawInkShimmer(canvas)
+    }
+
+    /** Shimmer 水墨翻页微光：翻页动画进行时在边缘叠加极淡的墨色渐变 */
+    private fun drawInkShimmer(canvas: Canvas) {
+        if (!AppConfig.inkShimmerEnabled) return
+        val delegate = pageDelegate ?: return
+        if (!delegate.isAnimating() && !isAutoPage) return
+        val w = width
+        val h = height
+        if (w <= 0 || h <= 0) return
+        val dx = delegate.startX - delegate.touchX
+        val dy = delegate.startY - delegate.touchY
+        val horizontal = abs(dx) >= abs(dy)
+        // 墨色渐变：极淡透明，不挡文字
+        val inkColorStart = 0x18000000  // alpha≈9% 墨色
+        val inkColorEnd = 0x00000000
+        // 重建 shader（尺寸变了才重建）
+        if (inkShaderWidth != w || inkShaderHeight != h) {
+            inkShaderWidth = w
+            inkShaderHeight = h
+        }
+        if (horizontal) {
+            // 水平翻页：左右边缘各画一道渐变
+            val edge = w * 0.28f
+            // 右边缘 → 向内
+            val rightShader = LinearGradient(w - edge, 0f, w.toFloat(), 0f,
+                inkColorEnd, inkColorStart, Shader.TileMode.CLAMP)
+            inkShimmerPaint.shader = rightShader
+            canvas.drawRect(w - edge, 0f, w.toFloat(), h.toFloat(), inkShimmerPaint)
+            // 左边缘 → 向内（方向相反）
+            val leftShader = LinearGradient(0f, 0f, edge, 0f,
+                inkColorStart, inkColorEnd, Shader.TileMode.CLAMP)
+            inkShimmerPaint.shader = leftShader
+            canvas.drawRect(0f, 0f, edge, h.toFloat(), inkShimmerPaint)
+        } else {
+            // 垂直翻页：上下边缘
+            val edge = h * 0.28f
+            val bottomShader = LinearGradient(0f, h - edge, 0f, h.toFloat(),
+                inkColorEnd, inkColorStart, Shader.TileMode.CLAMP)
+            inkShimmerPaint.shader = bottomShader
+            canvas.drawRect(0f, h - edge, w.toFloat(), h.toFloat(), inkShimmerPaint)
+            val topShader = LinearGradient(0f, 0f, 0f, edge,
+                inkColorStart, inkColorEnd, Shader.TileMode.CLAMP)
+            inkShimmerPaint.shader = topShader
+            canvas.drawRect(0f, 0f, w.toFloat(), edge, inkShimmerPaint)
+        }
+        inkShimmerPaint.shader = null
     }
 
     override fun computeScroll() {
