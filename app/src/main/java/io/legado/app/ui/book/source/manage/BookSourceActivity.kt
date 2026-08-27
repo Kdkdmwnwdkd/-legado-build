@@ -549,14 +549,17 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
             onSelected = { index ->
                 when (index) {
                     0 -> doDuplicateCheck(
+                        dupType = "URL",
                         groupKey = { it.bookSourceUrl },
                         query = { appDb.bookSourceDao.getDuplicateByUrl() }
                     )
                     1 -> doDuplicateCheck(
+                        dupType = "名称",
                         groupKey = { it.bookSourceName },
                         query = { appDb.bookSourceDao.getDuplicateByName() }
                     )
                     2 -> doDuplicateCheck(
+                        dupType = "URL+名称",
                         groupKey = { "${it.bookSourceUrl}|${it.bookSourceName}" },
                         query = { appDb.bookSourceDao.getDuplicateByUrlAndName() }
                     )
@@ -566,6 +569,7 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
     }
 
     private fun <K> doDuplicateCheck(
+        dupType: String,
         groupKey: (BookSourcePart) -> K,
         query: () -> List<BookSourcePart>
     ) {
@@ -704,14 +708,7 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
 
                             // ====== Shimmer：查重后自动给保留的书源打「重复-xxx」标签 ======
                             if (AppConfig.duplicateAutoTag && toDelete.isNotEmpty() && toKeep.isNotEmpty()) {
-                                val tagSuffix = when {
-                                    key.toString().all { it.isDigit() } -> ""
-                                    sortedListOf(toKeep.firstOrNull()?.bookSourceUrl, toKeep.firstOrNull()?.bookSourceName)
-                                        .any { it == key.toString() || key.toString().startsWith("${it}|") } -> "URL"
-                                    key.toString() == toKeep.firstOrNull()?.bookSourceName -> "名称"
-                                    else -> "URL+名称"
-                                }
-                                val tag = "重复" + (if (tagSuffix.isNotEmpty()) "-$tagSuffix" else "")
+                                val tag = "重复-$dupType"
                                 val updatedCount = toKeep.distinctBy { it.bookSourceUrl to it.bookSourceName }
                                     .mapNotNull { part ->
                                         val full = appDb.bookSourceDao.getBookSource(part.bookSourceUrl)

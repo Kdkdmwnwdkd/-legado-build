@@ -20,7 +20,7 @@ open class WelcomeActivity : BaseActivity<ActivityWelcomeBinding>(imageBg = fals
         // 动态切换启动页主题：setTheme 必须在 super.onCreate 之前调用
         if (AppConfig.welcomeStyle == 0) {
             // 0 = 白屏直达
-            theme = R.style.AppTheme_Welcome_Blank
+            setTheme(R.style.AppTheme_Welcome_Blank)
         }
     }
 

@@ -185,8 +185,9 @@ class ReadView(context: Context, attrs: AttributeSet) :
         val w = width
         val h = height
         if (w <= 0 || h <= 0) return
-        val dx = delegate.startX - delegate.touchX
-        val dy = delegate.startY - delegate.touchY
+        // ReadView 自身持有 startX/startY/touchX/touchY，直接引用
+        val dx = startX - touchX
+        val dy = startY - touchY
         val horizontal = abs(dx) >= abs(dy)
         // 墨色渐变：极淡透明，不挡文字
         val inkColorStart = 0x18000000  // alpha≈9% 墨色
