@@ -2,6 +2,15 @@
 欢迎关注公众号[阅读Plus]即时了解软件更新资讯  
 <img src="https://open.weixin.qq.com/qr/code?username=legado_plus" width="200">
 
+## 阅读Shimmer（由阅读Archive改版）
+
+**2026/08/27**
+- 🎨 全新水墨风格应用图标（含自适应图标、各密度 PNG、启动页图标）
+- 🚀 去除启动白屏，应用启动直达主界面
+- 🔍 书源查重功能增强：按重复**分组展示**，每条源独立勾选，支持"保留基准 / 全选该组 / 反选"，用户决定删哪个
+- 🏷️ 应用内名称统一改为 **阅读Shimmer**，关于页标注「由阅读Archive 改版」
+- 🔗 应用内 GitHub / 更新检查链接统一指向 Kdkdmwnwdkd/-legado-build
+
 ## cronet版本: 128.0.6613.40
 
 **2026/04/29**
