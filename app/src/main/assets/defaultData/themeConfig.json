@@ -1,5 +1,15 @@
 [
   {
+    "themeName": "水墨",
+    "isNightTheme": false,
+    "primaryColor": "#1A1A1A",
+    "accentColor": "#8B3A2E",
+    "backgroundColor": "#F5ECE0",
+    "bottomBackground": "#EDE2D4",
+    "uiFontColor": "#1A1A1A",
+    "titleFontColor": "#0D0D0D"
+  },
+  {
     "themeName": "默认",
     "isNightTheme": false,
     "primaryColor": "#795548",
@@ -18,6 +28,16 @@
     "bottomBackground": "#EEEEEE",
     "uiFontColor": "#000000",
     "titleFontColor": "#000000"
+  },
+  {
+    "themeName": "墨夜",
+    "isNightTheme": true,
+    "primaryColor": "#2C2C2C",
+    "accentColor": "#8B3A2E",
+    "backgroundColor": "#1A1A1A",
+    "bottomBackground": "#141414",
+    "uiFontColor": "#E8DFD3",
+    "titleFontColor": "#F5ECE0"
   },
   {
     "themeName": "黑白",
