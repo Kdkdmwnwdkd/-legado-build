@@ -29,6 +29,17 @@ jobs:
           set -o pipefail
           ./gradlew assembleDebug --stacktrace 2>&1 | tee build_output.txt
 
+      - name: Debug - list APK outputs
+        run: |
+          echo "=== Searching for APKs ==="
+          find . -name "*.apk" -type f 2>/dev/null | head -20
+          echo "=== apk output dir ==="
+          ls -la app/build/outputs/apk/debug/ 2>/dev/null || echo "debug dir not found"
+          echo "=== apk output root ==="
+          ls -la app/build/outputs/apk/ 2>/dev/null || echo "apk dir not found"
+          echo "=== build outputs ==="
+          find app/build/outputs -type d 2>/dev/null | head -20
+
       - name: Upload build log on failure
         if: failure()
         uses: actions/upload-artifact@v4
@@ -40,4 +51,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: |
+            app/build/outputs/apk/**/*.apk
