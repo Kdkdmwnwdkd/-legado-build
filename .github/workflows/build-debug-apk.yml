@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,17 +32,6 @@ jobs:
           set -o pipefail
           ./gradlew assembleDebug --stacktrace 2>&1 | tee build_output.txt
 
-      - name: Debug - list APK outputs
-        run: |
-          echo "=== Searching for APKs ==="
-          find . -name "*.apk" -type f 2>/dev/null | head -20
-          echo "=== apk output dir ==="
-          ls -la app/build/outputs/apk/debug/ 2>/dev/null || echo "debug dir not found"
-          echo "=== apk output root ==="
-          ls -la app/build/outputs/apk/ 2>/dev/null || echo "apk dir not found"
-          echo "=== build outputs ==="
-          find app/build/outputs -type d 2>/dev/null | head -20
-
       - name: Upload build log on failure
         if: failure()
         uses: actions/upload-artifact@v4
@@ -53,3 +45,19 @@ jobs:
           name: debug-apk
           path: |
             app/build/outputs/apk/**/*.apk
+
+      - name: Upload APK to GitHub Releases
+        if: success()
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly-debug
+          name: Nightly Debug Build
+          body: |
+            ## 阅读Shimmer Nightly Debug
+            自动构建产物，包含**备份修复**（WebDAV未配置时跳过云端，本地备份正常）。
+            - Commit: ${{ github.sha }}
+            - 构建时间: ${{ github.event.head_commit.timestamp }}
+          files: |
+            app/build/outputs/apk/**/*.apk
+          overwrite_files: true
+          update_existing: true
