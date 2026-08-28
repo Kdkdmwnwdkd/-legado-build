@@ -296,13 +296,24 @@ object Backup {
             }
             if (uploadCloud) {
                 val cloudType = if (uploadWebDavFallback) CloudStorageType.WEBDAV else AppCloudStorage.type
-                AppLog.put("Upload cloud backup: ${cloudType.name} $zipFileName")
-                if (uploadWebDavFallback) {
-                    AppCloudStorage.backupToWebDav(zipFileName)
+                val cloudOk = runCatching { AppCloudStorage.isOk }.getOrDefault(false)
+                if (!cloudOk) {
+                    AppLog.put("云端存储未配置，跳过云端备份，仅本地备份")
+                    LogUtils.w(TAG, "Cloud storage not configured, skipping cloud backup")
                 } else {
-                    AppCloudStorage.backup(zipFileName)
+                    AppLog.put("Upload cloud backup: ${cloudType.name} $zipFileName")
+                    runCatching {
+                        if (uploadWebDavFallback) {
+                            AppCloudStorage.backupToWebDav(zipFileName)
+                        } else {
+                            AppCloudStorage.backup(zipFileName)
+                        }
+                        AppLog.put("Cloud backup finished: ${cloudType.name} $zipFileName")
+                    }.onFailure {
+                        AppLog.put("云端备份失败（不影响本地备份）\n${it.localizedMessage}", it)
+                        LogUtils.w(TAG, "Cloud backup failed: ${it.localizedMessage}")
+                    }
                 }
-                AppLog.put("Cloud backup finished: ${cloudType.name} $zipFileName")
             }
             backupSuccess = true
         } else {
