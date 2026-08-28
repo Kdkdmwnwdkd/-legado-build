@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -34,13 +34,13 @@ jobs:
 
       - name: Upload build log on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build-log
           path: build_output.txt
 
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: debug-apk
           path: |
@@ -57,6 +57,7 @@ jobs:
             自动构建产物，包含**备份修复**（WebDAV未配置时跳过云端，本地备份正常）。
             - Commit: ${{ github.sha }}
             - 构建时间: ${{ github.event.head_commit.timestamp }}
+            - Actions 已升级到 Node24 版本
           files: |
             app/build/outputs/apk/**/*.apk
           overwrite_files: true
