@@ -1,5 +1,7 @@
 package io.legado.app.ui.config
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
@@ -61,6 +63,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import io.legado.app.ui.widget.compose.releaseComposeImage
 import androidx.core.net.toUri
 import androidx.core.graphics.toColorInt
+import androidx.palette.graphics.Palette
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.signature.ObjectKey
@@ -112,6 +115,7 @@ import io.legado.app.ui.widget.compose.showComposeActionListDialog
 import io.legado.app.ui.widget.number.NumberPickerDialog
 import io.legado.app.ui.widget.seekbar.SeekBarChangeListener
 import io.legado.app.utils.ColorUtils
+import androidx.core.graphics.ColorUtils as AndroidColorUtils
 import io.legado.app.utils.GSON
 import io.legado.app.utils.ImageCropHelper
 import io.legado.app.utils.ImageTypeUtils
@@ -220,6 +224,9 @@ class ThemeManageActivity : BaseActivity<ActivityThemeManageBinding>(),
                 requestPanelBackground -> {
                     pendingPanelBackgroundPath = resultPath
                     editDialogBinding?.let { binding -> updateImageRow(binding.rowPanelBackground, ThemeImageTarget.PANEL) }
+                }
+                requestExtractColors -> {
+                    extractAndApplyColorsFromPath(resultPath)
                 }
             }
         } else {
@@ -561,6 +568,7 @@ class ThemeManageActivity : BaseActivity<ActivityThemeManageBinding>(),
             setupImageRow(rowBookInfoBackground, R.string.theme_image_book_info_background, ThemeImageTarget.BOOK_INFO)
             setupImageRow(rowPanelBackground, R.string.theme_image_panel_background, ThemeImageTarget.PANEL)
             setupPanelBackgroundModeRow(rowPanelBackgroundMode)
+            setupExtractColorsRow(rowExtractFromImage)
             setupInterfaceRows(this)
             setupEditGroups(this)
             etName.isEnabled = entry?.source != ThemePackageManager.Source.REMOTE
@@ -1152,6 +1160,78 @@ class ThemeManageActivity : BaseActivity<ActivityThemeManageBinding>(),
             }
         }
     }
+
+    private fun setupExtractColorsRow(row: ItemThemePackageOptionBinding) {
+        applyOptionRowBackground(row)
+        row.tvTitle.text = "🎨 从图片生成配色"
+        row.tvValue.text = "点击选择图片"
+        row.viewSwatch.visibility = View.INVISIBLE
+        row.root.setOnClickListener {
+            selectImage.launch {
+                requestCode = requestExtractColors
+                mode = HandleFileContract.IMAGE
+            }
+        }
+    }
+
+    private fun extractAndApplyColorsFromPath(path: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val bitmap = runCatching {
+                BitmapFactory.decodeFile(path)
+            }.getOrNull()
+            if (bitmap == null) {
+                withContext(Dispatchers.Main) {
+                    toastOnUi("图片解码失败")
+                }
+                return@launch
+            }
+            val colors = extractColorsFromBitmap(bitmap)
+            bitmap.recycle()
+            withContext(Dispatchers.Main) {
+                applyExtractedColors(colors)
+            }
+        }
+    }
+
+    private fun extractColorsFromBitmap(bitmap: Bitmap): ExtractedThemeColors {
+        val palette = Palette.from(bitmap).generate()
+        val defaultAccent = 0xFF8B1A1A.toInt()
+        val primary = palette.getDominantColor(0xFF2C2C2C.toInt())
+        val accent = palette.getVibrantColor(defaultAccent)
+            ?: palette.getDominantColor(defaultAccent)
+        val bgMuted = palette.getMutedColor(0xFFF7F3EB.toInt())
+        val bgDarkMuted = palette.getDarkMutedColor(bgMuted)
+        val bgLightVibrant = palette.getLightMutedColor(0xFFF0EAE0.toInt())
+        val isImageDark = AndroidColorUtils.calculateLuminance(primary) < 0.5
+        val backgroundColor = if (isImageDark) bgDarkMuted else bgLightVibrant
+        val bottomBackground = ColorUtils.blendColors(backgroundColor, primary, 0.05f)
+        return ExtractedThemeColors(
+            primaryColor = "#${primary.hexString}",
+            accentColor = "#${accent.hexString}",
+            backgroundColor = "#${backgroundColor.hexString}",
+            bottomBackground = "#${bottomBackground.hexString}"
+        )
+    }
+
+    private fun applyExtractedColors(colors: ExtractedThemeColors) {
+        val binding = editDialogBinding ?: return
+        binding.rowPrimary.tvValue.text = colors.primaryColor
+        updateSwatch(binding.rowPrimary, colors.primaryColor.toColorInt())
+        binding.rowAccent.tvValue.text = colors.accentColor
+        updateSwatch(binding.rowAccent, colors.accentColor.toColorInt())
+        binding.rowBackground.tvValue.text = colors.backgroundColor
+        updateSwatch(binding.rowBackground, colors.backgroundColor.toColorInt())
+        binding.rowBottomBackground.tvValue.text = colors.bottomBackground
+        updateSwatch(binding.rowBottomBackground, colors.bottomBackground.toColorInt())
+        toastOnUi("配色已生成，可手动微调")
+    }
+
+    private data class ExtractedThemeColors(
+        val primaryColor: String,
+        val accentColor: String,
+        val backgroundColor: String,
+        val bottomBackground: String
+    )
 
     private fun setupPanelBackgroundModeRow(row: ItemThemePackageOptionBinding) {
         applyOptionRowBackground(row)
@@ -2098,6 +2178,7 @@ class ThemeManageActivity : BaseActivity<ActivityThemeManageBinding>(),
         private const val requestMainBackground = 301
         private const val requestBookInfoBackground = 302
         private const val requestPanelBackground = 303
+        private const val requestExtractColors = 310
         private const val colorPrimary = 401
         private const val colorAccent = 402
         private const val colorBackground = 403

@@ -129,6 +129,10 @@
                     android:id="@+id/row_shelf_color"
                     layout="@layout/item_theme_package_option" />
 
+                <include
+                    android:id="@+id/row_extract_from_image"
+                    layout="@layout/item_theme_package_option" />
+
             </LinearLayout>
 
             <LinearLayout
