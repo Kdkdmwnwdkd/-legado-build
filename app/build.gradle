@@ -95,19 +95,19 @@ android {
     }
     buildTypes {
         release {
-            signingConfig signingConfigs.modDebug
+            // 可选：本地/CI 环境变量提供签名则用 release 签名，否则跳过
+            if (project.hasProperty("RELEASE_STORE_FILE")) {
+                signingConfig signingConfigs.myConfig
+            }
             manifestPlaceholders.put("app_name", "@string/app_launcher_name")
-            applicationIdSuffix '.debug'
-            versionNameSuffix 'debug'
-            minifyEnabled true
-            shrinkResources true
+            // 注意：开启 minify/shrink 前确保所有 cronet/反射类 keep 规则齐全，否则运行闪退
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'cronet-proguard-rules.pro'
         }
         debug {
-            // 使用固定签名，确保每次编译的 APK 可以互相覆盖
             signingConfig signingConfigs.modDebug
             manifestPlaceholders.put("app_name", "@string/app_launcher_name")
-
             applicationIdSuffix '.debug'
             versionNameSuffix 'debug'
             minifyEnabled false

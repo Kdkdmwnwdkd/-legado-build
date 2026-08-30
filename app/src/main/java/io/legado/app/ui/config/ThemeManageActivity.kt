@@ -1175,36 +1175,47 @@ class ThemeManageActivity : BaseActivity<ActivityThemeManageBinding>(),
     }
 
     private fun extractAndApplyColorsFromPath(path: String) {
+        if (path.isBlank()) {
+            toastOnUi("无效的图片路径")
+            return
+        }
         lifecycleScope.launch(Dispatchers.IO) {
+            // 先采样解码，避免大图直接 OOM
+            val opts = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            BitmapFactory.decodeFile(path, opts)
+            val reqSize = 512
+            var sample = 1
+            while (opts.outWidth / sample > reqSize || opts.outHeight / sample > reqSize) sample *= 2
             val bitmap = runCatching {
-                BitmapFactory.decodeFile(path)
+                BitmapFactory.decodeFile(path, android.graphics.BitmapFactory.Options().apply {
+                    inSampleSize = sample
+                    inPreferredConfig = android.graphics.Bitmap.Config.RGB_565
+                })
             }.getOrNull()
             if (bitmap == null) {
-                withContext(Dispatchers.Main) {
-                    toastOnUi("图片解码失败")
-                }
+                withContext(Dispatchers.Main) { toastOnUi("图片解码失败") }
                 return@launch
             }
-            val colors = extractColorsFromBitmap(bitmap)
+            val colors = runCatching { extractColorsFromBitmap(bitmap) }.getOrNull()
             bitmap.recycle()
-            withContext(Dispatchers.Main) {
-                applyExtractedColors(colors)
+            if (colors == null) {
+                withContext(Dispatchers.Main) { toastOnUi("取色失败，请换张图片") }
+                return@launch
             }
+            withContext(Dispatchers.Main) { applyExtractedColors(colors) }
         }
     }
 
     private fun extractColorsFromBitmap(bitmap: Bitmap): ExtractedThemeColors {
-        val palette = Palette.from(bitmap).generate()
+        val palette = Palette.from(bitmap).maximumColorCount(16).generate()
         val defaultAccent = 0xFF8B1A1A.toInt()
         val primary = palette.getDominantColor(0xFF2C2C2C.toInt())
         val accent = palette.getVibrantColor(defaultAccent)
-            ?: palette.getDominantColor(defaultAccent)
-        val bgMuted = palette.getMutedColor(0xFFF7F3EB.toInt())
-        val bgDarkMuted = palette.getDarkMutedColor(bgMuted)
-        val bgLightVibrant = palette.getLightMutedColor(0xFFF0EAE0.toInt())
+        val bgLight = palette.getLightMutedColor(0xFFF0EAE0.toInt())
+        val bgDark = palette.getDarkMutedColor(palette.getMutedColor(0xFFF7F3EB.toInt()))
         val isImageDark = AndroidColorUtils.calculateLuminance(primary) < 0.5
-        val backgroundColor = if (isImageDark) bgDarkMuted else bgLightVibrant
-        val bottomBackground = ColorUtils.blendColors(backgroundColor, primary, 0.05f)
+        val backgroundColor = if (isImageDark) bgDark else bgLight
+        val bottomBackground = ColorUtils.blendColors(backgroundColor, primary, 0.08f)
         return ExtractedThemeColors(
             primaryColor = "#${primary.hexString}",
             accentColor = "#${accent.hexString}",
