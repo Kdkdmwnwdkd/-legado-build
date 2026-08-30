@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  雪花简笔画 · 树枝款（参考图第二行第1款）
+  中心圆 + 六方向短主轴 + 每轴3对小Y分叉
+  浅灰描边，紧凑造型。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100"
+    android:alpha="0.14">
+
+    <group
+        android:translateX="50"
+        android:translateY="50">
+
+        <!-- 中心圆 -->
+        <path
+            android:strokeColor="#777777"
+            android:strokeWidth="2.2"
+            android:fillColor="@null"
+            android:pathData="M 0,-6 m -6,0 a 6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0" />
+
+        <!-- 8 主轴（紧凑短版） -->
+        <path
+            android:strokeColor="#777777"
+            android:strokeWidth="2.2"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M 0,-6 L 0,-38
+                M 0,6 L 0,38
+                M -6,0 L -38,0
+                M 6,0 L 38,0
+                M -4.2,-4.2 L -32,-32
+                M 4.2,4.2 L 32,32
+                M -4.2,4.2 L -32,32
+                M 4.2,-4.2 L 32,-32" />
+
+        <!-- 上主轴 3 对 Y 分叉 -->
+        <path
+            android:strokeColor="#777777"
+            android:strokeWidth="1.9"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M 0,-38 l -5,5
+                M 0,-38 l 5,5
+                M 0,-26 l -5,4
+                M 0,-26 l 5,4
+                M 0,-14 l -4,3
+                M 0,-14 l 4,3" />
+
+        <!-- 下主轴 3 对 Y 分叉 -->
+        <path
+            android:strokeColor="#777777"
+            android:strokeWidth="1.9"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M 0,38 l -5,-5
+                M 0,38 l 5,-5
+                M 0,26 l -5,-4
+                M 0,26 l 5,-4
+                M 0,14 l -4,-3
+                M 0,14 l 4,-3" />
+
+        <!-- 左主轴 3 对 Y 分叉 -->
+        <path
+            android:strokeColor="#777777"
+            android:strokeWidth="1.9"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M -38,0 l 5,-5
+                M -38,0 l 5,5
+                M -26,0 l 4,-5
+                M -26,0 l 4,5
+                M -14,0 l 3,-4
+                M -14,0 l 3,4" />
+
+        <!-- 右主轴 3 对 Y 分叉 -->
+        <path
+            android:strokeColor="#777777"
+            android:strokeWidth="1.9"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M 38,0 l -5,-5
+                M 38,0 l -5,5
+                M 26,0 l -4,-5
+                M 26,0 l -4,5
+                M 14,0 l -3,-4
+                M 14,0 l -3,4" />
+    </group>
+</vector>

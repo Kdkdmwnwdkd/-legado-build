@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  雪花简笔画 · 经典款（参考图第一行第1款）
+  中心菱形 + 8 方向主轴 + 每轴两侧小枝杈
+  浅灰描边，极淡，用于主题装饰背景。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100"
+    android:alpha="0.14">
+
+    <group
+        android:scaleX="1.0"
+        android:scaleY="1.0"
+        android:translateX="50"
+        android:translateY="50"
+        android:rotation="0">
+
+        <!-- 中心菱形 -->
+        <path
+            android:strokeColor="#777777"
+            android:strokeWidth="2.4"
+            android:strokeLineJoin="round"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="M 0,-8 L 8,0 L 0,8 L -8,0 Z" />
+
+        <!-- 六向主轴：上下 + 左右 + 两个对角（共8根线） -->
+        <path
+            android:strokeColor="#777777"
+            android:strokeWidth="2.4"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M 0,-8 L 0,-44
+                M 0,8 L 0,44
+                M -8,0 L -44,0
+                M 8,0 L 44,0
+                M -6,-6 L -38,-38
+                M 6,6 L 38,38
+                M -6,6 L -38,38
+                M 6,-6 L 38,-38" />
+
+        <!-- 上主轴两侧枝杈 -->
+        <path
+            android:strokeColor="#777777"
+            android:strokeWidth="2.0"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M 0,-44 l -6,6
+                M 0,-44 l 6,6
+                M 0,-32 l -7,5
+                M 0,-32 l 7,5
+                M 0,-20 l -5,4
+                M 0,-20 l 5,4" />
+
+        <!-- 下主轴两侧枝杈 -->
+        <path
+            android:strokeColor="#777777"
+            android:strokeWidth="2.0"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M 0,44 l -6,-6
+                M 0,44 l 6,-6
+                M 0,32 l -7,-5
+                M 0,32 l 7,-5
+                M 0,20 l -5,-4
+                M 0,20 l 5,-4" />
+
+        <!-- 左主轴两侧枝杈 -->
+        <path
+            android:strokeColor="#777777"
+            android:strokeWidth="2.0"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M -44,0 l 6,-6
+                M -44,0 l 6,6
+                M -32,0 l 5,-7
+                M -32,0 l 5,7
+                M -20,0 l 4,-5
+                M -20,0 l 4,5" />
+
+        <!-- 右主轴两侧枝杈 -->
+        <path
+            android:strokeColor="#777777"
+            android:strokeWidth="2.0"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M 44,0 l -6,-6
+                M 44,0 l -6,6
+                M 32,0 l -5,-7
+                M 32,0 l -5,7
+                M 20,0 l -4,-5
+                M 20,0 l -4,5" />
+
+        <!-- 对角 ↖↘ 两主轴两侧枝杈（简化） -->
+        <path
+            android:strokeColor="#777777"
+            android:strokeWidth="1.8"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M -38,-38 l 8,1 l 1,7
+                M -28,-28 l 6,0 l 0,6
+                M 38,38 l -8,-1 l -1,-7
+                M 28,28 l -6,0 l 0,-6
+                M -38,38 l 8,-1 l 1,-7
+                M -28,28 l 6,0 l 0,-6
+                M 38,-38 l -8,1 l -1,7
+                M 28,-28 l -6,0 l 0,6" />
+
+    </group>
+</vector>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  雪花简笔画 · 叉形款（参考图第一行第4款）
+  中心圆 + 六方向主轴 + 每端叉形开口 + 对角菱形末梢
+  浅灰描边，极淡。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100"
+    android:alpha="0.15">
+
+    <group
+        android:translateX="50"
+        android:translateY="50">
+
+        <!-- 中心圆 -->
+        <path
+            android:strokeColor="#7A7A7A"
+            android:strokeWidth="2.2"
+            android:fillColor="@null"
+            android:pathData="M 0,-7 m -7,0 a 7,7 0 1,0 14,0 a 7,7 0 1,0 -14,0" />
+
+        <!-- 六主轴（上下、左右、两个对角） -->
+        <path
+            android:strokeColor="#7A7A7A"
+            android:strokeWidth="2.2"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M 0,-7 L 0,-42
+                M 0,7 L 0,42
+                M -7,0 L -42,0
+                M 7,0 L 42,0
+                M -5,-5 L -36,-36
+                M 5,5 L 36,36" />
+
+        <!-- 上主轴：末端叉形 + 中段叉形 -->
+        <path
+            android:strokeColor="#7A7A7A"
+            android:strokeWidth="1.9"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M 0,-42 l -7,8
+                M 0,-42 l 7,8
+                M 0,-42 l -3,10
+                M 0,-42 l 3,10
+                M 0,-26 l -6,5
+                M 0,-26 l 6,5" />
+
+        <!-- 下主轴 -->
+        <path
+            android:strokeColor="#7A7A7A"
+            android:strokeWidth="1.9"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M 0,42 l -7,-8
+                M 0,42 l 7,-8
+                M 0,42 l -3,-10
+                M 0,42 l 3,-10
+                M 0,26 l -6,-5
+                M 0,26 l 6,-5" />
+
+        <!-- 左主轴 -->
+        <path
+            android:strokeColor="#7A7A7A"
+            android:strokeWidth="1.9"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M -42,0 l 8,-7
+                M -42,0 l 8,7
+                M -42,0 l 10,-3
+                M -42,0 l 10,3
+                M -26,0 l 5,-6
+                M -26,0 l 5,6" />
+
+        <!-- 右主轴 -->
+        <path
+            android:strokeColor="#7A7A7A"
+            android:strokeWidth="1.9"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M 42,0 l -8,-7
+                M 42,0 l -8,7
+                M 42,0 l -10,-3
+                M 42,0 l -10,3
+                M 26,0 l -5,-6
+                M 26,0 l -5,6" />
+
+        <!-- 对角两主轴末梢（简化叉形） -->
+        <path
+            android:strokeColor="#7A7A7A"
+            android:strokeWidth="1.7"
+            android:strokeLineCap="round"
+            android:fillColor="@null"
+            android:pathData="
+                M -36,-36 l 7,1 l 1,7
+                M -36,-36 l 10,-2
+                M -36,-36 l -2,10
+                M -22,-22 l 5,0 l 0,5
+                M 36,36 l -7,-1 l -1,-7
+                M 36,36 l -10,2
+                M 36,36 l 2,-10
+                M 22,22 l -5,0 l 0,-5" />
+    </group>
+</vector>

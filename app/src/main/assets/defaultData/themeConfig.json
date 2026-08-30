@@ -2,12 +2,12 @@
   {
     "themeName": "默认",
     "isNightTheme": false,
-    "primaryColor": "#795548",
-    "accentColor": "#E53935",
-    "backgroundColor": "#F5F5F5",
-    "bottomBackground": "#EEEEEE",
-    "uiFontColor": "#000000",
-    "titleFontColor": "#000000"
+    "primaryColor": "#555555",
+    "accentColor": "#999999",
+    "backgroundColor": "#FFFFFF",
+    "bottomBackground": "#FAFAFA",
+    "uiFontColor": "#555555",
+    "titleFontColor": "#333333"
   },
   {
     "themeName": "典雅蓝",

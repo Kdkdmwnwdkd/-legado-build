@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 雪帝启动图标：前景层（纯白背景+线稿头像），用于 adaptive-icon -->
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/xuedi_launcher_fg"
+    android:gravity="center" />
