@@ -40,3 +40,6 @@ cloudflare/**/.wrangler/
 # local build logs (Claude)
 /rb*.log
 /release-build*.log
+
+# 签名及密码不进入公开仓库
+signing/
