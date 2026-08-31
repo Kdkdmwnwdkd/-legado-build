@@ -95,8 +95,7 @@
             android:alpha="0.34"
             android:contentDescription="@null"
             android:rotation="7"
-            android:src="@drawable/xuedi_decor"
-            tools:ignore="ContentDescription" />
+            android:src="@drawable/xuedi_decor" />
 
         <!-- 左上 经典六角雪花（参考图第一行①造型） -->
         <ImageView
@@ -109,8 +108,7 @@
             android:alpha="0.22"
             android:contentDescription="@null"
             android:rotation="-12"
-            android:src="@drawable/snowflake_classic"
-            tools:ignore="ContentDescription" />
+            android:src="@drawable/snowflake_classic" />
 
         <!-- 左下 叉形雪花（参考图第一行④造型） -->
         <ImageView
@@ -123,8 +121,7 @@
             android:alpha="0.19"
             android:contentDescription="@null"
             android:rotation="20"
-            android:src="@drawable/snowflake_forked"
-            tools:ignore="ContentDescription" />
+            android:src="@drawable/snowflake_forked" />
 
         <!-- 右下 枝型小雪花（参考图第二行①造型） -->
         <ImageView
@@ -137,8 +134,7 @@
             android:alpha="0.16"
             android:contentDescription="@null"
             android:rotation="-8"
-            android:src="@drawable/snowflake_branch"
-            tools:ignore="ContentDescription" />
+            android:src="@drawable/snowflake_branch" />
 
     </FrameLayout>
 
