@@ -66,6 +66,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
@@ -95,6 +96,7 @@ class App : Application() {
         applyDayNightInit(this)
         registerActivityLifecycleCallbacks(LifecycleHelp)
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(AppConfig)
+        // === 优先级1：启动必需的轻量初始化（立即执行，不阻塞主线程但尽早完成）===
         Coroutine.async {
             RestoreJournal.recoverIfNeeded("应用启动检测到上次恢复未完成")
             RestoreJournal.markStableIfPending()
@@ -107,12 +109,17 @@ class App : Application() {
                 .autoClear(false)
                 .enableLogger(AppConfig.recordLog)
                 .setLogger(EventLogger())
+            // 只在版本升级时跑，平时启动跳过大量DB插入
             DefaultData.upVersion()
+            URL.setURLStreamHandlerFactory(ObsoleteUrlFactory(okHttpClient))
+            // GMS TLS 旧设备兼容，单独 launch 不阻塞
+            launch { installGmsTlsProvider(appCtx) }
+        }
+        // === 优先级2：数据清理 & 排序整理（延后5秒，等界面渲染完+用户开始交互后）===
+        Coroutine.async {
+            delay(5000)
             AppFreezeMonitor.init(this@App)
             DispatchersMonitor.init()
-            URL.setURLStreamHandlerFactory(ObsoleteUrlFactory(okHttpClient))
-            //延迟非关键初始化，避免抢占启动资源
-            launch { installGmsTlsProvider(appCtx) }
             //清除过期数据
             appDb.cacheDao.clearDeadline(System.currentTimeMillis())
             if (getPrefBoolean(PreferKey.autoClearExpired, true)) {
@@ -127,25 +134,25 @@ class App : Application() {
             //调整排序序号
             SourceHelp.adjustSortNumber()
         }
-        //重型初始化放更低优先级，延迟到主初始化完成后
+        // === 优先级3：重型初始化（延后10秒，完全不抢占启动资源）===
         Coroutine.async {
+            delay(10000)
             //预下载Cronet so
-            Cronet.preDownload()
+            runCatching { Cronet.preDownload() }
             initRhino()
             //初始化封面
-            BookCover.toString()
-            //初始化简繁转换引擎
+            runCatching { BookCover.toString() }
+            //初始化简繁转换引擎（词典加载非常重，按需触发不预载也行；这里保留但延后）
             when (AppConfig.chineseConverterType) {
                 1 -> {
-                    ChineseUtils.fixT2sDict()
-                    ChineseUtils.preLoad(true, TransType.TRADITIONAL_TO_SIMPLE)
+                    runCatching { ChineseUtils.fixT2sDict() }
+                    runCatching { ChineseUtils.preLoad(true, TransType.TRADITIONAL_TO_SIMPLE) }
                 }
-
-                2 -> ChineseUtils.preLoad(true, TransType.SIMPLE_TO_TRADITIONAL)
+                2 -> runCatching { ChineseUtils.preLoad(true, TransType.SIMPLE_TO_TRADITIONAL) }
             }
-            //同步阅读记录
+            //同步阅读记录（网络IO，延后避免和启动抢带宽）
             if (AppConfig.syncBookProgress) {
-                AppCloudStorage.downloadAllBookProgress()
+                runCatching { AppCloudStorage.downloadAllBookProgress() }
             }
         }
     }

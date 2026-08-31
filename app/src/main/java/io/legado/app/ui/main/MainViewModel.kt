@@ -71,7 +71,11 @@ class MainViewModel(application: Application) : BaseViewModel(application) {
     }
 
     init {
-        deleteNotShelfBook()
+        // 延后删除不在书架的书，不抢占启动渲染资源
+        execute {
+            delay(4000)
+            appDb.bookDao.deleteNotShelfBook()
+        }
     }
 
     override fun onCleared() {

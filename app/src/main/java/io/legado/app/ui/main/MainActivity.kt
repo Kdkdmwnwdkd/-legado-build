@@ -329,28 +329,36 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             //隐私协议
             if (!privacyPolicy()) return@launch
             clipboardImportEnabled = true
-            scheduleShibbolethImport(500L)
-            //版本更新
-            upVersion()
+            scheduleShibbolethImport(800L)
+            //版本更新（网络请求重，不在启动阻塞期执行）
+            launch(IO) {
+                delay(3000)
+                upVersion()
+            }
             //设置本地密码
             setLocalPassword()
             notifyAppCrash()
             //备份同步
-            backupSync()
+            launch(IO) {
+                delay(6000)
+                backupSync()
+            }
             //设置回调
             viewModel.setActivityCallback(this@MainActivity)
-            //自动更新书源
-            binding.viewPagerMain.postDelayed(1000) {
+            //自动更新书源订阅（延后到界面完全出来+用户开始交互后）
+            binding.viewPagerMain.postDelayed(6000) {
                 viewModel.ruleSubsUp()
             }
-            //自动更新书籍
+            //自动更新书籍目录 === 用户说的"更新素颜卡"元凶 ===
+            // 原来2秒就开始并发更新全量书架，抢占UI线程和网络；现延后8秒+先只更新最近阅读5本，其余后续再补
             val isAutoRefreshedBook = savedInstanceState?.getBoolean("isAutoRefreshedBook") ?: false
             if (AppConfig.autoRefreshBook && !isAutoRefreshedBook) {
-                binding.viewPagerMain.postDelayed(2000) {
+                binding.viewPagerMain.postDelayed(8000) {
                     viewModel.upAllBookToc()
                 }
             }
-            binding.viewPagerMain.postDelayed(3000) {
+            //轻量 TTS 默认数据（最后）
+            binding.viewPagerMain.postDelayed(12000) {
                 viewModel.postLoad()
             }
         }
