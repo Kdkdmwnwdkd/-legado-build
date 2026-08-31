@@ -49,8 +49,7 @@
         android:layout_height="match_parent"
         android:clickable="false"
         android:focusable="false"
-        android:importantForAccessibility="no"
-        android:foregroundGravity="top|start">
+        android:importantForAccessibility="no">
 
         <!-- 左上小雪帝头像：小尺寸，透明度低，不挡搜索/顶栏内容 -->
         <ImageView
