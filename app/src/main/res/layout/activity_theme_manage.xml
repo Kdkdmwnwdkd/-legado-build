@@ -1,84 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <io.legado.app.ui.widget.TitleBar
-        android:id="@+id/title_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:title="@string/theme_manage_title" />
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/tab_bar"
         android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/bg_bookshelf_tag_track"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="4dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <io.legado.app.ui.widget.TitleBar
+            android:id="@+id/title_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="@string/theme_manage_title" />
+
+        <LinearLayout
+            android:id="@+id/tab_bar"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/bg_bookshelf_tag_track"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <TextView
+                android:id="@+id/btn_day"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_bookshelf_tag_item"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/theme_day"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/btn_night"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_bookshelf_tag_item"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/theme_night"
+                android:textSize="14sp" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/btn_day"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg_bookshelf_tag_item"
+            android:id="@+id/tv_summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="18dp"
+            android:minHeight="18dp"
+            android:text="@string/theme_package_summary_default"
+            android:textSize="13sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
             android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/theme_day"
-            android:textSize="14sp" />
+            android:clipToPadding="false"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp" />
 
         <TextView
-            android:id="@+id/btn_night"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg_bookshelf_tag_item"
-            android:layout_weight="1"
+            android:id="@+id/btn_add"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_book_info_action_secondary"
             android:gravity="center"
-            android:text="@string/theme_night"
-            android:textSize="14sp" />
+            android:text="@string/theme_add"
+            android:textColor="@color/primaryText"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_summary"
+    <!-- 雪帝主题装饰：主题管理页 Logo 水印 + 雪花（不拦截点击不抢焦点） -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="18dp"
-        android:minHeight="18dp"
-        android:text="@string/theme_package_summary_default"
-        android:textSize="13sp" />
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:importantForAccessibility="no">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="16dp" />
+        <!-- 右上角雪帝形象 - 较大，低透明度水印，代表「雪帝主题」 -->
+        <ImageView
+            android:id="@+id/xuedi_theme_logo"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="14dp"
+            android:alpha="0.20"
+            android:contentDescription="@null"
+            android:src="@drawable/xuedi_decor"
+            tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/btn_add"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_book_info_action_secondary"
-        android:gravity="center"
-        android:text="@string/theme_add"
-        android:textColor="@color/primaryText"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+        <!-- 左下经典雪花 -->
+        <ImageView
+            android:id="@+id/xuedi_theme_snow_bl"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_gravity="bottom|start"
+            android:layout_marginStart="28dp"
+            android:layout_marginBottom="96dp"
+            android:alpha="0.17"
+            android:contentDescription="@null"
+            android:rotation="-15"
+            android:src="@drawable/snowflake_classic"
+            tools:ignore="ContentDescription" />
 
-</LinearLayout>
+        <!-- 右下枝型雪花 -->
+        <ImageView
+            android:id="@+id/xuedi_theme_snow_br"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="80dp"
+            android:alpha="0.15"
+            android:contentDescription="@null"
+            android:rotation="25"
+            android:src="@drawable/snowflake_branch"
+            tools:ignore="ContentDescription" />
+
+    </FrameLayout>
+
+</FrameLayout>

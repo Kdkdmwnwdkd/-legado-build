@@ -43,5 +43,56 @@
         android:visibility="gone"
         tools:text="TextView" />
 
+    <!-- 雪帝主题装饰：书架头部淡雪帝 + 雪花（视觉水印，不拦截点击） -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:importantForAccessibility="no"
+        android:foregroundGravity="top|start">
+
+        <!-- 左上小雪帝头像：小尺寸，透明度低，不挡搜索/顶栏内容 -->
+        <ImageView
+            android:id="@+id/xuedi_shelf_decor_icon"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_gravity="top|start"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="4dp"
+            android:alpha="0.34"
+            android:contentDescription="@null"
+            android:src="@drawable/xuedi_decor"
+            tools:ignore="ContentDescription" />
+
+        <!-- 右上雪花（classic 经典六角雪花） -->
+        <ImageView
+            android:id="@+id/xuedi_shelf_snow_tl"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="10dp"
+            android:alpha="0.18"
+            android:contentDescription="@null"
+            android:src="@drawable/snowflake_classic"
+            tools:ignore="ContentDescription" />
+
+        <!-- 右下小雪花（branch 枝型） -->
+        <ImageView
+            android:id="@+id/xuedi_shelf_snow_br"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="26dp"
+            android:alpha="0.15"
+            android:contentDescription="@null"
+            android:rotation="15"
+            android:src="@drawable/snowflake_branch"
+            tools:ignore="ContentDescription" />
+
+    </FrameLayout>
+
 </FrameLayout>
 

@@ -1,47 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="io.legado.app.ui.about.AboutActivity">
+    android:layout_height="match_parent">
 
-    <io.legado.app.ui.widget.TitleBar
-        android:id="@+id/title_bar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:title="@string/about">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="io.legado.app.ui.about.AboutActivity">
 
-        <LinearLayout
-            android:id="@+id/ll_about"
+        <io.legado.app.ui.widget.TitleBar
+            android:id="@+id/title_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/shape_card_view"
-            android:orientation="vertical"
-            android:layout_margin="6dp"
-            android:padding="10dp">
+            app:title="@string/about">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/app_name_sigma"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_app_summary"
+            <LinearLayout
+                android:id="@+id/ll_about"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/about_description_sigma" />
-        </LinearLayout>
+                android:background="@drawable/shape_card_view"
+                android:orientation="vertical"
+                android:layout_margin="6dp"
+                android:padding="10dp">
 
-    </io.legado.app.ui.widget.TitleBar>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/app_name_sigma"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
+                <TextView
+                    android:id="@+id/tv_app_summary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/about_description_sigma" />
+            </LinearLayout>
+
+        </io.legado.app.ui.widget.TitleBar>
+
+        <FrameLayout
+            android:id="@+id/fl_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <!-- 雪帝主题装饰：关于页水印 - 雪帝形象 + 2朵雪花（不拦截点击不抢焦点） -->
     <FrameLayout
-        android:id="@+id/fl_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:importantForAccessibility="no">
 
-</LinearLayout>
+        <!-- 左上下雪帝形象装饰 -->
+        <ImageView
+            android:id="@+id/xuedi_about_logo"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_gravity="top|start"
+            android:layout_marginTop="170dp"
+            android:layout_marginStart="12dp"
+            android:alpha="0.18"
+            android:contentDescription="@null"
+            android:rotation="-6"
+            android:src="@drawable/xuedi_decor"
+            tools:ignore="ContentDescription" />
+
+        <!-- 右下雪帝形象（镜像感） -->
+        <ImageView
+            android:id="@+id/xuedi_about_logo_br"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="22dp"
+            android:layout_marginBottom="40dp"
+            android:alpha="0.16"
+            android:contentDescription="@null"
+            android:rotation="8"
+            android:src="@drawable/xuedi_decor"
+            tools:ignore="ContentDescription" />
+
+        <!-- 中上叉形雪花 -->
+        <ImageView
+            android:id="@+id/xuedi_about_snow_top"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="130dp"
+            android:layout_marginEnd="40dp"
+            android:alpha="0.16"
+            android:contentDescription="@null"
+            android:rotation="12"
+            android:src="@drawable/snowflake_forked"
+            tools:ignore="ContentDescription" />
+
+        <!-- 左下经典雪花 -->
+        <ImageView
+            android:id="@+id/xuedi_about_snow_bl"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="bottom|start"
+            android:layout_marginStart="70dp"
+            android:layout_marginBottom="120dp"
+            android:alpha="0.14"
+            android:contentDescription="@null"
+            android:rotation="-20"
+            android:src="@drawable/snowflake_classic"
+            tools:ignore="ContentDescription" />
+
+    </FrameLayout>
+
+</FrameLayout>
