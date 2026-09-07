@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#5E9DFF</color>
-    <color name="primaryDark">#3F7FE0</color>
-    <color name="accent">#0A84FF</color>
+    <color name="primary">#89b4fa</color>
+    <color name="primaryDark">#74c7ec</color>
+    <color name="accent">#89b4fa</color>
 
     <color name="disabled">@color/md_dark_disabled</color>
 
-    <color name="background">#111113</color>
-    <color name="background_card">#1C1C1E</color>
-    <color name="background_menu">#252528</color>
-    <color name="dialog_surface">#1C1C1E</color>
-    <color name="book_info_frost">#DD252528</color>
-    <color name="background_prefs">#241C1C1E</color>
-    <color name="glass_bar">#A81F242C</color>
+    <color name="background">#11111b</color>
+    <color name="background_card">#1e1e2e</color>
+    <color name="background_menu">#252538</color>
+    <color name="dialog_surface">#1e1e2e</color>
+    <color name="book_info_frost">#DD252538</color>
+    <color name="background_prefs">#241e1e2e</color>
+    <color name="glass_bar">#A81e1e2e</color>
     <color name="glass_bar_shadow">#66000000</color>
     <color name="glass_bar_highlight">#26FFFFFF</color>
-    <color name="glass_button">#B52A303A</color>
-    <color name="glass_button_pressed">#D02D6FD6</color>
+    <color name="glass_button">#B52a2a3e</color>
+    <color name="glass_button_pressed">#D089b4fa</color>
     <color name="glass_overlay">#18000000</color>
-    <color name="glass_stroke">#4D8EA6C8</color>
+    <color name="glass_stroke">#4D89b4fa</color>
 
     <color name="night_mask">#69000000</color>
 
@@ -27,13 +27,13 @@
     <color name="transparent30">#30ffffff</color>
     <color name="transparent50">#50ffffff</color>
 
-    <color name="bg_divider_line">#2C2C2E</color>
+    <color name="bg_divider_line">#2C2C3E</color>
 
-    <color name="btn_bg_press">#330A84FF</color>
+    <color name="btn_bg_press">#3389b4fa</color>
     <color name="btn_bg_press_2">#24FFFFFF</color>
     <color name="btn_bg_press_tp">#63C7C7C7</color>
 
-    <color name="card_bg_water">#E61C1C1E</color>
+    <color name="card_bg_water">#E61e1e2e</color>
     <color name="card_border_water">#24FFFFFF</color>
 
     <color name="darker_gray">#66666666</color>
@@ -50,5 +50,5 @@
     <color name="tv_text_button_nor">#303030</color>
 
     <!--statusBarBackground-->
-    <color name="navigation_bar_bag">#222222</color>
+    <color name="navigation_bar_bag">#11111b</color>
 </resources>

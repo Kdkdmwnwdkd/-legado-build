@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="launcher_background">#FFFFFFFF</color>
-    <color name="primary">#3482FF</color>
-    <color name="primaryDark">#1F6FE5</color>
-    <color name="accent">#0A84FF</color>
+    <color name="primary">#89b4fa</color>
+    <color name="primaryDark">#74c7ec</color>
+    <color name="accent">#89b4fa</color>
 
     <color name="disabled">@color/md_light_disabled</color>
 
     <color name="divider">#1F000000</color>
 
-    <color name="lightBlue_color">#FF578FCC</color>
+    <color name="lightBlue_color">#FF89b4fa</color>
 
-    <color name="error">#eb4333</color>
-    <color name="success">#439b53</color>
+    <color name="error">#ef7b74</color>
+    <color name="success">#a6e3a1</color>
 
     <color name="night_mask">#00000000</color>
 
-    <color name="background">#F7F7FA</color>
+    <color name="background">#f0f1f5</color>
     <color name="background_card">#FFFFFFFF</color>
-    <color name="background_menu">#F1F2F6</color>
+    <color name="background_menu">#e6e9ef</color>
     <color name="dialog_surface">#FFFFFFFF</color>
-    <color name="book_info_frost">#DDF1F2F6</color>
+    <color name="book_info_frost">#DDe6e9ef</color>
     <color name="background_prefs">#EFFFFFFF</color>
-    <color name="glass_bar">#A8D9E6F7</color>
+    <color name="glass_bar">#A8e6e9ef</color>
     <color name="glass_bar_shadow">#260A1D35</color>
     <color name="glass_bar_highlight">#52FFFFFF</color>
-    <color name="glass_button">#B5E5EFFB</color>
-    <color name="glass_button_pressed">#D05C9DFF</color>
+    <color name="glass_button">#B5e6e9ef</color>
+    <color name="glass_button_pressed">#D089b4fa</color>
     <color name="glass_overlay">#22FFFFFF</color>
     <color name="glass_stroke">#668FA8C8</color>
 
@@ -37,9 +37,9 @@
     <color name="transparent30">#30000000</color>
     <color name="transparent50">#50000000</color>
 
-    <color name="highlight">#d3321b</color>
+    <color name="highlight">#f38ba8</color>
 
-    <color name="btn_bg_press">#1A0A84FF</color>
+    <color name="btn_bg_press">#1A89b4fa</color>
     <color name="btn_bg_press_2">#14000000</color>
     <color name="btn_bg_press_tp">#632C2C2C</color>
 
