@@ -29,11 +29,13 @@ import io.legado.app.model.webBook.WebBook
 import io.legado.app.service.CacheBookService
 import io.legado.app.utils.onEachParallel
 import io.legado.app.utils.postEvent
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
@@ -66,7 +68,7 @@ class MainViewModel(application: Application) : BaseViewModel(application) {
         setMaxRecycledViews(0, 100)
     }
     var callback: CallBack? = null
-    fun setActivityCallback(callback: CallBack) {
+    fun setActivityCallback(callback: CallBack?) {
         this.callback = callback
     }
 
@@ -113,8 +115,10 @@ class MainViewModel(application: Application) : BaseViewModel(application) {
             for (ruleSub in ruleSubs) {
                 if (ruleSub.autoUpdate) {
                     val checkResult = RuleUpdate.cacheSource(ruleSub)
-                    if(checkResult) {
-                        callback?.openImportUi(ruleSub.type, ruleSub.url)
+                    if (checkResult) {
+                        withContext(Dispatchers.Main) {
+                            callback?.openImportUi(ruleSub.type, ruleSub.url)
+                        }
                     }
                 }
             }

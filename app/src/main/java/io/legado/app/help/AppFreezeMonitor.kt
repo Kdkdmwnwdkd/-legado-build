@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.SystemClock
+import androidx.core.content.ContextCompat
 import io.legado.app.help.config.AppConfig
 import io.legado.app.utils.LogUtils
 
@@ -37,7 +38,12 @@ object AppFreezeMonitor {
 
         if (!registeredReceiver) {
             registeredReceiver = true
-            context.registerReceiver(screenStatusReceiver, screenStatusReceiver.filter)
+            ContextCompat.registerReceiver(
+                context,
+                screenStatusReceiver,
+                screenStatusReceiver.filter,
+                ContextCompat.RECEIVER_EXPORTED
+            )
         }
 
         var previous = SystemClock.uptimeMillis()

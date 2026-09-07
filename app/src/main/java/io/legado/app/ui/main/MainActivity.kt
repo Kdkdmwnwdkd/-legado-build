@@ -39,10 +39,8 @@ import androidx.appcompat.widget.AppCompatImageButton
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
-import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.core.view.doOnLayout
-import androidx.core.view.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -67,7 +65,6 @@ import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.MainBottomNavConfig
 import io.legado.app.help.config.NavigationBarIconConfig
 import io.legado.app.help.config.LocalConfig
-import io.legado.app.help.config.ThemeConfig
 import io.legado.app.help.coroutine.Coroutine
 import io.legado.app.help.storage.Backup
 import io.legado.app.lib.dialogs.alert
@@ -83,7 +80,6 @@ import io.legado.app.service.BaseReadAloudService
 import io.legado.app.ui.about.CrashLogsDialog
 import io.legado.app.ui.about.ReadRecordWidgetStore
 import io.legado.app.ui.about.loadReadRecordAvatar
-import io.legado.app.ui.about.loadReadRecordCover
 import io.legado.app.ui.association.ImportBookSourceDialog
 import io.legado.app.ui.association.ImportDictRuleDialog
 import io.legado.app.ui.association.ImportHttpTtsDialog
@@ -120,7 +116,6 @@ import io.legado.app.utils.setStatusBarColorAuto
 import io.legado.app.utils.showDialogFragment
 import io.legado.app.utils.toastOnUi
 import io.legado.app.utils.viewbindingdelegate.viewBinding
-import io.legado.app.utils.windowSize
 import io.legado.app.utils.ColorUtils as AppColorUtils
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
@@ -210,6 +205,18 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
     private var onUpBooksBadgeView: BadgeView? = null
     private val appearanceRefreshRunnable = Runnable {
         refreshAppearanceKitNow()
+    }
+    private val ruleSubsUpRunnable = Runnable {
+        if (isFinishing || isDestroyed) return@Runnable
+        viewModel.ruleSubsUp()
+    }
+    private val autoRefreshBookRunnable = Runnable {
+        if (isFinishing || isDestroyed) return@Runnable
+        viewModel.upAllBookToc()
+    }
+    private val postLoadRunnable = Runnable {
+        if (isFinishing || isDestroyed) return@Runnable
+        viewModel.postLoad()
     }
     private var mainBackgroundVersion by mutableIntStateOf(0)
     private var mainBackgroundSignature: MainThemeBackgroundSignature? = null
@@ -344,24 +351,13 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                 delay(6000)
                 backupSync()
             }
-            //设置回调
             viewModel.setActivityCallback(this@MainActivity)
-            //自动更新书源订阅（延后到界面完全出来+用户开始交互后）
-            binding.viewPagerMain.postDelayed(6000) {
-                viewModel.ruleSubsUp()
-            }
-            //自动更新书籍目录 === 用户说的"更新素颜卡"元凶 ===
-            // 原来2秒就开始并发更新全量书架，抢占UI线程和网络；现延后8秒+先只更新最近阅读5本，其余后续再补
+            binding.viewPagerMain.postDelayed(ruleSubsUpRunnable, 6000)
             val isAutoRefreshedBook = savedInstanceState?.getBoolean("isAutoRefreshedBook") ?: false
             if (AppConfig.autoRefreshBook && !isAutoRefreshedBook) {
-                binding.viewPagerMain.postDelayed(8000) {
-                    viewModel.upAllBookToc()
-                }
+                binding.viewPagerMain.postDelayed(autoRefreshBookRunnable, 8000)
             }
-            //轻量 TTS 默认数据（最后）
-            binding.viewPagerMain.postDelayed(12000) {
-                viewModel.postLoad()
-            }
+            binding.viewPagerMain.postDelayed(postLoadRunnable, 12000)
         }
     }
 
@@ -849,11 +845,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             if (standardMode) 0 else floatingBottomControlsBottomPadding()
         )
         bottomControls.requestLayout()
-        bottomNavigationView.labelVisibilityMode = if (standardMode) {
-            NavigationBarView.LABEL_VISIBILITY_UNLABELED
-        } else {
-            NavigationBarView.LABEL_VISIBILITY_UNLABELED
-        }
+        bottomNavigationView.labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_UNLABELED
         bottomNavigationView.itemIconSize = if (standardMode) {
             resources.getDimensionPixelSize(R.dimen.main_bottom_standard_icon_size)
         } else {
@@ -1994,11 +1986,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                 (itemView.width - 16.dpToPx()).coerceAtLeast(42.dpToPx())
             )
         }
-        val targetHeight = if (standardMode) {
-            resources.getDimensionPixelSize(R.dimen.main_bottom_indicator_height)
-        } else {
-            resources.getDimensionPixelSize(R.dimen.main_bottom_indicator_height)
-        }
+        val targetHeight = resources.getDimensionPixelSize(R.dimen.main_bottom_indicator_height)
         indicator.layoutParams = indicator.layoutParams.apply {
             width = targetWidth
             height = targetHeight
@@ -2282,6 +2270,10 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
     }
 
     override fun onDestroy() {
+        viewModel.setActivityCallback(null)
+        binding.viewPagerMain.removeCallbacks(ruleSubsUpRunnable)
+        binding.viewPagerMain.removeCallbacks(autoRefreshBookRunnable)
+        binding.viewPagerMain.removeCallbacks(postLoadRunnable)
         aiFloatingBall?.removeCallbacks(aiFloatingBallAttachRunnable)
         binding.root.removeCallbacks(appearanceRefreshRunnable)
         clearLiquidGlassCallbacks()
@@ -2497,7 +2489,8 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
 
     }
 
-    override fun openImportUi(type:Int, source: String) {
+    override fun openImportUi(type: Int, source: String) {
+        if (isFinishing || isDestroyed || supportFragmentManager.isStateSaved) return
         when (type) {
             0 -> showDialogFragment(
                 ImportBookSourceDialog(source)

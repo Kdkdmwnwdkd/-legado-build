@@ -17,6 +17,7 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.media.AudioFocusRequestCompat
 import androidx.media3.common.PlaybackException
@@ -572,7 +573,12 @@ class AudioPlayService : BaseService(),
             }
         }
         val intentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-        registerReceiver(broadcastReceiver, intentFilter)
+        ContextCompat.registerReceiver(
+            this,
+            broadcastReceiver,
+            intentFilter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
     }
 
     /**

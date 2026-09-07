@@ -21,8 +21,9 @@ class NetworkChangedListener(private val context: Context) {
     private val receiver: NetworkChangedReceiver? by lazy {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             NetworkChangedReceiver()
+        } else {
+            null
         }
-        return@lazy null
     }
 
     private val networkCallback: ConnectivityManager.NetworkCallback? by lazy {

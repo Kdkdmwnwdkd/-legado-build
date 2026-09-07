@@ -716,7 +716,12 @@ class ReadBookActivity : BaseReadBookActivity(),
             }
         }
         upSystemUiVisibility()
-        registerReceiver(timeBatteryReceiver, timeBatteryReceiver.filter)
+        ContextCompat.registerReceiver(
+            this,
+            timeBatteryReceiver,
+            timeBatteryReceiver.filter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
         binding.readView.upTime()
         screenOffTimerStart()
         // 网络监听，当从无网切换到网络环境时同步进度（注意注册的同时就会收到监听，因此界面激活时无需重复执行同步操作）

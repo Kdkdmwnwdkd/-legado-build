@@ -22,7 +22,7 @@ class LargeBodyUploadProvider(
     private val body: RequestBody,
     private val executorService: ExecutorService
 ) : UploadDataProvider(), AutoCloseable {
-    private val pipe = Pipe(BUFFER_SIZE.toLong())
+    private var pipe = Pipe(BUFFER_SIZE.toLong())
     private var source: BufferedSource = pipe.source.buffer()
 
     @Volatile
@@ -36,10 +36,13 @@ class LargeBodyUploadProvider(
             fillBuffer()
         }
         check(byteBuffer.hasRemaining()) { "Cronet passed a buffer with no bytes remaining" }
-        var read: Int
         var bytesRead = 0
-        while (bytesRead <= 0) {
-            read = source.read(byteBuffer)
+        while (bytesRead == 0) {
+            val read = source.read(byteBuffer)
+            if (read < 0) {
+                uploadDataSink.onReadSucceeded(true)
+                return
+            }
             bytesRead += read
         }
         uploadDataSink.onReadSucceeded(false)
@@ -49,27 +52,30 @@ class LargeBodyUploadProvider(
     private fun fillBuffer() {
         executorService.submit {
             try {
-                val writeSink = pipe.sink.buffer()
-                filled = true
-                body.writeTo(writeSink)
-                writeSink.flush()
+                pipe.sink.buffer().use { writeSink ->
+                    filled = true
+                    body.writeTo(writeSink)
+                    writeSink.flush()
+                }
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-
         }
 
     }
 
-    override fun rewind(p0: UploadDataSink?) {
-        check(body.isOneShot()) { "Okhttp RequestBody is OneShot" }
+    override fun rewind(uploadDataSink: UploadDataSink) {
+        check(!body.isOneShot()) { "OkHttp RequestBody is oneShot" }
         filled = false
+        runCatching { source.close() }
+        pipe = Pipe(BUFFER_SIZE.toLong())
+        source = pipe.source.buffer()
         fillBuffer()
+        uploadDataSink.onRewindSucceeded()
     }
 
     override fun close() {
-//        pipe.cancel()
-//        source.close()
+        runCatching { source.close() }
         super.close()
     }
 }

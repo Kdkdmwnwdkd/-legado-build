@@ -100,9 +100,7 @@ fun buildRequest(request: Request, callback: UrlRequest.Callback): UrlRequest? {
             } else {
                 BodyUploadProvider(requestBody)
             }
-            provider.use {
-                this.setUploadDataProvider(it, okHttpClient.dispatcher.executorService)
-            }
+            setUploadDataProvider(provider, okHttpClient.dispatcher.executorService)
         }
     }?.build()
 }

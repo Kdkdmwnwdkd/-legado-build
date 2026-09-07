@@ -24,6 +24,7 @@ import android.telephony.PhoneStateListener
 import android.telephony.TelephonyManager
 import androidx.annotation.CallSuper
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
@@ -1373,7 +1374,12 @@ abstract class BaseReadAloudService : BaseService(),
      */
     private fun initBroadcastReceiver() {
         val intentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-        registerReceiver(broadcastReceiver, intentFilter)
+        ContextCompat.registerReceiver(
+            this,
+            broadcastReceiver,
+            intentFilter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
     }
 
     /**

@@ -28,6 +28,7 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.FrameLayout
 import androidx.annotation.OptIn
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -299,7 +300,12 @@ class VideoPlayService : BaseService() {
             }
         }
         val intentFilter = IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY)
-        registerReceiver(broadcastReceiver, intentFilter)
+        ContextCompat.registerReceiver(
+            this,
+            broadcastReceiver,
+            intentFilter,
+            ContextCompat.RECEIVER_EXPORTED
+        )
     }
 
     /**

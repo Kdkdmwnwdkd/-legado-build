@@ -15,7 +15,7 @@ object Cronet {
     }
 
     val interceptor: Interceptor? by lazy {
-        CronetInterceptor(cookieJar)
+        CronetInterceptor()
     }
 
     interface LoaderInterface {

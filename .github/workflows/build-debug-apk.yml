@@ -54,10 +54,13 @@ jobs:
           name: Nightly Debug Build
           body: |
             ## 阅读Shimmer Nightly Debug
-            自动构建产物，包含**备份修复**（WebDAV未配置时跳过云端，本地备份正常）。
+            稳定性修复：
+            - 修复阅读页网络监听未注册，切网后进度不同步
+            - 修复 Cronet POST 上传被提前关闭、重放崩溃、EOF 死循环
+            - 修复 Android 14+ 广播注册缺少 RECEIVER flag 导致崩溃
+            - 修复主界面销毁后仍弹导入框
             - Commit: ${{ github.sha }}
             - 构建时间: ${{ github.event.head_commit.timestamp }}
-            - Actions 已升级到 Node24 版本
           files: |
             app/build/outputs/apk/**/*.apk
           overwrite_files: true
