@@ -17,6 +17,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '18'
+
+      - name: Build web frontend
+        run: |
+          cd modules/web
+          npm ci
+          npm run build
+
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
@@ -30,7 +41,7 @@ jobs:
       - name: Build with Gradle (app flavor only, arm64 ABI)
         run: |
           set -o pipefail
-          ./gradlew assembleAppDebug -Pabi=arm64-v8a --no-daemon --max-workers=2 --stacktrace 2>&1 | tee build_output.txt
+          ./gradlew assembleAppDebug -Pbi=arm64-v8a --no-daemon --max-workers=2 --stacktrace 2>&1 | tee build_output.txt
 
       - name: Upload build log on failure
         if: failure()
@@ -47,21 +58,14 @@ jobs:
             app/build/outputs/apk/**/*.apk
 
       - name: Upload APK to GitHub Releases
-        if: success()
+        if: success
+
         uses: softprops/action-gh-release@v2
         with:
           tag_name: nightly-debug
           name: Nightly Debug Build
           body: |
             ## 阅读Shimmer Nightly Debug
-            稳定性修复：
-            - 修复阅读页网络监听未注册，切网后进度不同步
-            - 修复 Cronet POST 上传被提前关闭、重放崩溃、EOF 死循环
-            - 修复 Android 14+ 广播注册缺少 RECEIVER flag 导致崩溃
-            - 修复主界面销毁后仍弹导入框
-            - Commit: ${{ github.sha }}
-            - 构建时间: ${{ github.event.head_commit.timestamp }}
-          files: |
-            app/build/outputs/apk/**/*.apk
-          overwrite_files: true
-          update_existing: true
+            稳客性修复��
+            - 修复阅读页彑廜监听未注册，切网后进度不同步
+            - 修复 Cronet POST 上传袛提前儶闭、重放崩溃
