@@ -42,15 +42,44 @@ const isSaveError = computed(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.2s ease;
+}
+:deep(.el-checkbox) {
+  border-radius: var(--legado-radius-sm, 8px);
+  transition: all 0.25s ease;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 8px 12px;
+  &:hover {
+    background: rgba(137, 180, 250, 0.04);
+    border-color: rgba(137, 180, 250, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    :deep(.el-checkbox__label) {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+}
+:deep(.el-checkbox.is-checked) {
+  background: rgba(137, 180, 250, 0.06);
+  border-color: rgba(137, 180, 250, 0.25);
+}
+:deep(.el-button) {
+  color: rgba(255, 255, 255, 0.35);
+  &:hover {
+    color: var(--legado-accent, #89b4fa);
+  }
 }
 .error {
-  border-color: var(--el-color-error) !important;
-  color: var(--el-color-error) !important;
-  --el-checkbox-checked-text-color: var(--el-color-error);
-  --el-checkbox-checked-bg-color: var(--el-color-error);
-  --el-checkbox-checked-input-border-color: var(--el-color-error);
+  border-color: rgba(239, 121, 116, 0.4) !important;
+  color: #ef7b74 !important;
+  --el-checkbox-checked-text-color: #ef7b74;
+  --el-checkbox-checked-bg-color: #ef7b74;
+  --el-checkbox-checked-input-border-color: #ef7b74;
 }
 .edit {
-  border-color: var(--el-color-dark) !important;
+  border-color: rgba(137, 180, 250, 0.3) !important;
+  background: rgba(137, 180, 250, 0.04);
 }
 </style>

@@ -369,24 +369,46 @@ const setInfiniteLoading = (loading: boolean) => {
 
 .settings-wrapper {
   user-select: none;
-  margin: -13px;
-  /*   width: 478px;
-  height: 350px; */
+  margin: -12px;
   text-align: left;
-  padding: 40px 0 40px 24px;
-  background: #ede7da url('../assets/imgs/themes/popup_1.png') repeat;
+  padding: 24px 20px 24px 20px;
+  border-radius: var(--legado-radius, 14px);
 
   .settings-title {
-    font-size: 18px;
-    line-height: 22px;
-    margin-bottom: 28px;
-    font-family: FZZCYSK;
-    font-weight: 400;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 18px;
+    margin-bottom: 20px;
+    color: var(--legado-accent, #89b4fa);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    position: relative;
+    padding-left: 12px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 1px;
+      bottom: 1px;
+      width: 3px;
+      border-radius: 2px;
+      background: var(--legado-accent, #89b4fa);
+    }
   }
 
   .setting-list {
-    max-height: calc(70vh - 50px);
+    max-height: calc(70vh - 40px);
     overflow: auto;
+    padding-right: 4px;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.08);
+      border-radius: 2px;
+    }
 
     ul {
       list-style: none outside none;
@@ -395,38 +417,45 @@ const setInfiniteLoading = (loading: boolean) => {
 
       li {
         list-style: none outside none;
+        padding: 8px 0;
 
         i {
           font:
-            12px / 16px PingFangSC-Regular,
-            '-apple-system',
-            Simsun;
+            11px / 16px -apple-system,
+            'PingFang SC',
+            sans-serif;
           display: inline-block;
-          min-width: 48px;
-          margin-right: 16px;
+          min-width: 52px;
+          margin-right: 12px;
           vertical-align: middle;
-          color: #666;
+          color: var(--legado-text-dim, #6c6f85);
+          font-weight: 500;
         }
 
         .theme-item {
-          line-height: 32px;
-          width: 34px;
-          height: 34px;
-          margin-right: 16px;
-          margin-top: 5px;
-          border-radius: 100%;
+          line-height: 28px;
+          width: 28px;
+          height: 28px;
+          margin-right: 10px;
+          margin-top: 4px;
+          border-radius: 50%;
           display: inline-block;
           cursor: pointer;
           text-align: center;
           vertical-align: middle;
+          transition: all var(--legado-transition, 0.28s ease);
 
           .iconfont {
             display: none;
           }
+
+          &:hover {
+            transform: scale(1.15);
+          }
         }
 
         .selected {
-          color: #ed4259;
+          color: var(--legado-accent, #89b4fa);
 
           .iconfont {
             display: inline;
@@ -436,38 +465,40 @@ const setInfiniteLoading = (loading: boolean) => {
 
       .font-list,
       .infinite-loading {
-        margin-top: 28px;
+        margin-top: 8px;
 
         .font-item,
         .infinite-loading-item {
-          width: 78px;
-          height: 34px;
+          width: 70px;
+          height: 30px;
           cursor: pointer;
-          margin-right: 16px;
-          border-radius: 2px;
+          margin-right: 8px;
+          border-radius: var(--legado-radius-sm, 10px);
           text-align: center;
           vertical-align: middle;
           display: inline-block;
           font:
-            14px / 34px PingFangSC-Regular,
-            HelveticaNeue-Light,
-            'Helvetica Neue Light',
+            12px / 30px -apple-system,
+            'PingFang SC',
             'Microsoft YaHei',
             sans-serif;
+          transition: all var(--legado-transition, 0.28s ease);
         }
         .font-item-input {
-          width: 168px;
-          color: #000000;
+          width: 148px;
+          color: var(--legado-text, #1e1e2e);
+          padding: 0 8px;
         }
         .selected {
-          color: #ed4259;
-          border: 1px solid #ed4259;
+          color: var(--legado-accent, #89b4fa);
+          border: 1px solid var(--legado-accent, #89b4fa);
+          background: rgba(137, 180, 250, 0.06);
         }
 
         .font-item:hover,
         .infinite-loading-item:hover {
-          border: 1px solid #ed4259;
-          color: #ed4259;
+          border: 1px solid var(--legado-accent, #89b4fa);
+          color: var(--legado-accent, #89b4fa);
         }
       }
 
@@ -476,23 +507,25 @@ const setInfiniteLoading = (loading: boolean) => {
       .letter-spacing,
       .line-spacing,
       .paragraph-spacing {
-        margin-top: 28px;
+        margin-top: 8px;
 
         .resize {
           display: inline-block;
-          width: 274px;
-          height: 34px;
+          width: 250px;
+          height: 30px;
           vertical-align: middle;
-          border-radius: 2px;
+          border-radius: var(--legado-radius-sm, 10px);
+          overflow: hidden;
 
           span {
-            width: 89px;
-            height: 34px;
-            line-height: 34px;
+            width: 80px;
+            height: 30px;
+            line-height: 30px;
             display: inline-block;
             cursor: pointer;
             text-align: center;
             vertical-align: middle;
+            transition: background 0.2s ease, color 0.2s ease;
 
             em {
               font-style: normal;
@@ -501,18 +534,20 @@ const setInfiniteLoading = (loading: boolean) => {
 
           .less:hover,
           .more:hover {
-            color: #ed4259;
+            color: var(--legado-accent, #89b4fa);
+            background: rgba(137, 180, 250, 0.06);
           }
 
           .lang {
-            color: #a6a6a6;
-            font-weight: 400;
-            font-family: FZZCYSK;
+            color: var(--legado-text-faint, #a0a3b8);
+            font-weight: 500;
+            font-family: -apple-system, 'PingFang SC', monospace;
+            font-size: 12px;
           }
 
           b {
             display: inline-block;
-            height: 20px;
+            height: 18px;
             vertical-align: middle;
           }
         }
@@ -523,43 +558,43 @@ const setInfiniteLoading = (loading: boolean) => {
 
 .night {
   :deep(.theme-item) {
-    border: 1px solid #666;
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   :deep(.selected) {
-    border: 1px solid #666;
+    border: 1px solid var(--legado-accent, #89b4fa) !important;
   }
 
   :deep(.moon-icon) {
-    color: #ed4259;
+    color: var(--legado-accent, #89b4fa);
   }
 
   :deep(.font-list),
   .infinite-loading {
     .font-item,
     .infinite-loading-item {
-      border: 1px solid #666;
-      background: rgba(45, 45, 45, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(30, 30, 46, 0.5);
     }
   }
 
   :deep(.resize) {
-    border: 1px solid #666;
-    background: rgba(45, 45, 45, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(30, 30, 46, 0.5);
 
     b {
-      border-right: 1px solid #666;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
     }
   }
 }
 
 .day {
   :deep(.theme-item) {
-    border: 1px solid #e5e5e5;
+    border: 1px solid rgba(0, 0, 0, 0.06);
   }
 
   :deep(.selected) {
-    border: 1px solid #ed4259;
+    border: 1px solid var(--legado-accent, #89b4fa);
   }
 
   :deep(.moon-icon) {
@@ -572,16 +607,16 @@ const setInfiniteLoading = (loading: boolean) => {
     .font-item,
     .infinite-loading-item {
       background: rgba(255, 255, 255, 0.5);
-      border: 1px solid rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.06);
     }
   }
 
   :deep(.resize) {
-    border: 1px solid #e5e5e5;
+    border: 1px solid rgba(0, 0, 0, 0.06);
     background: rgba(255, 255, 255, 0.5);
 
     b {
-      border-right: 1px solid #e5e5e5;
+      border-right: 1px solid rgba(0, 0, 0, 0.06);
     }
   }
 }

@@ -1,8 +1,10 @@
 .el-loading-spinner {
-  font-size: 36px;
-  color: #b5b5b5;
+  font-size: 28px;
+  color: var(--legado-accent, #89b4fa);
 }
 .el-loading-text {
   font-weight: 500;
-  color: #b5b5b5 !important;
+  font-size: 13px;
+  color: var(--legado-text-dim, #6c6f85) !important;
+  letter-spacing: 0.5px;
 }

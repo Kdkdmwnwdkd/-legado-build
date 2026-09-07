@@ -34,6 +34,31 @@ const tabData = ref([
 
 <style lang="scss" scoped>
 :deep(.el-tabs__header) {
-  margin-bottom: 5px;
+  margin: 0 0 4px 0;
+  padding: 0 8px;
+  background: rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+:deep(.el-tabs__item) {
+  height: 38px;
+  line-height: 38px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  transition: all 0.2s ease;
+  &:hover {
+    color: rgba(255, 255, 255, 0.65);
+  }
+  &.is-active {
+    color: var(--legado-accent, #89b4fa);
+  }
+}
+:deep(.el-tabs__active-line) {
+  background: var(--legado-accent, #89b4fa);
+  height: 2px;
+  border-radius: 2px;
+}
+:deep(.el-tab-pane) {
+  padding: 8px 4px;
 }
 </style>

@@ -61,7 +61,40 @@ const isBookSource = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+:deep(#debug-key) {
+  padding-bottom: 4px;
+  .el-input__wrapper {
+    border-radius: var(--legado-radius-sm, 8px) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
+    transition: all 0.25s ease;
+    &:hover, &.is-focus {
+      border-color: rgba(137, 180, 250, 0.4) !important;
+      background: rgba(255, 255, 255, 0.05) !important;
+    }
+  }
+  .el-input__inner {
+    color: rgba(255, 255, 255, 0.85);
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.25);
+    }
+  }
+}
 :deep(#debug-text) {
   height: calc(100vh - 45px - 36px - 5px);
+  .el-textarea__inner {
+    border-radius: var(--legado-radius, 14px) !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
+    color: rgba(255, 255, 255, 0.75);
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.2);
+    }
+  }
 }
 </style>

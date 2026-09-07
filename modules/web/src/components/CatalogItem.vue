@@ -35,7 +35,22 @@ const catas = computed(() => {
 
 <style lang="scss" scoped>
 .selected {
-  color: #eb4259;
+  color: var(--legado-accent, #89b4fa);
+  font-weight: 600;
+  position: relative;
+  padding-left: 12px !important;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 16px;
+    border-radius: 2px;
+    background: var(--legado-accent, #89b4fa);
+  }
 }
 .wrapper {
   display: flex;
@@ -46,6 +61,12 @@ const catas = computed(() => {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    transition: padding-left 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      padding-left: 8px;
+      color: var(--legado-accent, #89b4fa);
+    }
   }
 }
 </style>

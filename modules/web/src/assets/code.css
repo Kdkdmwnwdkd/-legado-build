@@ -1,9 +1,8 @@
 code {
-  border-radius: 4px;
+  border-radius: var(--legado-radius-xs, 6px);
   padding: 0.15rem 0.5rem;
   background-color: var(--el-fill-color-light);
-  transition:
-    color 0.25s,
-    background-color 0.5s;
-  font-size: 14px;
+  transition: color 0.25s, background-color 0.5s;
+  font-size: 13px;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
 }

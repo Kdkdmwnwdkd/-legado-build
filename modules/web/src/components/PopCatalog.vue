@@ -94,42 +94,54 @@ const gotoChapter = (chapter: BookChapter) => {
 
 <style lang="scss" scoped>
 .cata-wrapper {
-  margin: -16px;
-  padding: 18px 0 24px 25px;
+  margin: -12px;
+  padding: 20px 8px 20px 20px;
 
-  /* background: #ede7da url('../assets/imgs/themes/popup_1.png') repeat; */
   .title {
-    font-size: 18px;
-    font-weight: 400;
-    font-family: FZZCYSK;
-    margin: 0 0 20px 0;
-    color: #ed4259;
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    color: var(--legado-accent, #89b4fa);
     width: fit-content;
-    border-bottom: 1px solid #ed4259;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    position: relative;
+    padding-left: 12px;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 2px;
+      bottom: 2px;
+      width: 3px;
+      border-radius: 2px;
+      background: var(--legado-accent, #89b4fa);
+    }
   }
+
   :deep(.data-wrapper) {
     .cata {
-      /*width: 50%;*/
-      height: 40px;
+      height: 36px;
       cursor: pointer;
       font:
-        16px / 40px PingFangSC-Regular,
-        HelveticaNeue-Light,
-        'Helvetica Neue Light',
+        14px / 36px -apple-system,
+        'PingFang SC',
         'Microsoft YaHei',
         sans-serif;
+      transition: padding-left 0.2s ease, color 0.2s ease;
     }
   }
 
   .night {
     :deep(.cata) {
-      border-bottom: 1px solid #666;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     }
   }
 
   .day {
     :deep(.cata) {
-      border-bottom: 1px solid #f2f2f2;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.03);
     }
   }
 }

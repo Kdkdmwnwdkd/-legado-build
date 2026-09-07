@@ -144,18 +144,65 @@ const outExport = () => {
 </script>
 
 <style lang="scss" scoped>
+:deep(.search) {
+  .el-input__wrapper {
+    border-radius: var(--legado-radius-sm, 8px) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
+    transition: all 0.25s ease;
+    &:hover, &.is-focus {
+      border-color: rgba(137, 180, 250, 0.4) !important;
+      background: rgba(255, 255, 255, 0.05) !important;
+    }
+  }
+  .el-input__inner {
+    color: rgba(255, 255, 255, 0.85);
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.25);
+    }
+  }
+}
+
 .tool {
   display: flex;
-  margin: 4px 0;
-  justify-content: center;
+  margin: 8px 0;
+  justify-content: stretch;
+  gap: 6px;
+  .el-button {
+    flex: 1;
+    border-radius: var(--legado-radius-sm, 8px);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 8px 4px;
+    height: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    color: rgba(255, 255, 255, 0.6);
+    transition: all 0.25s ease;
+    &:hover {
+      border-color: rgba(137, 180, 250, 0.25);
+      background: rgba(137, 180, 250, 0.06);
+      color: var(--legado-accent, #89b4fa);
+    }
+    &.el-button--danger {
+      &:hover {
+        border-color: rgba(239, 121, 116, 0.3);
+        background: rgba(239, 121, 116, 0.08);
+        color: #ef7b74;
+      }
+    }
+  }
 }
 
 #source-list {
-  margin-top: 6px;
+  margin-top: 8px;
   height: calc(100vh - 112px - 7px);
   :deep(.el-checkbox) {
     margin-bottom: 4px;
     width: 100%;
+    border-radius: var(--legado-radius-sm, 8px);
+    transition: all 0.25s ease;
   }
 }
 </style>

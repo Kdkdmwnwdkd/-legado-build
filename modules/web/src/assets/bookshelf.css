@@ -1,14 +1,62 @@
+:root {
+  --legado-bg: #f0f1f5;
+  --legado-surface: #ffffff;
+  --legado-surface-hover: #f7f8fa;
+  --legado-sidebar-bg: #1e1e2e;
+  --legado-sidebar-fg: #cdd6f4;
+  --legado-sidebar-dim: #6c7086;
+  --legado-accent: #89b4fa;
+  --legado-accent-strong: #74c7ec;
+  --legado-accent-warm: #f9e2af;
+  --legado-text: #1e1e2e;
+  --legado-text-dim: #6c6f85;
+  --legado-text-faint: #a0a3b8;
+  --legado-border: rgba(0, 0, 0, 0.06);
+  --legado-border-strong: rgba(0, 0, 0, 0.1);
+  --legado-radius: 14px;
+  --legado-radius-sm: 10px;
+  --legado-radius-xs: 6px;
+  --legado-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
+  --legado-shadow-lg: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+  --legado-shadow-float: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --legado-glass: rgba(255, 255, 255, 0.72);
+  --legado-glass-border: rgba(255, 255, 255, 0.5);
+  --legado-glass-blur: 16px;
+  --legado-transition: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark {
+  --legado-bg: #11111b;
+  --legado-surface: #1e1e2e;
+  --legado-surface-hover: #313244;
+  --legado-sidebar-bg: #181825;
+  --legado-sidebar-fg: #cdd6f4;
+  --legado-sidebar-dim: #585b70;
+  --legado-text: #cdd6f4;
+  --legado-text-dim: #a6adc8;
+  --legado-text-faint: #6c7086;
+  --legado-border: rgba(255, 255, 255, 0.06);
+  --legado-border-strong: rgba(255, 255, 255, 0.1);
+  --legado-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.2);
+  --legado-shadow-lg: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --legado-shadow-float: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --legado-glass: rgba(30, 30, 46, 0.72);
+  --legado-glass-border: rgba(255, 255, 255, 0.06);
+}
+
 body {
   padding: 0;
   margin: 0;
   height: 100vh;
+  background: var(--legado-bg);
 }
 
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Microsoft YaHei', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: var(--legado-text);
   margin: 0;
   height: 100%;
 }

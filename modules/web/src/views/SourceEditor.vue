@@ -30,14 +30,27 @@ if (isBookSource.value) {
   display: flex;
   height: 100vh;
   overflow: hidden;
+  gap: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #181825 0%, #1e1e2e 50%, #181825 100%);
   .left {
     flex: 1;
-    margin-left: 20px;
+    margin: 12px 0 12px 12px;
+    border-radius: var(--legado-radius, 14px);
+    overflow: hidden;
+    background: var(--legado-bg, #1e1e2e);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
   }
   .right {
     flex: 1;
-    width: 360px;
-    margin-right: 20px;
+    width: 380px;
+    margin: 12px 12px 12px 0;
+    border-radius: var(--legado-radius, 14px);
+    overflow: hidden;
+    background: var(--legado-bg, #1e1e2e);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
   }
 }
 </style>

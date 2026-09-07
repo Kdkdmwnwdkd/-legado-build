@@ -62,9 +62,30 @@ const sourcePath = computed(() => {
 
 <style lang="scss" scoped>
 .el-link {
-  padding: 4px;
+  padding: 8px 12px;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  border-radius: var(--legado-radius-sm, 8px);
+  color: rgba(255, 255, 255, 0.6);
+  &:hover {
+    color: var(--legado-accent, #89b4fa);
+    background: rgba(137, 180, 250, 0.08);
+    transform: translateX(4px);
+  }
 }
 .el-text {
   padding-top: 20px;
+  display: block;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.4);
+  code {
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--legado-accent, #89b4fa);
+    font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  }
 }
 </style>

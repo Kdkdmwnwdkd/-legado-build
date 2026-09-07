@@ -2,12 +2,12 @@
   <div class="books-wrapper">
     <div class="wrapper">
       <div
-        class="book"
+        class="book-card"
         v-for="book in books"
         :key="book.bookUrl"
         @click="handleClick(book)"
       >
-        <div class="cover-img">
+        <div class="cover-wrap">
           <img
             class="cover"
             :src="getCover(book)"
@@ -19,23 +19,21 @@
         </div>
         <div class="info">
           <div class="name">{{ book.name }}</div>
-          <div class="sub">
-            <div class="author">
-              {{ book.author }}
-            </div>
-            <div class="update-info">
-              <div class="dot">•</div>
-              <div class="size">共{{ (book as Book).totalChapterNum }}章</div>
-              <div class="dot">•</div>
-              <div class="date">
-                {{ dateFormat((book as Book).lastCheckTime) }}
-              </div>
-            </div>
+          <div class="meta-row">
+            <span class="author">{{ book.author }}</span>
+            <span class="dot">·</span>
+            <span class="size">{{ (book as Book).totalChapterNum }}章</span>
+            <span class="dot">·</span>
+            <span class="date">{{ dateFormat((book as Book).lastCheckTime) }}</span>
           </div>
-          <div class="dur-chapter">
-            已读：{{ (book as Book).durChapterTitle }}
+          <div class="chapter-line">
+            <span class="chapter-label">已读</span>
+            <span class="chapter-text">{{ (book as Book).durChapterTitle }}</span>
           </div>
-          <div class="last-chapter">最新：{{ book.latestChapterTitle }}</div>
+          <div class="chapter-line">
+            <span class="chapter-label">最新</span>
+            <span class="chapter-text">{{ book.latestChapterTitle }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -67,97 +65,124 @@ const proxyImage = (evt: Event, book: Book) => {
 <style lang="scss" scoped>
 .books-wrapper {
   overflow: auto;
+  height: 100%;
 
   .wrapper {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 380px);
-    justify-content: space-around;
-    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fill, 340px);
+    justify-content: start;
+    gap: 12px;
+    padding-bottom: 20px;
 
-    .book {
+    .book-card {
       user-select: none;
       display: flex;
       cursor: pointer;
-      margin-bottom: 18px;
-      padding: 24px 24px;
-      width: 360px;
-      flex-direction: row;
-      justify-content: space-around;
+      width: 340px;
+      padding: 16px;
+      border-radius: var(--legado-radius, 14px);
+      background: var(--legado-surface, #fff);
+      border: 1px solid var(--legado-border, rgba(0, 0, 0, 0.06));
+      box-shadow: var(--legado-shadow, 0 1px 3px rgba(0, 0, 0, 0.04));
+      transition: all var(--legado-transition, 0.28s cubic-bezier(0.4, 0, 0.2, 1));
 
-      .cover-img {
-        width: 84px;
-        height: 112px;
+      .cover-wrap {
+        width: 72px;
+        height: 96px;
+        border-radius: var(--legado-radius-sm, 10px);
+        overflow: hidden;
+        flex-shrink: 0;
+        background: var(--legado-surface-hover, #f7f8fa);
 
         .cover {
-          width: 84px;
-          height: 112px;
+          width: 72px;
+          height: 96px;
+          border-radius: var(--legado-radius-sm, 10px);
+          object-fit: cover;
         }
       }
 
       .info {
         display: flex;
         flex-direction: column;
-        justify-content: space-around;
-        align-items: left;
-        height: 112px;
-        margin-left: 20px;
+        gap: 6px;
+        margin-left: 16px;
         flex: 1;
         overflow: hidden;
+        justify-content: center;
 
         .name {
-          width: fit-content;
-          font-size: 16px;
-          font-weight: 700;
-          color: #33373d;
-        }
-
-        .sub {
-          display: flex;
-          flex-direction: row;
-          align-items: baseline;
-          justify-content: flex-start;
-          font-size: 12px;
+          font-size: 14px;
           font-weight: 600;
-          color: #6b6b6b;
-          .update-info {
-            display: flex;
-            .dot {
-              margin: 0 7px;
-            }
-          }
-        }
-
-        .dur-chapter,
-        .last-chapter {
-          color: #969ba3;
-          font-size: 13px;
-          margin-top: 3px;
-          font-weight: 500;
-          word-wrap: break-word;
+          color: var(--legado-text, #1e1e2e);
+          line-height: 1.3;
           overflow: hidden;
           text-overflow: ellipsis;
           display: -webkit-box;
           -webkit-box-orient: vertical;
           -webkit-line-clamp: 1;
           line-clamp: 1;
-          text-align: left;
+        }
+
+        .meta-row {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 11px;
+          color: var(--legado-text-faint, #a0a3b8);
+          font-weight: 400;
+
+          .dot {
+            opacity: 0.5;
+          }
+        }
+
+        .chapter-line {
+          display: flex;
+          align-items: baseline;
+          gap: 6px;
+          font-size: 11px;
+          overflow: hidden;
+
+          .chapter-label {
+            color: var(--legado-accent, #89b4fa);
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+            width: 28px;
+          }
+
+          .chapter-text {
+            color: var(--legado-text-dim, #6c6f85);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+          }
         }
       }
     }
 
-    .book:hover {
-      background: rgba(0, 0, 0, 0.1);
-      transition-duration: 0.5s;
+    .book-card:hover {
+      background: var(--legado-surface-hover, #f7f8fa);
+      box-shadow: var(--legado-shadow-lg, 0 4px 24px rgba(0, 0, 0, 0.08));
+      transform: translateY(-3px);
+      border-color: var(--legado-border-strong, rgba(0, 0, 0, 0.1));
     }
-  }
-
-  .wrapper:last-child {
-    margin-right: auto;
   }
 }
 
 .books-wrapper::-webkit-scrollbar {
-  width: 0 !important;
+  width: 6px !important;
+}
+.books-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+.books-wrapper::-webkit-scrollbar-thumb {
+  background: var(--legado-border-strong, rgba(0, 0, 0, 0.1));
+  border-radius: 3px;
 }
 
 @media screen and (max-width: 750px) {
@@ -165,12 +190,21 @@ const proxyImage = (evt: Event, book: Book) => {
     .wrapper {
       display: flex;
       flex-direction: column;
+      gap: 0;
 
-      .book {
-        box-sizing: border-box;
+      .book-card {
         width: 100%;
-        margin-bottom: 0;
-        padding: 10px 20px;
+        padding: 14px 18px;
+        border-radius: 0;
+        border: none;
+        border-bottom: 1px solid var(--legado-border, rgba(0, 0, 0, 0.06));
+        box-shadow: none;
+
+        &:hover {
+          transform: none;
+          background: var(--legado-surface-hover, #f7f8fa);
+          box-shadow: none;
+        }
       }
     }
   }

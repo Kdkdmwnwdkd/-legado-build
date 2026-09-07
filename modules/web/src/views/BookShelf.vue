@@ -1,69 +1,73 @@
 <template>
   <div :class="{ 'index-wrapper': true, night: isNight, day: !isNight }">
-    <div class="navigation-wrapper">
-      <div class="navigation-title-wrapper">
-        <div class="navigation-title">阅读</div>
-        <div class="navigation-sub-title">清风不识字，何故乱翻书</div>
-      </div>
-      <div class="bottom-wrapper">
-        <div class="recent-wrapper">
-          <div class="recent-title">最近阅读</div>
-          <div class="reading-recent">
-            <el-tag
-              :type="
-                readingRecent.name == '尚无阅读记录' ? 'warning' : 'primary'
-              "
-              class="recent-book"
-              size="large"
-              @click="
-                toDetail(
-                  readingRecent.bookUrl,
-                  readingRecent.name,
-                  readingRecent.author,
-                  readingRecent.chapterIndex,
-                  readingRecent.chapterPos,
-                  readingRecent.isSeachBook,
-                  true,
-                )
-              "
-              :class="{ 'no-point': readingRecent.bookUrl == '' }"
-            >
-              {{ readingRecent.name }}
-            </el-tag>
+    <aside class="sidebar">
+      <div class="sidebar-inner">
+        <div class="brand">
+          <div class="brand-mark">R</div>
+          <div class="brand-text">
+            <div class="navigation-title">阅读</div>
+            <div class="navigation-sub-title">Legado</div>
           </div>
         </div>
-        <div class="setting-wrapper">
-          <div class="setting-title">基本设定</div>
-          <div class="setting-item">
-            <el-tag
-              :type="connectType"
-              size="large"
-              class="setting-connect"
-              :class="{ 'no-point': newConnect }"
-              @click="setLegadoRetmoteUrl"
-            >
-              {{ connectStatus }}
-            </el-tag>
+        <div class="sidebar-sections">
+          <div class="recent-wrapper">
+            <div class="recent-title">最近阅读</div>
+            <div class="reading-recent">
+              <el-tag
+                :type="
+                  readingRecent.name == '尚无阅读记录' ? 'warning' : 'primary'
+                "
+                class="recent-book"
+                size="large"
+                @click="
+                  toDetail(
+                    readingRecent.bookUrl,
+                    readingRecent.name,
+                    readingRecent.author,
+                    readingRecent.chapterIndex,
+                    readingRecent.chapterPos,
+                    readingRecent.isSeachBook,
+                    true,
+                  )
+                "
+                :class="{ 'no-point': readingRecent.bookUrl == '' }"
+              >
+                {{ readingRecent.name }}
+              </el-tag>
+            </div>
+          </div>
+          <div class="setting-wrapper">
+            <div class="setting-title">连接</div>
+            <div class="setting-item">
+              <el-tag
+                :type="connectType"
+                size="large"
+                class="setting-connect"
+                :class="{ 'no-point': newConnect }"
+                @click="setLegadoRetmoteUrl"
+              >
+                {{ connectStatus }}
+              </el-tag>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="bottom-icons">
-        <a
-          href="https://github.com/gedoor/legado_web_bookshelf"
-          target="_blank"
-        >
-          <div class="bottom-icon">
+        <div class="bottom-icons">
+          <a
+            href="https://github.com/gedoor/legado_web_bookshelf"
+            target="_blank"
+            class="github-link"
+          >
             <img :src="githubUrl" alt="" />
-          </div>
-        </a>
+          </a>
+        </div>
       </div>
-    </div>
-    <div class="shelf-wrapper" ref="shelfWrapper">
+    </aside>
+    <main class="shelf-wrapper" ref="shelfWrapper">
       <book-items
         :books="books"
         @bookClick="handleBookClick"
       ></book-items>
-    </div>
+    </main>
   </div>
 </template>
 
@@ -242,94 +246,141 @@ onMounted(() => {
   display: flex;
   flex-direction: row;
 
-  .navigation-wrapper {
-    width: 260px;
-    min-width: 260px;
-    padding: 48px 36px;
-    background-color: #f7f7f7;
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--legado-sidebar-bg, #1e1e2e);
+    position: relative;
+    display: flex;
+    flex-direction: column;
 
-    .navigation-title {
-      font-size: 24px;
-      font-weight: 500;
-      font-family: FZZCYSK;
-    }
-
-    .navigation-sub-title {
-      font-size: 16px;
-      font-weight: 300;
-      font-family: FZZCYSK;
-      margin-top: 16px;
-      color: #b1b1b1;
-    }
-
-    .bottom-wrapper {
+    .sidebar-inner {
+      padding: 36px 24px;
       display: flex;
       flex-direction: column;
+      height: 100%;
+      box-sizing: border-box;
     }
 
-    .recent-wrapper {
-      margin-top: 36px;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
 
-      .recent-title {
-        font-size: 14px;
-        color: #b1b1b1;
-        font-family: FZZCYSK;
+      .brand-mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--legado-accent, #89b4fa);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e1e2e;
+        flex-shrink: 0;
       }
 
-      .reading-recent {
-        margin: 18px 0;
+      .brand-text {
+        .navigation-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--legado-sidebar-fg, #cdd6f4);
+          line-height: 1.2;
+        }
 
-        .recent-book {
-          font-size: 10px;
-          /*           // font-weight: 400;
-          // margin: 12px 0;
-          // font-weight: 500;
-          // color: #6B7C87; */
-          cursor: pointer;
-          /*           // padding: 6px 18px; */
+        .navigation-sub-title {
+          font-size: 11px;
+          font-weight: 400;
+          color: var(--legado-sidebar-dim, #6c7086);
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          margin-top: 2px;
         }
       }
     }
 
+    .sidebar-sections {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .recent-wrapper,
     .setting-wrapper {
-      margin-top: 36px;
-
+      .recent-title,
       .setting-title {
-        font-size: 14px;
-        color: #b1b1b1;
-        font-family: FZZCYSK;
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--legado-sidebar-dim, #6c7086);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
       }
 
-      .no-point {
-        pointer-events: none;
+      .reading-recent {
+        .recent-book {
+          font-size: 11px;
+          cursor: pointer;
+          border-radius: var(--legado-radius-sm, 10px);
+          border: none;
+          transition: all var(--legado-transition, 0.28s ease);
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
       }
 
-      .setting-connect {
-        font-size: 8px;
-        margin-top: 16px;
-        /*         // color: #6B7C87; */
-        cursor: pointer;
+      .setting-item {
+        .setting-connect {
+          font-size: 10px;
+          cursor: pointer;
+          border-radius: var(--legado-radius-sm, 10px);
+          border: none;
+          transition: all var(--legado-transition, 0.28s ease);
+        }
       }
     }
 
+    .no-point {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
     .bottom-icons {
-      position: fixed;
-      bottom: 0;
-      height: 120px;
-      width: 260px;
-      align-items: center;
-      display: flex;
-      flex-direction: row;
+      margin-top: auto;
+      padding-top: 20px;
+
+      .github-link {
+        display: inline-flex;
+        opacity: 0.4;
+        transition: opacity var(--legado-transition, 0.28s ease);
+
+        &:hover {
+          opacity: 0.8;
+        }
+
+        img {
+          width: 20px;
+          height: 20px;
+          filter: brightness(0) invert(1);
+          opacity: 0.7;
+        }
+      }
     }
   }
 
   .shelf-wrapper {
-    padding: 48px 48px;
-    width: 100%;
+    flex: 1;
+    padding: 32px 40px;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
     overflow: hidden;
+    background: var(--legado-bg, #f0f1f5);
   }
 }
 
@@ -338,28 +389,57 @@ onMounted(() => {
     overflow-x: hidden;
     flex-direction: column;
 
-    .navigation-wrapper {
-      padding: 20px 24px;
-      box-sizing: border-box;
+    .sidebar {
       width: 100%;
+      min-width: unset;
 
-      .navigation-title-wrapper {
-        white-space: nowrap;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
+      .sidebar-inner {
+        padding: 14px 20px;
+        flex-direction: row;
+        align-items: center;
+        gap: 16px;
+        height: auto;
       }
 
-      .bottom-wrapper {
-        flex-direction: row;
+      .brand {
+        margin-bottom: 0;
+        flex-shrink: 0;
 
-        > * {
-          flex-grow: 1;
-          margin-top: 18px;
+        .brand-mark {
+          width: 28px;
+          height: 28px;
+          font-size: 14px;
+          border-radius: 8px;
+        }
+
+        .brand-text {
+          .navigation-title {
+            font-size: 15px;
+          }
+          .navigation-sub-title {
+            font-size: 9px;
+          }
+        }
+      }
+
+      .sidebar-sections {
+        flex: 1;
+        flex-direction: row;
+        gap: 12px;
+        overflow: hidden;
+
+        .recent-wrapper,
+        .setting-wrapper {
+          flex: 1;
+
+          .recent-title,
+          .setting-title {
+            display: none;
+          }
 
           .reading-recent,
           .setting-item {
-            margin-bottom: 0px;
+            margin: 0;
           }
         }
       }
@@ -381,17 +461,18 @@ onMounted(() => {
 }
 
 .night {
-  .navigation-wrapper {
-    background-color: #454545;
-
-    .navigation-title {
-      color: #aeaeae;
-    }
-
+  .sidebar {
+    background: var(--legado-sidebar-bg, #181825);
   }
 
   :deep(.shelf-wrapper) {
-    background-color: #161819;
+    background: var(--legado-bg, #11111b);
+  }
+}
+
+.day {
+  .sidebar {
+    background: var(--legado-sidebar-bg, #1e1e2e);
   }
 }
 </style>

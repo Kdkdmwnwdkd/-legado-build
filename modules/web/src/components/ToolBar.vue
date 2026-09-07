@@ -314,36 +314,82 @@ onMounted(() => {
 .flex-space-between {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
 }
 .flex-column-center {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: 6px;
 }
 
-.menu > .el-button {
-  margin: 4px;
-  padding: 1em;
-  width: 6em;
+.menu {
+  padding: 8px 6px;
+  min-width: 120px;
+  > .el-button {
+    margin: 3px 0;
+    padding: 10px 14px;
+    width: 100%;
+    height: 40px;
+    border-radius: var(--legado-radius-sm, 8px);
+    font-weight: 500;
+    font-size: 13px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    &:hover {
+      transform: translateX(2px);
+      border-color: rgba(137, 180, 250, 0.25);
+      background: rgba(137, 180, 250, 0.06);
+      color: var(--legado-accent, #89b4fa);
+    }
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+}
+
+.hotkeys-header {
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hotkeys-settings {
+  gap: 12px;
+  padding: 8px 0;
 }
 
 .hotkeys-item {
+  padding: 8px 12px;
+  border-radius: var(--legado-radius-sm, 8px);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.2s ease;
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
   .title {
     width: 5em;
     display: flex;
     justify-content: flex-end;
     margin-right: 1em;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.55);
   }
   .hotkeys-item__content {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     flex: 1;
     div {
-      margin-bottom: 1em;
+      margin-bottom: 0.5em;
+      display: flex;
+      align-items: center;
     }
     span {
-      margin: 0.5em;
+      margin: 0 0.3em;
+      color: rgba(255, 255, 255, 0.35);
     }
   }
 }

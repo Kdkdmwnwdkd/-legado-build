@@ -565,27 +565,39 @@ onBeforeRouteLeave(async (to, from, next) => {
 <style lang="scss" scoped>
 :deep(.pop-setting) {
   margin-left: 68px;
-  top: 0;
+  top: 12px;
+  border-radius: var(--legado-radius, 14px);
+  overflow: hidden;
+  border: 1px solid var(--legado-border, rgba(0, 0, 0, 0.06));
+  box-shadow: var(--legado-shadow-float, 0 8px 32px rgba(0, 0, 0, 0.12));
 }
 
 :deep(.pop-cata) {
   margin-left: 10px;
+  border-radius: var(--legado-radius, 14px);
+  overflow: hidden;
+  border: 1px solid var(--legado-border, rgba(0, 0, 0, 0.06));
+  box-shadow: var(--legado-shadow-float, 0 8px 32px rgba(0, 0, 0, 0.12));
 }
 
 .chapter-wrapper {
   padding: 0 4%;
-
   overflow-x: hidden;
 
   :deep(.no-point) {
     pointer-events: none;
+    opacity: 0.3;
   }
 
   .tool-bar {
     position: fixed;
-    top: 0;
+    top: 16px;
     left: 50%;
     z-index: 100;
+    border-radius: var(--legado-radius, 14px);
+    overflow: hidden;
+    backdrop-filter: blur(var(--legado-glass-blur, 16px));
+    -webkit-backdrop-filter: blur(var(--legado-glass-blur, 16px));
 
     .tools {
       display: flex;
@@ -593,23 +605,37 @@ onBeforeRouteLeave(async (to, from, next) => {
 
       .tool-icon {
         font-size: 18px;
-        width: 58px;
-        height: 48px;
+        width: 52px;
+        height: 44px;
         text-align: center;
-        padding-top: 12px;
+        padding-top: 8px;
         cursor: pointer;
         outline: none;
+        border: none;
+        background: transparent;
+        transition: all var(--legado-transition, 0.28s ease);
 
         .iconfont {
           font-family: iconfont;
           width: 16px;
           height: 16px;
           font-size: 16px;
-          margin: 0 auto 6px;
+          margin: 0 auto 3px;
+          transition: transform var(--legado-transition, 0.28s ease);
         }
 
         .icon-text {
-          font-size: 12px;
+          font-size: 10px;
+          letter-spacing: 0.5px;
+          opacity: 0.6;
+        }
+      }
+
+      .tool-icon:hover {
+        background: rgba(0, 0, 0, 0.04);
+
+        .iconfont {
+          transform: scale(1.2);
         }
       }
     }
@@ -617,54 +643,78 @@ onBeforeRouteLeave(async (to, from, next) => {
 
   .read-bar {
     position: fixed;
-    bottom: 0;
+    bottom: 16px;
     right: 50%;
     z-index: 100;
+    border-radius: var(--legado-radius, 14px);
+    overflow: hidden;
+    backdrop-filter: blur(var(--legado-glass-blur, 16px));
+    -webkit-backdrop-filter: blur(var(--legado-glass-blur, 16px));
 
     .tools {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
 
       .tool-icon {
         font-size: 18px;
-        width: 42px;
-        height: 31px;
-        padding-top: 12px;
+        width: 48px;
+        height: 40px;
+        padding-top: 10px;
         text-align: center;
         align-items: center;
         cursor: pointer;
         outline: none;
-        margin-top: -1px;
+        border: none;
+        background: transparent;
+        transition: all var(--legado-transition, 0.28s ease);
 
         .iconfont {
           font-family: iconfont;
           width: 16px;
           height: 16px;
           font-size: 16px;
-          margin: 0 auto 6px;
+          margin: 0 auto;
+          transition: transform var(--legado-transition, 0.28s ease);
+        }
+
+        span {
+          font-size: 10px;
+          opacity: 0.6;
+          margin-left: 4px;
+        }
+      }
+
+      .tool-icon:hover {
+        background: rgba(0, 0, 0, 0.04);
+
+        .iconfont {
+          transform: scale(1.2);
         }
       }
     }
   }
 
+  .chapter-bar {
+    height: 40px;
+  }
+
   .chapter {
-    font-family: 'Microsoft YaHei', PingFangSC-Regular, HelveticaNeue-Light,
-      'Helvetica Neue Light', sans-serif;
+    font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
     text-align: left;
-    padding: 0 65px;
+    padding: 0 48px;
     min-height: 100vh;
     width: 670px;
     margin: 0 auto;
+    border-radius: var(--legado-radius, 14px);
 
     .content {
       font-size: 18px;
-      line-height: 1.8;
-      font-family: 'Microsoft YaHei', PingFangSC-Regular, HelveticaNeue-Light,
-        'Helvetica Neue Light', sans-serif;
+      line-height: 1.85;
+      font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
 
       .bottom-bar,
       .top-bar {
-        height: 64px;
+        height: 60px;
       }
     }
   }
@@ -672,51 +722,49 @@ onBeforeRouteLeave(async (to, from, next) => {
 
 .day {
   :deep(.popup) {
-    box-shadow:
-      0 2px 4px rgba(0, 0, 0, 0.12),
-      0 0 6px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--legado-shadow-float, 0 8px 32px rgba(0, 0, 0, 0.12));
+    border: 1px solid var(--legado-border, rgba(0, 0, 0, 0.06));
+  }
+
+  :deep(.tool-bar),
+  :deep(.read-bar) {
+    background: var(--legado-glass, rgba(255, 255, 255, 0.72));
+    border: 1px solid var(--legado-glass-border, rgba(255, 255, 255, 0.5));
+    box-shadow: var(--legado-shadow-lg, 0 4px 24px rgba(0, 0, 0, 0.08));
   }
 
   :deep(.tool-icon) {
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    margin-top: -1px;
-    color: #000;
-
-    .icon-text {
-      color: rgba(0, 0, 0, 0.4);
-    }
+    color: var(--legado-text, #1e1e2e);
   }
 
   :deep(.chapter) {
-    border: 1px solid #d8d8d8;
     color: #262626;
   }
 }
 
 .night {
   :deep(.popup) {
-    box-shadow:
-      0 2px 4px rgba(0, 0, 0, 0.48),
-      0 0 6px rgba(0, 0, 0, 0.16);
+    box-shadow: var(--legado-shadow-float, 0 8px 32px rgba(0, 0, 0, 0.4));
+    border: 1px solid var(--legado-border, rgba(255, 255, 255, 0.06));
+  }
+
+  :deep(.tool-bar),
+  :deep(.read-bar) {
+    background: var(--legado-glass, rgba(30, 30, 46, 0.72));
+    border: 1px solid var(--legado-glass-border, rgba(255, 255, 255, 0.06));
+    box-shadow: var(--legado-shadow-lg, 0 4px 24px rgba(0, 0, 0, 0.3));
   }
 
   :deep(.tool-icon) {
-    border: 1px solid #444;
-    margin-top: -1px;
-    color: #666;
-
-    .icon-text {
-      color: #666;
-    }
+    color: var(--legado-text-dim, #a6adc8);
   }
 
   :deep(.chapter) {
-    border: 1px solid #444;
-    color: #666;
+    color: #a6adc8;
   }
 
   :deep(.popper__arrow) {
-    background: #666;
+    background: var(--legado-text-dim, #a6adc8);
   }
 }
 
@@ -728,10 +776,12 @@ onBeforeRouteLeave(async (to, from, next) => {
       left: 0;
       width: 100vw;
       margin-left: 0 !important;
+      border-radius: 0;
+      top: 0;
 
       .tools {
         flex-direction: row;
-        justify-content: space-between;
+        justify-content: space-around;
 
         .tool-icon {
           border: none;
@@ -743,11 +793,13 @@ onBeforeRouteLeave(async (to, from, next) => {
       right: 0;
       width: 100vw;
       margin-right: 0 !important;
+      border-radius: 0;
+      bottom: 0;
 
       .tools {
         flex-direction: row;
-        justify-content: space-between;
-        padding: 0 15px;
+        justify-content: space-around;
+        padding: 0 8px;
 
         .tool-icon {
           border: none;
@@ -764,6 +816,7 @@ onBeforeRouteLeave(async (to, from, next) => {
       width: 100vw !important;
       padding: 0 20px;
       box-sizing: border-box;
+      border-radius: 0;
     }
   }
 }

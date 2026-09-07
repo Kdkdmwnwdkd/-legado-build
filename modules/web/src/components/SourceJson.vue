@@ -40,5 +40,18 @@ watchEffect(async () => {
 }
 :deep(#source-json) {
   height: calc(100vh - 50px);
+  .el-textarea__inner {
+    border-radius: var(--legado-radius, 14px) !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none !important;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.2);
+    }
+  }
 }
 </style>

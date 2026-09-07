@@ -119,21 +119,36 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .title {
-  margin-bottom: 57px;
+  margin-bottom: 48px;
+  margin-top: 8px;
   font:
-    24px / 32px PingFangSC-Regular,
-    HelveticaNeue-Light,
-    'Helvetica Neue Light',
+    20px / 30px -apple-system,
+    'PingFang SC',
     'Microsoft YaHei',
     sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding-bottom: 20px;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--legado-accent, #89b4fa);
+  }
 }
 
 p {
   display: block;
   word-wrap: break-word;
-  /*   word-break: break-all; */
   letter-spacing: calc(v-bind('props.spacing.letter') * 1em);
   line-height: calc(1 + v-bind('props.spacing.line'));
   margin: calc(v-bind('props.spacing.paragraph') * 1em) 0;
+  text-indent: 2em;
 }
 </style>
