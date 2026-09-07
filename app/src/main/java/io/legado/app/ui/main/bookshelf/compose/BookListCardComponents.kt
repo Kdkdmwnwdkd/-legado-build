@@ -37,10 +37,10 @@ fun BookshelfListRenderConfig.classicCardMetrics(compact: Boolean): BookListCard
 fun BookshelfListRenderConfig.roundedCardMetrics(compact: Boolean): BookListCardMetrics {
     return BookListCardMetrics(
         minHeight = if (compact) roundedCompactMinHeight else roundedMinHeight,
-        horizontalPadding = if (compact) 10.dp else 12.dp,
-        verticalPadding = if (compact) 8.dp else 10.dp,
+        horizontalPadding = if (compact) 14.dp else 16.dp,
+        verticalPadding = if (compact) 12.dp else 14.dp,
         coverWidth = if (compact) cardCompactCoverWidth else cardCoverWidth,
-        cornerRadius = palette.actionRadius
+        cornerRadius = palette.panelRadius
     )
 }
 
@@ -65,6 +65,15 @@ fun BookListCardSurface(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .then(
+                if (rounded) {
+                    Modifier
+                        .padding(horizontal = 4.dp, vertical = 4.dp)
+                        .shadow(6.dp, shape, clip = false)
+                } else {
+                    Modifier
+                }
+            )
             .clip(shape)
             .then(
                 if (rounded) {
@@ -77,6 +86,20 @@ fun BookListCardSurface(
                 } else {
                     Modifier
                 }
+            )
+            .heightIn(min = metrics.minHeight)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
+            .padding(
+                horizontal = metrics.horizontalPadding,
+                vertical = metrics.verticalPadding
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        content(metrics)
+    }
             )
             .heightIn(min = metrics.minHeight)
             .combinedClickable(

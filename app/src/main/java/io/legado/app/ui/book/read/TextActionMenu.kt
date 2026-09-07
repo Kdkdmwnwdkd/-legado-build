@@ -542,14 +542,14 @@ private fun TextActionChip(
             .width(width)
             .height(height)
             .padding(horizontal = 3.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(12.dp))
             .background(background)
-            .border(1.dp, accent.copy(alpha = 0.16f), RoundedCornerShape(8.dp))
+            .border(1.dp, accent.copy(alpha = 0.16f), RoundedCornerShape(12.dp))
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = onLongClick
             )
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = 12.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(

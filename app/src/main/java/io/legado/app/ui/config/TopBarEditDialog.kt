@@ -528,7 +528,7 @@ private fun TopBarEditOptionRow(
                     shape = RoundedCornerShape(50),
                     color = Color(colorPreview),
                     tonalElevation = 0.dp,
-                    shadowElevation = 0.dp
+                    shadowElevation = 2.dp
                 ) {}
                 Spacer(modifier = Modifier.width(8.dp))
             }

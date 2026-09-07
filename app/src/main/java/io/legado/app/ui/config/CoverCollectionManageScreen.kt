@@ -149,7 +149,7 @@ private fun TabButton(
         color = if (selected) palette.settings.accent.copy(alpha = 0.14f) else Color.Transparent,
         contentColor = if (selected) palette.settings.accent else palette.settings.primaryText,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Text(
             text = text,
@@ -209,7 +209,7 @@ private fun CoverCollectionItemRow(
                 onRelease = { it.releaseComposeImage() },
                 modifier = Modifier
                     .size(width = 54.dp, height = 72.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(12.dp))
             )
             Spacer(modifier = Modifier.width(12.dp))
             // Text info

@@ -74,7 +74,7 @@ class AppLogDialog : ComposeDialogFragment() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .heightIn(max = 520.dp),
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 itemsIndexed(
                                     items = logs,

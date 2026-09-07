@@ -225,7 +225,7 @@ private fun AiProviderTopBar(onBack: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(54.dp)
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Surface(
@@ -236,7 +236,7 @@ private fun AiProviderTopBar(onBack: () -> Unit) {
             color = Color.Transparent,
             contentColor = palette.settings.primaryText,
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp
+            shadowElevation = 2.dp
         ) {
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -339,7 +339,7 @@ private fun AiProviderCurrentBadge(palette: AppManagementPalette) {
         color = palette.settings.accent.copy(alpha = 0.14f),
         contentColor = palette.settings.accent,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Text(
             text = stringResource(R.string.ai_current_provider),

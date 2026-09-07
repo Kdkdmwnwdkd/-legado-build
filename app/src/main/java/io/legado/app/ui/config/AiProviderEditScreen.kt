@@ -108,7 +108,7 @@ fun AiProviderTabBar(
             .clip(trackShape)
             .background(style.fieldSurface)
             .padding(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         tabs.forEachIndexed { index, label ->
             val isSelected = index == selectedIndex
@@ -506,7 +506,7 @@ fun FetchedModelSelectorContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(max = 360.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 items(filteredModels, key = { it }) { modelId ->
                     val isExisting = modelId in existingIds

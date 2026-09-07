@@ -257,7 +257,7 @@ private fun AiImageProviderEditTopBar(onBack: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(54.dp)
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Surface(
@@ -268,7 +268,7 @@ private fun AiImageProviderEditTopBar(onBack: () -> Unit) {
             color = Color.Transparent,
             contentColor = style.primaryText,
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp
+            shadowElevation = 2.dp
         ) {
             Row(
                 horizontalArrangement = Arrangement.Center,

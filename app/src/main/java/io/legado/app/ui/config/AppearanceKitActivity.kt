@@ -581,7 +581,7 @@ private fun KitPreview(seed: String, palette: AppSettingPalette) {
     Box(
         modifier = Modifier
             .size(width = 56.dp, height = 42.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(12.dp))
             .background(Brush.linearGradient(colors))
             .padding(6.dp)
     ) {
@@ -686,7 +686,7 @@ private fun AppearanceKitCard(
                 Box(
                     modifier = Modifier
                         .size(width = 18.dp, height = 8.dp)
-                        .clip(RoundedCornerShape(4.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(Color(it))
                 )
             }
@@ -749,7 +749,7 @@ private fun AppearanceKitPreview(
                         color = palette.settings.accent.copy(alpha = 0.92f),
                         contentColor = palette.settings.onAccent,
                         tonalElevation = 0.dp,
-                        shadowElevation = 0.dp
+                        shadowElevation = 2.dp
                     ) {
                         Text(
                             text = stringResource(R.string.theme_applied_state),
@@ -767,14 +767,14 @@ private fun AppearanceKitPreview(
                     modifier = Modifier
                         .fillMaxWidth(0.72f)
                         .height(24.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(Color(preview.cardColor).copy(alpha = 0.86f))
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(15.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(Color(preview.bottomColor).copy(alpha = 0.90f))
                 )
             }

@@ -264,7 +264,7 @@ fun AppPackageManageActionButton(
         color = background,
         contentColor = content,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Row(
             modifier = Modifier
@@ -357,7 +357,7 @@ private fun AppPackageManageTabs(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             AppPackageManageTabButton(
                 text = stringResource(R.string.theme_day),
@@ -393,7 +393,7 @@ private fun AppPackageManageTabButton(
         color = if (selected) palette.settings.accent.copy(alpha = 0.14f) else Color.Transparent,
         contentColor = if (selected) palette.settings.accent else palette.settings.primaryText,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),

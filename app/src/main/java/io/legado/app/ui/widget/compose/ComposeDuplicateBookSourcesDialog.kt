@@ -119,7 +119,7 @@ class ComposeDuplicateBookSourcesDialog : ComposeDialogFragment() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .heightIn(max = 420.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp),
                             contentPadding = PaddingValues(vertical = 4.dp)
                         ) {
                             itemsIndexed(rowLabels) { index, label ->

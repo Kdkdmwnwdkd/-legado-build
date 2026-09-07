@@ -217,7 +217,7 @@ private fun AdvancedTitlePreview(
         shape = RoundedCornerShape(10.dp),
         color = palette.miuix.surfaceVariant,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         val value = json
         if (value == null) {
@@ -274,7 +274,7 @@ private fun AdvancedTitleActionButton(
         color = if (accent) palette.accent.copy(alpha = if (enabled) 0.14f else 0.08f)
         else palette.surfaceVariant,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Row(
             modifier = Modifier

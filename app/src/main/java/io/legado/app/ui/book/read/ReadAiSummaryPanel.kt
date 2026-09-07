@@ -387,7 +387,7 @@ private fun ReadAiSummaryContent(
             .clip(panelShape),
         shape = panelShape,
         color = style.colors.background,
-        shadowElevation = 0.dp,
+        shadowElevation = 2.dp,
         border = BorderStroke(style.metrics.strokeWidth, style.colors.stroke)
     ) {
         Column(modifier = Modifier.padding(start = 12.dp, top = 10.dp, end = 12.dp, bottom = 12.dp)) {

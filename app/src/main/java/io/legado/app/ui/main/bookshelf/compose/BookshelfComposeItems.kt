@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
@@ -154,13 +155,19 @@ fun BookshelfGridItem(
                 onClick = { onClick(item) },
                 onLongClick = { onLongClick(item) }
             )
-            .padding(4.dp),
+            .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp)),
+                .padding(2.dp)
+                .shadow(
+                    elevation = 6.dp,
+                    shape = RoundedCornerShape(18.dp),
+                    clip = false
+                )
+                .clip(RoundedCornerShape(18.dp)),
             contentAlignment = Alignment.TopEnd
         ) {
             BookshelfCover(

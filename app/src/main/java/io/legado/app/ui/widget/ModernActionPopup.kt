@@ -481,7 +481,7 @@ object ModernActionPopup {
                     color = style.surface,
                     contentColor = style.primaryText,
                     tonalElevation = 0.dp,
-                    shadowElevation = 0.dp
+                    shadowElevation = 2.dp
                 ) {
                     LazyColumn(
                         modifier = Modifier

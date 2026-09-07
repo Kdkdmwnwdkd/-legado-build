@@ -287,7 +287,7 @@ class PaddingConfigDialog : ComposeDialogFragment() {
             color = style.fieldSurface,
             contentColor = style.primaryText,
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp
+            shadowElevation = 2.dp
         ) {
             Column(
                 modifier = Modifier

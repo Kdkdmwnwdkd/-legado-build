@@ -155,7 +155,7 @@ class ParagraphRuleQuickDialog : ReaderBottomSheetComposeDialogFragment() {
             color = if (checked) style.accent.copy(alpha = 0.14f) else style.fieldSurface,
             contentColor = style.primaryText,
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp
+            shadowElevation = 2.dp
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 9.dp),
@@ -180,7 +180,7 @@ class ParagraphRuleQuickDialog : ReaderBottomSheetComposeDialogFragment() {
                         color = style.fieldSurface,
                         contentColor = style.accent,
                         tonalElevation = 0.dp,
-                        shadowElevation = 0.dp
+                        shadowElevation = 2.dp
                     ) {
                         Box(
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),

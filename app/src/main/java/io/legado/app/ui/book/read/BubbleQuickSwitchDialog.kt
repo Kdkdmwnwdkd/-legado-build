@@ -204,7 +204,7 @@ private fun BubblePreview(bitmap: Bitmap?) {
     Box(
         modifier = Modifier
             .size(58.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(12.dp))
             .background(palette.miuix.surfaceVariant),
         contentAlignment = Alignment.Center
     ) {

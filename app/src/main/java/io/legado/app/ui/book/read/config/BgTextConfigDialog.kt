@@ -234,7 +234,7 @@ class BgTextConfigDialog : BaseDialogFragment(0) {
             color = style.fieldSurface,
             contentColor = style.primaryText,
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp
+            shadowElevation = 2.dp
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 9.dp),

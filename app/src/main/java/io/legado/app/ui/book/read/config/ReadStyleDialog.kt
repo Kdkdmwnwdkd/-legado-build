@@ -223,7 +223,7 @@ class ReadStyleDialog : ReaderBottomSheetComposeDialogFragment(),
             color = style.fieldSurface,
             contentColor = style.primaryText,
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp
+            shadowElevation = 2.dp
         ) {
             Column(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
@@ -357,7 +357,7 @@ class ReadStyleDialog : ReaderBottomSheetComposeDialogFragment(),
             color = style.fieldSurface,
             contentColor = style.primaryText,
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp
+            shadowElevation = 2.dp
         ) {
             Column(
                 modifier = Modifier
@@ -511,7 +511,7 @@ class ReadStyleDialog : ReaderBottomSheetComposeDialogFragment(),
                 color = style.fieldSurface,
                 contentColor = style.primaryText,
                 tonalElevation = 0.dp,
-                shadowElevation = 0.dp
+                shadowElevation = 2.dp
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(

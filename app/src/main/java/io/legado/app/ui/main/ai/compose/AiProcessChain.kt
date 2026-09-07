@@ -78,7 +78,7 @@ fun AiProcessTimelineCard(
         shape = RoundedCornerShape(style.metrics.cardRadius),
         color = style.colors.composerSurface,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)
@@ -279,7 +279,7 @@ fun AiProcessChainCard(
         shape = RoundedCornerShape(style.metrics.cardRadius),
         color = surface,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),

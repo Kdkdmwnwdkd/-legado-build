@@ -176,10 +176,10 @@ private fun BubbleItemRow(
             // Preview
             Surface(
                 modifier = Modifier.size(BUBBLE_PREVIEW_BOX),
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(12.dp),
                 color = Color.Transparent,
                 tonalElevation = 0.dp,
-                shadowElevation = 0.dp
+                shadowElevation = 2.dp
             ) {
                 val density = LocalDensity.current
                 val sidePx = with(density) { BUBBLE_PREVIEW_BOX.roundToPx() }
@@ -286,7 +286,7 @@ private fun ActionTextButton(
         shape = RoundedCornerShape(actionRadius),
         color = if (accent) palette.accent.copy(alpha = 0.14f) else palette.surfaceVariant,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Text(
             text = text,

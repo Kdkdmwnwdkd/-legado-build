@@ -515,7 +515,7 @@ private fun ConfigSection(
         shape = RoundedCornerShape(style.actionRadius),
         color = style.fieldSurface,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Column(modifier = Modifier.padding(spec.sectionPadding)) {
             Text(
@@ -631,7 +631,7 @@ private fun BookshelfSelectTile(
         color = if (expanded) style.accent.copy(alpha = 0.10f) else style.surface,
         contentColor = style.primaryText,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 11.dp, vertical = 8.dp),
@@ -752,10 +752,10 @@ private fun BookshelfChoiceChip(
         color = if (selected) style.accent.copy(alpha = 0.14f) else style.fieldSurface,
         contentColor = if (selected) style.accent else style.primaryText,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 8.dp),
+            modifier = Modifier.padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -813,7 +813,7 @@ private fun BookshelfDisplaySummaryCard(
         color = style.surface,
         contentColor = style.primaryText,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 11.dp, vertical = 10.dp),
@@ -891,7 +891,7 @@ private fun BookshelfSummaryChip(
         color = if (active) style.accent.copy(alpha = 0.13f) else style.fieldSurface,
         contentColor = if (active) style.accent else style.secondaryText,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Text(
             text = text,
@@ -1051,7 +1051,7 @@ private fun BookshelfSliderRow(
         color = style.surface,
         contentColor = style.primaryText,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)
@@ -1074,7 +1074,7 @@ private fun BookshelfSliderRow(
                     color = style.accent.copy(alpha = 0.12f),
                     contentColor = style.accent,
                     tonalElevation = 0.dp,
-                    shadowElevation = 0.dp
+                    shadowElevation = 2.dp
                 ) {
                     Text(
                         text = value.toString(),

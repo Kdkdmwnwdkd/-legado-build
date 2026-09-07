@@ -511,7 +511,7 @@ private fun AppManagementCheckbox(
     Box(
         modifier = modifier
             .size(24.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(12.dp))
             .background(palette.settings.accent.copy(alpha = checkedProgress))
             .border(
                 width = 1.2.dp,
@@ -520,7 +520,7 @@ private fun AppManagementCheckbox(
                 } else {
                     palette.settings.secondaryText.copy(alpha = 0.46f)
                 },
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(12.dp)
             )
             .clickable(
                 enabled = onToggleSelection != null,

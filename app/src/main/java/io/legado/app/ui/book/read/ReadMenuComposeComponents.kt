@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -135,7 +136,9 @@ fun ReadMenuTitleBar(
     var popupHandle by remember { mutableStateOf<ModernActionPopup.Handle?>(null) }
 
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(8.dp, RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp), clip = false),
         color = style.surface,
         contentColor = style.primaryText,
         tonalElevation = 0.dp,
@@ -311,7 +314,9 @@ fun ReadMenuActionBar(
     val disableSourceTitle = stringResource(R.string.disable_source)
 
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(8.dp, RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp), clip = false),
         color = style.surface,
         contentColor = style.primaryText,
         tonalElevation = 0.dp,
@@ -690,11 +695,13 @@ private fun ReadMenuButton(
     Column(
         modifier = modifier
             .heightIn(min = READ_MENU_BUTTON_MIN_HEIGHT)
+            .clip(RoundedCornerShape(style.actionRadius))
+            .background(style.fieldSurface)
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = { onLongClick() }
             )
-            .padding(vertical = 6.dp),
+            .padding(vertical = 6.dp, horizontal = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AndroidView(

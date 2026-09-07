@@ -684,7 +684,7 @@ private fun ReadRecordDivider(color: Color) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(0.5.dp)
+            .height(1.dp)
             .background(color)
     )
 }

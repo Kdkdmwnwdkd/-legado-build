@@ -429,7 +429,7 @@ private fun ColorOptionRow(
                 shape = CircleShape,
                 color = Color(colorInt),
                 tonalElevation = 0.dp,
-                shadowElevation = 0.dp
+                shadowElevation = 2.dp
             ) {}
             Spacer(modifier = Modifier.width(8.dp))
             Text(

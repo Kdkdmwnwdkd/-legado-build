@@ -1304,7 +1304,7 @@ private fun ReadAiPanelContent(
         modifier = panelModifier.clip(panelShape),
         shape = panelShape,
         color = style.colors.background,
-        shadowElevation = 0.dp,
+        shadowElevation = 2.dp,
         border = if (fullscreen) null else BorderStroke(style.metrics.strokeWidth, style.colors.stroke)
     ) {
         Column(
@@ -1657,7 +1657,7 @@ private fun ReadAiMessageRow(
             shape = RoundedCornerShape(style.metrics.cardRadius),
             color = if (isUser) style.colors.userBubble else style.colors.composerSurface,
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp
+            shadowElevation = 2.dp
         ) {
             Column(
                 modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),

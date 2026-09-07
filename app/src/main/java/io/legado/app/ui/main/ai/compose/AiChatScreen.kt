@@ -1000,7 +1000,7 @@ private fun AiCompanionSessionPanel(
         shape = RoundedCornerShape(style.metrics.cardRadius),
         color = style.colors.cardSurface.copy(alpha = 0.90f),
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp,
+        shadowElevation = 2.dp,
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 14.dp)
@@ -1103,7 +1103,7 @@ private fun AiCompanionDrawerItem(
             modifier = Modifier
                 .width(3.dp)
                 .height(38.dp)
-                .clip(RoundedCornerShape(2.dp))
+                .clip(RoundedCornerShape(6.dp))
                 .background(if (selected) style.colors.accent.copy(alpha = 0.72f) else Color.Transparent)
         )
         Spacer(modifier = Modifier.width(9.dp))
@@ -1165,7 +1165,7 @@ private fun AiSessionDrawerItem(
             modifier = Modifier
                 .width(3.dp)
                 .height(32.dp)
-                .clip(RoundedCornerShape(2.dp))
+                .clip(RoundedCornerShape(6.dp))
                 .background(if (selected) style.colors.accent else Color.Transparent)
         )
         Column(
@@ -1513,7 +1513,7 @@ private fun AiVariantSwitcher(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         AiMessageIconButton(
             iconRes = R.drawable.ic_cursor_left,
@@ -1612,7 +1612,7 @@ private fun AiChatBubbleSurface(
         shape = shape,
         color = if (isUser) style.colors.userBubble else style.colors.composerSurface,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp,
+        shadowElevation = 2.dp,
         modifier = modifier
     ) {
         content()

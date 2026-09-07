@@ -240,7 +240,7 @@ private fun BreadcrumbBar(
             .horizontalScroll(rememberScrollState())
             .padding(horizontal = 10.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         // Root "root" item
         BreadcrumbItem(

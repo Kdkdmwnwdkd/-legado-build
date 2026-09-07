@@ -175,8 +175,8 @@ fun AppDialogFrame(
         LegadoMiuixCard(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(horizontal = 10.dp, vertical = 10.dp)
-                .shadow(14.dp, frameShape, clip = false)
+                .padding(horizontal = 14.dp, vertical = 14.dp)
+                .shadow(22.dp, frameShape, clip = false)
                 .border(1.dp, style.stroke, frameShape),
             color = style.surface,
             contentColor = style.primaryText,

@@ -891,7 +891,7 @@ private fun FloatingControls(
         shape = CircleShape,
         color = colors.panelStrong.copy(alpha = progress),
         border = BorderStroke(1.dp, colors.panelBorder.copy(alpha = progress)),
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Box(
             modifier = Modifier
@@ -1019,7 +1019,7 @@ private fun FloatingCover(
         shape = CircleShape,
         color = colors.panel,
         border = BorderStroke(1.dp, colors.panelBorder),
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         BookCoverImage(
             path = state.coverUrl,
@@ -1065,7 +1065,7 @@ private fun FloatingReaderWindow(
         shape = panelShape,
         color = colors.panelStrong.copy(alpha = backgroundAlpha / 100f),
         border = BorderStroke(1.dp, colors.panelBorder),
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             FloatingReaderTopBar(

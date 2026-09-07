@@ -923,7 +923,7 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
             shape = RoundedCornerShape(style.metrics.cardRadius),
             color = style.colors.cardSurface.copy(alpha = 0.92f),
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp,
+            shadowElevation = 2.dp,
             modifier = Modifier.fillMaxWidth()
         ) {
             Box(
@@ -977,7 +977,7 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
             shape = RoundedCornerShape(style.metrics.cardRadius),
             color = style.colors.cardSurface.copy(alpha = 0.94f),
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp,
+            shadowElevation = 2.dp,
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(onClick = onClick)
@@ -1026,7 +1026,7 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
             shape = RoundedCornerShape(style.metrics.cardRadius),
             color = style.colors.cardSurface.copy(alpha = 0.94f),
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp,
+            shadowElevation = 2.dp,
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
@@ -1093,7 +1093,7 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
             shape = RoundedCornerShape(style.metrics.chipRadius),
             color = if (selected) style.colors.accent.copy(alpha = 0.14f) else style.colors.cardSurface,
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp,
+            shadowElevation = 2.dp,
             modifier = Modifier.clickable(onClick = onClick)
         ) {
             Text(
@@ -1117,7 +1117,7 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
             shape = RoundedCornerShape(style.metrics.cardRadius),
             color = style.colors.cardSurface.copy(alpha = 0.94f),
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp,
+            shadowElevation = 2.dp,
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(onClick = onClick)

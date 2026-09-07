@@ -511,7 +511,7 @@ private fun TocTopBar(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 8.dp)
+                    .padding(horizontal = 12.dp)
             )
             AppManagementMoreActionButton(
                 actionsProvider = { moreActions },
@@ -565,7 +565,7 @@ private fun TocSearchField(
                 cursorBrush = SolidColor(palette.settings.accent),
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 8.dp),
+                    .padding(horizontal = 12.dp),
                 decorationBox = { inner ->
                     if (query.isBlank()) {
                         Text(
@@ -731,7 +731,7 @@ private fun TocVolumeHeaderRow(
             modifier = Modifier
                 .padding(end = 10.dp)
                 .size(width = 3.dp, height = 16.dp)
-                .clip(RoundedCornerShape(2.dp))
+                .clip(RoundedCornerShape(6.dp))
                 .background(palette.settings.accent)
         )
         Text(

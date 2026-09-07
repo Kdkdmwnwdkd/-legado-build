@@ -253,7 +253,7 @@ class ShareNotePreviewOverlay private constructor(
             color = style.surface,
             contentColor = style.primaryText,
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp
+            shadowElevation = 2.dp
         ) {
             Column(
                 modifier = Modifier

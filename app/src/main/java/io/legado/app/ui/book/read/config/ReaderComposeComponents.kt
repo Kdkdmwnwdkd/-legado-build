@@ -162,7 +162,7 @@ fun ReaderBottomSheetFrame(
             color = style.surface,
             contentColor = style.primaryText,
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp
+            shadowElevation = 2.dp
         ) {
             Column(
                 modifier = Modifier
@@ -229,7 +229,7 @@ fun ReaderSectionCard(
         color = style.fieldSurface,
         contentColor = style.primaryText,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Column(
             modifier = Modifier

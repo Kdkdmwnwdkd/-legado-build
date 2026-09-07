@@ -2331,7 +2331,7 @@ private fun ThemePackageManageScreen(
                         .fillMaxWidth(),
                     contentPadding = PaddingValues(start = 6.dp, top = 8.dp, end = 6.dp, bottom = 6.dp),
                     horizontalArrangement = Arrangement.spacedBy(2.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     items(
                         entries,
@@ -2384,7 +2384,7 @@ private fun ThemePackageTabs(
             .clip(RoundedCornerShape(palette.miuix.actionRadius ?: 12.dp))
             .background(ComposeColor(palette.settings.row))
             .padding(3.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         ThemePackageTabButton(
             text = stringResource(R.string.theme_day),
@@ -2420,7 +2420,7 @@ private fun ThemePackageTabButton(
         color = if (selected) ComposeColor(palette.settings.rowPressed) else ComposeColor.Transparent,
         contentColor = if (selected) palette.settings.accent else palette.settings.primaryText,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp,
+        shadowElevation = 2.dp,
         onClick = onClick
     ) {
         Row(
@@ -2574,7 +2574,7 @@ private fun ThemeColorDot(color: ComposeColor) {
     Box(
         modifier = Modifier
             .size(width = 18.dp, height = 8.dp)
-            .clip(RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(12.dp))
             .background(color)
     )
 }
@@ -2633,7 +2633,7 @@ private fun ThemePackagePreview(
                         color = palette.settings.accent.copy(alpha = 0.90f),
                         contentColor = palette.settings.onAccent,
                         tonalElevation = 0.dp,
-                        shadowElevation = 0.dp
+                        shadowElevation = 2.dp
                     ) {
                         Text(
                             text = stringResource(R.string.theme_applied_state),

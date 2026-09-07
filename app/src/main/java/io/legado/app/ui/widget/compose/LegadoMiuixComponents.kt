@@ -158,7 +158,7 @@ fun LegadoMiuixCard(
 ) {
     if (canUseRealMiuix()) {
         MiuixCard(
-            modifier = modifier,
+            modifier = modifier.shadow(4.dp, RoundedCornerShape(cornerRadius), clip = false),
             cornerRadius = cornerRadius,
             insideMargin = insidePadding,
             colors = MiuixCardDefaults.defaultColors(
@@ -170,7 +170,8 @@ fun LegadoMiuixCard(
         return
     }
     Surface(
-        modifier = modifier,
+        modifier = modifier
+            .shadow(4.dp, RoundedCornerShape(cornerRadius), clip = false),
         shape = RoundedCornerShape(cornerRadius),
         color = color,
         contentColor = contentColor,
@@ -207,10 +208,11 @@ fun LegadoMiuixActionButton(
         danger -> palette.danger
         else -> palette.primaryText
     }
+    val shadowElevation = if (primary) 4.dp else if (danger) 0.dp else 2.dp
     if (canUseRealMiuix()) {
         MiuixButton(
             onClick = onClick,
-            modifier = modifier,
+            modifier = modifier.shadow(shadowElevation, RoundedCornerShape(resolvedCornerRadius), clip = false),
             cornerRadius = resolvedCornerRadius,
             minWidth = minWidth,
             minHeight = effectiveMinHeight,
@@ -220,22 +222,24 @@ fun LegadoMiuixActionButton(
                 disabledColor = background.copy(alpha = 0.46f),
                 contentColor = content,
                 disabledContentColor = content.copy(alpha = 0.38f)
-            )
-        ) {
-            Text(
-                text = text,
-                color = content,
-                fontSize = 14.sp,
-                lineHeight = 20.sp,
-                fontWeight = if (primary) FontWeight.SemiBold else FontWeight.Medium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+            ),
+            content = {
+                Text(
+                    text = text,
+                    color = content,
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp,
+                    fontWeight = if (primary) FontWeight.SemiBold else FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        )
         return
     }
     Surface(
         modifier = modifier
+            .shadow(shadowElevation, RoundedCornerShape(resolvedCornerRadius), clip = false)
             .defaultMinSize(minWidth = minWidth, minHeight = effectiveMinHeight)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(resolvedCornerRadius),

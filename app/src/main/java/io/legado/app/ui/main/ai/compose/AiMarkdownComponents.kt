@@ -250,7 +250,7 @@ private fun AiMarkdownQuote(
             modifier = Modifier
                 .width(3.dp)
                 .heightIn(min = 22.dp)
-                .clip(RoundedCornerShape(2.dp))
+                .clip(RoundedCornerShape(6.dp))
                 .background(style.colors.accent.copy(alpha = 0.46f))
         )
         AiMarkdownInlineContent(
@@ -273,7 +273,7 @@ private fun AiMarkdownCodeBlock(
         shape = RoundedCornerShape(style.metrics.chipRadius),
         color = style.colors.processSurface,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
@@ -343,7 +343,7 @@ private fun AiMarkdownTable(table: AiSharedMarkdownBlock.Table, style: AiCompose
         shape = RoundedCornerShape(style.metrics.chipRadius),
         color = style.colors.processSurface,
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         BoxWithConstraints(
             modifier = Modifier
@@ -473,7 +473,7 @@ private fun AiMarkdownImage(
         shape = RoundedCornerShape(style.metrics.chipRadius),
         color = style.colors.background.copy(alpha = 0.08f),
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp
+        shadowElevation = 2.dp
     ) {
         AndroidView(
             modifier = Modifier.fillMaxSize(),

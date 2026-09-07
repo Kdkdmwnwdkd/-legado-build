@@ -120,7 +120,7 @@ private fun LibraryContainerTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(54.dp)
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Surface(
@@ -131,7 +131,7 @@ private fun LibraryContainerTopBar(
             color = Color.Transparent,
             contentColor = palette.settings.primaryText,
             tonalElevation = 0.dp,
-            shadowElevation = 0.dp
+            shadowElevation = 2.dp
         ) {
             Row(
                 horizontalArrangement = Arrangement.Center,

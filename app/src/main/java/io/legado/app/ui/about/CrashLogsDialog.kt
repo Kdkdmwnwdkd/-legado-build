@@ -187,7 +187,7 @@ private fun CrashLogsContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(max = 420.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 items(logFiles, key = { it.name }) { fileDoc ->
                     LegadoMiuixCard(
