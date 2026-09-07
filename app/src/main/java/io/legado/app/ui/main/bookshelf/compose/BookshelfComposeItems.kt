@@ -160,7 +160,7 @@ fun BookshelfGridItem(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp)),
+                .clip(RoundedCornerShape(12.dp)),
             contentAlignment = Alignment.TopEnd
         ) {
             BookshelfCover(
