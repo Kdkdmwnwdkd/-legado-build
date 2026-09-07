@@ -16,7 +16,7 @@ jobs:
       - name: Build web
         run: |
           cd modules/web
-          npm ci
+          npm install
           npm run build
       - uses: actions/setup-java@v5
         with:
