@@ -1,5 +1,6 @@
 package io.legado.app.help
 
+import android.content.Context
 import io.legado.app.utils.GSON
 import io.legado.app.utils.fromJsonObject
 import splitties.init.appCtx
@@ -10,7 +11,12 @@ import splitties.init.appCtx
  */
 object SourceTrustManager {
 
+    private const val PREF_NAME = "source_trust_prefs"
     private const val PREF_KEY_TRUSTED_SOURCES = "trustedSourceUrls"
+
+    private val prefs by lazy {
+        appCtx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+    }
 
     /**
      * 判断指定 URL 是否在用户白名单中
@@ -42,7 +48,7 @@ object SourceTrustManager {
      * 获取所有白名单 URL 列表
      */
     fun getTrustedUrls(): Set<String> {
-        val json = appCtx.defaultSharedPreferences.getString(PREF_KEY_TRUSTED_SOURCES, null)
+        val json = prefs.getString(PREF_KEY_TRUSTED_SOURCES, null)
             ?: return emptySet()
         return GSON.fromJsonObject<Set<String>>(json).getOrNull() ?: emptySet()
     }
@@ -51,7 +57,7 @@ object SourceTrustManager {
      * 清空白名单
      */
     fun clear() {
-        appCtx.defaultSharedPreferences.edit().remove(PREF_KEY_TRUSTED_SOURCES).apply()
+        prefs.edit().remove(PREF_KEY_TRUSTED_SOURCES).apply()
     }
 
     /**
@@ -59,7 +65,7 @@ object SourceTrustManager {
      */
     private fun saveTrustedUrls(urls: Set<String>) {
         val json = GSON.toJson(urls)
-        appCtx.defaultSharedPreferences.edit().putString(PREF_KEY_TRUSTED_SOURCES, json).apply()
+        prefs.edit().putString(PREF_KEY_TRUSTED_SOURCES, json).apply()
     }
 
     /**
