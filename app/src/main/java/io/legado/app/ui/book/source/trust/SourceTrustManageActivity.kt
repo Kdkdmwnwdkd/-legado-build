@@ -1,56 +1,62 @@
 package io.legado.app.ui.book.source.trust
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import io.legado.app.R
-import io.legado.app.base.BaseActivity
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.BookSource
-import io.legado.app.databinding.ActivityRecyclerViewBinding
 import io.legado.app.help.SourceTrustManager
-import io.legado.app.utils.setEdgeEffectColor
-import io.legado.app.utils.toastOnUi
-import io.legado.app.utils.viewbindingdelegate.viewBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SourceTrustManageActivity : BaseActivity<ActivityRecyclerViewBinding>() {
+class SourceTrustManageActivity : AppCompatActivity() {
 
-    override val binding by viewBinding(ActivityRecyclerViewBinding::inflate)
+    private lateinit var recyclerView: RecyclerView
     private val adapter by lazy { SourceTrustAdapter(this) }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        setSupportToolbar(binding.titleBar.toolbar)
-        binding.titleBar.title = getString(R.string.source_trust_manage)
-        initRecyclerView()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_source_trust_manage)
+
+        setSupportActionBar(findViewById(R.id.title_bar))
+        supportActionBar?.setTitle(R.string.source_trust_manage)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        recyclerView = findViewById(R.id.recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
+
         loadSources()
     }
 
-    override fun onCompatCreateOptionsMenu(menu: Menu) {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.source_trust_manage, menu)
+        return true
     }
 
-    override fun onCompatOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_clear_all -> {
                 SourceTrustManager.clear()
                 adapter.notifyDataSetChanged()
-                toastOnUi("已清空白名单")
+            }
+            android.R.id.home -> {
+                finish()
+                return true
             }
         }
-        return super.onCompatOptionsItemSelected(item)
-    }
-
-    private fun initRecyclerView() {
-        binding.recyclerView.setEdgeEffectColor(primaryColor)
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = adapter
+        return super.onOptionsItemSelected(item)
     }
 
     private fun loadSources() {
@@ -71,7 +77,7 @@ class SourceTrustManageActivity : BaseActivity<ActivityRecyclerViewBinding>() {
     }
 
     class SourceTrustAdapter(private val activity: SourceTrustManageActivity) :
-        androidx.recyclerview.widget.RecyclerView.Adapter<SourceTrustAdapter.ViewHolder>() {
+        RecyclerView.Adapter<SourceTrustAdapter.ViewHolder>() {
 
         private var items: List<BookSource> = emptyList()
 
@@ -80,8 +86,8 @@ class SourceTrustManageActivity : BaseActivity<ActivityRecyclerViewBinding>() {
             notifyDataSetChanged()
         }
 
-        override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): ViewHolder {
-            val view = android.view.LayoutInflater.from(parent.context)
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_source_trust, parent, false)
             return ViewHolder(view)
         }
@@ -100,7 +106,7 @@ class SourceTrustManageActivity : BaseActivity<ActivityRecyclerViewBinding>() {
 
         override fun getItemCount(): Int = items.size
 
-        class ViewHolder(view: android.view.View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
+        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val nameView: TextView = view.findViewById(R.id.tv_source_name)
             val urlView: TextView = view.findViewById(R.id.tv_source_url)
             val switchView: Switch = view.findViewById(R.id.sw_trust)
