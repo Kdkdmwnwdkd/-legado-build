@@ -43,3 +43,4 @@ cloudflare/**/.wrangler/
 
 # 签名及密码不进入公开仓库
 signing/
+*.txt
