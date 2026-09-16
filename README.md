@@ -84,9 +84,11 @@
 
 ## 最新版本下载
 
-| 版本 | 日期 | 大小 | 下载链接 |
-|------|------|------|----------|
-| **3.26.091621** | 2026-09-16 | 53.8 MB | [点击下载](https://github.com/Kdkdmwnwdkd/-legado-build/releases/download/nightly-debug/legado_app_3.26.091621_10001.apk) |
+> ⚠️ **国内用户注意**：GitHub 下载慢/断流？请优先使用「国内镜像」列的链接，速度更快更稳定。两列内容相同，任选一个下载即可。
+
+| 版本 | 日期 | 大小 | GitHub 下载 | 国内镜像 |
+|------|------|------|------------|----------|
+| **3.26.091623** | 2026-09-17 | 53.8 MB | [点击下载](https://github.com/Kdkdmwnwdkd/-legado-build/releases/download/nightly-debug/legado_app_3.26.091623_10001.apk) | [镜像下载](https://ghproxy.com/https://github.com/Kdkdmwnwdkd/-legado-build/releases/download/nightly-debug/legado_app_3.26.091623_10001.apk) |
 
 ### 本次更新亮点（2026-09-16）
 - **用户可控证书白名单**：编辑书源时打开"Trust Certificate"开关，即可信任该书源的 HTTPS 证书，解决自签名证书书源无法访问的问题
