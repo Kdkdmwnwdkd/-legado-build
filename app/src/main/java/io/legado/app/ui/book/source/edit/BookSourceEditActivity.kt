@@ -30,7 +30,7 @@ import io.legado.app.lib.dialogs.selector
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.backgroundColor
 import io.legado.app.lib.theme.primaryColor
-import io.legado.app.ui.about.AppLogDialog
+import io.legado.app.help.SourceTrustManager
 import io.legado.app.ui.book.search.SearchActivity
 import io.legado.app.ui.book.source.debug.BookSourceDebugActivity
 import io.legado.app.ui.code.CodeEditActivity
@@ -307,6 +307,7 @@ class BookSourceEditActivity :
             )
             binding.cbIsEventListener.isChecked = it.eventListener
             binding.cbIsCustomButton.isChecked = it.customButton
+            binding.cbIsTrustCertificate.isChecked = SourceTrustManager.isTrusted(it.bookSourceUrl)
         }
         // 基本信息
         sourceEntities.clear()
@@ -436,6 +437,12 @@ class BookSourceEditActivity :
         }
         source.eventListener = binding.cbIsEventListener.isChecked
         source.customButton = binding.cbIsCustomButton.isChecked
+        val sourceUrl = source.bookSourceUrl
+        if (binding.cbIsTrustCertificate.isChecked) {
+            SourceTrustManager.add(sourceUrl)
+        } else {
+            SourceTrustManager.remove(sourceUrl)
+        }
         val searchRule = SearchRule()
         val exploreRule = ExploreRule()
         val bookInfoRule = BookInfoRule()

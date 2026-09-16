@@ -588,6 +588,13 @@ interface JsExtensions : JsEncodeUtils {
         return get(urlStr, headers, null)
     }
 
+    /**
+     * 判断是否应该跳过证书校验：书源配置启用 OR 用户手动添加到白名单
+     */
+    private fun shouldSkipCertificateValidation(url: String): Boolean {
+        return getSource()?.ignoreCertificate == true || SourceTrustManager.isTrusted(url)
+    }
+
     fun get(urlStr: String, headers: Map<String, String>, timeout: Int?): Connection.Response {
         val requestHeaders = if (getSource()?.enabledCookieJar == true) {
             headers.toMutableMap().apply { put(cookieJarHeader, "1") }
@@ -601,7 +608,7 @@ interface JsExtensions : JsEncodeUtils {
                 .followRedirects(false)
                 .headers(requestHeaders)
                 .method(Connection.Method.GET)
-            if (getSource()?.ignoreCertificate == true) {
+            if (shouldSkipCertificateValidation(urlStr)) {
                 connection.sslSocketFactory(SSLHelper.unsafeSSLSocketFactory)
             }
             connection.execute()
@@ -629,7 +636,7 @@ interface JsExtensions : JsEncodeUtils {
                 .followRedirects(false)
                 .headers(requestHeaders)
                 .method(Connection.Method.HEAD)
-            if (getSource()?.ignoreCertificate == true) {
+            if (shouldSkipCertificateValidation(urlStr)) {
                 connection.sslSocketFactory(SSLHelper.unsafeSSLSocketFactory)
             }
             connection.execute()
@@ -658,7 +665,7 @@ interface JsExtensions : JsEncodeUtils {
                 .requestBody(body)
                 .headers(requestHeaders)
                 .method(Connection.Method.POST)
-            if (getSource()?.ignoreCertificate == true) {
+            if (shouldSkipCertificateValidation(urlStr)) {
                 connection.sslSocketFactory(SSLHelper.unsafeSSLSocketFactory)
             }
             connection.execute()

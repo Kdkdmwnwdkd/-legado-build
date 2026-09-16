@@ -11,9 +11,10 @@ import androidx.lifecycle.lifecycleScope
 import io.legado.app.R
 import io.legado.app.base.VMBaseActivity
 import io.legado.app.databinding.ActivitySourceDebugBinding
+import io.legado.app.help.SourceTrustManager
 import io.legado.app.help.source.clearExploreKindsCache
 import io.legado.app.help.source.exploreKinds
-import io.legado.app.lib.dialogs.selector
+import io.legado.app.lib.dialogs.alert
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.ui.qrcode.QrCodeResult
@@ -55,6 +56,20 @@ class BookSourceDebugActivity : VMBaseActivity<ActivitySourceDebugBinding, BookS
                 adapter.addItem(msg)
                 if (state == -1 || state == 1000) {
                     binding.rotateLoading.gone()
+                }
+                // 检测到SSL证书错误时，提示用户是否信任此书源
+                if (msg.contains("SSL") || msg.contains("证书") || msg.contains("certificate") || msg.contains("Handshake")) {
+                    val sourceUrl = viewModel.bookSource?.bookSourceUrl ?: return@launch
+                    if (!SourceTrustManager.isTrusted(sourceUrl)) {
+                        alert(R.string.trust_certificate) {
+                            message = getString(R.string.ssl_error_trust_prompt, sourceUrl)
+                            yesButton {
+                                SourceTrustManager.add(sourceUrl)
+                                toastOnUi(R.string.source_trusted)
+                            }
+                            noButton {}
+                        }
+                    }
                 }
             }
         }

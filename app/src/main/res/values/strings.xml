@@ -2489,4 +2489,7 @@ Selected text or question:
     <string name="shibboleth_invalid">Invalid import code</string>
     <string name="shibboleth_expired">This import code has expired</string>
     <string name="shibboleth_import_confirm">The import code will download configuration from the Internet. Continue only if you trust its source.</string>
+    <string name="trust_certificate">Trust Certificate</string>
+    <string name="ssl_error_trust_prompt">This source (%s) has an SSL certificate error. Do you want to trust it and add it to the whitelist?</string>
+    <string name="source_trusted">Source added to trusted list</string>
 </resources>
