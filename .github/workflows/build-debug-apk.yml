@@ -25,7 +25,7 @@ jobs:
           cache: gradle
       - run: chmod +x gradlew
       - name: Build APK
-        run: ./gradlew assembleAppDebug -Pabi=arm64-v8a --no-daemon --max-workers=2 --stacktrace
+        run: ./gradlew assembleAppRelease -Pabi=arm64-v8a --no-daemon --max-workers=2 --stacktrace
       - name: Release
         if: success()
         uses: softprops/action-gh-release@v2

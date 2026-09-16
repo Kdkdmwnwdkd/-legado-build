@@ -128,13 +128,12 @@ class WebViewLoginFragment : BaseFragment(R.layout.fragment_web_view_login) {
                 }
             }
 
-            @SuppressLint("WebViewClientOnReceivedSslError")
             override fun onReceivedSslError(
                 view: WebView?,
                 handler: SslErrorHandler?,
                 error: SslError?
             ) {
-                handler?.proceed()
+                handler?.cancel()
             }
         }
         webView.webChromeClient = object : WebChromeClient() {

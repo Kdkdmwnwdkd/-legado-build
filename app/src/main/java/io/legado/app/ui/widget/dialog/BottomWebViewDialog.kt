@@ -966,11 +966,11 @@ class BottomWebViewDialog() : BottomSheetDialogFragment(R.layout.dialog_web_view
             }
         }
 
-        @SuppressLint("WebViewClientOnReceivedSslError")
         override fun onReceivedSslError(
             view: WebView?, handler: SslErrorHandler?, error: SslError?
         ) {
-            handler?.proceed()
+            // 默认拒绝有问题的证书
+            handler?.cancel()
         }
 
         private var jsInjected = false

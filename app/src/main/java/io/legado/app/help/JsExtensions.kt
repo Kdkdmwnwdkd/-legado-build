@@ -595,14 +595,16 @@ interface JsExtensions : JsEncodeUtils {
         val rateLimiter = ConcurrentRateLimiter(getSource())
         val response = rateLimiter.withLimitBlocking {
             rhinoContextOrNull?.ensureActive()
-            Jsoup.connect(urlStr)
-                .sslSocketFactory(SSLHelper.unsafeSSLSocketFactory)
+            val connection = Jsoup.connect(urlStr)
                 .timeout(timeout ?: 30000)
                 .ignoreContentType(true)
                 .followRedirects(false)
                 .headers(requestHeaders)
                 .method(Connection.Method.GET)
-                .execute()
+            if (getSource()?.ignoreCertificate == true) {
+                connection.sslSocketFactory(SSLHelper.unsafeSSLSocketFactory)
+            }
+            connection.execute()
         }
         return response
     }
@@ -621,14 +623,16 @@ interface JsExtensions : JsEncodeUtils {
         val rateLimiter = ConcurrentRateLimiter(getSource())
         val response = rateLimiter.withLimitBlocking {
             rhinoContextOrNull?.ensureActive()
-            Jsoup.connect(urlStr)
-                .sslSocketFactory(SSLHelper.unsafeSSLSocketFactory)
+            val connection = Jsoup.connect(urlStr)
                 .timeout(timeout ?: 30000)
                 .ignoreContentType(true)
                 .followRedirects(false)
                 .headers(requestHeaders)
                 .method(Connection.Method.HEAD)
-                .execute()
+            if (getSource()?.ignoreCertificate == true) {
+                connection.sslSocketFactory(SSLHelper.unsafeSSLSocketFactory)
+            }
+            connection.execute()
         }
         return response
     }
@@ -647,15 +651,17 @@ interface JsExtensions : JsEncodeUtils {
         val rateLimiter = ConcurrentRateLimiter(getSource())
         val response = rateLimiter.withLimitBlocking {
             rhinoContextOrNull?.ensureActive()
-            Jsoup.connect(urlStr)
-                .sslSocketFactory(SSLHelper.unsafeSSLSocketFactory)
+            val connection = Jsoup.connect(urlStr)
                 .timeout(timeout ?: 30000)
                 .ignoreContentType(true)
                 .followRedirects(false)
                 .requestBody(body)
                 .headers(requestHeaders)
                 .method(Connection.Method.POST)
-                .execute()
+            if (getSource()?.ignoreCertificate == true) {
+                connection.sslSocketFactory(SSLHelper.unsafeSSLSocketFactory)
+            }
+            connection.execute()
         }
         return response
     }

@@ -109,7 +109,6 @@ android {
             signingConfig signingConfigs.modDebug
             manifestPlaceholders.put("app_name", "@string/app_launcher_name")
             applicationIdSuffix '.debug'
-            versionNameSuffix 'debug'
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'cronet-proguard-rules.pro'
         }

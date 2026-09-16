@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config xmlns:tools="http://schemas.android.com/tools">
+    <!-- 默认严格校验 HTTPS，禁止明文 HTTP -->
     <base-config
-        cleartextTrafficPermitted="true"
-        tools:ignore="InsecureBaseConfiguration" />
+        cleartextTrafficPermitted="false" />
 
-    <debug-overrides cleartextTrafficPermitted="true">
+    <!-- 对有自签名证书的书源站，允许用户导入证书后信任（未来可配合书源配置动态添加） -->
+    <debug-overrides cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="user" />
             <certificates src="system"/>
