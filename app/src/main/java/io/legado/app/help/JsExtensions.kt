@@ -611,7 +611,12 @@ interface JsExtensions : JsEncodeUtils {
             if (shouldSkipCertificateValidation(urlStr)) {
                 connection.sslSocketFactory(SSLHelper.unsafeSSLSocketFactory)
             }
-            connection.execute()
+            try {
+                connection.execute()
+            } catch (e: javax.net.ssl.SSLException) {
+                SourceTrustManager.addSslError(urlStr)
+                throw e
+            }
         }
         return response
     }

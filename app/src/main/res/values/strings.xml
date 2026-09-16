@@ -2494,4 +2494,8 @@ Selected text or question:
     <string name="source_trusted">Source added to trusted list</string>
     <string name="source_trust_manage">证书白名单</string>
     <string name="source_trust_manage_desc">管理需要信任证书的书源</string>
+    <string name="ssl_error">证书异常</string>
+    <string name="menu_trust_all">全部信任</string>
+    <string name="menu_untrust_all">全部取消信任</string>
+    <string name="menu_clear_ssl_errors">清除SSL错误记录</string>
 </resources>

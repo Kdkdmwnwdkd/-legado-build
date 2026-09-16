@@ -13,6 +13,7 @@ object SourceTrustManager {
 
     private const val PREF_NAME = "source_trust_prefs"
     private const val PREF_KEY_TRUSTED_SOURCES = "trustedSourceUrls"
+    private const val PREF_KEY_SSL_ERROR_SOURCES = "sslErrorSources"
 
     private val prefs by lazy {
         appCtx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -61,11 +62,49 @@ object SourceTrustManager {
     }
 
     /**
+     * 添加 URL 到 SSL 错误记录（被动检测）
+     */
+    fun addSslError(url: String) {
+        val urls = getSslErrorUrls().toMutableSet()
+        urls.add(url)
+        saveSslErrorUrls(urls)
+    }
+
+    /**
+     * 获取所有出过 SSL 错误的书源 URL 列表
+     */
+    fun getSslErrorUrls(): Set<String> {
+        val json = prefs.getString(PREF_KEY_SSL_ERROR_SOURCES, null)
+            ?: return emptySet()
+        return GSON.fromJsonObject<Set<String>>(json).getOrNull() ?: emptySet()
+    }
+
+    /**
+     * 判断指定 URL 是否出过 SSL 错误
+     */
+    fun hasSslError(url: String): Boolean {
+        val domain = extractDomain(url)
+        return getSslErrorUrls().any { extractDomain(it) == domain }
+    }
+
+    /**
+     * 清除 SSL 错误记录
+     */
+    fun clearSslErrors() {
+        prefs.edit().remove(PREF_KEY_SSL_ERROR_SOURCES).apply()
+    }
+
+    /**
      * 保存 URL 列表到 SharedPreferences
      */
     private fun saveTrustedUrls(urls: Set<String>) {
         val json = GSON.toJson(urls)
         prefs.edit().putString(PREF_KEY_TRUSTED_SOURCES, json).apply()
+    }
+
+    private fun saveSslErrorUrls(urls: Set<String>) {
+        val json = GSON.toJson(urls)
+        prefs.edit().putString(PREF_KEY_SSL_ERROR_SOURCES, json).apply()
     }
 
     /**

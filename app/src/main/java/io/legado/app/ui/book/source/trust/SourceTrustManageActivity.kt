@@ -1,5 +1,6 @@
 package io.legado.app.ui.book.source.trust
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -24,6 +25,7 @@ class SourceTrustManageActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private val adapter by lazy { SourceTrustAdapter(this) }
+    private var allSources: List<BookSource> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,8 +49,16 @@ class SourceTrustManageActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_clear_all -> {
-                SourceTrustManager.clear()
+            R.id.menu_trust_all -> {
+                allSources.forEach { SourceTrustManager.add(it.bookSourceUrl) }
+                adapter.notifyDataSetChanged()
+            }
+            R.id.menu_untrust_all -> {
+                allSources.forEach { SourceTrustManager.remove(it.bookSourceUrl) }
+                adapter.notifyDataSetChanged()
+            }
+            R.id.menu_clear_ssl_errors -> {
+                SourceTrustManager.clearSslErrors()
                 adapter.notifyDataSetChanged()
             }
             android.R.id.home -> {
@@ -64,6 +74,7 @@ class SourceTrustManageActivity : AppCompatActivity() {
             val sources = withContext(Dispatchers.IO) {
                 appDb.bookSourceDao.all
             }
+            allSources = sources
             adapter.setItems(sources)
         }
     }
@@ -96,6 +107,17 @@ class SourceTrustManageActivity : AppCompatActivity() {
             val source = items[position]
             holder.nameView.text = source.bookSourceName
             holder.urlView.text = source.bookSourceUrl
+
+            // 标记出过 SSL 错误的书源
+            val hasError = SourceTrustManager.hasSslError(source.bookSourceUrl)
+            if (hasError) {
+                holder.errorView.visibility = View.VISIBLE
+                holder.errorView.text = "证书异常"
+                holder.errorView.setTextColor(Color.parseColor("#FF5722"))
+            } else {
+                holder.errorView.visibility = View.GONE
+            }
+
             holder.switchView.setOnCheckedChangeListener(null)
             val trusted = SourceTrustManager.isTrusted(source.bookSourceUrl)
             holder.switchView.isChecked = trusted
@@ -109,6 +131,7 @@ class SourceTrustManageActivity : AppCompatActivity() {
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val nameView: TextView = view.findViewById(R.id.tv_source_name)
             val urlView: TextView = view.findViewById(R.id.tv_source_url)
+            val errorView: TextView = view.findViewById(R.id.tv_ssl_error)
             val switchView: Switch = view.findViewById(R.id.sw_trust)
         }
     }
