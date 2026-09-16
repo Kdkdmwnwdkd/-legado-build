@@ -61,6 +61,12 @@ interface BaseSource : JsExtensions {
      */
     var jsLib: String?
 
+    /**
+     * 忽略证书校验（用于自签名证书书源）
+     */
+    val ignoreCertificate: Boolean
+        get() = false
+
     override fun getTag(): String
 
     fun getKey(): String

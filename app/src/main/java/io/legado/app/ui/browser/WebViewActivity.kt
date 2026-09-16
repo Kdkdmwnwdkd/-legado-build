@@ -549,13 +549,12 @@ class WebViewActivity : VMBaseActivity<ActivityWebViewBinding, WebViewModel>() {
             }
         }
 
-        @SuppressLint("WebViewClientOnReceivedSslError")
         override fun onReceivedSslError(
             view: WebView?,
             handler: SslErrorHandler?,
             error: SslError?
         ) {
-            handler?.proceed()
+            handler?.cancel()
         }
 
     }

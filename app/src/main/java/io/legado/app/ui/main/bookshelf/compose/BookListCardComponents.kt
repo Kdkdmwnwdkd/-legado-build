@@ -100,18 +100,4 @@ fun BookListCardSurface(
     ) {
         content(metrics)
     }
-            )
-            .heightIn(min = metrics.minHeight)
-            .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongClick
-            )
-            .padding(
-                horizontal = metrics.horizontalPadding,
-                vertical = metrics.verticalPadding
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        content(metrics)
-    }
 }

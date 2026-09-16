@@ -251,13 +251,12 @@ class BackstageWebView(
             mHandler.postDelayed(runnable, 100L + delayTime)
         }
 
-        @SuppressLint("WebViewClientOnReceivedSslError")
         override fun onReceivedSslError(
             view: WebView?,
             handler: SslErrorHandler?,
             error: SslError?
         ) {
-            handler?.proceed()
+            handler?.cancel()
         }
 
         private inner class EvalJsRunnable(
@@ -396,18 +395,17 @@ class BackstageWebView(
                 val runnable = LoadJsRunnable(webView, javaScript)
                 mHandler.postDelayed(runnable, 100L + delayTime)
             }
-        }
+            }
 
-        @SuppressLint("WebViewClientOnReceivedSslError")
-        override fun onReceivedSslError(
-            view: WebView?,
-            handler: SslErrorHandler?,
-            error: SslError?
-        ) {
-            handler?.proceed()
-        }
+            override fun onReceivedSslError(
+                view: WebView?,
+                handler: SslErrorHandler?,
+                error: SslError?
+            ) {
+                handler?.cancel()
+            }
 
-        private inner class LoadJsRunnable(
+            private inner class LoadJsRunnable(
             webView: WebView,
             private val mJavaScript: String?
         ) : Runnable {
