@@ -25,7 +25,8 @@ import io.legado.app.ui.about.AboutActivity
 import io.legado.app.ui.about.ReadRecordActivity
 import io.legado.app.ui.book.bookmark.AllBookmarkActivity
 import io.legado.app.ui.book.cache.CacheManageActivity
-import io.legado.app.ui.book.source.manage.BookSourceActivity
+        import io.legado.app.ui.book.source.manage.BookSourceActivity
+import io.legado.app.ui.book.source.trust.SourceTrustManageActivity
 import io.legado.app.ui.book.toc.rule.TxtTocRuleActivity
 import io.legado.app.ui.config.ConfigActivity
 import io.legado.app.ui.config.ConfigTag
@@ -282,6 +283,7 @@ class MyFragment() : BaseFragment(R.layout.fragment_my_config),
         }
         when (key) {
             "bookSourceManage" -> startActivity<BookSourceActivity>()
+            "sourceTrustManage" -> startActivity<SourceTrustManageActivity>()
             "rssSourceManage" -> startActivity<RssSourceActivity>()
             "replaceManage" -> startActivity<ReplaceRuleActivity>()
             "dictRuleManage" -> startActivity<DictRuleActivity>()
@@ -321,6 +323,7 @@ class MyFragment() : BaseFragment(R.layout.fragment_my_config),
                 title = getString(R.string.config_category_content),
                 rows = listOf(
                     actionRow("bookSourceManage", R.string.book_source_manage, R.string.book_source_manage_desc),
+                    actionRow("sourceTrustManage", R.string.source_trust_manage, R.string.source_trust_manage_desc),
                     actionRow("rssSourceManage", R.string.rss_source_manage, R.string.rss_source_manage_summary),
                     actionRow("txtTocRuleManage", R.string.txt_toc_rule, R.string.config_txt_toc_rule),
                     actionRow("replaceManage", R.string.replace_purify, R.string.replace_purify_desc),

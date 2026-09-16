@@ -2492,4 +2492,6 @@ Selected text or question:
     <string name="trust_certificate">Trust Certificate</string>
     <string name="ssl_error_trust_prompt">This source (%s) has an SSL certificate error. Do you want to trust it and add it to the whitelist?</string>
     <string name="source_trusted">Source added to trusted list</string>
+    <string name="source_trust_manage">证书白名单</string>
+    <string name="source_trust_manage_desc">管理需要信任证书的书源</string>
 </resources>
