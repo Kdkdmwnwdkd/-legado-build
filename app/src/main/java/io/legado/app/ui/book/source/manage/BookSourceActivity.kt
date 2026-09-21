@@ -538,12 +538,12 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
     private fun showDuplicateCheckDialog() {
         showComposeActionListDialog(
             title = getString(R.string.duplicate_check),
-            items = listOf(
+            labels = listOf(
                 getString(R.string.duplicate_by_url),
                 getString(R.string.duplicate_by_name),
                 getString(R.string.duplicate_by_url_and_name)
             ),
-            onItemSelect = { index ->
+            onSelected = { index ->
                 when (index) {
                     0 -> doDuplicateCheck { appDb.bookSourceDao.getDuplicateByUrl() }
                     1 -> doDuplicateCheck { appDb.bookSourceDao.getDuplicateByName() }
@@ -558,7 +558,7 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
             val duplicates = query()
             val groups = duplicates.groupBy { it.bookSourceUrl }
             val totalExtra = duplicates.size - groups.size
-            withContext(Dispatchers.Main) {
+            withContext(Main) {
                 if (duplicates.isEmpty()) {
                     toastOnUi(R.string.duplicate_none_found)
                     return@withContext
@@ -570,8 +570,8 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
                         groups.size.toString(),
                         totalExtra.toString()
                     ),
-                    confirmText = getString(R.string.duplicate_delete_extra),
-                    onConfirm = {
+                    positiveText = getString(R.string.duplicate_delete_extra),
+                    onPositive = {
                         lifecycleScope.launch(IO) {
                             val toDelete = mutableListOf<BookSourcePart>()
                             groups.forEach { (_, list) ->
@@ -580,7 +580,7 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
                                     .let { toDelete.addAll(it) }
                             }
                             appDb.bookSourceDao.delete(toDelete)
-                            withContext(Dispatchers.Main) {
+                            withContext(Main) {
                                 toastOnUi(getString(R.string.duplicate_deleted, toDelete.size.toString()))
                             }
                         }
