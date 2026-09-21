@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="reader_template_title">页面模板</string>
+    <string name="reader_template_scope">普通正文 EPUB 渲染的高级排版功能。每章首页与其余页可以分别排版；复杂模板首次排版可能稍慢，建议先预览。运行异常时自动回退原有排版。</string>
+    <string name="reader_template_original">原有排版</string>
+    <string name="reader_template_original_description">使用阅读设置中的排版与页眉页脚</string>
+    <string name="reader_template_selected">已应用</string>
+    <string name="reader_template_apply">应用</string>
+    <string name="reader_template_edit">编辑</string>
+    <string name="reader_template_copy_edit">复制编辑</string>
+    <string name="reader_template_name">模板名称</string>
+    <string name="reader_template_description">说明</string>
+    <string name="reader_template_first_html">首页 HTML</string>
+    <string name="reader_template_other_html">续页 HTML</string>
+    <string name="reader_template_css">CSS</string>
+    <string name="reader_template_javascript">JavaScript</string>
+    <string name="reader_template_save">保存模板</string>
+    <string name="reader_template_save_apply">保存并应用</string>
+    <string name="reader_template_saved">模板已保存</string>
+    <string name="reader_template_import">从文件导入</string>
+    <string name="reader_template_import_title">导入页面模板或独立备份</string>
+    <string name="reader_template_imported">导入完成</string>
+    <string name="reader_template_export">导出文件</string>
+    <string name="reader_template_backup">独立备份</string>
+    <string name="reader_template_backup_file_name">页面模板备份.zip</string>
+    <string name="reader_template_backup_help">“导出文件”分享一个模板；“独立备份”保存模板库与内置模板的隐藏状态，都可从文件导入。模板库不随普通备份打包。导入会合并，相同 ID 的不同内容另存为副本。</string>
+    <string name="reader_template_restore_builtins">恢复内置模板</string>
+    <string name="reader_template_restored">已恢复内置模板</string>
+    <string name="reader_template_delete_builtin">删除“%1$s”？使用它的阅读样式将回到原有排版，可在更多菜单中恢复。</string>
+    <string name="reader_template_delete_custom">删除“%1$s”？使用它的阅读样式将回到原有排版。</string>
+    <string name="reader_template_deleted">已删除模板</string>
+    <string name="reader_template_help">使用与编写帮助</string>
+    <string name="reader_template_cancel_edit">取消编辑</string>
+    <string name="reader_template_busy">正在处理…</string>
+    <string name="reader_template_preview">预览排版</string>
+    <string name="reader_template_preview_unavailable">当前页面尚未接入模板预览。</string>
+    <string name="reader_template_editor_unavailable">编辑内容已失效，请重新打开编辑器。</string>
+    <string name="reader_template_scope_error">请在普通正文的 EPUB 渲染模式中应用模板。</string>
+    <string name="reader_template_code_note">HTML、CSS 和 JavaScript 按原文保存，不过滤标签或样式。保存只检查模板格式；运行错误会在预览或正文中显示。</string>
+    <string name="reader_template_javascript_help">JavaScript 全局对象：readerTemplate。\nsource：可编辑的正文 DOM；fields：动态信息；viewport：视口信息。\n使用 readerTemplate.on(event, handler) 监听 beforeLayout、beforePage、afterPage、afterLayout、pageChange、fieldsChange、motionChange、dispose，返回值可取消监听。\n在 beforeLayout 修改正文，在 beforePage 设置正文区域。afterLayout 提供本轮候选 pages；pageChange 通知导航；motionChange 通知已提交的当前 page 与实际 state，首次显示、重新分页也会触发。\n有限异步准备：readerTemplate.waitUntil(promise)；请求重新分页：readerTemplate.requestLayout()。不要等待无限动画结束或在分页钩子中无条件重排。\nmotionChange 的 state 为 settled、running、paused，不等待返回的 Promise。按它启动、暂停 JS 动画，settled 时保留完整静态画面；换页释放旧任务，dispose 清理计时器、事件和请求。星幕月相的 JS 开头有完整示例，HTML、CSS 和 JS 均可自由改写。</string>
+    <!-- Double hyphens are literal CSS custom-property names, not punctuation. -->
+    <string name="reader_template_author_help" tools:ignore="TypographyDashes">正文区域：data-reader-flow=\"body\"，可放置多个，按 DOM 顺序或 data-reader-order 流入。\n动态信息：data-reader-field=\"chapterTitle|bookName|time|battery|page|pageIndex|pageCount|progress\"，每个元素选择一个字段。\n页面根节点：data-reader-page=\"first|other\"。正文段落与章名：.reader-paragraph、.reader-chapter-title。\n样式变量：--reader-text-color、--reader-page-background、--reader-accent、--reader-font-size、--reader-line-height、--reader-paragraph-indent、--reader-paragraph-spacing。</string>
+</resources>

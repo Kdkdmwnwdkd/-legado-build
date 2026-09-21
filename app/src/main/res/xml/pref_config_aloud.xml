@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <io.legado.app.lib.prefs.PreferenceCategory
+        android:key="readAloudConfigCategory"
+        android:title="@string/aloud_config"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false">
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="false"
+            android:key="ignoreAudioFocus"
+            android:summary="@string/ignore_audio_focus_summary"
+            android:title="@string/ignore_audio_focus_title" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="false"
+            android:key="pauseReadAloudWhilePhoneCalls"
+            android:summary="@string/pause_read_aloud_while_phone_calls_summary"
+            android:title="@string/pause_read_aloud_while_phone_calls_title" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="false"
+            android:key="readAloudWakeLock"
+            android:summary="@string/read_aloud_wake_lock_summary"
+            android:title="@string/read_aloud_wake_lock"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="true"
+            android:key="showReadAloudFloatingBall"
+            android:summary="@string/read_aloud_floating_ball_summary"
+            android:title="@string/read_aloud_floating_ball"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="false"
+            android:key="mediaButtonPerNext"
+            android:summary="@string/pref_media_button_per_next_summary"
+            android:title="@string/pref_media_button_per_next"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="false"
+            android:key="readAloudByPage"
+            android:summary="@string/read_aloud_by_page_summary"
+            android:title="@string/read_aloud_by_page"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="false"
+            android:key="streamReadAloudAudio"
+            android:summary="@string/stream_read_aloud_audio_summary"
+            android:title="@string/stream_read_aloud_audio"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="true"
+            android:key="ttsFollowSys"
+            android:summary="开启后使用系统语速，语速滑条仅展示当前保存值"
+            android:title="@string/flow_sys"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SeekBarPreference
+            android:clickable="false"
+            android:defaultValue="5"
+            android:key="ttsSpeechRate"
+            android:summary="0.5 - 5.0"
+            android:title="@string/read_aloud_speed"
+            app:MaxValue="45"
+            app:MinValue="0"
+            app:iconSpaceReserved="false"
+            app:selectable="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="false"
+            android:key="aiReadAloudRoleEnabled"
+            android:summary="后台分析当前章节的旁白和角色片段，并缓存结果"
+            android:title="多角色"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="aiReadAloudModelRouting"
+            android:summary="多角色主模型、备用模型、首响超时、智能音频模型"
+            android:title="AI 模型与超时"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="aiReadAloudRoleModelId"
+            android:summary="未配置"
+            android:title="多角色模型"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="true"
+            android:key="aiReadAloudAutoCreateCharacters"
+            android:summary="识别到新角色或路人时自动创建角色，并为未配置角色分配可用发言人"
+            android:title="自动创建角色并分配发言人"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="aiReadAloudAutoCreateCharacterPrompt"
+            android:summary="设置自动创建角色时的判断规则"
+            android:title="自动建卡提示词"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="false"
+            android:key="aiReadAloudAutoCreateAvatar"
+            android:summary="有可用生图提供商时，为自动创建的新角色后台生成头像"
+            android:title="自动生成角色头像"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.NameListPreference
+            android:defaultValue="chunk_context"
+            android:entries="@array/ai_read_aloud_role_mode_title"
+            android:entryValues="@array/ai_read_aloud_role_mode_value"
+            android:key="aiReadAloudRoleMode"
+            android:title="处理模式"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="aiReadAloudRolePreprocess"
+            android:summary="内置引号、冒号、跨段对话预切分；AI 只确认不确定 unitId"
+            android:title="预处理规则"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="aiReadAloudRoleThreadCount"
+            android:summary="2"
+            android:title="并发请求数"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="aiReadAloudRoleContextParagraphs"
+            android:summary="2"
+            android:title="上下文段落数"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="aiReadAloudRoleMergeGapParagraphs"
+            android:summary="1"
+            android:title="相隔段落合并"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="aiReadAloudRolePrompt"
+            android:summary="未设置"
+            android:title="预注入分角色提示词"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="aiReadAloudUsageRecords"
+            android:summary="查看多角色、配乐、音效的 AI Token 消耗"
+            android:title="消耗记录"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="false"
+            android:key="aiReadAloudBgmEnabled"
+            android:summary="AI 可按段落范围选择配乐"
+            android:title="智能配乐"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="aiReadAloudBgmManage"
+            android:summary="添加、分组、批量管理配乐和音效"
+            android:title="智能音频设置"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="aiReadAloudBgmPrompt"
+            android:summary="内置默认"
+            android:title="配乐提示词"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="aiReadAloudSoundEffectPrompt"
+            android:summary="内置默认"
+            android:title="音效提示词"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SeekBarPreference
+            android:defaultValue="100"
+            android:key="aiReadAloudBgmVolume"
+            android:summary="配乐总音量"
+            android:title="配乐音量"
+            app:MaxValue="100"
+            app:MinValue="0"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SeekBarPreference
+            android:defaultValue="80"
+            android:key="aiReadAloudSfxVolume"
+            android:summary="音效总音量"
+            android:title="音效音量"
+            app:MaxValue="100"
+            app:MinValue="0"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SwitchPreference
+            android:defaultValue="true"
+            android:key="readAloudSpeakerLoudnessEnabled"
+            android:summary="按发言人自动平衡旁白和角色响度"
+            android:title="发言人响度均衡"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SeekBarPreference
+            android:defaultValue="100"
+            android:key="readAloudTargetVoiceVolume"
+            android:summary="人声目标响度"
+            android:title="目标人声音量"
+            app:MaxValue="160"
+            app:MinValue="60"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SeekBarPreference
+            android:defaultValue="135"
+            android:key="readAloudMaxSpeakerGain"
+            android:summary="限制自动增益，避免爆音"
+            android:title="最大自动增益"
+            app:MaxValue="200"
+            app:MinValue="100"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.SeekBarPreference
+            android:defaultValue="110"
+            android:key="readAloudNarratorBaseGain"
+            android:summary="旁白默认基础增益"
+            android:title="旁白基础增益"
+            app:MaxValue="160"
+            app:MinValue="60"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="readAloudSpeakerLoudnessReset"
+            android:summary="暂无学习数据"
+            android:title="重置响度学习"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="appTtsEngine"
+            android:summary="TTS"
+            android:title="@string/speak_engine"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="readAloudSpeakerManage"
+            android:summary="创建分组，并从不同朗读引擎选择可复用发言人"
+            android:title="发言人管理"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="sysTtsConfig"
+            android:summary="@string/sys_tts_config_summary"
+            android:title="@string/sys_tts_config"
+            app:iconSpaceReserved="false" />
+
+    </io.legado.app.lib.prefs.PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>

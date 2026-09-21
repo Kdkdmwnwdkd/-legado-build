@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:layout_marginBottom="5dp"
+    android:padding="12dp" android:orientation="horizontal" android:gravity="center_vertical" android:baselineAligned="false">
+    <FrameLayout android:layout_width="64dp" android:layout_height="72dp">
+        <ImageView android:id="@+id/iv_preview" android:layout_width="match_parent" android:layout_height="match_parent"
+            android:scaleType="fitCenter" android:contentDescription="@string/reader_assets_preview" />
+        <TextView android:id="@+id/tv_preview" android:layout_width="match_parent" android:layout_height="match_parent"
+            android:gravity="center" android:textSize="24sp" android:textColor="@color/primaryText" android:visibility="gone" />
+    </FrameLayout>
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+        android:layout_marginStart="12dp" android:orientation="vertical">
+        <TextView android:id="@+id/tv_name" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textSize="16sp" android:maxLines="2" android:ellipsize="end" />
+        <TextView android:id="@+id/tv_info" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginTop="4dp" android:textSize="12sp" android:maxLines="2" android:ellipsize="end" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+            <TextView android:id="@+id/btn_use" android:layout_width="wrap_content" android:layout_height="48dp"
+                android:minWidth="64dp" android:paddingStart="12dp" android:paddingEnd="12dp" android:gravity="center" android:text="@string/reader_assets_use" />
+            <TextView android:id="@+id/btn_more" android:layout_width="wrap_content" android:layout_height="48dp"
+                android:minWidth="64dp" android:paddingStart="12dp" android:paddingEnd="12dp" android:gravity="center" android:text="@string/more" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

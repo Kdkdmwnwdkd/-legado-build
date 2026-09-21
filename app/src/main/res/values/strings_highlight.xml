@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="highlight_rule_manage">高亮规则</string>
+    <string name="highlight_rule_edit">编辑高亮规则</string>
+    <string name="highlight_rule_summary">共 %1$d 条规则，%2$d 条已启用 · 长按拖动排序</string>
+    <string name="highlight_rule_search_hint">搜索名称、分组或匹配内容</string>
+    <string name="highlight_rule_search_summary">找到 %1$d 条，共 %2$d 条规则</string>
+    <string name="highlight_rule_search_empty">没有匹配的高亮规则</string>
+    <string name="highlight_rule_empty">还没有高亮规则，可从下方添加或导入</string>
+    <string name="highlight_rule_loading">正在读取高亮规则…</string>
+    <string name="highlight_rule_load_failed">未能读取高亮规则，请稍后重新进入</string>
+    <string name="highlight_rule_export_all">导出全部规则（%1$d 条）</string>
+    <string name="highlight_rule_export_results">导出搜索结果（%1$d 条）</string>
+    <string name="highlight_rule_option_label">%1$s · %2$s</string>
+    <string name="highlight_rule_render_hint">原生正文支持文字上色、底色和字形；图片气泡、九宫格等复杂样式请使用 EPUB 渲染。</string>
+    <string name="highlight_rule_help">选择本地 .red 高亮规则文件导入。重复规则自动跳过，无法读取时会提示原因。\n\n全局规则用于所有书籍；单书规则绑定到导入时打开的书籍。没有打开书籍时，可稍后从“作用范围”绑定。Reeden 的书籍 ID 不会直接用作本地书籍 ID。\n\n规则按列表顺序叠加。只匹配正文文字，不改写原文、书签和朗读内容。标题规则允许匹配内容为空，表示整个标题。\n\n目前支持 RED01 格式。部分 .red 文件采用 Reeden 的 AES 加密封装，当前尚不支持读取，这不代表你或规则作者设置了密码。未附带的 Reeden 字体会使用当前阅读字体。</string>
+    <string name="highlight_rule_scope">作用范围</string>
+    <string name="highlight_rule_global">全局</string>
+    <string name="highlight_rule_this_book">仅本书</string>
+    <string name="highlight_rule_other_book">已绑定其他书籍</string>
+    <string name="highlight_rule_unbound">待绑定书籍</string>
+    <string name="highlight_rule_bind_hint">请先打开一本书，再绑定此规则</string>
+    <string name="highlight_rule_title">仅标题</string>
+    <string name="highlight_rule_regex">正则表达式</string>
+    <string name="highlight_rule_multiline">多行匹配（含跨行内容）</string>
+    <string name="highlight_rule_styled">应用于保留样式的 EPUB</string>
+    <string name="highlight_rule_keyword">匹配内容（标题规则可留空）</string>
+    <string name="highlight_rule_css">高级 CSS（留空使用基础样式）</string>
+    <string name="highlight_rule_group">分组</string>
+    <string name="highlight_rule_notice">兼容提示</string>
+    <string name="highlight_rule_has_notice">有兼容提示</string>
+    <string name="highlight_rule_preview">预览</string>
+    <string name="highlight_rule_sample">预览正文</string>
+    <string name="highlight_rule_sample_text">他望向窗外，说：“今天的风很轻。”\n她翻开《书》，写下「新的故事」与『旧日回忆』，在【此处】留下记号。</string>
+    <string name="highlight_rule_sample_title">第一章 新的故事</string>
+    <string name="highlight_rule_type">基础样式</string>
+    <string name="highlight_rule_color">基础颜色</string>
+</resources>

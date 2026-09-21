@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reader_assets_title">阅读素材</string>
+    <string name="reader_assets_hint">图片和字体可用于高亮规则、EPUB 页面。导入后保存在素材库，移动原文件不影响引用。</string>
+    <string name="reader_assets_search">搜索名称、格式</string>
+    <string name="reader_assets_all">全部</string>
+    <string name="reader_assets_images">图片</string>
+    <string name="reader_assets_fonts">字体</string>
+    <string name="reader_assets_folders">文件夹</string>
+    <string name="reader_assets_import">导入素材</string>
+    <string name="reader_assets_add_folder">添加文件夹</string>
+    <string name="reader_assets_folder_hint">浏览本地来源文件夹。点击文件可导入；只读取原文件，引用使用素材库中的副本。</string>
+    <string name="reader_assets_folder_empty">还没有来源文件夹\n添加本地文件夹，方便浏览和导入图片、字体。</string>
+    <string name="reader_assets_empty">还没有素材\n导入图片或字体，供高亮和 EPUB 页面使用。</string>
+    <string name="reader_assets_search_empty">没有找到匹配的素材</string>
+    <string name="reader_assets_loading">正在读取素材…</string>
+    <string name="reader_assets_busy">正在处理，请稍候…</string>
+    <string name="reader_assets_load_failed">未能读取素材，请从菜单重试。</string>
+    <string name="reader_assets_supported">图片：PNG / JPG / GIF / WebP\n字体：TTF / OTF / TTC / WOFF / WOFF2\n单个文件最大 64 MiB。WOFF 字体用于 EPUB 渲染。</string>
+    <string name="reader_assets_up">‹ 返回上一级</string>
+    <string name="reader_assets_use">引用</string>
+    <string name="reader_assets_select">选择</string>
+    <string name="reader_assets_font_select">选择字体</string>
+    <string name="reader_assets_font_label">字体</string>
+    <string name="reader_assets_background_label">背景图片</string>
+    <string name="reader_assets_image_select">选择背景图片</string>
+    <string name="reader_assets_follow_font">跟随阅读字体</string>
+    <string name="reader_assets_no_image">不使用背景图片</string>
+    <string name="reader_assets_preview">预览素材</string>
+    <string name="reader_assets_references">查看引用</string>
+    <string name="reader_assets_unused">尚未被已保存的高亮规则或 EPUB 页面引用。</string>
+    <string name="reader_assets_reference_block">此素材仍在使用，请先在对应规则或页面中更换。</string>
+    <string name="reader_assets_copy_url">复制图片地址</string>
+    <string name="reader_assets_copy_font">复制字体 CSS</string>
+    <string name="reader_assets_rename">重命名</string>
+    <string name="reader_assets_rename_hint">名称只用于管理，修改名称不会改变引用。</string>
+    <string name="reader_assets_remove_folder">移除来源文件夹</string>
+    <string name="reader_assets_remove_folder_hint">仅从列表移除此来源。原文件和已导入的素材都会保留。</string>
+    <string name="reader_assets_import_folder">导入当前文件夹</string>
+    <string name="reader_assets_import_folder_hint">导入当前文件夹内显示的图片和字体，不包含子文件夹。重复素材会自动合并。</string>
+    <string name="reader_assets_delete_hint">删除素材库中的副本，原文件不受影响。未保存草稿的引用不会计入检查。</string>
+    <string name="reader_assets_current">当前选择</string>
+    <string name="reader_assets_picker_label">%1$s：%2$s  ›</string>
+    <string name="reader_assets_font_tile_sample" translatable="false">字 Aa</string>
+    <string name="reader_assets_font_sample">春风有信，花开有期。\n\n阅读让每一页都有自己的模样。\n\nAa Bb Cc · 0123456789\n标点、字形与行间的留白。</string>
+    <string name="reader_assets_template_done">已加入草稿，可预览后保存。</string>
+    <string name="reader_assets_missing">素材已丢失，请重新导入</string>
+</resources>

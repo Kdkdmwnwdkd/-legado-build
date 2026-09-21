@@ -1,0 +1,263 @@
+name: Android Fast Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-release-abi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Grant gradlew permission
+        run: chmod +x gradlew
+
+      - name: Release Apk Sign
+        run: |
+          echo -e "\n" >> gradle.properties
+          echo RELEASE_KEY_ALIAS='${{ secrets.CI_DEBUG_KEY_ALIAS }}' >> gradle.properties
+          echo RELEASE_KEY_PASSWORD='${{ secrets.CI_DEBUG_KEY_PASSWORD }}' >> gradle.properties
+          echo RELEASE_STORE_PASSWORD='${{ secrets.CI_DEBUG_STORE_PASSWORD }}' >> gradle.properties
+          echo RELEASE_STORE_FILE='./key.jks' >> gradle.properties
+          echo ${{ secrets.CI_DEBUG_KEY_STORE_B64 }} | base64 --decode > $GITHUB_WORKSPACE/app/key.jks
+
+      - name: Prepare release version
+        id: version
+        run: |
+          VERSION_NAME="3.$(TZ=Asia/Shanghai date +%y.%m%d%H%M)"
+          VERSION_CODE=$(($(date -u +%s) / 60))
+          TAG_NAME="archive-v3-${VERSION_NAME}"
+          {
+            echo "name=${VERSION_NAME}"
+            echo "code=${VERSION_CODE}"
+            echo "tag=${TAG_NAME}"
+          } >> "$GITHUB_OUTPUT"
+
+          cat > release-notes.md <<'EOF'
+          阅读 Archive 发现套件与稳定性更新
+
+          本次更新继续完善发现页“套件”模式，并围绕顶栏动画、套件加载、书封显示、内存占用和导入导出稳定性做了一轮修复。
+
+          新增：
+          - 新增发现页“套件”模式，可在“界面设置 - 发现与订阅 - 发现页模式”中选择。
+          - 新增发现套件管理页，支持新建套件、设为当前套件、重命名、设置别名和删除套件。
+          - 新增套件详情页，支持给单个套件添加、编辑、删除控件。
+          - 新增随机推荐、Tag 按键栏、横排滑动、排行榜列表和瀑布流等套件控件。
+          - 新增套件透明度倍率设置，用于在主题透明度基础上单独增强套件卡片不透明度。
+          - 新增新版发现页记住上次选中的 Tag，重新进入后不再每次回到默认分类。
+
+          修复：
+          - 修复套件编辑页拖拽排序抽搐、拖不动的问题。
+          - 修复套件编辑页层级标题重复、进入详情后仍像停留在上一层的问题。
+          - 修复套件空状态按钮文字不居中的问题。
+          - 修复书封预览卡片打开后系统返回直接退出页面的问题，现在优先关闭预览卡片。
+          - 修复发现和搜索进入详情页时封面重复加载导致闪动的问题。
+          - 修复详情页进入时主题色先变化再恢复的问题。
+          - 修复套件卡片不透明度没有受到倍率影响的问题。
+          - 修复小尺寸阅读背景取色时可能越界崩溃的问题。
+          - 修复发现套件加载取消被吞掉，切换套件后旧任务可能继续写回状态的问题。
+          - 修复 BGM/SFX 音频包导出大文件时内存占用过高的问题。
+          - 修复音频包导入读取 config.yaml 无上限的问题。
+          - 修复书库云同步 gzip 解压无膨胀上限的问题。
+          - 修复 PDF 页面导出为图片流时额外复制大图片数据的问题。
+          - 修复外部 EPUB 模板资源过大时可能导致内存压力过高的问题。
+          - 修复内置阅读背景频繁切换时 assets 输入流未正确关闭的问题。
+
+          调整：
+          - 调整常规顶栏筛选展开动画，使用更柔和的曲线、淡入和轻微位移，减少展开生硬感。
+          - 调整发现套件首页搜索栏、三点菜单和套件入口样式，使其更贴近当前主题风格。
+          - 调整发现套件编辑流程，按“套件列表 - 套件详情 - 控件编辑”分层管理。
+          - 调整套件控件书封裁剪、圆角和列表视觉风格，提升控件整体一致性。
+          - 调整排行榜和横排控件加载逻辑，减少滑动时内容跳动。
+          - 调整备份恢复入库方式，降低大量数据恢复时的内存峰值。
+          EOF
+
+      - name: Build arm64 release APK
+        run: |
+          rm -rf release-apks app/build/outputs/apk/app/release
+          mkdir -p release-apks
+          ./gradlew :app:clean :app:assembleAppRelease \
+            -Pabi=arm64-v8a \
+            -PVERSION_NAME="${{ steps.version.outputs.name }}" \
+            -PVERSION_CODE="${{ steps.version.outputs.code }}" \
+            --stacktrace
+          APK_PATH=$(find app/build/outputs/apk/app/release -type f -name '*.apk' | head -n 1)
+          cp "$APK_PATH" "release-apks/legado-arm64-v8a_app_${{ steps.version.outputs.name }}_${{ steps.version.outputs.code }}.apk"
+
+      - name: Build armeabi-v7a release APK
+        run: |
+          rm -rf app/build/outputs/apk/app/release
+          ./gradlew :app:clean :app:assembleAppRelease \
+            -Pabi=armeabi-v7a \
+            -PVERSION_NAME="${{ steps.version.outputs.name }}" \
+            -PVERSION_CODE="${{ steps.version.outputs.code }}" \
+            --stacktrace
+          APK_PATH=$(find app/build/outputs/apk/app/release -type f -name '*.apk' | head -n 1)
+          cp "$APK_PATH" "release-apks/legado-armeabi-v7a_app_${{ steps.version.outputs.name }}_${{ steps.version.outputs.code }}.apk"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: legado-release-abi
+          path: release-apks/*.apk
+
+      - name: Clear existing versioned release APKs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          RELEASE_ID=$(gh api repos/${{ github.repository }}/releases/tags/${{ steps.version.outputs.tag }} --jq '.id' 2>/dev/null || true)
+          if [ -n "$RELEASE_ID" ]; then
+            gh api repos/${{ github.repository }}/releases/$RELEASE_ID/assets --paginate \
+              --jq '.[] | select(.name | endswith(".apk")) | .id' \
+              | while read -r ASSET_ID; do
+                  gh api -X DELETE repos/${{ github.repository }}/releases/assets/$ASSET_ID
+                done
+          fi
+
+      - name: Publish versioned release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: 阅读 Archive 发现套件与稳定性更新
+          prerelease: false
+          make_latest: true
+          generate_release_notes: false
+          files: release-apks/*.apk
+          body_path: release-notes.md
+
+      - name: Refresh app update channel
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CHANNEL_TAG="latest-arm64-release"
+          RELEASE_ID=$(gh api repos/${{ github.repository }}/releases/tags/$CHANNEL_TAG --jq '.id' 2>/dev/null || true)
+          if [ -n "$RELEASE_ID" ]; then
+            gh api repos/${{ github.repository }}/releases/$RELEASE_ID/assets --paginate \
+              --jq '.[] | select(.name | endswith(".apk")) | .id' \
+              | while read -r ASSET_ID; do
+                  gh api -X DELETE repos/${{ github.repository }}/releases/assets/$ASSET_ID
+                done
+            gh release upload "$CHANNEL_TAG" release-apks/*.apk --clobber
+            gh release edit "$CHANNEL_TAG" \
+              --title "阅读 Archive 更新通道" \
+              --notes-file release-notes.md
+          else
+            gh release create "$CHANNEL_TAG" release-apks/*.apk \
+              --title "阅读 Archive 更新通道" \
+              --notes-file release-notes.md
+          fi
+
+      - name: Sync release to Gitee
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+        run: |
+          if [ -z "$GITEE_TOKEN" ]; then
+            echo "GITEE_TOKEN is not configured, skip Gitee release sync."
+            exit 0
+          fi
+
+          set +e
+          API="https://gitee.com/api/v5/repos/zziji/legado"
+          TAG_NAME="${{ steps.version.outputs.tag }}"
+          RELEASE_NAME="阅读 Archive 发现套件与稳定性更新"
+          CHANNEL_TAG="latest-arm64-release"
+          TOKEN_QUERY="$(python3 -c 'import os, urllib.parse; print(urllib.parse.urlencode({"access_token": os.environ["GITEE_TOKEN"]}))')"
+
+          if ! git rev-parse -q --verify "refs/tags/$TAG_NAME" >/dev/null; then
+            git fetch origin "refs/tags/$TAG_NAME:refs/tags/$TAG_NAME"
+          fi
+
+          GITEE_REMOTE="https://oauth2:${GITEE_TOKEN}@gitee.com/zziji/legado.git"
+          if git ls-remote --exit-code --tags "$GITEE_REMOTE" "refs/tags/$TAG_NAME" >/dev/null 2>&1; then
+            echo "Gitee tag already exists: $TAG_NAME"
+          else
+            git push "$GITEE_REMOTE" "refs/tags/$TAG_NAME:refs/tags/$TAG_NAME"
+            echo "Pushed Gitee tag: $TAG_NAME"
+          fi
+
+          find_release_id() {
+            curl -fsS -G \
+              --data-urlencode "access_token=$GITEE_TOKEN" \
+              "$API/releases/tags/$1" \
+              | python3 -c 'import json,sys; print(json.load(sys.stdin).get("id", ""))'
+          }
+
+          upsert_release() {
+            local tag_name="$1"
+            local release_name="$2"
+            local release_id
+            release_id="$(find_release_id "$tag_name" 2>/dev/null || true)"
+            if [ -n "$release_id" ]; then
+              curl -fsS -X PATCH "$API/releases/$release_id" \
+                --data-urlencode "access_token=$GITEE_TOKEN" \
+                --data-urlencode "tag_name=$tag_name" \
+                --data-urlencode "name=$release_name" \
+                --data-urlencode "body=$(cat release-notes.md)" \
+                --data-urlencode "prerelease=false" >/dev/null
+            else
+              release_id="$(curl -fsS -X POST "$API/releases" \
+                --data-urlencode "access_token=$GITEE_TOKEN" \
+                --data-urlencode "tag_name=$tag_name" \
+                --data-urlencode "target_commitish=$tag_name" \
+                --data-urlencode "name=$release_name" \
+                --data-urlencode "body=$(cat release-notes.md)" \
+                --data-urlencode "prerelease=false" \
+                | python3 -c 'import json,sys; print(json.load(sys.stdin).get("id", ""))')"
+            fi
+            echo "$release_id"
+          }
+
+          upload_apks() {
+            local release_id="$1"
+            if [ -z "$release_id" ]; then
+              return 1
+            fi
+            curl -fsS -G \
+              --data-urlencode "access_token=$GITEE_TOKEN" \
+              "$API/releases/$release_id/attach_files" \
+              | python3 -c 'import json,sys; data=json.load(sys.stdin); [print(item.get("id")) for item in data if str(item.get("name", "")).endswith(".apk")]' \
+              | while read -r attach_id; do
+                  if [ -n "$attach_id" ]; then
+                    curl -fsS -X DELETE "$API/releases/$release_id/attach_files/$attach_id?$TOKEN_QUERY" >/dev/null
+                  fi
+                done
+            for apk in release-apks/*.apk; do
+              curl -fsS -X POST "$API/releases/$release_id/attach_files" \
+                -F "access_token=$GITEE_TOKEN" \
+                -F "file=@$apk" >/dev/null || return 1
+            done
+          }
+
+          SYNC_FAILED=0
+          VERSIONED_ID="$(upsert_release "$TAG_NAME" "$RELEASE_NAME")" || SYNC_FAILED=1
+          upload_apks "$VERSIONED_ID" || SYNC_FAILED=1
+
+          if git ls-remote --exit-code --tags "$GITEE_REMOTE" "refs/tags/$CHANNEL_TAG" >/dev/null 2>&1; then
+            echo "Gitee update channel tag already exists: $CHANNEL_TAG"
+          else
+            git push "$GITEE_REMOTE" "HEAD:refs/tags/$CHANNEL_TAG"
+            echo "Pushed Gitee update channel tag: $CHANNEL_TAG"
+          fi
+
+          CHANNEL_ID="$(upsert_release "$CHANNEL_TAG" "阅读Shimmer 更新通道")" || SYNC_FAILED=1
+          upload_apks "$CHANNEL_ID" || SYNC_FAILED=1
+
+          if [ "$SYNC_FAILED" -ne 0 ]; then
+            echo "Gitee release sync failed, GitHub release has already been published."
+            exit 0
+          fi
+          echo "Gitee release sync finished."

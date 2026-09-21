@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Search index for the Compose network settings page. Keys match its items. -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference android:key="networkDnsConfigV1" android:title="启用 DoH" android:summary="DNS over HTTPS 加密解析，按功能和域名分流" />
+    <Preference android:key="dns_provider" android:title="DoH 服务" android:summary="阿里 DNS、腾讯 DNSPod、Cloudflare、Google、自定义" />
+    <Preference android:key="dns_custom" android:title="服务地址与启动 IP" android:summary="自定义 HTTPS 查询地址与 bootstrap" />
+    <Preference android:key="dns_restart" android:title="重启并应用网络设置" />
+    <Preference android:key="dns_scope_reading" android:title="书源、搜索与正文 DNS" />
+    <Preference android:key="dns_scope_image" android:title="封面、漫画与正文图片 DNS" />
+    <Preference android:key="dns_scope_ai" android:title="AI、MCP 与 AI 工具 DNS" />
+    <Preference android:key="dns_scope_media" android:title="HTTP 朗读与音视频 DNS" />
+    <Preference android:key="dns_scope_websocket" android:title="脚本 WebSocket DNS" />
+    <Preference android:key="dns_scope_sync" android:title="WebDAV 与云同步 DNS" />
+    <Preference android:key="dns_scope_import" android:title="在线导入 DNS" />
+    <Preference android:key="dns_scope_relay" android:title="远程分享与中继 DNS" />
+    <Preference android:key="dns_scope_other" android:title="其它应用请求 DNS" />
+    <Preference android:key="dns_rule_add" android:title="域名例外规则" android:summary="精确域名、通配子域名、选择 DoH 或系统 DNS" />
+    <Preference android:key="dns_test_host" android:title="DNS 测试域名" />
+    <Preference android:key="dns_benchmark" android:title="DNS 测速" android:summary="解析成功率、首次耗时与中位数" />
+    <Preference android:key="dns_ipv6" android:title="查询 IPv6 地址" />
+    <Preference android:key="dns_local" android:title="局域网名称使用系统 DNS" />
+    <Preference android:key="dns_fallback" android:title="DoH 失败时回退系统 DNS" />
+    <Preference android:key="customHosts" android:title="@string/custom_hosts" android:summary="@string/custom_hosts_summary" />
+    <Preference android:key="Cronet" android:title="优先使用 Cronet" android:summary="@string/pref_cronet_summary" />
+    <Preference android:key="dns_help" android:title="网络与 DNS 覆盖范围" android:summary="WebView、代理、书源指定 IP 和测速说明" />
+</PreferenceScreen>

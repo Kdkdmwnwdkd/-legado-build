@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reader_template_preview_title">模板预览</string>
+    <string name="reader_template_preview_position">当前章节：第 %1$d / %2$d 页</string>
+    <string name="reader_template_preview_loading">正在排版当前章节…</string>
+    <string name="reader_template_preview_previous">上一页</string>
+    <string name="reader_template_preview_next">下一页</string>
+    <string name="reader_template_preview_close">关闭</string>
+    <string name="reader_template_preview_session_missing">阅读会话已失效，请重新打开正文后再预览。</string>
+</resources>

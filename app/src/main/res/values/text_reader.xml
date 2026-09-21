@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="text_read_engine">普通正文渲染方式</string>
+    <string name="text_read_engine_summary">原生渲染开销较低；EPUB 渲染使用独立排版，跳过段落规则并限制部分阅读功能。目录沿用原书籍。首次排版、长章节和图片较多时可能更慢，效果取决于设备与系统 WebView。出现问题可切回原生。</string>
+    <string name="native_layout_profile">原生排版</string>
+    <string name="epub_layout_profile">EPUB 排版</string>
+    <string name="native_reader_feature_only">此功能仅支持原生正文渲染</string>
+    <string-array name="text_read_engine_entries">
+        <item>原生渲染</item>
+        <item>EPUB 渲染</item>
+    </string-array>
+    <string-array name="text_read_engine_values">
+        <item>native</item>
+        <item>epub</item>
+    </string-array>
+</resources>

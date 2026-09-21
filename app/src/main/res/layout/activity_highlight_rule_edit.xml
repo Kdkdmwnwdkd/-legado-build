@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+    <io.legado.app.ui.widget.TitleBar android:id="@+id/title_bar" android:layout_width="match_parent" android:layout_height="wrap_content"
+        app:contentInsetStartWithNavigation="0dp" app:displayHomeAsUp="true" app:title="@string/highlight_rule_edit" />
+    <io.legado.app.ui.widget.NoChildScrollNestedScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <LinearLayout android:id="@+id/ll_content" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="10dp">
+            <io.legado.app.ui.widget.text.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/name">
+                <io.legado.app.lib.theme.view.ThemeEditText android:id="@+id/et_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLength="512" android:inputType="text" android:maxLines="1" />
+            </io.legado.app.ui.widget.text.TextInputLayout>
+            <io.legado.app.ui.widget.text.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/highlight_rule_group">
+                <io.legado.app.lib.theme.view.ThemeEditText android:id="@+id/et_group" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLength="512" android:inputType="text" android:maxLines="1" />
+            </io.legado.app.ui.widget.text.TextInputLayout>
+            <io.legado.app.ui.widget.text.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/highlight_rule_keyword">
+                <io.legado.app.lib.theme.view.ThemeEditText android:id="@+id/et_keyword" android:layout_width="match_parent" android:layout_height="wrap_content" android:maxLength="16384" android:inputType="textMultiLine|textNoSuggestions" android:maxLines="6" />
+            </io.legado.app.ui.widget.text.TextInputLayout>
+            <io.legado.app.lib.theme.view.ThemeCheckBox android:id="@+id/cb_enabled" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/enable" />
+            <io.legado.app.lib.theme.view.ThemeCheckBox android:id="@+id/cb_global" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/highlight_rule_global" />
+            <io.legado.app.lib.theme.view.ThemeCheckBox android:id="@+id/cb_regex" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/highlight_rule_regex" />
+            <io.legado.app.lib.theme.view.ThemeCheckBox android:id="@+id/cb_multiline" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/highlight_rule_multiline" />
+            <io.legado.app.lib.theme.view.ThemeCheckBox android:id="@+id/cb_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/highlight_rule_title" />
+            <io.legado.app.lib.theme.view.ThemeCheckBox android:id="@+id/cb_styled" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:text="@string/highlight_rule_styled" />
+            <TextView android:id="@+id/btn_type" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:gravity="center_vertical" android:padding="12dp" android:text="@string/highlight_rule_type" />
+            <TextView android:id="@+id/btn_color" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:gravity="center_vertical" android:padding="12dp" android:text="@string/highlight_rule_color" />
+            <TextView android:id="@+id/btn_font" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:gravity="center_vertical" android:padding="12dp" android:text="@string/reader_assets_font_label" />
+            <TextView android:id="@+id/btn_image" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:gravity="center_vertical" android:padding="12dp" android:text="@string/reader_assets_background_label" />
+            <io.legado.app.ui.widget.text.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/highlight_rule_css">
+                <io.legado.app.lib.theme.view.ThemeEditText android:id="@+id/et_css" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textMultiLine|textNoSuggestions" android:maxLength="32768" android:maxLines="14" />
+            </io.legado.app.ui.widget.text.TextInputLayout>
+            <io.legado.app.ui.widget.text.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/highlight_rule_sample">
+                <io.legado.app.lib.theme.view.ThemeEditText android:id="@+id/et_sample" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textMultiLine|textNoSuggestions" android:maxLength="4096" android:maxLines="5" />
+            </io.legado.app.ui.widget.text.TextInputLayout>
+            <TextView android:id="@+id/btn_preview" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:gravity="center" android:text="@string/highlight_rule_preview" />
+            <FrameLayout android:layout_width="match_parent" android:layout_height="240dp">
+                <WebView android:id="@+id/preview" android:layout_width="match_parent" android:layout_height="match_parent" android:importantForAutofill="noExcludeDescendants" />
+            </FrameLayout>
+        </LinearLayout>
+    </io.legado.app.ui.widget.NoChildScrollNestedScrollView>
+</LinearLayout>

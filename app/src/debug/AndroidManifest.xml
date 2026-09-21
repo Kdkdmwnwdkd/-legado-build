@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity
+            android:name="io.legado.app.help.webView.WebViewDialogLifecycleTestActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.Light" />
+        <activity
+            android:name="io.legado.app.ui.book.read.epub.EpubDirectWebResourceTestActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.Light" />
+    </application>
+</manifest>

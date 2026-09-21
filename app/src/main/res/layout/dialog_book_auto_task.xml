@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:id="@+id/ll_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <io.legado.app.lib.theme.view.ThemeSwitch
+            android:id="@+id/switch_enable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="@string/auto_task_enable"
+            android:textColor="@color/primaryText"
+            android:textSize="16sp"
+            app:switchPadding="16dp" />
+
+        <io.legado.app.lib.theme.view.ThemeSwitch
+            android:id="@+id/switch_notify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="@string/auto_task_notify_switch"
+            android:textColor="@color/primaryText"
+            android:textSize="16sp"
+            app:switchPadding="16dp" />
+
+        <io.legado.app.lib.theme.view.ThemeSwitch
+            android:id="@+id/switch_cache"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="@string/auto_task_cache_switch"
+            android:textColor="@color/primaryText"
+            android:textSize="16sp"
+            app:switchPadding="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:labelFor="@id/edit_interval"
+            android:text="@string/auto_task_interval"
+            android:textColor="@color/primaryText"
+            android:textSize="16sp" />
+
+        <io.legado.app.ui.widget.text.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxBackgroundMode="none"
+            app:hintEnabled="false"
+            app:suffixText="@string/time_hour">
+
+            <io.legado.app.lib.theme.view.ThemeEditText
+                android:id="@+id/edit_interval"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="1"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:maxLength="4"
+                android:minHeight="48dp"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:textColor="@color/primaryText"
+                android:textSize="16sp" />
+        </io.legado.app.ui.widget.text.TextInputLayout>
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <io.legado.app.lib.prefs.IconListPreference
+        android:defaultValue="ic_launcher"
+        android:entries="@array/icon_names"
+        android:entryValues="@array/icons"
+        android:key="launcherIcon"
+        android:summary="@string/change_icon_summary"
+        android:title="@string/change_icon"
+        app:iconSpaceReserved="false"
+        app:icons="@array/icons" />
+
+    <io.legado.app.lib.prefs.SwitchPreference
+        android:defaultValue="false"
+        android:key="mainTransparentStatusBar"
+        android:summary="@string/main_status_bar_immersion"
+        android:title="@string/main_immersion_status_bar"
+        app:iconSpaceReserved="false" />
+
+    <io.legado.app.lib.prefs.SwitchPreference
+        android:defaultValue="true"
+        android:key="immersiveManageBar"
+        android:summary="@string/manage_bar_immersion_summary"
+        android:title="@string/manage_bar_immersion"
+        app:iconSpaceReserved="false" />
+
+    <io.legado.app.lib.prefs.Preference
+        android:key="theme_manage"
+        android:summary="@string/theme_list_summary"
+        android:title="@string/theme_list"
+        app:iconSpaceReserved="false" />
+
+    <io.legado.app.lib.prefs.Preference
+        android:key="navigation_bar_manage"
+        android:summary="@string/navigation_bar_manage_summary"
+        android:title="@string/navigation_bar_manage"
+        app:iconSpaceReserved="false" />
+
+    <io.legado.app.lib.prefs.Preference
+        android:key="discoverySubscriptionSettings"
+        android:summary="@string/discovery_subscription_settings_summary"
+        android:title="@string/discovery_subscription_settings_title"
+        app:iconSpaceReserved="false" />
+
+    <io.legado.app.lib.prefs.Preference
+        android:key="top_bar_manage"
+        android:summary="@string/top_bar_manage_summary"
+        android:title="@string/top_bar_manage"
+        app:iconSpaceReserved="false" />
+
+    <io.legado.app.lib.prefs.Preference
+        android:key="book_info_manage"
+        android:summary="@string/book_info_manage_summary"
+        android:title="@string/book_info_manage"
+        app:iconSpaceReserved="false" />
+
+    <io.legado.app.lib.prefs.Preference
+        android:key="bubble_manage"
+        android:summary="@string/bubble_manage_summary"
+        android:title="@string/bubble_manage"
+        app:iconSpaceReserved="false" />
+
+    <io.legado.app.lib.prefs.Preference
+        android:key="coverConfig"
+        android:summary="@string/cover_config_summary"
+        android:title="@string/cover_config"
+        app:iconSpaceReserved="false" />
+
+</androidx.preference.PreferenceScreen>
