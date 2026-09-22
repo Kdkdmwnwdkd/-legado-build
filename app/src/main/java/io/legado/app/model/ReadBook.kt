@@ -750,8 +750,10 @@ object ReadBook : CoroutineScope by MainScope() {
                 } else {
                     readAloud(!BaseReadAloudService.pause)
                 }
-            } else if (!fromReadAloud && BaseReadAloudService.isRun && it.isCompleted && pageChanged) {
+            } else if (!fromReadAloud && BaseReadAloudService.isRun && it.isCompleted) {
                 // 听书跟随翻页：用户手动翻页时，听书自动跳到当前页继续朗读
+                // 不依赖 pageChanged 参数，因为跨章节翻页时 pageChanged 为 false
+                // isReadAloudUserNavigationActive 确保只在用户主动翻页后 1.5 秒内触发
                 readAloud(play = !BaseReadAloudService.pause, startPos = 0)
             }
         }
