@@ -65,6 +65,11 @@ import io.legado.app.model.VideoPlay.VIDEO_PREF_NAME
 /**
  * 备份
  */
+/**
+ * 本地备份成功但云端备份失败
+ */
+class CloudBackupFailedException(val error: String) : Exception(error)
+
 object Backup {
 
     val backupPath: String by lazy {
@@ -295,6 +300,8 @@ object Backup {
             zipFileName
         }
         var backupSuccess = false
+        var cloudBackupSuccess = true
+        var cloudBackupError: String? = null
         if (ZipUtils.zipFiles(paths, zipFilePath)) {
             when {
                 path.isNullOrBlank() -> {
@@ -309,23 +316,30 @@ object Backup {
                     copyBackup(File(path), backupFileName)
                 }
             }
+            // 本地备份已成功
+            backupSuccess = true
             if (uploadCloud) {
                 val cloudType = if (uploadWebDavFallback) CloudStorageType.WEBDAV else AppCloudStorage.type
                 AppLog.put("Upload cloud backup: ${cloudType.name} $zipFileName")
-                if (uploadWebDavFallback) {
-                    AppCloudStorage.backupToWebDav(zipFileName)
-                } else {
-                    AppCloudStorage.backup(zipFileName)
+                try {
+                    if (uploadWebDavFallback) {
+                        AppCloudStorage.backupToWebDav(zipFileName)
+                    } else {
+                        AppCloudStorage.backup(zipFileName)
+                    }
+                    AppLog.put("Cloud backup finished: ${cloudType.name} $zipFileName")
+                } catch (e: Throwable) {
+                    cloudBackupSuccess = false
+                    cloudBackupError = e.localizedMessage
+                    AppLog.put("云端备份失败，本地备份已成功\n${e.localizedMessage}", e)
                 }
-                AppLog.put("Cloud backup finished: ${cloudType.name} $zipFileName")
             }
-            backupSuccess = true
         } else {
             throw NoStackTraceException("创建备份压缩包失败")
         }
         if (backupSuccess) {
             LocalConfig.lastBackup = System.currentTimeMillis()
-            LogUtils.d(TAG, "备份完成")
+            LogUtils.d(TAG, "备份完成 local=$backupSuccess cloud=$cloudBackupSuccess")
         }
         FileUtils.delete(backupPath)
         FileUtils.delete(zipFilePath)
@@ -337,7 +351,15 @@ object Backup {
                 appCtx.externalFiles.getFile("bg", it)
             }
         }.let {
-            AppCloudStorage.upBgs(it.toTypedArray())
+            try {
+                AppCloudStorage.upBgs(it.toTypedArray())
+            } catch (e: Throwable) {
+                AppLog.put("上传背景图失败\n${e.localizedMessage}", e)
+            }
+        }
+        // 本地备份成功但云端失败时，抛出可识别的异常让 UI 显示正确信息
+        if (backupSuccess && !cloudBackupSuccess && uploadCloud) {
+            throw CloudBackupFailedException(cloudBackupError ?: "unknown")
         }
     }
 

@@ -22,6 +22,7 @@ import io.legado.app.help.config.LocalConfig
 import io.legado.app.help.coroutine.Coroutine
 import io.legado.app.help.storage.Backup
 import io.legado.app.help.storage.BackupConfig
+import io.legado.app.help.storage.CloudBackupFailedException
 import io.legado.app.help.storage.ImportOldData
 import io.legado.app.help.storage.Restore
 import io.legado.app.lib.permission.Permissions
@@ -557,6 +558,15 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
                 activeBackupPath = backupPath
                 Backup.backupLocked(requireContext(), backupPath, uploadCloud, uploadWebDavFallback)
                 appCtx.toastOnUi(R.string.backup_success)
+            } catch (e: CloudBackupFailedException) {
+                ensureActive()
+                AppLog.put("云端备份失败，本地备份已成功\n${e.localizedMessage}", e)
+                appCtx.toastOnUi(
+                    appCtx.getString(
+                        R.string.backup_local_success_cloud_fail,
+                        e.localizedMessage
+                    )
+                )
             } catch (e: S3CapacityFullException) {
                 ensureActive()
                 if (showS3FullFallbackAfterFailure(backupPath)) {

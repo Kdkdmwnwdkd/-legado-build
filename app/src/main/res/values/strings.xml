@@ -133,6 +133,7 @@
     <string name="restore_message">Restoring the bookshelf data will overwrite the current Bookshelf.</string>
     <string name="backup_success">Backup succeed</string>
     <string name="backup_fail">Backup failed\n%s</string>
+    <string name="backup_local_success_cloud_fail">Local backup succeed, cloud backup failed\n%s</string>
     <string name="on_restore">Restoring</string>
     <string name="restore_success">Restore succeed</string>
     <string name="restore_fail">Backup failed</string>
