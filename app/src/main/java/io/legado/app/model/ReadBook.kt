@@ -750,6 +750,9 @@ object ReadBook : CoroutineScope by MainScope() {
                 } else {
                     readAloud(!BaseReadAloudService.pause)
                 }
+            } else if (!fromReadAloud && BaseReadAloudService.isRun && it.isCompleted && pageChanged) {
+                // 听书跟随翻页：用户手动翻页时，听书自动跳到当前页继续朗读
+                readAloud(play = !BaseReadAloudService.pause, startPos = 0)
             }
         }
         upReadTime()
