@@ -2,7 +2,7 @@
 <resources>
     <!--App-->
     <string name="app_name">阅读Shimmer</string>
-    <string name="app_launcher_name">阅读</string>
+    <string name="app_launcher_name">Shimmer</string>
     <string name="app_name_a">阅读Shimmer·A</string>
     <string name="app_name_s" translatable="false">阅读ShimmerPlus</string>
     <string name="receiving_shared_label">阅读Shimmer·搜索</string>

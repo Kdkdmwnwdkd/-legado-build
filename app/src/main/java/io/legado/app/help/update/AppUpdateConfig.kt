@@ -23,10 +23,10 @@ object AppUpdateConfig {
     private const val URL_PLACEHOLDER = "\${url}"
 
     var strategy: String
-        get() = when (appCtx.getPrefString(PreferKey.updateSourceStrategy, STRATEGY_GITEE_THEN_GITHUB)) {
+        get() = when (appCtx.getPrefString(PreferKey.updateSourceStrategy, STRATEGY_GITHUB_ONLY)) {
             STRATEGY_GITEE_ONLY -> STRATEGY_GITEE_ONLY
             STRATEGY_GITHUB_ONLY -> STRATEGY_GITHUB_ONLY
-            else -> STRATEGY_GITEE_THEN_GITHUB
+            else -> STRATEGY_GITHUB_ONLY
         }
         set(value) {
             appCtx.putPrefString(
@@ -34,7 +34,7 @@ object AppUpdateConfig {
                 when (value) {
                     STRATEGY_GITEE_ONLY -> STRATEGY_GITEE_ONLY
                     STRATEGY_GITHUB_ONLY -> STRATEGY_GITHUB_ONLY
-                    else -> STRATEGY_GITEE_THEN_GITHUB
+                    else -> STRATEGY_GITHUB_ONLY
                 }
             )
         }
@@ -117,7 +117,7 @@ object AppUpdateConfig {
         return when (strategy) {
             STRATEGY_GITEE_ONLY -> "只使用 Gitee"
             STRATEGY_GITHUB_ONLY -> "只使用 GitHub"
-            else -> "Gitee 优先，失败后 GitHub"
+            else -> "只使用 GitHub"
         }
     }
 

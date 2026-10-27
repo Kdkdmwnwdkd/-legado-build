@@ -9,24 +9,22 @@ import io.legado.app.help.http.okHttpClient
 import io.legado.app.help.http.text
 import io.legado.app.utils.GSON
 import io.legado.app.utils.fromJsonArray
-import io.legado.app.utils.fromJsonObject
 import kotlinx.coroutines.CoroutineScope
 
 @Keep
 @Suppress("unused")
 object AppUpdateGitHub : AppUpdate.AppUpdateInterface {
 
+    /** 本产品唯一的发布仓库。换仓库只改这一处。 */
+    private const val RELEASES_URL =
+        "https://api.github.com/repos/Kdkdmwnwdkd/-legado-build/releases?per_page=10"
+
     private val checkVariant: AppVariant
         get() = AppVariant.OFFICIAL
 
     private suspend fun getLatestRelease(): List<AppReleaseInfo> {
-        val lastReleaseUrl = if (checkVariant.isBeta()) {
-            "https://api.github.com/repos/Kdkdmwnwdkd/-legado-build/releases/tags/latest-arm64-debug"
-        } else {
-            "https://api.github.com/repos/Kdkdmwnwdkd/-legado-build/releases?per_page=10"
-        }
         val res = okHttpClient.newCallResponse {
-            url(AppUpdateConfig.applyGithubProxy(lastReleaseUrl))
+            url(AppUpdateConfig.applyGithubProxy(RELEASES_URL))
         }
         if (!res.isSuccessful) {
             throw NoStackTraceException("获取新版本出错(${res.code})")
@@ -35,20 +33,12 @@ object AppUpdateGitHub : AppUpdate.AppUpdateInterface {
         if (body.isBlank()) {
             throw NoStackTraceException("获取新版本出错")
         }
-        if (!checkVariant.isBeta()) {
-            return GSON.fromJsonArray<GithubRelease>(body)
-                .getOrElse {
-                    throw NoStackTraceException("获取新版本出错" + it.localizedMessage)
-                }
-                .filterNot { it.isPreRelease }
-                .flatMap { it.gitReleaseToAppReleaseInfo() }
-                .sortedByDescending { it.createdAt }
-        }
-        return GSON.fromJsonObject<GithubRelease>(body)
+        return GSON.fromJsonArray<GithubRelease>(body)
             .getOrElse {
                 throw NoStackTraceException("获取新版本出错" + it.localizedMessage)
             }
-            .gitReleaseToAppReleaseInfo()
+            .filterNot { it.isPreRelease }
+            .flatMap { it.gitReleaseToAppReleaseInfo() }
             .sortedByDescending { it.createdAt }
     }
 

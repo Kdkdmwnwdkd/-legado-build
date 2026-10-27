@@ -50,8 +50,6 @@ object UpdateAcceleratorDialog {
 
     fun show(fragment: Fragment, onChanged: () -> Unit) {
         val strategies = listOf(
-            StrategyOption("Gitee 优先，失败后 GitHub", AppUpdateConfig.STRATEGY_GITEE_THEN_GITHUB),
-            StrategyOption("只使用 Gitee", AppUpdateConfig.STRATEGY_GITEE_ONLY),
             StrategyOption("只使用 GitHub", AppUpdateConfig.STRATEGY_GITHUB_ONLY)
         )
         val initialStrategyIndex = strategies.indexOfFirst {

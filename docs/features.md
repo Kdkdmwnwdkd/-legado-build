@@ -2,7 +2,7 @@
 
 阅读 Archive 是基于 Legado / 阅读 Sigma 分支继续开发的 Android 阅读器。支持自行添加书源、阅读本地书籍，并提供书架管理、听书、主题、AI 和自动任务等功能。应用不内置书籍内容，书源与阅读内容由使用者自行添加。
 
-本文介绍第十四版功能。安装包见 [GitHub Releases](https://github.com/Kdkdmwnwdkd/-legado-build/releases) 和 [Gitee Releases](https://gitee.com/zziji/legado/releases)。
+本文介绍第十四版功能。安装包见 [GitHub Releases](https://github.com/Kdkdmwnwdkd/-legado-build/releases)。
 
 ## 阅读与书籍管理
 

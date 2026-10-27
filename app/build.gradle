@@ -22,18 +22,13 @@ def name = "legado"
 def version = project.hasProperty("VERSION_NAME")
         ? project.property("VERSION_NAME").toString()
         : "3." + releaseTime()
-def gitCommitsText = ""
-try {
-    def gitRevList = ['git', 'rev-list', 'HEAD', '--count'].execute(null, rootDir)
-    gitRevList.waitFor()
-    gitCommitsText = gitRevList.in.text.trim()
-} catch (Throwable ignored) {
-    gitCommitsText = ""
-}
-def gitCommits = gitCommitsText?.isInteger() ? Integer.parseInt(gitCommitsText) : 0
+// 版本号统一用 epoch 分钟，与 CI 保持一致。
+// 不要再用「提交数」：本仓库历史是整包导入，提交数只有个位数，
+// 会把版本号压到 1 万附近，导致应用内更新判断失效。
+// 注意用 intdiv：Groovy 里 long/long 会得到 BigDecimal，不能直接喂给 int。
 def buildVersionCode = project.hasProperty("VERSION_CODE")
         ? project.property("VERSION_CODE").toString().toInteger()
-        : 10000 + gitCommits
+        : (System.currentTimeMillis().intdiv(60000L) as int)
 
 android {
     compileSdk = compile_sdk_version
@@ -59,7 +54,9 @@ android {
         }
     }
     defaultConfig {
-        applicationId "io.legado.app"
+        // 独立产品标识：与「阅读 Archive」（io.legado.app.Archive）和
+        // 原版（io.legado.app）互不覆盖，可共存安装。
+        applicationId "io.legado.app.shimmer"
         minSdk 21
         targetSdk 36
         multiDexEnabled true
@@ -94,14 +91,9 @@ android {
             if (project.hasProperty("RELEASE_STORE_FILE")) {
                 signingConfig signingConfigs.myConfig
             }
-            applicationIdSuffix '.Archive'
-            if (getApplicationIdSuffix() == '.releaseA') {
-                manifestPlaceholders.put("app_name", "@string/app_name_a")
-            } else if (getApplicationIdSuffix() == '.releaseS') {
-                manifestPlaceholders.put("app_name", "@string/app_name_s")
-            } else {
-                manifestPlaceholders.put("app_name", "@string/app_launcher_name")
-            }
+            // 不再追加 .Archive 后缀：包名已由 defaultConfig 唯一确定，
+            // 避免与上游 Archive 版同包名互相覆盖。
+            manifestPlaceholders.put("app_name", "@string/app_launcher_name")
 
             minifyEnabled false
             shrinkResources = false

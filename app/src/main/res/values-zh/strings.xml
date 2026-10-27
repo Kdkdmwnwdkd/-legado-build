@@ -1,7 +1,7 @@
 <resources>
     <!--App-->
     <string name="app_name">阅读Shimmer</string>
-    <string name="app_launcher_name">阅读</string>
+    <string name="app_launcher_name">Shimmer</string>
     <string name="app_name_a">阅读Shimmer·A</string>
     <string name="app_name_s">阅读ShimmerPlus</string>
     <string name="receiving_shared_label">阅读Shimmer·搜索</string>
@@ -2075,7 +2075,7 @@ bookUrl：%7$s
     <string name="video_setting">&#35270;&#39057;&#35774;&#32622;</string>
     <string name="video_setting_summary">&#33258;&#21160;&#25773;&#25918;&#12289;&#20840;&#23631;&#25773;&#25918;&#31561;&#37197;&#32622;</string>
     <string name="history">&#21382;&#21490;&#35760;&#24405;</string>
-    <string name="app_name_sigma">&#38405;&#35835;Archive</string>
+    <string name="app_name_sigma">阅读Shimmer</string>
     <string name="about_description_sigma">\u3000\u3000&#38405;&#35835;Archive &#22522;&#20110; Legado &#25345;&#32493;&#23450;&#21046;&#65292;&#19987;&#27880;&#38405;&#35835;&#20307;&#39564;&#12289;&#20070;&#28304;&#24037;&#20855;&#19982; AI &#36741;&#21161;&#33021;&#21147;&#12290;</string>
     <string name="contributors_summary_sigma">当前维护仓库：Kdkdmwnwdkd/-legado-build，详情请在 GitHub 中查看</string>
     <string name="app_share_description_sigma">

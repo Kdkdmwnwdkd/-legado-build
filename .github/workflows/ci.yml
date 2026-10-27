@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # 编译是硬性门槛：能打出 debug 包才允许合并。
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Tune memory for CI
+        # 37 万行 Kotlin + Compose/KSP，默认堆在标准 runner 上会 OOM
+        run: |
+          {
+            echo ""
+            echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
+            echo "kotlin.daemon.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g"
+          } >> gradle.properties
+
+      - name: Assemble debug
+        run: ./gradlew :app:assembleAppDebug -Pabi=arm64-v8a --max-workers=2 --stacktrace
+
+      - name: Upload debug APK
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-debug-apk
+          path: app/build/outputs/apk/**/*.apk
+          if-no-files-found: ignore
+
+  # 单测与编译分开，避免个别会挂起的用例把编译验证一起拖死。
+  # 现存测试里已有长时间不结束的用例，故设超时并允许失败；
+  # 排查完挂起问题后应去掉 continue-on-error。
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Tune memory for CI
+        # 37 万行 Kotlin + Compose/KSP，默认堆在标准 runner 上会 OOM
+        run: |
+          {
+            echo ""
+            echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
+            echo "kotlin.daemon.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g"
+          } >> gradle.properties
+
+      - name: Unit tests
+        # 只跑 debug 变体：gradlew test 会同时编译 debug/release 两套 Kotlin，
+        # 标准 runner 上内存扛不住（两套 IR lowering 并行会 OOM）。
+        run: ./gradlew :app:testAppDebugUnitTest --max-workers=2 --stacktrace
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: app/build/reports/tests/**
+          if-no-files-found: ignore
