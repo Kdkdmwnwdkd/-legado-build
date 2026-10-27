@@ -30,11 +30,17 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Grant gradlew permission
-        run: chmod +x gradlew
+      - name: Tune memory for CI
+        # 37 万行 Kotlin + Compose/KSP，默认堆在标准 runner 上会 OOM
+        run: |
+          {
+            echo ""
+            echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
+            echo "kotlin.daemon.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g"
+          } >> gradle.properties
 
       - name: Assemble debug
-        run: ./gradlew :app:assembleAppDebug -Pabi=arm64-v8a --stacktrace
+        run: ./gradlew :app:assembleAppDebug -Pabi=arm64-v8a --max-workers=2 --stacktrace
 
       - name: Upload debug APK
         if: always()
@@ -64,12 +70,17 @@ jobs:
           java-version: 17
           cache: gradle
 
-      - name: Grant gradlew permission
-        run: chmod +x gradlew
+      - name: Tune memory for CI
+        # 37 万行 Kotlin + Compose/KSP，默认堆在标准 runner 上会 OOM
+        run: |
+          {
+            echo ""
+            echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
+            echo "kotlin.daemon.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g"
+          } >> gradle.properties
 
       - name: Unit tests
-        # 单个用例最长 8 分钟，超过即视为挂起
-        run: ./gradlew test -Dorg.gradle.internal.http.socketTimeout=300000 --stacktrace
+        run: ./gradlew test --max-workers=2 --stacktrace
 
       - name: Upload test reports
         if: always()
