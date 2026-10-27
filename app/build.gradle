@@ -25,9 +25,10 @@ def version = project.hasProperty("VERSION_NAME")
 // 版本号统一用 epoch 分钟，与 CI 保持一致。
 // 不要再用「提交数」：本仓库历史是整包导入，提交数只有个位数，
 // 会把版本号压到 1 万附近，导致应用内更新判断失效。
+// 注意用 intdiv：Groovy 里 long/long 会得到 BigDecimal，不能直接喂给 int。
 def buildVersionCode = project.hasProperty("VERSION_CODE")
         ? project.property("VERSION_CODE").toString().toInteger()
-        : Math.toIntExact(System.currentTimeMillis() / 60000L)
+        : (System.currentTimeMillis().intdiv(60000L) as int)
 
 android {
     compileSdk = compile_sdk_version
