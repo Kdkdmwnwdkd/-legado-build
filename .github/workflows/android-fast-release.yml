@@ -33,6 +33,15 @@ jobs:
           java-version: 17
           cache: gradle
 
+      - name: Tune memory for CI
+        # 37 万行 Kotlin + Compose/KSP，标准 runner 默认堆会 GC overhead limit exceeded
+        run: |
+          {
+            echo ""
+            echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
+            echo "kotlin.daemon.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g"
+          } >> gradle.properties
+
       - name: Check signing secrets
         env:
           KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
@@ -81,6 +90,7 @@ jobs:
             -Pabi=arm64-v8a \
             -PVERSION_NAME="${{ steps.v.outputs.name }}" \
             -PVERSION_CODE="${{ steps.v.outputs.code }}" \
+            --max-workers=2 \
             --stacktrace
           APK=$(find app/build/outputs/apk/app/release -type f -name '*.apk' | head -n 1)
           test -n "$APK"
@@ -93,6 +103,7 @@ jobs:
             -Pabi=armeabi-v7a \
             -PVERSION_NAME="${{ steps.v.outputs.name }}" \
             -PVERSION_CODE="${{ steps.v.outputs.code }}" \
+            --max-workers=2 \
             --stacktrace
           APK=$(find app/build/outputs/apk/app/release -type f -name '*.apk' | head -n 1)
           test -n "$APK"
