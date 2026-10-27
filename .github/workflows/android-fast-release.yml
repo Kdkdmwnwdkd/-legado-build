@@ -124,7 +124,7 @@ jobs:
           head -n 20 release-notes.md
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: shimmer-release-${{ steps.v.outputs.name }}
           path: release-apks/*.apk
