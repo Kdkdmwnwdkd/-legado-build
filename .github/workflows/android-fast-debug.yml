@@ -1,46 +1,19 @@
-name: Android Fast Debug
+name: Nightly Debug
 
+# 只发布到固定的 nightly 标签，绝不按「最新 release」定位，
+# 避免把正式版的 APK 和说明覆盖掉。
 on:
   workflow_dispatch:
-    inputs:
-      probe_only:
-        description: "Only publish a txt probe"
-        required: false
-        type: boolean
-        default: false
 
 permissions:
   contents: write
 
+concurrency:
+  group: nightly
+  cancel-in-progress: true
+
 jobs:
-  publish-txt-probe:
-    if: ${{ inputs.probe_only }}
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Create txt probe
-        run: |
-          cat > debug-release-probe.txt <<EOF
-          Txt release probe
-
-          Commit: ${{ github.sha }}
-          Branch: ${{ github.ref_name }}
-          Time: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          EOF
-
-      - name: Upload txt probe to existing release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          TAG_NAME=$(gh api repos/${{ github.repository }}/releases --jq '.[0].tag_name')
-          if [ -z "$TAG_NAME" ] || [ "$TAG_NAME" = "null" ]; then
-            echo "No release tag found."
-            exit 1
-          fi
-          gh release upload "$TAG_NAME" debug-release-probe.txt --clobber -R "${{ github.repository }}"
-
   build-debug-arm64:
-    if: ${{ !inputs.probe_only }}
     runs-on: ubuntu-latest
 
     steps:
@@ -54,76 +27,79 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-
-      - name: Install AAPT2 runtime dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libc6-i386 lib32stdc++6 lib32z1 libncurses6 libtinfo6
+          cache: gradle
 
       - name: Grant gradlew permission
         run: chmod +x gradlew
 
-      - name: Sanitize Gradle AAPT2 caches
+      # 有正式签名就用，没有就退回 Android 默认 debug 签名。
+      # 两种签名不能互相升级，装 nightly 前请先卸载正式版（或反之）。
+      - name: Configure signing (optional)
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          rm -rf ~/.gradle/caches
-          rm -rf ~/.gradle/daemon
-          rm -rf ~/.gradle/native
-          rm -rf ~/.gradle/caches/*/transforms
-          rm -rf ~/.gradle/caches/*/transforms-*
-          rm -rf ~/.gradle/caches/modules-2/files-2.1/com.android.tools.build/aapt2
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "未配置 KEYSTORE_B64，本次使用默认 debug 签名。"
+            exit 0
+          fi
+          KEYSTORE="$RUNNER_TEMP/release.jks"
+          printf '%s' "$KEYSTORE_B64" | base64 -d > "$KEYSTORE"
+          {
+            echo ""
+            echo "RELEASE_STORE_FILE=$KEYSTORE"
+            echo "RELEASE_STORE_PASSWORD=$KEYSTORE_PASSWORD"
+            echo "RELEASE_KEY_ALIAS=$KEY_ALIAS"
+            echo "RELEASE_KEY_PASSWORD=$KEY_PASSWORD"
+          } >> gradle.properties
 
       - name: Build arm64 debug APK
-        env:
-          GRADLE_OPTS: >-
-            -Dorg.gradle.jvmargs=-XX:+UseParallelGC\ -Xmx4g\ -Xms256m\ -XX:MaxMetaspaceSize=768m\ -Dfile.encoding=UTF-8
-            -Dorg.gradle.workers.max=2
         run: |
-          VERSION_CODE=$(($(date -u +%s) / 60))
+          VERSION_CODE=$(( $(date -u +%s) / 60 ))
           ./gradlew :app:assembleAppDebug \
             -Pabi=arm64-v8a \
+            -PVERSION_NAME="3.$(TZ=Asia/Shanghai date +%y.%m%d%H%M)-nightly" \
             -PVERSION_CODE="$VERSION_CODE" \
-            -PRELEASE_STORE_FILE=ci-debug.keystore \
-            -PRELEASE_STORE_PASSWORD=legado-ci-debug \
-            -PRELEASE_KEY_ALIAS=legado-ci-debug \
-            -PRELEASE_KEY_PASSWORD=legado-ci-debug \
-            --no-daemon \
-            --max-workers=2 \
             --stacktrace
 
       - name: Resolve APK
         id: apk
         run: |
           APK_PATH=$(find app/build/outputs/apk -type f -name '*.apk' | head -n 1)
+          test -n "$APK_PATH"
           APK_NAME=$(basename "$APK_PATH")
           echo "path=$APK_PATH" >> "$GITHUB_OUTPUT"
           echo "name=$APK_NAME" >> "$GITHUB_OUTPUT"
 
-      - name: Publish debug release
+      - name: Publish to nightly tag
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          LATEST_RELEASE=$(gh api repos/${{ github.repository }}/releases --jq '.[0]')
-          TAG_NAME=$(jq -r '.tag_name' <<< "$LATEST_RELEASE")
-          RELEASE_ID=$(jq -r '.id' <<< "$LATEST_RELEASE")
-          if [ -z "$TAG_NAME" ] || [ "$TAG_NAME" = "null" ] || [ -z "$RELEASE_ID" ] || [ "$RELEASE_ID" = "null" ]; then
-            echo "No release found to upload debug APK."
-            exit 1
-          fi
-          NOTES_FILE="debug-release-notes.md"
-          cat > "$NOTES_FILE" <<EOF
-          Debug build
+          TAG="nightly"
+          cat > notes.md <<EOF
+          阅读Shimmer 每日构建（调试版）
 
-          Commit: ${{ github.sha }}
-          Branch: ${{ github.ref_name }}
-          APK: ${{ steps.apk.outputs.name }}
+          - Commit: ${{ github.sha }}
+          - 分支: ${{ github.ref_name }}
+          - APK: ${{ steps.apk.outputs.name }}
+          - 构建时间: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          调试版与正式版签名不同，安装前请先卸载另一个版本。
           EOF
 
-          gh api repos/${{ github.repository }}/releases/$RELEASE_ID/assets --paginate \
-            --jq '.[] | select(.name | endswith(".apk")) | .id' \
-            | while read -r ASSET_ID; do
-                gh api -X DELETE repos/${{ github.repository }}/releases/assets/$ASSET_ID
-              done
-          gh release upload "$TAG_NAME" "${{ steps.apk.outputs.path }}" --clobber
-          gh release edit "$TAG_NAME" \
-            --notes-file "$NOTES_FILE" \
-            --prerelease
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh api "repos/${{ github.repository }}/releases/tags/$TAG" \
+              --jq '.assets[] | select(.name | endswith(".apk")) | .id' \
+              | while read -r id; do
+                  [ -n "$id" ] && gh api -X DELETE "repos/${{ github.repository }}/releases/assets/$id"
+                done
+            gh release upload "$TAG" "${{ steps.apk.outputs.path }}" --clobber
+            gh release edit "$TAG" --notes-file notes.md --prerelease
+          else
+            gh release create "$TAG" "${{ steps.apk.outputs.path }}" \
+              --title "阅读Shimmer 每日构建" \
+              --notes-file notes.md \
+              --prerelease
+          fi

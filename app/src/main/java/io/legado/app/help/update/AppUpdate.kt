@@ -120,32 +120,9 @@ object AppUpdate {
         }
 
         private suspend fun checkOfficialNow(): UpdateInfo {
-            return when (AppUpdateConfig.strategy) {
-                AppUpdateConfig.STRATEGY_GITEE_ONLY -> AppUpdateGitee.checkNow()
-                AppUpdateConfig.STRATEGY_GITHUB_ONLY -> AppUpdateGitHub.checkNow()
-                else -> checkGiteeThenGithub()
-            }
-        }
-
-        private suspend fun checkGiteeThenGithub(): UpdateInfo {
-            return try {
-                AppUpdateGitee.checkNow()
-            } catch (giteeError: Throwable) {
-                try {
-                    AppUpdateGitHub.checkNow()
-                } catch (githubError: Throwable) {
-                    if (isLatestVersionError(giteeError) && !isLatestVersionError(githubError)) {
-                        throw githubError
-                    }
-                    if (isLatestVersionError(githubError)) {
-                        throw githubError
-                    }
-                    throw NoStackTraceException(
-                        "Gitee 更新失败: ${giteeError.localizedMessage ?: giteeError.message ?: giteeError}\n" +
-                            "GitHub 更新失败: ${githubError.localizedMessage ?: githubError.message ?: githubError}"
-                    )
-                }
-            }
+            // 阅读Shimmer 为独立产品，发布与更新只走自己的 GitHub 仓库，
+            // 不再访问 Gitee（原配置指向的是上游作者的仓库）。
+            return AppUpdateGitHub.checkNow()
         }
     }
 

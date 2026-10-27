@@ -2,6 +2,8 @@
 .gradle
 local.properties
 *.jks
+*.keystore
+*.p12
 /app/key.jks
 __pycache__/
 *.pyc

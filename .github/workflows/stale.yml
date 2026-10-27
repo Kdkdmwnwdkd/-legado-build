@@ -15,7 +15,7 @@ jobs:
   stale:
 
     runs-on: ubuntu-latest
-    if: ${{ github.repository == 'Luoyacheng/legado' }}
+    if: ${{ github.repository == 'Kdkdmwnwdkd/-legado-build' }}
     permissions:
       issues: write
 
@@ -27,3 +27,5 @@ jobs:
         days-before-stale: 30
         days-before-close: 5
         operations-per-run: 100
+        # 不自动关闭依赖升级 PR，避免误删待评估的升级
+        days-before-pr-stale: -1
