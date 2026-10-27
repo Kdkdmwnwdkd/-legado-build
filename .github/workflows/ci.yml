@@ -80,7 +80,9 @@ jobs:
           } >> gradle.properties
 
       - name: Unit tests
-        run: ./gradlew test --max-workers=2 --stacktrace
+        # 只跑 debug 变体：gradlew test 会同时编译 debug/release 两套 Kotlin，
+        # 标准 runner 上内存扛不住（两套 IR lowering 并行会 OOM）。
+        run: ./gradlew :app:testAppDebugUnitTest --max-workers=2 --stacktrace
 
       - name: Upload test reports
         if: always()
