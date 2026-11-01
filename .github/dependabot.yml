@@ -1,10 +1,13 @@
 # Dependabot 配置
 #
-# 关键背景：本项目 compileSdk = 36，AGP 8.13.2 支持的最高 compileSdk 也是 36。
-# 2026 年下半年起大量 Android 库把 minCompileSdk 抬到 37，这类升级在当前工具链下
-# 必然失败（checkAarMetadata 报 "requires compileSdk >= 37"）。
-# 在完成 AGP 9 / compileSdk 37 迁移之前直接 ignore，避免每周重开一堆合不了的 PR。
-# 迁移完成后，把「等 compileSdk 37」那一段删掉即可恢复提醒。
+# 这个项目的依赖升级受两个硬约束，大部分升级在当前状态下必然失败：
+#
+# 1. 源码里刻意锁定的版本（gradle/libs.versions.toml 中标了 #noinspection GradleDependency）
+#    —— 升级会直接引入崩溃或书源解析错误，Dependabot 读不到这些注释
+# 2. compileSdk 37 要求 —— AGP 8.13.2 上限是 36，2026 下半年的 Android 库普遍要求 37
+#
+# ignore 分三段，注释里标明原因。第 2 段在 AGP 9 迁移（issue #66 / PR #75）
+# 完成后整段删除即可恢复提醒。
 
 version: 2
 registries:
@@ -39,20 +42,29 @@ updates:
           - "org.jetbrains.kotlin:*"
           - "com.google.devtools.ksp"
     ignore:
-      # ── 源码注释明确锁定，理由见 gradle/libs.versions.toml ─────────────
-      # jsoup：issue #3811，新版选择器行为变更会破坏书源解析
+      # ══════════════════════════════════════════════════════════════════
+      # 一、源码里刻意锁定（libs.versions.toml 有 #noinspection GradleDependency）
+      # ══════════════════════════════════════════════════════════════════
+      # jsoup：issue #3811，新版选择器行为破坏书源解析
       - dependency-name: "org.jsoup:jsoup"
       # JsoupXpath 依赖 jsoup 的选择器行为，必须同步锁定
       - dependency-name: "cn.wanghaomiao:JsoupXpath"
-      # commons-text：新版用了 Android 6 以下缺失的 Arrays.setAll，进阅读页即崩
+      # commons-text：新版用 Android 6 以下缺失的 Arrays.setAll，进阅读页即崩
       - dependency-name: "org.apache.commons:commons-text"
-      # rhino：新版用了 Android 8 以下无法编译的 VarHandle
+      # rhino：新版用 Android 8 以下无法编译的 VarHandle
       - dependency-name: "org.mozilla:rhino"
-      # protobuf-javalite：标了「不要更新版本」，序列化产物需重新生成
+      # protobuf-javalite：标注「不要更新版本」，序列化产物需重新生成
       - dependency-name: "com.google.protobuf:protobuf-javalite"
       - dependency-name: "cn.hutool:*"
+      # 以下四项标了 GradleDependency 抑制且全是 androidx，新版普遍要求更高 minSdk
+      - dependency-name: "androidx.activity:*"
+      - dependency-name: "androidx.lifecycle:*"
+      - dependency-name: "androidx.recyclerview:recyclerview"
+      - dependency-name: "androidx.viewpager2:viewpager2"
 
-      # ── 等 compileSdk 37（AGP 9 迁移完成后删除本段）──────────────────
+      # ══════════════════════════════════════════════════════════════════
+      # 二、等 compileSdk 37（AGP 9 迁移完成后删除本段）
+      # ══════════════════════════════════════════════════════════════════
       - dependency-name: "com.android.tools.build:gradle"
       - dependency-name: "org.jetbrains.kotlin:*"
       # Dependabot 把 KSP 识别成 group 名（无 artifactId），必须写成这样才匹配
@@ -63,28 +75,36 @@ updates:
       - dependency-name: "androidx.room:*"
       - dependency-name: "androidx.constraintlayout:constraintlayout"
       - dependency-name: "androidx.test.ext:junit"
+      - dependency-name: "androidx.core:core"
+      - dependency-name: "androidx.webkit:webkit"
+      - dependency-name: "androidx.annotation:annotation"
+      - dependency-name: "androidx.fragment:*"
+      - dependency-name: "androidx.collection:collection"
       - dependency-name: "com.qmdeve.liquidglass:core"
       - dependency-name: "com.airbnb.android:lottie"
       - dependency-name: "me.zhanghai.android.libarchive:library"
       - dependency-name: "com.github.jenly1314:zxing-lite"
       - dependency-name: "com.squareup.okhttp3:*"
-      - dependency-name: "androidx.core:core"
-      - dependency-name: "androidx.webkit:webkit"
-      - dependency-name: "androidx.annotation:annotation"
-      - dependency-name: "com.shuyu:GSYVideoPlayer"
+      - dependency-name: "com.jayway.jsonpath:json-path"
+      - dependency-name: "io.github.rosemoe:editor-bom"
+      # GSYVideoPlayer 的实际坐标是 io.github.carguo（不是 com.shuyu）
+      - dependency-name: "io.github.carguo:*"
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+
   - package-ecosystem: npm
     directory: "modules/web"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 3
     ignore:
+      # ══════════════════════════════════════════════════════════════════
       # 前端构建链互相锁定，需整体迁移（vite 5->8 牵动下面全部）
+      # ══════════════════════════════════════════════════════════════════
       - dependency-name: "vite"
       - dependency-name: "@vitejs/plugin-vue"
       - dependency-name: "npm-run-all2"
