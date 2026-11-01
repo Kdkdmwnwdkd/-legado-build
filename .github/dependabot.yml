@@ -96,11 +96,23 @@ updates:
     schedule:
       interval: "weekly"
 
+  # ──────────────────────────────────────────────────────────────────────
+  # 前端（modules/web）整体停用版本更新 PR
+  #
+  # 这里的包几乎全部卡在一次「构建链整体迁移」上：vite 5→8、unplugin-*、
+  # typescript 5→7、@vueuse 11→15、pinia 2→4、element-plus、eslint-plugin-vue…
+  # 逐个 ignore 追不完，逐个升级又会连环破坏构建。
+  #
+  # 用 limit: 0 直接不创建 PR。注意这不影响 Dependabot 安全告警
+  # （Security → Dependabot alerts 是独立机制，不看这个配置）。
+  #
+  # 做前端迁移时，把 limit 改回 3 并把下面 ignore 清空即可恢复。
+  # ──────────────────────────────────────────────────────────────────────
   - package-ecosystem: npm
     directory: "modules/web"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 3
+      interval: "monthly"
+    open-pull-requests-limit: 0
     ignore:
       # ══════════════════════════════════════════════════════════════════
       # 前端构建链互相锁定，需整体迁移（vite 5->8 牵动下面全部）
@@ -114,3 +126,6 @@ updates:
       - dependency-name: "@vueuse/core"
       - dependency-name: "typescript"
       - dependency-name: "@vue/tsconfig"
+      - dependency-name: "@vueuse/shared"
+      - dependency-name: "pinia"
+      - dependency-name: "eslint-plugin-vue"
