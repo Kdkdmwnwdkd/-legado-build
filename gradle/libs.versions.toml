@@ -28,7 +28,7 @@ material = "1.13.0"
 media = "1.7.1"
 danmaku = "0.9.25"
 nanoHttpd = "2.3.1"
-okhttp = "5.3.2"
+okhttp = "5.5.1"
 preference = "1.2.1"
 quickChineseTransfer = "0.2.17"
 
@@ -44,7 +44,7 @@ miuix = "0.8.8"
 reorderable = "3.1.0"
 lazyColumnScrollbar = "2.2.0"
 
-zxingLite = "3.3.0"
+zxingLite = "3.5.0"
 
 #不要更新版本
 #noinspection NewerVersionAvailable
