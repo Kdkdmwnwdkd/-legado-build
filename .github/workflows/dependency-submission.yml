@@ -1,0 +1,54 @@
+name: Dependency graph
+
+# 把 Gradle/Maven 依赖提交到 GitHub 的依赖图。
+#
+# 为什么需要它：本仓库没有任何 gradle.lockfile，GitHub 只能解析到
+# modules/web 的 npm 依赖（121 个）和 Actions（11 个），
+# Maven 侧一个都没有。结果就是 Security → Dependabot alerts 永远报 0，
+# 而 app 真正跑起来用的那两百多个库（okhttp / jsoup / protobuf …）完全没人盯。
+#
+# 这个工作流不参与编译，只在配置阶段解析依赖并上报，代价约 2 分钟。
+# 只在 main 推送和每周定时跑，不挂在 PR 上，避免拖慢每次提交。
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 3 * * 1"   # 每周一 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write   # 提交依赖快照需要
+
+concurrency:
+  group: dependency-graph
+  cancel-in-progress: true
+
+jobs:
+  submit:
+    name: Submit dependency graph
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Tune memory
+        run: |
+          {
+            echo ""
+            echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
+          } >> gradle.properties
+
+      - name: Submit dependencies
+        uses: gradle/actions/dependency-submission@v6.4.1
+        with:
+          # 配置失败也要把已经解析到的部分上报，否则一次配置报错就什么都收不到
+          dependency-graph-continue-on-failure: true
