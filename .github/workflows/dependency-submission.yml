@@ -12,7 +12,7 @@ name: Dependency graph
 
 on:
   push:
-    branches: [main, ci/dependency-submission]   # 后者仅用于本分支自测，合并前会删掉
+    branches: [main]
   schedule:
     - cron: "0 3 * * 1"   # 每周一 03:00 UTC
   workflow_dispatch:
