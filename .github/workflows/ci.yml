@@ -15,7 +15,10 @@ concurrency:
 
 jobs:
   # 编译是硬性门槛：能打出 debug 包才允许合并。
+  # 注意：job 名会成为 GitHub 上的检查项名称，分支保护按名字匹配。
+  # 这里统一加 "CI / " 前缀，避免和 web.yml 的 build 重名。
   build:
+    name: CI / build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -51,12 +54,12 @@ jobs:
           if-no-files-found: ignore
 
   # 单测与编译分开，避免个别会挂起的用例把编译验证一起拖死。
-  # 现存测试里已有长时间不结束的用例，故设超时并允许失败；
-  # 排查完挂起问题后应去掉 continue-on-error。
+  # 实测单变体下 12 分钟跑完且全绿，所以这里不再允许失败——
+  # 能过才是合并门槛，否则这条 job 没有意义。
   test:
+    name: CI / test
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
