@@ -1,10 +1,13 @@
 # Dependabot 配置
 #
-# 关键背景：本项目 compileSdk = 36，AGP 8.13.2 支持的最高 compileSdk 也是 36。
-# 2026 年下半年起大量 Android 库把 minCompileSdk 抬到 37，这类升级在当前工具链下
-# 必然失败（checkAarMetadata 报 "requires compileSdk >= 37"）。
-# 在完成 AGP 9 / compileSdk 37 迁移之前直接 ignore，避免每周重开一堆合不了的 PR。
-# 迁移完成后，把「等 compileSdk 37」那一段删掉即可恢复提醒。
+# 这个项目的依赖升级受两个硬约束，大部分升级在当前状态下必然失败：
+#
+# 1. 源码里刻意锁定的版本（gradle/libs.versions.toml 中标了 #noinspection GradleDependency）
+#    —— 升级会直接引入崩溃或书源解析错误，Dependabot 读不到这些注释
+# 2. compileSdk 37 要求 —— AGP 8.13.2 上限是 36，2026 下半年的 Android 库普遍要求 37
+#
+# ignore 分三段，注释里标明原因。第 2 段在 AGP 9 迁移（issue #66 / PR #75）
+# 完成后整段删除即可恢复提醒。
 
 version: 2
 registries:
@@ -39,48 +42,90 @@ updates:
           - "org.jetbrains.kotlin:*"
           - "com.google.devtools.ksp"
     ignore:
-      # ── 源码注释明确锁定，理由见 gradle/libs.versions.toml ─────────────
-      # jsoup：issue #3811，新版选择器行为变更会破坏书源解析
+      # ══════════════════════════════════════════════════════════════════
+      # 一、源码里刻意锁定（libs.versions.toml 有 #noinspection GradleDependency）
+      # ══════════════════════════════════════════════════════════════════
+      # jsoup：issue #3811，新版选择器行为破坏书源解析
       - dependency-name: "org.jsoup:jsoup"
-      # commons-text：新版用了 Android 6 以下缺失的 Arrays.setAll，进阅读页即崩
+      # JsoupXpath 依赖 jsoup 的选择器行为，必须同步锁定
+      - dependency-name: "cn.wanghaomiao:JsoupXpath"
+      # commons-text：新版用 Android 6 以下缺失的 Arrays.setAll，进阅读页即崩
       - dependency-name: "org.apache.commons:commons-text"
-      # rhino：新版用了 Android 8 以下无法编译的 VarHandle
+      # rhino：新版用 Android 8 以下无法编译的 VarHandle
       - dependency-name: "org.mozilla:rhino"
-      # protobuf-javalite：标了「不要更新版本」，序列化产物需重新生成
+      # protobuf-javalite：标注「不要更新版本」，序列化产物需重新生成
       - dependency-name: "com.google.protobuf:protobuf-javalite"
       - dependency-name: "cn.hutool:*"
+      # 以下四项标了 GradleDependency 抑制且全是 androidx，新版普遍要求更高 minSdk
+      - dependency-name: "androidx.activity:*"
+      - dependency-name: "androidx.lifecycle:*"
+      - dependency-name: "androidx.recyclerview:recyclerview"
+      - dependency-name: "androidx.viewpager2:viewpager2"
 
-      # ── 等 compileSdk 37（AGP 9 迁移完成后删除本段）──────────────────
+      # ══════════════════════════════════════════════════════════════════
+      # 二、等 compileSdk 37（AGP 9 迁移完成后删除本段）
+      # ══════════════════════════════════════════════════════════════════
       - dependency-name: "com.android.tools.build:gradle"
       - dependency-name: "org.jetbrains.kotlin:*"
-      - dependency-name: "com.google.devtools.ksp:*"
+      # Dependabot 把 KSP 识别成 group 名（无 artifactId），必须写成这样才匹配
+      - dependency-name: "com.google.devtools.ksp"
       - dependency-name: "androidx.compose:compose-bom"
       - dependency-name: "androidx.media:media"
       - dependency-name: "androidx.media3:*"
       - dependency-name: "androidx.room:*"
       - dependency-name: "androidx.constraintlayout:constraintlayout"
       - dependency-name: "androidx.test.ext:junit"
+      - dependency-name: "androidx.core:core"
+      - dependency-name: "androidx.webkit:webkit"
+      - dependency-name: "androidx.annotation:annotation"
+      - dependency-name: "androidx.fragment:*"
+      - dependency-name: "androidx.collection:collection"
       - dependency-name: "com.qmdeve.liquidglass:core"
       - dependency-name: "com.airbnb.android:lottie"
       - dependency-name: "me.zhanghai.android.libarchive:library"
       - dependency-name: "com.github.jenly1314:zxing-lite"
       - dependency-name: "com.squareup.okhttp3:*"
+      - dependency-name: "com.jayway.jsonpath:json-path"
+      - dependency-name: "io.github.rosemoe:editor-bom"
+      # GSYVideoPlayer 的实际坐标是 io.github.carguo（不是 com.shuyu）
+      - dependency-name: "io.github.carguo:*"
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # 前端（modules/web）整体停用版本更新 PR
+  #
+  # 这里的包几乎全部卡在一次「构建链整体迁移」上：vite 5→8、unplugin-*、
+  # typescript 5→7、@vueuse 11→15、pinia 2→4、element-plus、eslint-plugin-vue…
+  # 逐个 ignore 追不完，逐个升级又会连环破坏构建。
+  #
+  # 用 limit: 0 直接不创建 PR。注意这不影响 Dependabot 安全告警
+  # （Security → Dependabot alerts 是独立机制，不看这个配置）。
+  #
+  # 做前端迁移时，把 limit 改回 3 并把下面 ignore 清空即可恢复。
+  # ──────────────────────────────────────────────────────────────────────
   - package-ecosystem: npm
     directory: "modules/web"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 3
+      interval: "monthly"
+    open-pull-requests-limit: 0
     ignore:
+      # ══════════════════════════════════════════════════════════════════
       # 前端构建链互相锁定，需整体迁移（vite 5->8 牵动下面全部）
+      # ══════════════════════════════════════════════════════════════════
       - dependency-name: "vite"
       - dependency-name: "@vitejs/plugin-vue"
       - dependency-name: "npm-run-all2"
       - dependency-name: "unplugin-auto-import"
       - dependency-name: "unplugin-icons"
       - dependency-name: "unplugin-vue-components"
+      - dependency-name: "@vueuse/core"
+      - dependency-name: "typescript"
+      - dependency-name: "@vue/tsconfig"
+      - dependency-name: "@vueuse/shared"
+      - dependency-name: "pinia"
+      - dependency-name: "eslint-plugin-vue"
