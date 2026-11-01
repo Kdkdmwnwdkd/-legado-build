@@ -75,3 +75,12 @@ updates:
     directory: "modules/web"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 3
+    ignore:
+      # 前端构建链互相锁定，需整体迁移（vite 5->8 牵动下面全部）
+      - dependency-name: "vite"
+      - dependency-name: "@vitejs/plugin-vue"
+      - dependency-name: "npm-run-all2"
+      - dependency-name: "unplugin-auto-import"
+      - dependency-name: "unplugin-icons"
+      - dependency-name: "unplugin-vue-components"
