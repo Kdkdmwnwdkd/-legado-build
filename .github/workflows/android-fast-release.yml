@@ -22,12 +22,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 17
@@ -135,7 +135,7 @@ jobs:
           head -n 20 release-notes.md
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: shimmer-release-${{ steps.v.outputs.name }}
           path: release-apks/*.apk
@@ -144,7 +144,7 @@ jobs:
       # 应用内更新靠这个格式解析版本与 ABI；名称里也不能出现 release 字样，
       # 否则会被识别成内测包并被过滤掉。
       - name: Publish release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: shimmer-v${{ steps.v.outputs.name }}
           name: 阅读Shimmer ${{ steps.v.outputs.name }}
