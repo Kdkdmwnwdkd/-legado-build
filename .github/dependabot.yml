@@ -1,13 +1,24 @@
 # Dependabot 配置
 #
-# 这个项目的依赖升级受两个硬约束，大部分升级在当前状态下必然失败：
+# ── 现状：只保留 GitHub Actions 的版本更新 ──
 #
-# 1. 源码里刻意锁定的版本（gradle/libs.versions.toml 中标了 #noinspection GradleDependency）
-#    —— 升级会直接引入崩溃或书源解析错误，Dependabot 读不到这些注释
+# 这个项目的依赖更新被两个硬约束卡死，90% 的 PR 提出来也合不了：
+#
+# 1. 源码里刻意锁定的版本（gradle/libs.versions.toml 标了 #noinspection GradleDependency）
+#    —— 升级会直接崩溃或破坏书源解析，Dependabot 读不到这些注释
 # 2. compileSdk 37 要求 —— AGP 8.13.2 上限是 36，2026 下半年的 Android 库普遍要求 37
 #
-# ignore 分三段，注释里标明原因。第 2 段在 AGP 9 迁移（issue #66 / PR #75）
-# 完成后整段删除即可恢复提醒。
+# 尝试过用 ignore 精确控制，但 Dependabot 的检查任务会持续产出新 PR，
+# 先后冒出六批（KSP / AGP / Kotlin / androidx 全家 / vite 全家 / pinia…），
+# 逐条 ignore 追不完。因此 gradle 与 npm 的版本更新 PR 直接停用。
+#
+# 重要：停用"版本更新 PR"不影响安全告警。
+#   Security → Dependabot alerts 是独立机制，不读这个文件。
+#
+# 恢复条件：
+#   gradle —— PR #75（AGP 9 / compileSdk 37）合并并真机验证后，
+#             把下面的 limit 改回 10，并删除「等 compileSdk 37」那段 ignore
+#   npm    —— 前端构建链整体迁移时，改回 3 并清空那段 ignore
 
 version: 2
 registries:
@@ -34,8 +45,8 @@ updates:
     schedule:
       interval: "weekly"
     registries: "*"
-    # 一次最多开 10 个，防止再次堆到 30 个无人处理
-    open-pull-requests-limit: 10
+    # 0 = 不创建版本更新 PR（原因见文件头）。需要时改回 10。
+    open-pull-requests-limit: 0
     groups:
       kotlin_KSP:
         patterns:
