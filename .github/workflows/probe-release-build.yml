@@ -1,0 +1,102 @@
+name: Probe / release-build
+
+# ⚠️ 临时工作流，仅用于 AGP 9.5 迁移验证（PR #75）。
+# 与 android-fast-release.yml 的区别：只产出 artifact，不创建 release、不打 tag，
+# 因此不会污染「最新版本」，也不会被应用内更新检查误识别。
+# #75 合并后请删除本文件。
+
+on:
+  workflow_dispatch:
+    inputs:
+      abi:
+        description: "ABI"
+        required: false
+        default: "arm64-v8a"
+      version:
+        description: "版本名"
+        required: false
+        default: "3.26.9999-agp9probe"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: Probe / release build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+
+      - name: Tune memory for CI
+        run: |
+          {
+            echo ""
+            echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
+            echo "kotlin.daemon.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g"
+          } >> gradle.properties
+
+      - name: Configure signing
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "::error::缺少 secrets.KEYSTORE_B64，无法产出可安装的 release APK"
+            exit 1
+          fi
+          KEYSTORE="$RUNNER_TEMP/release.jks"
+          printf '%s' "$KEYSTORE_B64" | base64 -d > "$KEYSTORE"
+          test -s "$KEYSTORE"
+          {
+            echo ""
+            echo "RELEASE_STORE_FILE=$KEYSTORE"
+            echo "RELEASE_STORE_PASSWORD=$KEYSTORE_PASSWORD"
+            echo "RELEASE_KEY_ALIAS=$KEY_ALIAS"
+            echo "RELEASE_KEY_PASSWORD=$KEY_PASSWORD"
+          } >> gradle.properties
+
+      - name: Report toolchain versions
+        run: |
+          echo "== gradle ==" && grep distributionUrl gradle/wrapper/gradle-wrapper.properties
+          echo "== agp / sdk ==" && grep -E '^(agp|compile_sdk_version)' gradle/libs.versions.toml build.gradle || true
+
+      - name: Build release
+        env:
+          VERSION_NAME: ${{ inputs.version }}
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleAppRelease \
+            -Pabi=${{ inputs.abi }} \
+            -PVERSION_NAME="$VERSION_NAME" \
+            --max-workers=2 \
+            --stacktrace
+
+      - name: Collect and verify
+        run: |
+          mkdir -p out
+          APK=$(find app/build/outputs/apk -type f -name '*.apk' | head -n 1)
+          test -n "$APK"
+          cp "$APK" "out/shimmer-${{ inputs.abi }}_probe_${{ inputs.version }}_0.apk"
+          ls -lh out/
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)
+          "$APKSIGNER" verify --print-certs "out/"*.apk | head -n 5
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: shimmer-probe-${{ inputs.version }}
+          path: out/*.apk
+          retention-days: 14
