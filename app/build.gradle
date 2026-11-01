@@ -119,29 +119,9 @@ android {
         }
     }
 
-    android.applicationVariants.configureEach { variant ->
-        variant.outputs.configureEach {
-            def flavor = variant.productFlavors[0].name
-            outputFileName = "${name}_${flavor}_${defaultConfig.versionName}_${defaultConfig.versionCode}.apk"
-        }
-    }
-
-    android.applicationVariants.configureEach { variant ->
-        def variantName = variant.name.capitalize()
-        def copyTask = tasks.register("copy${variantName}ApkToCurrentDir") {
-            doLast {
-                copy {
-                    from(layout.buildDirectory.dir("outputs/apk/${variant.flavorName}/${variant.buildType.name}")) {
-                        include("*.apk")
-                    }
-                    into(rootProject.projectDir.parentFile)
-                }
-            }
-        }
-        tasks.named("assemble${variantName}").configure {
-            finalizedBy(copyTask)
-        }
-    }
+    // AGP 9 移除了 applicationVariants，改用 androidComponents.onVariants。
+    // 只保留「构建后把 APK 拷到仓库根目录」这个本地开发便利；
+    // APK 文件名不再定制——发布工作流本来就用 find 取第一个 apk 再自行重命名。
 
 
     room {
@@ -341,3 +321,23 @@ dependencies {
     implementation(libs.soraEditor.language.textmate)
 }
 
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        def cap = variant.name.capitalize()
+        def flavorDir = variant.productFlavors.isEmpty() ? "" : variant.productFlavors.get(0).second
+        def copyTask = tasks.register("copy${cap}ApkToCurrentDir") {
+            doLast {
+                copy {
+                    from(layout.buildDirectory.dir("outputs/apk/${flavorDir}/${variant.buildType}")) {
+                        include("*.apk")
+                    }
+                    into(rootProject.projectDir.parentFile)
+                }
+            }
+        }
+        tasks.matching { it.name == "assemble${cap}" }.configureEach {
+            finalizedBy(copyTask)
+        }
+    }
+}
