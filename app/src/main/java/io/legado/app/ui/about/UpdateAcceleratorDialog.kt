@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import io.legado.app.help.update.AppUpdateConfig
 import io.legado.app.ui.widget.compose.AppDialogFrame
-import io.legado.app.ui.widget.compose.AppDialogOptionGroup
 import io.legado.app.ui.widget.compose.ComposeDialogFragment
 import io.legado.app.ui.widget.compose.AppDialogSize
 import io.legado.app.ui.widget.compose.LegadoMiuixActionButton
@@ -43,31 +41,14 @@ import io.legado.app.utils.showDialogFragment
 
 object UpdateAcceleratorDialog {
 
-    private data class StrategyOption(
-        val label: String,
-        val value: String
-    )
-
     fun show(fragment: Fragment, onChanged: () -> Unit) {
-        val strategies = listOf(
-            StrategyOption("只使用 GitHub", AppUpdateConfig.STRATEGY_GITHUB_ONLY)
-        )
-        val initialStrategyIndex = strategies.indexOfFirst {
-            it.value == AppUpdateConfig.strategy
-        }.coerceAtLeast(0)
         val initialProxyIndex = AppUpdateConfig.githubProxyIndex
         val initialProxyTemplates = AppUpdateConfig.githubProxyTemplates.toList()
 
         fragment.showDialogFragment(
             UpdateAcceleratorComposeDialog.create(
-                strategyLabels = strategies.map { it.label },
-                initialStrategyIndex = initialStrategyIndex,
                 initialProxyTemplates = initialProxyTemplates,
                 initialProxyIndex = initialProxyIndex,
-                onStrategyChanged = { index ->
-                    AppUpdateConfig.strategy = strategies[index].value
-                    onChanged()
-                },
                 onProxySelected = { index ->
                     AppUpdateConfig.githubProxyIndex = index
                     onChanged()
@@ -107,7 +88,6 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
 
     override val dialogSize: AppDialogSize = AppDialogSize.Form
 
-    private var onStrategyChanged: ((Int) -> Unit)? = null
     private var onProxySelected: ((Int) -> Unit)? = null
     private var onProxyAdded: ((String) -> Unit)? = null
     private var onProxyEdited: ((Int, String) -> Unit)? = null
@@ -126,13 +106,6 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
                 val style = rememberAppDialogStyle()
                 val palette = style.toMiuixPalette()
 
-                val strategies = rememberSaveable {
-                    args.getStringArrayList(ARG_STRATEGY_LABELS)?.toList().orEmpty()
-                }
-                var selectedStrategyIndex by rememberSaveable {
-                    mutableIntStateOf(args.getInt(ARG_STRATEGY_INDEX))
-                }
-
                 var proxyTemplates by rememberSaveable {
                     mutableStateOf(
                         args.getStringArrayList(ARG_PROXY_TEMPLATES)?.toList().orEmpty()
@@ -150,20 +123,6 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            // -- Strategy section --
-                            AppDialogOptionGroup(
-                                title = "更新通道",
-                                options = strategies,
-                                selectedIndex = selectedStrategyIndex,
-                                onSelected = { index ->
-                                    selectedStrategyIndex = index
-                                    onStrategyChanged?.invoke(index)
-                                }
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            // -- Proxy section --
                             Text(
                                 text = "GitHub 加速代理",
                                 color = style.accent,
@@ -310,11 +269,8 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
 
     companion object {
         fun create(
-            strategyLabels: List<String>,
-            initialStrategyIndex: Int,
             initialProxyTemplates: List<String>,
             initialProxyIndex: Int,
-            onStrategyChanged: (Int) -> Unit,
             onProxySelected: (Int) -> Unit,
             onProxyAdded: (String) -> Unit,
             onProxyEdited: (Int, String) -> Unit,
@@ -324,17 +280,11 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
             return UpdateAcceleratorComposeDialog().apply {
                 arguments = Bundle().apply {
                     putStringArrayList(
-                        ARG_STRATEGY_LABELS,
-                        ArrayList(strategyLabels)
-                    )
-                    putInt(ARG_STRATEGY_INDEX, initialStrategyIndex)
-                    putStringArrayList(
                         ARG_PROXY_TEMPLATES,
                         ArrayList(initialProxyTemplates)
                     )
                     putInt(ARG_PROXY_INDEX, initialProxyIndex)
                 }
-                this.onStrategyChanged = onStrategyChanged
                 this.onProxySelected = onProxySelected
                 this.onProxyAdded = onProxyAdded
                 this.onProxyEdited = onProxyEdited
@@ -343,8 +293,6 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
             }
         }
 
-        private const val ARG_STRATEGY_LABELS = "strategyLabels"
-        private const val ARG_STRATEGY_INDEX = "strategyIndex"
         private const val ARG_PROXY_TEMPLATES = "proxyTemplates"
         private const val ARG_PROXY_INDEX = "proxyIndex"
     }
