@@ -26,7 +26,7 @@
 
 DoH 使用与现有 OkHttp 同版本的官方模块。客户端独立创建，保留默认 TLS 证书链及主机名校验，不继承业务客户端的宽松证书校验、Cookie 或 Cronet。启动 IP 只决定连接地址，URL、Host 与证书域名保持原样。
 
-使用独立调度器和连接池、4 MiB HTTP 缓存，以及 64 KiB 的解压后响应上限。缓存遵循 HTTP 缓存语义；重复的并发域名查询共享当前查询，不额外保存没有 TTL 的结果。请求、入队和等待设置时限。DoH 失败默认报错，只有用户打开回退时才查询系统 DNS。
+使用独立调度器和连接池、4 MiB HTTP 缓存，以及 64 KiB 的解压后响应上限。磁盘缓存遵循 HTTP 缓存语义；okhttp 5 起 `DnsOverHttps` 另带一层进程内 DNS 缓存（默认 10s～300s，失败结果 10s，上限 1000 条，随进程重建，其构造函数为 internal 无法从库外关闭），重复的并发域名查询共享当前查询，应用侧不额外保存没有 TTL 的结果。请求、入队和等待设置时限。DoH 失败默认报错，只有用户打开回退时才查询系统 DNS。
 
 测速直接使用生产解析实现。对系统 DNS 和四个预设服务分别查询三次，并展示首次耗时、成功次数、中位数、地址数量及失败原因。DoH 测速不使用本地 HTTP 缓存、Hosts、功能分流或系统回退；复测可以复用 TLS 连接，系统缓存仍由系统控制。这是解析耗时，不是下载带宽或正文渲染性能。
 
@@ -52,6 +52,6 @@ DoH 使用与现有 OkHttp 同版本的官方模块。客户端独立创建，�
 
 完整样本见 `output/doh-network-measurements-1.json`。首次耗时包含连接建立；这些结果只代表本次网络和目标域名，不能据此保证其它网络下的速度或可达性。
 
-发布前会对签名 APK 做一次文件级校验：确认包名、ABI、签名证书与上一版一致，并检查 EPUB 资源与 DoH 相关类的 DEX 引用。构建与验包记录见 CI 产物。
+签名 APK 已生成并通过实际文件校验：`output/doh-network-3.26.09120802-doh-29819522-arm64-v8a-candidate.apk`，大小为 41,041,347 字节，SHA-256 为 `df1d4f143dd0a3e7ce8433f9d13c88bdaaa134a344128c6e34d374573aecd971`。包名为 `io.legado.app.Archive`，仅含 ARM64 库，签名证书与上一版一致；所有 EPUB 资源、DoH 类及其 DEX 引用均已检查。构建及验包记录分别为 `output/doh-network-assemble-1.json` 和 `output/doh-network-apk-bytes-verification.json`；汇总验证记录为 `output/doh-network-release-verification.json`。
 
 目前没有连接 Android 真机，不能把 JVM、主机网络测速和静态 APK 检查当作 ART、厂商 WebView、Wi-Fi/移动网络/VPN 切换的真机验收。

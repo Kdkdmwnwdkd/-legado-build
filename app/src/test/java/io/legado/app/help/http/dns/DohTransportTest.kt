@@ -80,13 +80,18 @@ class DohTransportTest {
             server.dispatcher = object : Dispatcher() {
                 override fun dispatch(request: RecordedRequest) = answer(request)
             }
-            DohTransport(config(server)) {
-                sslSocketFactory(trusted.sslSocketFactory(), trusted.trustManager)
-                proxy(Proxy.NO_PROXY)
-            }.use { transport ->
-                repeat(2) { assertEquals("93.184.216.34", transport.dns.lookup("book.example").single().hostAddress) }
-                assertEquals(2, server.requestCount)
+            // okhttp 5 的 DnsOverHttps 自带一层内存 DnsCache（10s~300s），
+            // 单实例内的第二次查询不再触网。这里用两个独立实例验证
+            // 「没给 cacheDirectory 就不落盘」这条真正的契约。
+            repeat(2) {
+                DohTransport(config(server)) {
+                    sslSocketFactory(trusted.sslSocketFactory(), trusted.trustManager)
+                    proxy(Proxy.NO_PROXY)
+                }.use { transport ->
+                    assertEquals("93.184.216.34", transport.dns.lookup("book.example").single().hostAddress)
+                }
             }
+            assertEquals(2, server.requestCount)
         }
     }
 
@@ -122,7 +127,13 @@ class DohTransportTest {
                 sslSocketFactory(trusted.sslSocketFactory(), trusted.trustManager)
                 proxy(Proxy.NO_PROXY)
             }.use { transport ->
-                repeat(2) { assertThrows(UnknownHostException::class.java) { transport.dns.lookup("book.example") } }
+                // 用不同的主机名绕开 okhttp 5 自带的失败缓存（failureTimeToLive=10s），
+                // 确保 302 与 503 各自真的打到了服务器。
+                repeat(2) { index ->
+                    assertThrows(UnknownHostException::class.java) {
+                        transport.dns.lookup("book$index.example")
+                    }
+                }
                 assertEquals(2, server.requestCount)
             }
         }
