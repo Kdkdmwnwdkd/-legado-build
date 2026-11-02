@@ -393,13 +393,12 @@ abstract class AbsCallBack(
             val requestBuilder = userResponse.request.newBuilder()
             if (HttpMethod.permitsRequestBody(method)) {
                 val responseCode = userResponse.code
-                val maintainBody = HttpMethod.redirectsWithBody(method) ||
-                        responseCode == HTTP_PERM_REDIRECT ||
+                // okhttp 5.5 起 HttpMethod.redirectsWithBody 被移除，307/308 保持原方法这一点
+                // 由下面两个常量直接表达；redirectsToGet 改为接收 responseCode，
+                // 内部已对 307/308 返回 false，所以原来的额外判断也一并去掉。
+                val maintainBody = responseCode == HTTP_PERM_REDIRECT ||
                         responseCode == HTTP_TEMP_REDIRECT
-                if (HttpMethod.redirectsToGet(method)
-                    && responseCode != HTTP_PERM_REDIRECT
-                    && responseCode != HTTP_TEMP_REDIRECT
-                ) {
+                if (HttpMethod.redirectsToGet(method, responseCode)) {
                     requestBuilder.method("GET", null)
                 } else {
                     val requestBody = if (maintainBody) userResponse.request.body else null
