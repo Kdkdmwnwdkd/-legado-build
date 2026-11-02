@@ -52,6 +52,6 @@ DoH 使用与现有 OkHttp 同版本的官方模块。客户端独立创建，�
 
 完整样本见 `output/doh-network-measurements-1.json`。首次耗时包含连接建立；这些结果只代表本次网络和目标域名，不能据此保证其它网络下的速度或可达性。
 
-签名 APK 已生成并通过实际文件校验：`output/doh-network-3.26.09120802-doh-29819522-arm64-v8a-candidate.apk`，大小为 41,041,347 字节，SHA-256 为 `df1d4f143dd0a3e7ce8433f9d13c88bdaaa134a344128c6e34d374573aecd971`。包名为 `io.legado.app.Archive`，仅含 ARM64 库，签名证书与上一版一致；所有 EPUB 资源、DoH 类及其 DEX 引用均已检查。构建及验包记录分别为 `output/doh-network-assemble-1.json` 和 `output/doh-network-apk-bytes-verification.json`；汇总验证记录为 `output/doh-network-release-verification.json`。
+发布前会对签名 APK 做一次文件级校验：确认包名、ABI、签名证书与上一版一致，并检查 EPUB 资源与 DoH 相关类的 DEX 引用。构建与验包记录见 CI 产物。
 
 目前没有连接 Android 真机，不能把 JVM、主机网络测速和静态 APK 检查当作 ART、厂商 WebView、Wi-Fi/移动网络/VPN 切换的真机验收。
