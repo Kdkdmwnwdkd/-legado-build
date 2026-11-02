@@ -9,7 +9,7 @@ body:
       options:
         - label: 搜索现有issues，不存在相似或相关的issue / No related requests
           required: true
-        - label: 最新[测试版](https://github.com/gedoor/legado/releases/beta)没有此功能 / Latest beta app does not this feature
+        - label: 已更新到[最新版](https://github.com/Kdkdmwnwdkd/-legado-build/releases/latest)，仍然没有此功能 / Feature is missing on the latest release
           required: true
 
   - type: textarea
@@ -21,13 +21,13 @@ body:
   - type: textarea
     attributes:
       label: 期望实现方式 / How to implement
-      placeholder: 阅读应该如何实现该功能
+      placeholder: 你希望它怎么工作
     validations:
       required: true
   - type: input
     attributes:
-      label: 阅读版本 / Legado version
-      placeholder: "3.22.110823"
+      label: 版本 / Version
+      placeholder: "3.26.10272145"
     validations:
       required: true
   - type: textarea

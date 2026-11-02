@@ -1,18 +1,16 @@
-# Reading Archive
+# Shimmer Reader
 
 [English](English.md) · [中文](README.md)
 
-Reading Archive builds on the Legado branch maintained by Lyc, extending the open-source Android reader with reading layouts, themes, text-to-speech, AI tools and scheduled tasks.
+Shimmer is an Android reader. Import book sources you provide, or read local TXT and EPUB files.
 
-The app does not include books or book sources. Add your own sources or import local TXT and EPUB files.
+The app does not include books or book sources, does not host any content, and does not provide sources of its own.
+
+> This repository is maintained independently. It does not track any upstream project and does not accept pull requests whose purpose is syncing upstream. Code origin and licensing are stated under "Origin and license" at the end of this file.
 
 ## Downloads
 
 - [GitHub Releases](https://github.com/Kdkdmwnwdkd/-legado-build/releases)
-- [Gitee Releases](https://gitee.com/zziji/legado/releases)
-- [Gitee update channel](https://gitee.com/zziji/legado/releases/tag/latest-arm64-release)
-
-Version 14, `3.26.09160852-smooth`, is available as an arm64-v8a APK. See the release pages for downloads and full release notes.
 
 ## Features
 
@@ -37,16 +35,19 @@ DoH is off by default and configuration changes require an app restart. Requests
 ## Documentation
 
 - [Full feature guide (Chinese)](docs/features.md)
-- [Version 14 release notes (Chinese)](docs/releases/2026-09-17-v14.md)
 - [Page templates](docs/reader-templates.md)
 - [Network and DNS](docs/doh-network.md)
 - [Changelog](CHANGELOG.md)
 - [API](api.md)
 
-This release has passed automated checks, browser rendering comparisons and APK validation. Android device appearance, touch responsiveness and whole-app frame rate have not been measured.
+## Origin and license
 
-## Credits
+The code originates from the open-source Legado reader and its forks. In line with GPLv3, the origin is stated as follows:
 
-Thanks to [gedoor/legado](https://github.com/gedoor/legado), [Luoyacheng/legado](https://github.com/Luoyacheng/legado) and their contributors. Thanks to Mingyue for the scheduled task contribution.
+- [gedoor/legado](https://github.com/gedoor/legado): the original project.
+- [Luoyacheng/legado](https://github.com/Luoyacheng/legado): Reading Sigma.
+- [rimvoid/legado](https://github.com/rimvoid/legado) (formerly Rimchars/legado, Reading Archive): the code baseline of this project.
 
-See [LICENSE](LICENSE) and the [third-party license notices](app/src/main/assets/LICENSE.md).
+None of these projects is affiliated with this one. This project is not their official release and no longer follows their updates.
+
+See [LICENSE](LICENSE) and the [third-party license notices](app/src/main/assets/LICENSE.md). This project is released under GPLv3 as well.

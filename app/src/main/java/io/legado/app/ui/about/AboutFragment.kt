@@ -81,8 +81,7 @@ class AboutFragment : ComposeSettingFragment() {
                         },
                         action(
                             key = KEY_UPDATE_ACCELERATION,
-                            title = getString(R.string.update_acceleration_manage),
-                            summary = AppUpdateConfig.summary(requireContext())
+                            title = getString(R.string.update_acceleration_manage)
                         ) {
                             showUpdateAccelerationManage()
                         }

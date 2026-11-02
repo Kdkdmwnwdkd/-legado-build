@@ -10,9 +10,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 
 object AppUpdate {
 
-    val giteeUpdate: AppUpdateInterface by lazy {
-        AppUpdateGitee
-    }
     val githubUpdate: AppUpdateInterface by lazy {
         AppUpdateGitHub
     }
@@ -120,8 +117,7 @@ object AppUpdate {
         }
 
         private suspend fun checkOfficialNow(): UpdateInfo {
-            // 阅读Shimmer 为独立产品，发布与更新只走自己的 GitHub 仓库，
-            // 不再访问 Gitee（原配置指向的是上游作者的仓库）。
+            // 阅读Shimmer 为独立产品，发布与更新只走自己的 GitHub 仓库。
             return AppUpdateGitHub.checkNow()
         }
     }
