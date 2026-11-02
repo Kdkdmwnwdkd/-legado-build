@@ -2,7 +2,7 @@
 
 [中文](README.md) · [English](English.md)
 
-<p align="center"><img width="125" height="125" src="docs/archive_icon.svg" alt="阅读Shimmer"></p>
+<p align="center"><img width="125" height="125" src="docs/icon.svg" alt="阅读Shimmer"></p>
 
 阅读Shimmer 是一个 Android 阅读器。书源自行导入，也可以读本地 TXT、EPUB。
 
