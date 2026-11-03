@@ -1,10 +1,9 @@
-# Compose Migration Skill Guide
+# Compose UI 规范速查
 
-## 目标
-将"我的"页面及其衍生页面/弹窗从传统 View/XML 迁移到 Jetpack Compose。
+## 背景
 
-## 分支
-`codex/compose-dialog-ui-20260608`
+本项目正在把「我的」页面及其衍生页面、弹窗从传统 View/XML 迁移到 Jetpack Compose。
+这份文档整理迁移过程中形成的视觉规范与可复用组件清单，供后续新增页面参考。
 
 ## 设计规范速查
 
@@ -42,7 +41,10 @@
 3. legacy 弹窗 → showCompose*Dialog 或 ComposeDialogFragment
 4. XML 外壳 → Compose TopAppBar
 
-## 迁移阶段
+## 迁移阶段（历史计划，供参考）
+
+> 这是迁移启动时排的阶段划分，实际进度以代码为准。
+
 - Phase 0: 基础设施补全（ComposeManageScreen 框架、ComposeEditDialog 基类、ComposeImportDialog 基类）
 - Phase 1: 高收益低风险（AiConfigFragment 弹窗、通用弹窗、子弹窗补全）
 - Phase 2: MyFragment + ConfigActivity 外壳去 XML

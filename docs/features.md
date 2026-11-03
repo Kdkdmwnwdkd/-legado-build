@@ -1,8 +1,8 @@
-# 阅读 Archive 功能说明
+# 功能说明
 
-阅读 Archive 是基于 Legado / 阅读 Sigma 分支继续开发的 Android 阅读器。支持自行添加书源、阅读本地书籍，并提供书架管理、听书、主题、AI 和自动任务等功能。应用不内置书籍内容，书源与阅读内容由使用者自行添加。
+阅读Shimmer 是一个 Android 阅读器。支持自行添加书源、阅读本地书籍，并提供书架管理、听书、主题、AI 和自动任务等功能。应用不内置书籍内容，书源与阅读内容由使用者自行添加。
 
-本文介绍第十四版功能。安装包见 [GitHub Releases](https://github.com/Kdkdmwnwdkd/-legado-build/releases)。
+本文对应当前版本。安装包见 [GitHub Releases](https://github.com/Kdkdmwnwdkd/-legado-build/releases)。
 
 ## 阅读与书籍管理
 
@@ -78,4 +78,4 @@ EPUB 支持覆盖、滑动、仿真等翻页方式和独立阅读样式。默认
 
 ## 当前验证范围
 
-第十四版已完成 JVM 回归、浏览器渲染比较、静态检查和安装包校验。复杂模板、高亮图案和系统 WebView 的实际表现仍需设备反馈；当前未完成 Android 真机显示、触控或整机帧率验收。
+当前版本已完成 JVM 回归、浏览器渲染比较、静态检查和安装包校验。复杂模板、高亮图案和系统 WebView 的实际表现仍需设备反馈；当前未完成 Android 真机显示、触控或整机帧率验收。

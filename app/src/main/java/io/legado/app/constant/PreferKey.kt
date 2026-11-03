@@ -384,7 +384,6 @@ object PreferKey {
     const val optimizeRender = "optimizeRender"
     const val readerDataRepairVersion = "readerDataRepairVersion"
     const val updateToVariant = "updateToVariant"
-    const val updateSourceStrategy = "updateSourceStrategy"
     const val updateGithubProxyTemplates = "updateGithubProxyTemplates"
     const val updateGithubProxyIndex = "updateGithubProxyIndex"
     const val internalBetaUpdateEnabled = "internalBetaUpdateEnabled"

@@ -2,19 +2,19 @@
 
 [中文](README.md) · [English](English.md)
 
-<p align="center"><img width="125" height="125" src="docs/archive_icon.svg" alt="阅读Shimmer"></p>
+<p align="center"><img width="125" height="125" src="docs/icon.svg" alt="阅读Shimmer"></p>
 
-阅读Shimmer 是一个独立的 Legado 分支，延续「阅读 Archive」的正文与 EPUB 阅读体验，并加入水墨风格图标、书源查重分组、听书跟随翻页等自有改动。
+阅读Shimmer 是一个 Android 阅读器。书源自行导入，也可以读本地 TXT、EPUB。
 
-应用不内置任何书籍内容。书源由用户自行添加，也可以导入本地 TXT、EPUB 书籍。
+应用不内置任何书籍内容，不提供内容来源，也不托管任何书籍。
 
-> **与原版、Archive 的关系**：本项目的代码来自 [gedoor/legado](https://github.com/gedoor/legado) → [Luoyacheng/legado](https://github.com/Luoyacheng/legado)（阅读Sigma）→ [rimvoid/legado](https://github.com/rimvoid/legado)（阅读Archive）这条线，在其第十四版基础上继续维护。原版作者已于 2026 年停止更新并清空仓库，本分支与上述项目没有从属关系，也不代表它们的官方发布。
+> 本仓库独立维护，不跟踪任何上游项目的更新，也不接收以「同步上游」为目的的 PR。代码来源与许可见文末「来源与许可」。
 
 ## 下载与更新
 
 - [GitHub Releases](https://github.com/Kdkdmwnwdkd/-legado-build/releases)：唯一发布渠道，应用内更新同样读取这里。
 
-包名为 `io.legado.app.shimmer`，与原版（`io.legado.app`）、阅读 Archive（`io.legado.app.Archive`）**互不覆盖，可同时安装**。
+包名为 `io.legado.app.shimmer`，与 Legado（`io.legado.app`）、阅读 Archive（`io.legado.app.Archive`）**互不覆盖，可同时安装**。
 
 ## 从旧版本迁移
 
@@ -26,12 +26,12 @@
 
 > 旧版的「书源分组」「阅读主题」等自定义项也会随备份恢复；WebDAV 备份需要重新填写账号。
 
-## 本轮更新
+## 主要改动
 
-- 应用独立为 `io.legado.app.shimmer`，可与 Archive 版共存，不再互相覆盖。
-- 更新通道改为只使用本项目自己的 GitHub Release，不再访问上游仓库。
+- 独立包名 `io.legado.app.shimmer`，可与 Legado、阅读 Archive 共存。
+- 更新只读本仓库的 GitHub Release。
 - 版本号统一为时间戳（epoch 分钟），本地构建与 CI 产物可直接比较新旧。
-- 签名密钥移出仓库，改由 CI Secrets 提供。
+- 签名密钥移出仓库，由 CI Secrets 提供。
 - 听书跟随翻页：手动翻页时听书自动跳到当前页，跨章节同样生效。
 - 书源查重支持按分组选择。
 - 备份区分本地与云端：云端失败不再中断本地备份。
@@ -61,7 +61,6 @@
 - [高级标题等视觉资源包](docs/visual-resource-packages.md)
 - [段落规则和气泡包导入](docs/online-package-import.md)
 - [Web 与 Content Provider API](api.md)
-- [上游帮助文档](https://www.yuque.com/legado/wiki)
 
 高亮规则使用本地 `.red` 文件导入。完整图片图案与复杂 CSS 效果使用 EPUB 渲染；普通正文的 EPUB 模式当前不启用段落规则与 `pclick`，原始图片 `click` 和替换净化继续支持。页面模板库提供独立备份。
 
@@ -105,15 +104,16 @@
 
 产物命名必须保持 `<任意>_<任意>_<版本>_<版本号>.apk` 且不能含 `release` 字样——应用内更新按这个规则解析版本和 ABI。
 
-## 开源与致谢
+## 来源与许可
 
-本项目建立在以下项目之上，感谢原作者与各分支维护者：
+本项目的代码源自开源阅读（Legado）及其分支。按 GPLv3 的要求，如实说明来源：
 
-- [gedoor/legado](https://github.com/gedoor/legado)：原始项目，作者已停止维护。
-- [Luoyacheng/legado](https://github.com/Luoyacheng/legado)：本分支的直接上游之一。
-- [rimvoid/legado](https://github.com/rimvoid/legado)（原 Rimchars/legado，阅读 Archive）：本分支的代码基线。
-- 定时任务功能感谢明月的贡献。
+- [gedoor/legado](https://github.com/gedoor/legado)：原始项目。
+- [Luoyacheng/legado](https://github.com/Luoyacheng/legado)：阅读 Sigma。
+- [rimvoid/legado](https://github.com/rimvoid/legado)（原 Rimchars/legado，阅读 Archive）：本项目的代码基线。
+
+以上项目与本项目无从属关系，本项目不代表它们的官方发布，也不再跟随它们更新。
 
 项目使用 Rhino、Jsoup、OkHttp、Glide、Miuix、Paged.js 等开源组件，各组件保留各自许可。项目许可见 [LICENSE](LICENSE)（GPLv3），应用内组件说明见 [开源许可](app/src/main/assets/LICENSE.md)。
 
-本分支的修改同样以 GPLv3 开源。如果你二次分发，请保留上述署名并标明修改。
+本项目同样以 GPLv3 开源。二次分发时请保留上述署名并标明修改。

@@ -106,10 +106,10 @@
     <string name="offline_cache_s">cache the selected chapter(s) to Storage</string>
     <string name="change_origin">Change Origin</string>
     <string name="about_description">
-        \u3000\u3000 This is an open source reading software newly developed by Kotlin, welcome to join us.
+        \u3000\u3000 Shimmer is an open source Android reader written in Kotlin.
     </string>
     <string name="app_share_description">
-        阅读Shimmer download link（由阅读Archive改版）：\nhttps://github.com/Kdkdmwnwdkd/-legado-build/releases
+        阅读Shimmer download link：\nhttps://github.com/Kdkdmwnwdkd/-legado-build/releases
     </string>
     <string name="version_name">Version %s</string>
     <string name="pt_background_verification">Background-verification</string>
@@ -1859,10 +1859,10 @@ function login() {
     <string name="video_setting_summary">自动播放、全屏播放等配置</string>
     <string name="history">历史记录</string>
     <string name="app_name_sigma">阅读Shimmer</string>
-    <string name="about_description_sigma">\u3000\u3000阅读Shimmer 基于 阅读Archive 改版，源自 Legado 持续定制，专注阅读体验、书源工具与 AI 辅助能力。</string>
-    <string name="contributors_summary_sigma">当前维护仓库：Kdkdmwnwdkd/-legado-build（由阅读Archive改版），详情请在 GitHub 中查看</string>
+    <string name="about_description_sigma">\u3000\u3000阅读Shimmer 是一个独立的 Android 阅读器，专注阅读体验、书源工具与 AI 辅助能力。</string>
+    <string name="contributors_summary_sigma">当前维护仓库：Kdkdmwnwdkd/-legado-build，详情请在 GitHub 中查看</string>
     <string name="app_share_description_sigma">
-        阅读Shimmer 下载地址（由阅读Archive改版）：\nhttps://github.com/Kdkdmwnwdkd/-legado-build/releases
+        阅读Shimmer 下载地址：\nhttps://github.com/Kdkdmwnwdkd/-legado-build/releases
     </string>
     <string name="sure_cache_book">是否确认开始缓存？</string>
     <string name="non_printable_set">不可视字符设定</string>
