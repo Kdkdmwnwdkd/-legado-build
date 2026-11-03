@@ -56,7 +56,7 @@ android {
         // 独立产品标识：与「阅读 Archive」（io.legado.app.Archive）和
         // 原版（io.legado.app）互不覆盖，可共存安装。
         applicationId "io.legado.app.shimmer"
-        minSdk 21
+        minSdk 24
         targetSdk 36
         multiDexEnabled true
         multiDexKeepFile file('multidex-config.txt')
