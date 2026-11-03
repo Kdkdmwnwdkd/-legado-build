@@ -16,6 +16,8 @@
 
 包名为 `io.legado.app.shimmer`，与 Legado（`io.legado.app`）、阅读 Archive（`io.legado.app.Archive`）**互不覆盖，可同时安装**。
 
+最低系统要求 **Android 7.0（API 24）**。旧版本曾声明支持 Android 5.0，但主界面依赖的渲染组件从 2025 年起就要求 API 24，低版本实际无法运行，故不再声明。
+
 ## 从旧版本迁移
 
 包名变更后，旧版本的本地数据不会自动带过来（Android 按包名隔离数据）。迁移方式：
