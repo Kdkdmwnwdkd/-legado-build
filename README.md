@@ -68,12 +68,14 @@
 
 ## 构建
 
-环境：JDK 17、Android SDK（compileSdk 36）。
+环境：JDK 17、Android SDK（compileSdk 37），Gradle Wrapper 自带，无需本地安装。
 
 ```bash
 ./gradlew :app:assembleAppDebug -Pabi=arm64-v8a     # 调试包，默认 debug 签名
-./gradlew test                                      # 单元测试
+./gradlew :app:testAppDebugUnitTest                 # 单元测试（只编译 debug 一套）
 ```
+
+> 不要用 `./gradlew test`：它会同时编译 debug 与 release 两套 Kotlin，耗时接近翻倍，CI 用的是上面这条。
 
 正式包需要签名参数，仓库内不再保存任何密钥：
 
