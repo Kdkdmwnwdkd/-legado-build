@@ -55,6 +55,10 @@ class DohTransport(
             } finally { response.close() }
         }
         .build()
+    // okhttp 5 起 DnsOverHttps 自带一层进程内 DNS 缓存（默认 10s～300s，失败 10s，
+    // 上限 1000 条）。它的构造函数是 internal，库外既无法替换也无法关闭，故不显式设置。
+    // 这层缓存不会让配置变更失效：AppDns 是进程级单例，改 DNS 设置本来就要求重启进程，
+    // 重启后 transport 与缓存一起重建。
     private val implementation = DnsOverHttps.Builder()
         .client(client)
         .url(endpoint)

@@ -2,7 +2,7 @@
 
 kotlin = "2.3.10"
 ksp = "2.3.7"
-agp = "8.13.2"
+agp = "9.5.0"
 appcompat = "1.7.1"
 colorpicker = "1.1.0"
 constraintlayout = "2.2.1"
@@ -28,7 +28,7 @@ material = "1.13.0"
 media = "1.7.1"
 danmaku = "0.9.25"
 nanoHttpd = "2.3.1"
-okhttp = "5.3.2"
+okhttp = "5.5.1"
 preference = "1.2.1"
 quickChineseTransfer = "0.2.17"
 
