@@ -75,7 +75,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:minEms="2"
-            android:text="关弹幕"
+            android:text="@string/hide_danmaku"
             android:textColor="#ffffff"
             android:visibility="gone"
             tools:visibility="visible" />

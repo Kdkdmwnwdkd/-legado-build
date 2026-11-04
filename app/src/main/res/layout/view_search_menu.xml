@@ -157,7 +157,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="3dp"
                     android:maxLines="1"
-                    android:text="结果"
+                    android:text="@string/search_menu_result"
                     android:textColor="@color/primaryText"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -238,7 +238,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="3dp"
                     android:maxLines="1"
-                    android:text="退出"
+                    android:text="@string/exit"
                     android:textColor="@color/primaryText"
                     android:textSize="12sp" />
             </LinearLayout>

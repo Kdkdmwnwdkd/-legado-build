@@ -2526,4 +2526,13 @@ bookUrl：%7$s
     <string name="share_note_render_failed">生成分享图片失败：%1$s</string>
     <string name="share_note_save_failed">保存图片失败：%1$s</string>
 
+    <!--布局文案-->
+    <string name="manga_reload">重新加载</string>
+    <string name="select_episode">选集</string>
+    <string name="hide_danmaku">关弹幕</string>
+    <string name="playback_speed">倍速</string>
+    <string name="search_menu_result">结果</string>
+    <string name="welcome_title">阅读</string>
+    <string name="welcome_subtitle">享受美好时光</string>
+    <string name="welcome_slogan">品读万千故事</string>
 </resources>

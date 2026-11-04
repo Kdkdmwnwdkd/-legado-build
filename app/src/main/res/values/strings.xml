@@ -2586,4 +2586,14 @@ Selected text or question:
     <string name="auto_task_import_duplicate_id">Task IDs must be unique</string>
     <string name="auto_task_import_done">Tasks imported</string>
     <string name="auto_task_import_select_none">Select at least one task</string>
+
+    <!--Layout labels-->
+    <string name="manga_reload">Reload</string>
+    <string name="select_episode">Episodes</string>
+    <string name="hide_danmaku">Hide comments</string>
+    <string name="playback_speed">Speed</string>
+    <string name="search_menu_result">Results</string>
+    <string name="welcome_title">Read</string>
+    <string name="welcome_subtitle">Enjoy the moment</string>
+    <string name="welcome_slogan">A thousand stories await</string>
 </resources>
