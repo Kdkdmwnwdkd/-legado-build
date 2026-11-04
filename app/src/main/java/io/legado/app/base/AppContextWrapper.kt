@@ -83,10 +83,11 @@ object AppContextWrapper {
      */
     private fun getSetLocale(context: Context): Locale {
         return when (context.getPrefString(PreferKey.language)) {
-            "zh" -> Locale.SIMPLIFIED_CHINESE
+            "auto" -> getSystemLocale()
             "tw" -> Locale.TRADITIONAL_CHINESE
             "en" -> Locale.ENGLISH
-            else -> getSystemLocale()
+            // 未设置语言时默认简体中文（本产品面向中文用户）；需要跟随系统请显式选择「跟随系统」
+            else -> Locale.SIMPLIFIED_CHINESE
         }
     }
 
