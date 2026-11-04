@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <io.legado.app.lib.prefs.NameListPreference
-        android:defaultValue="auto"
+        android:defaultValue="zh"
         android:key="language"
         android:title="@string/language"
         app:entries="@array/language"
