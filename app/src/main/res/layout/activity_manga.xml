@@ -88,7 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:text="重新加载"
+                android:text="@string/manga_reload"
                 android:textSize="18sp"
                 tools:visibility="visible" />
         </LinearLayout>

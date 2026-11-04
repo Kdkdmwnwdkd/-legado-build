@@ -100,6 +100,37 @@ tap_tab 14  shot-5-bookshelf
 tap_tab 88  shot-6-search
 echo "::endgroup::"
 
+# 默认语言是简体中文，所以上面跑出来的是中文界面。
+# 这一段把偏好里的 language 改成 en 重启一次，用来检查英文资源有没有漏翻或串味。
+# debug 包 debuggable=true，可以直接用 run-as 改私有目录里的偏好文件。
+echo "::group::switch-to-english"
+PREFS="shared_prefs/${PKG}_preferences.xml"
+adb shell am force-stop "$PKG"
+sleep 2
+adb shell "run-as $PKG cat $PREFS" > pref.xml 2>/dev/null
+if [ -s pref.xml ]; then
+  python3 - <<'PY'
+import re
+s = open('pref.xml', encoding='utf-8').read()
+if '<string name="language">' in s:
+    s = re.sub(r'<string name="language">[^<]*</string>',
+               '<string name="language">en</string>', s)
+else:
+    s = s.replace('<map>', '<map>\n    <string name="language">en</string>', 1)
+open('pref.xml', 'w', encoding='utf-8').write(s)
+PY
+  adb push pref.xml /data/local/tmp/pref.xml >/dev/null
+  adb shell "run-as $PKG sh -c 'cat /data/local/tmp/pref.xml > $PREFS'"
+  adb shell am start -W -n "$ACT" >/dev/null
+  sleep 12
+  tap_tab 73  shot-7-en-mine
+  tap_tab 14  shot-8-en-bookshelf
+  tap_tab 29  shot-9-en-discovery
+else
+  echo "::warning::没有读到偏好文件，跳过英文界面检查"
+fi
+echo "::endgroup::"
+
 adb logcat -d -v threadtime > logcat.txt
 
 echo "::group::crash scan"

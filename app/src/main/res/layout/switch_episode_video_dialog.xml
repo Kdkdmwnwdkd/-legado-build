@@ -13,7 +13,7 @@
         android:layout_margin="8dp"
         android:gravity="center"
         android:minEms="2"
-        android:text="选集"
+        android:text="@string/select_episode"
         android:textColor="#88ffffff" />
 
     <ListView
