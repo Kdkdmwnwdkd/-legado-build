@@ -5,7 +5,7 @@
     <string name="app_launcher_name">Shimmer</string>
     <string name="app_name_a">阅读Shimmer·A</string>
     <string name="app_name_s" translatable="false">阅读ShimmerPlus</string>
-    <string name="receiving_shared_label">阅读Shimmer·搜索</string>
+    <string name="receiving_shared_label">阅读Shimmer Search</string>
     <string name="tip_perm_request_storage">阅读Shimmer needs storage access to find and read books. please go "App Settings" to allow "Storage permission".</string>
 
     <!--Other-->
@@ -108,9 +108,7 @@
     <string name="about_description">
         \u3000\u3000 Shimmer is an open source Android reader written in Kotlin.
     </string>
-    <string name="app_share_description">
-        阅读Shimmer download link：\nhttps://github.com/Kdkdmwnwdkd/-legado-build/releases
-    </string>
+    <string name="app_share_description">阅读Shimmer download link:\nhttps://github.com/Kdkdmwnwdkd/-legado-build/releases</string>
     <string name="version_name">Version %s</string>
     <string name="pt_background_verification">Background-verification</string>
     <string name="ps_background_verification">you can operate freely when verifying the book source</string>
@@ -197,7 +195,7 @@
     <string name="source_rule_s">Source rules description</string>
     <string name="check_update">Check for Updates</string>
     <string name="update_no_new_version">No updates available</string>
-    <string name="update_acceleration_manage">加速管理</string>
+    <string name="update_acceleration_manage">Acceleration</string>
     <string name="camera_scan">Scan QR code</string>
     <string name="scan_image">Scan local images</string>
     <string name="rule_summary">Rules description</string>
@@ -626,44 +624,44 @@
     <string name="help">Help</string>
     <string name="my">Me</string>
     <string name="ai">AI</string>
-    <string name="ai_assistant">AI 助手</string>
+    <string name="ai_assistant">AI Assistant</string>
     <string name="side_nav_assistant">Assistant</string>
     <string name="side_nav_stats">Stats</string>
-    <string name="ai_setting">AI 设置</string>
-    <string name="ai_setting_summary">分开配置提供商和模型</string>
+    <string name="ai_setting">AI Settings</string>
+    <string name="ai_setting_summary">Configure providers and models separately</string>
     <string name="ai_enable">Enable AI</string>
     <string name="ai_enable_summary">Enabled: long press Search to open AI</string>
-    <string name="ai_enable_summary_disabled">当前提供商下有模型时才能开启</string>
-    <string name="ai_system_prompt">系统提示词</string>
-    <string name="ai_system_prompt_summary">设置 AI 的身份、工具调用规则和回答风格</string>
-    <string name="ai_system_prompt_hint">输入系统提示词</string>
-    <string name="ai_provider">提供商</string>
-    <string name="ai_current_provider">当前提供商</string>
-    <string name="ai_current_provider_summary_empty">请先添加提供商</string>
-    <string name="ai_add_provider">添加提供商</string>
-    <string name="ai_add_provider_summary">新增一个兼容 OpenAI 的接口提供商</string>
-    <string name="ai_manage_providers">管理提供商</string>
-    <string name="ai_manage_providers_summary">已添加 %1$d 个提供商</string>
-    <string name="ai_provider_name">提供商名称</string>
-    <string name="ai_provider_name_required">请输入提供商名称</string>
-    <string name="ai_provider_url_required">请输入接口地址</string>
-    <string name="ai_no_providers">暂无提供商</string>
-    <string name="ai_set_current_provider">设为当前提供商</string>
-    <string name="ai_edit_provider">编辑提供商</string>
-    <string name="ai_remove_provider">删除提供商</string>
-    <string name="ai_remove_provider_confirm">确定删除这个提供商吗？</string>
-    <string name="ai_remove_provider_confirm_with_models">确定删除这个提供商吗？关联的 %1$d 个模型也会一起删除。</string>
-    <string name="ai_provider_saved">已保存提供商</string>
-    <string name="ai_provider_removed">已删除提供商</string>
-    <string name="ai_model">模型</string>
-    <string name="ai_provider_manage_title">供应商管理</string>
-    <string name="ai_provider_config">供应商配置</string>
-    <string name="ai_model_manage">模型管理</string>
-    <string name="ai_provider_manage_summary">按供应商管理模型，点击供应商可进入编辑和模型管理。</string>
+    <string name="ai_enable_summary_disabled">Available after adding a model to the current provider</string>
+    <string name="ai_system_prompt">System prompt</string>
+    <string name="ai_system_prompt_summary">Set the AI\'s identity, tool-calling rules, and reply style</string>
+    <string name="ai_system_prompt_hint">Enter the system prompt</string>
+    <string name="ai_provider">Provider</string>
+    <string name="ai_current_provider">Current provider</string>
+    <string name="ai_current_provider_summary_empty">Add a provider first</string>
+    <string name="ai_add_provider">Add provider</string>
+    <string name="ai_add_provider_summary">Add an OpenAI-compatible API provider</string>
+    <string name="ai_manage_providers">Manage providers</string>
+    <string name="ai_manage_providers_summary">%1$d providers added</string>
+    <string name="ai_provider_name">Provider name</string>
+    <string name="ai_provider_name_required">Enter a provider name</string>
+    <string name="ai_provider_url_required">Enter the API endpoint</string>
+    <string name="ai_no_providers">No providers yet</string>
+    <string name="ai_set_current_provider">Set as current provider</string>
+    <string name="ai_edit_provider">Edit provider</string>
+    <string name="ai_remove_provider">Delete provider</string>
+    <string name="ai_remove_provider_confirm">Delete this provider?</string>
+    <string name="ai_remove_provider_confirm_with_models">Delete this provider? Its %1$d models will be deleted too.</string>
+    <string name="ai_provider_saved">Provider saved</string>
+    <string name="ai_provider_removed">Provider deleted</string>
+    <string name="ai_model">Model</string>
+    <string name="ai_provider_manage_title">Provider management</string>
+    <string name="ai_provider_config">Provider configuration</string>
+    <string name="ai_model_manage">Model management</string>
+    <string name="ai_provider_manage_summary">Manage models per provider. Tap a provider to edit it or manage its models.</string>
     <string name="ai_provider_mode_chat">Chat Completions</string>
     <string name="ai_provider_mode_responses">Responses</string>
-    <string name="ai_api_mode">接口模式</string>
-    <string name="ai_enable_prompt_cache_key">启用提示词缓存标记</string>
+    <string name="ai_api_mode">API mode</string>
+    <string name="ai_enable_prompt_cache_key">Enable prompt cache key</string>
     <string name="ai_base_url">Base URL</string>
     <string name="ai_base_url_summary">Compatible endpoint base address</string>
     <string name="ai_api_key">API Key</string>
@@ -677,50 +675,50 @@
     <string name="ai_manage_native_tools_summary">Enable or disable available built-in tools</string>
     <string name="ai_enter_to_send">Enter to send</string>
     <string name="ai_enter_to_send_summary">When enabled, pressing Enter sends the message. When disabled, only the send button sends.</string>
-    <string name="ai_context_compression">上下文压缩</string>
-    <string name="ai_context_compression_summary_default">默认 258K 上下文，128K 思考上下文；接近上限时压缩旧历史</string>
-    <string name="ai_context_compression_enabled">启用上下文压缩</string>
-    <string name="ai_context_tokens">上下文长度</string>
-    <string name="ai_thinking_context_tokens">思考上下文</string>
-    <string name="ai_persona_manage">人格提示词</string>
-    <string name="ai_persona_manage_summary_empty">未设置人格提示词</string>
-    <string name="ai_image_provider_manage">生图供应商</string>
-    <string name="ai_image_provider_summary_empty">未配置生图供应商</string>
-    <string name="ai_image_provider_summary">已启用 %1$d 个，共 %2$d 个</string>
-    <string name="ai_image_provider_manage_summary">配置 OpenAI 生图接口或 JS 生图规则。AI 对话可通过工具调用或独立生图入口生成图片。</string>
-    <string name="ai_image_provider_openai">OpenAI 生图</string>
-    <string name="ai_image_provider_js">JS 生图规则</string>
-    <string name="ai_image_provider_type">供应商类型</string>
-    <string name="ai_image_params">请求参数 JSON</string>
-    <string name="ai_image_style_prompt">风格提示词</string>
-    <string name="ai_image_script">生图脚本</string>
-    <string name="ai_image_generate">生图</string>
-    <string name="ai_image_gallery">AI 图片库</string>
-    <string name="ai_image_gallery_summary">查看生成图片、收藏分组和临时图片</string>
-    <string name="ai_image_gallery_empty">暂无图片</string>
-    <string name="ai_image_gallery_all">全部</string>
-    <string name="ai_image_gallery_temporary">未收藏</string>
-    <string name="ai_image_group">分组</string>
-    <string name="ai_image_default_group">默认分组</string>
-    <string name="ai_image_new_group">新建分组</string>
-    <string name="ai_image_favorite_to">收藏到</string>
-    <string name="ai_image_cancel_favorite">取消收藏</string>
-    <string name="ai_image_rename">重命名</string>
-    <string name="ai_image_delete_confirm">删除这张图片？</string>
-    <string name="ai_image_prompt_hint">输入图片提示词</string>
-    <string name="ai_image_generating">正在生成图片...</string>
-    <string name="ai_image_generated">图片已生成</string>
-    <string name="ai_image_regenerate">重新生成</string>
-    <string name="ai_image_optimize_prompt">AI优化</string>
-    <string name="ai_image_insert">插入</string>
-    <string name="ai_image_inserted">图片已插入正文</string>
-    <string name="ai_image_generate_failed">图片生成失败</string>
-    <string name="ai_image_insert_failed">图片插入失败</string>
-    <string name="ai_image_no_selection">请选择正文段落</string>
-    <string name="ai_image_delete_insert">删除插图</string>
-    <string name="ai_image_delete_insert_confirm">删除这张插图？图库中的原图会保留。</string>
-    <string name="ai_image_insert_deleted">插图已删除</string>
-    <string name="ai_image_insert_not_found">未找到插图引用</string>
+    <string name="ai_context_compression">Context compression</string>
+    <string name="ai_context_compression_summary_default">258K context and 128K thinking context by default; older history is compressed near the limit</string>
+    <string name="ai_context_compression_enabled">Enable context compression</string>
+    <string name="ai_context_tokens">Context length</string>
+    <string name="ai_thinking_context_tokens">Thinking context</string>
+    <string name="ai_persona_manage">Persona prompts</string>
+    <string name="ai_persona_manage_summary_empty">No persona prompt set</string>
+    <string name="ai_image_provider_manage">Image providers</string>
+    <string name="ai_image_provider_summary_empty">No image provider configured</string>
+    <string name="ai_image_provider_summary">%1$d of %2$d enabled</string>
+    <string name="ai_image_provider_manage_summary">Configure OpenAI image endpoints or JS image rules. AI chat can generate images through tool calls or the standalone image entry.</string>
+    <string name="ai_image_provider_openai">OpenAI image</string>
+    <string name="ai_image_provider_js">JS image rules</string>
+    <string name="ai_image_provider_type">Provider type</string>
+    <string name="ai_image_params">Request parameters (JSON)</string>
+    <string name="ai_image_style_prompt">Style prompt</string>
+    <string name="ai_image_script">Image script</string>
+    <string name="ai_image_generate">Generate image</string>
+    <string name="ai_image_gallery">AI image library</string>
+    <string name="ai_image_gallery_summary">Browse generated images, favorite groups, and temporary images</string>
+    <string name="ai_image_gallery_empty">No images yet</string>
+    <string name="ai_image_gallery_all">All</string>
+    <string name="ai_image_gallery_temporary">Not in favorites</string>
+    <string name="ai_image_group">Group</string>
+    <string name="ai_image_default_group">Default group</string>
+    <string name="ai_image_new_group">New group</string>
+    <string name="ai_image_favorite_to">Add to favorites</string>
+    <string name="ai_image_cancel_favorite">Remove from favorites</string>
+    <string name="ai_image_rename">Rename</string>
+    <string name="ai_image_delete_confirm">Delete this image?</string>
+    <string name="ai_image_prompt_hint">Enter an image prompt</string>
+    <string name="ai_image_generating">Generating image...</string>
+    <string name="ai_image_generated">Image generated</string>
+    <string name="ai_image_regenerate">Regenerate</string>
+    <string name="ai_image_optimize_prompt">AI optimize</string>
+    <string name="ai_image_insert">Insert</string>
+    <string name="ai_image_inserted">Image inserted into the text</string>
+    <string name="ai_image_generate_failed">Image generation failed</string>
+    <string name="ai_image_insert_failed">Failed to insert the image</string>
+    <string name="ai_image_no_selection">Select a paragraph first</string>
+    <string name="ai_image_delete_insert">Remove inline image</string>
+    <string name="ai_image_delete_insert_confirm">Remove this inline image? The original stays in the library.</string>
+    <string name="ai_image_insert_deleted">Inline image removed</string>
+    <string name="ai_image_insert_not_found">Inline image reference not found</string>
     <string name="ai_tavily_api_key">Tavily API key</string>
     <string name="ai_tavily_api_key_hint">tvly-...</string>
     <string name="ai_tavily_api_key_summary">Tap to set your Tavily API key.</string>
@@ -764,24 +762,24 @@
     <string name="ai_manage_models_summary">%1$d models added</string>
     <string name="ai_edit_model">Edit model</string>
     <string name="ai_model_saved">Model saved</string>
-    <string name="ai_mcp">MCP 服务器</string>
-    <string name="ai_add_mcp_server">添加 MCP 服务器</string>
-    <string name="ai_add_mcp_server_summary">添加 Streamable HTTP MCP 接口</string>
-    <string name="ai_manage_mcp_servers">管理 MCP 服务器</string>
-    <string name="ai_manage_mcp_servers_summary">已启用 %1$d 个，共 %2$d 个</string>
-    <string name="ai_no_mcp_servers">暂无 MCP 服务器</string>
-    <string name="ai_mcp_server_name">服务器名称</string>
-    <string name="ai_mcp_server_endpoint">服务器地址</string>
-    <string name="ai_mcp_server_name_required">请输入 MCP 服务器名称</string>
-    <string name="ai_mcp_server_endpoint_required">请输入 MCP 服务器地址</string>
-    <string name="ai_mcp_server_enabled">启用这个 MCP 服务器</string>
-    <string name="ai_mcp_server_saved">已保存 MCP 服务器</string>
-    <string name="ai_mcp_server_removed">已删除 MCP 服务器</string>
-    <string name="ai_edit_mcp_server">编辑 MCP 服务器</string>
-    <string name="ai_remove_mcp_server">删除 MCP 服务器</string>
-    <string name="ai_remove_mcp_server_confirm">确定删除这个 MCP 服务器吗？</string>
-    <string name="ai_enable_mcp_server">启用服务器</string>
-    <string name="ai_disable_mcp_server">停用服务器</string>
+    <string name="ai_mcp">MCP servers</string>
+    <string name="ai_add_mcp_server">Add MCP server</string>
+    <string name="ai_add_mcp_server_summary">Add a Streamable HTTP MCP endpoint</string>
+    <string name="ai_manage_mcp_servers">Manage MCP servers</string>
+    <string name="ai_manage_mcp_servers_summary">%1$d of %2$d enabled</string>
+    <string name="ai_no_mcp_servers">No MCP servers yet</string>
+    <string name="ai_mcp_server_name">Server name</string>
+    <string name="ai_mcp_server_endpoint">Server endpoint</string>
+    <string name="ai_mcp_server_name_required">Enter the MCP server name</string>
+    <string name="ai_mcp_server_endpoint_required">Enter the MCP server endpoint</string>
+    <string name="ai_mcp_server_enabled">Enable this MCP server</string>
+    <string name="ai_mcp_server_saved">MCP server saved</string>
+    <string name="ai_mcp_server_removed">MCP server deleted</string>
+    <string name="ai_edit_mcp_server">Edit MCP server</string>
+    <string name="ai_remove_mcp_server">Delete MCP server</string>
+    <string name="ai_remove_mcp_server_confirm">Delete this MCP server?</string>
+    <string name="ai_enable_mcp_server">Enable server</string>
+    <string name="ai_disable_mcp_server">Disable server</string>
     <string name="ai_chat_empty">Start a new chat.</string>
     <string name="ai_chat_history">Chat history</string>
     <string name="ai_history_empty">No chat history yet</string>
@@ -809,35 +807,35 @@
     <string name="config_category_sync">Sync and services</string>
     <string name="config_category_tools">Tools and about</string>
     <string name="ai_chat_cancelled">Generation stopped</string>
-    <string name="bookshelf_tag_manage">管理标签</string>
-    <string name="bookshelf_tag_all">全部</string>
-    <string name="bookshelf_tag_manage_hint">取消勾选会从当前书架分组的书籍中移除该标签。</string>
-    <string name="bookshelf_tag_edit">编辑标签</string>
-    <string name="bookshelf_tag_none">未设置标签</string>
-    <string name="bookshelf_tag_new_hint">新增标签，多个用空格或逗号分隔</string>
-    <string name="bookshelf_tag_add_title">添加标签</string>
-    <string name="bookshelf_tag_add_group">添加到“%1$s”</string>
-    <string name="bookshelf_tag_new_label">新标签</string>
-    <string name="bookshelf_tag_search_existing">搜索已有标签</string>
-    <string name="bookshelf_tag_reusable_summary">可复用 %1$d 个 · 已选择 %2$d 个</string>
-    <string name="bookshelf_tag_no_reusable">没有可复用的已有标签，可直接输入新标签</string>
-    <string name="bookshelf_tag_no_matching_existing">没有匹配的已有标签</string>
-    <string name="bookshelf_tag_delete_title">删除标签</string>
-    <string name="bookshelf_tag_delete_message">确定从“%2$s”分组的所有书籍中移除“%1$s”标签吗？不会删除书籍。</string>
-    <string name="bookshelf_tag_group_summary">%1$d 本书 · %2$d 个标签</string>
-    <string name="bookshelf_tag_empty_summary">当前分组还没有标签，可以点击“新增”创建。</string>
-    <string name="bookshelf_tag_book_count">已标记 %1$d 本书</string>
-    <string name="bookshelf_tag_visible">标签栏显示</string>
-    <string name="bookshelf_tag_manage_books">管理书籍</string>
-    <string name="bookshelf_tag_search_book">搜索书名或作者</string>
-    <string name="bookshelf_tag_filter_all">全部</string>
-    <string name="bookshelf_tag_filter_selected">已选择</string>
-    <string name="bookshelf_tag_filter_unselected">未选择</string>
-    <string name="bookshelf_tag_selected_count">已选择 %1$d / %2$d</string>
-    <string name="bookshelf_tag_select_results">选择结果</string>
-    <string name="bookshelf_tag_clear_results">清空结果</string>
-    <string name="bookshelf_tag_no_matching_books">当前筛选条件下没有书籍</string>
-    <string name="bookshelf_tag_save">保存</string>
+    <string name="bookshelf_tag_manage">Manage tags</string>
+    <string name="bookshelf_tag_all">All</string>
+    <string name="bookshelf_tag_manage_hint">Unchecking removes the tag from books in the current shelf group.</string>
+    <string name="bookshelf_tag_edit">Edit tag</string>
+    <string name="bookshelf_tag_none">No tag</string>
+    <string name="bookshelf_tag_new_hint">Add tags separated by spaces or commas</string>
+    <string name="bookshelf_tag_add_title">Add tags</string>
+    <string name="bookshelf_tag_add_group">Add to &quot;%1$s&quot;</string>
+    <string name="bookshelf_tag_new_label">New tag</string>
+    <string name="bookshelf_tag_search_existing">Search existing tags</string>
+    <string name="bookshelf_tag_reusable_summary">%1$d reusable · %2$d selected</string>
+    <string name="bookshelf_tag_no_reusable">No existing tags to reuse. Type a new tag.</string>
+    <string name="bookshelf_tag_no_matching_existing">No matching existing tags</string>
+    <string name="bookshelf_tag_delete_title">Delete tag</string>
+    <string name="bookshelf_tag_delete_message">Remove tag &quot;%1$s&quot; from all books in &quot;%2$s&quot;? The books themselves are not deleted.</string>
+    <string name="bookshelf_tag_group_summary">%1$d books · %2$d tags</string>
+    <string name="bookshelf_tag_empty_summary">No tags in this group yet. Tap Add to create one.</string>
+    <string name="bookshelf_tag_book_count">%1$d books tagged</string>
+    <string name="bookshelf_tag_visible">Show tag bar</string>
+    <string name="bookshelf_tag_manage_books">Manage books</string>
+    <string name="bookshelf_tag_search_book">Search title or author</string>
+    <string name="bookshelf_tag_filter_all">All</string>
+    <string name="bookshelf_tag_filter_selected">Selected</string>
+    <string name="bookshelf_tag_filter_unselected">Unselected</string>
+    <string name="bookshelf_tag_selected_count">%1$d / %2$d selected</string>
+    <string name="bookshelf_tag_select_results">Select results</string>
+    <string name="bookshelf_tag_clear_results">Clear results</string>
+    <string name="bookshelf_tag_no_matching_books">No books match the current filter</string>
+    <string name="bookshelf_tag_save">Save</string>
     <string name="ai_missing_config">Complete the provider and model setup first.</string>
     <string name="ai_model_input_hint">model id</string>
     <string name="ai_model_exists">Model already exists</string>
@@ -863,7 +861,7 @@
     <string name="bg_image">Background images</string>
     <string name="bg_color">Background color</string>
     <string name="text_color">Text color</string>
-    <string name="text_accent_color">强调颜色</string>
+    <string name="text_accent_color">Accent color</string>
     <string name="select_image">Select a picture</string>
     <string name="group_manage">Group management</string>
     <string name="group_select">Group selection</string>
@@ -1392,7 +1390,7 @@
     <string name="scope_title">Act on the title</string>
     <string name="scope_content">Act on the content</string>
     <string name="join_qq_channel">Join QQ channel</string>
-    <string name="qq_channel_summary">点击加入阅读QQ频道</string>
+    <string name="qq_channel_summary">Join the 阅读Shimmer QQ channel</string>
     <string name="menu_refresh_dur">Refresh the current chapter</string>
     <string name="menu_refresh_after">Refresh the chapter after</string>
     <string name="menu_refresh_all">Refresh all chapters</string>
@@ -1407,7 +1405,7 @@
     <string name="welcome_style">Launch interface style</string>
     <string name="welcome_style_summary">Startup screen image and whether to display text, etc.</string>
     <string name="show_welcome_text">Display text</string>
-    <string name="welcome_text">阅读|享受美好时光</string>
+    <string name="welcome_text">Read | Enjoy the moment</string>
     <string name="custom_welcome">Customize the welcome page</string>
     <string name="custom_welcome_summary">Whether to use a customized welcome page</string>
     <string name="show_icon">Show icon</string>
@@ -1451,7 +1449,7 @@
     <!-- string end -->
     <string name="error_decode_bitmap">Fail to decode bitmap</string>
     <string name="error_image_url_empty">Image url is empty, check replacement rules</string>
-    <string name="variable_comment">变量说明(variableComment)</string>
+    <string name="variable_comment">Variables (variableComment)</string>
     <string name="remote_book">Remote book</string>
     <string name="reading_time_sort">Sort by reading duration</string>
     <string name="last_read_time_sort">Sort by read time</string>
@@ -1460,15 +1458,15 @@
     <string name="page_touch_slop_title">Sliding Page Threshold</string>
     <string name="page_touch_slop_dialog_title">Sliding page turn threshold (0 = system default)</string>
     <string name="page_touch_slop_summary">How far to slide to trigger a page slide (system default %s px)</string>
-    <string name="page_touch_click_title">边缘点击阈值</string>
-    <string name="page_touch_click_summary">左右边缘多少距离不会触发点击事件，默认为0px</string>
-    <string name="page_touch_click_dialog_title">边缘点击阈值</string>
+    <string name="page_touch_click_title">Edge tap threshold</string>
+    <string name="page_touch_click_summary">Distance from the left and right edges where taps are ignored. Defaults to 0px.</string>
+    <string name="page_touch_click_dialog_title">Edge tap threshold</string>
     <string name="check_selected_interval">Select zones</string>
     <string name="show_add_to_shelf_alert_title">Prompt to add to bookshelf when return</string>
     <string name="show_add_to_shelf_alert_summary">Prompt to add to bookshelf when return from reading books that are not on the bookshelf</string>
     <string name="review">Review</string>
-    <string name="rule_avatar">段评发布者头像（avatarRule）</string>
-    <string name="rule_review_url">段评URL（reviewUrl）</string>
+    <string name="rule_avatar">Paragraph comment poster avatar (avatarRule)</string>
+    <string name="rule_review_url">Paragraph comment URL (reviewUrl)</string>
     <string name="rule_review_content">Paragraph review content（contentRule）</string>
     <string name="rule_post_time">Release time of paragraph comments（postTimeRule）</string>
     <string name="rule_review_quote">Paragraph comment replied to URL（reviewQuoteUrl）</string>
@@ -1497,33 +1495,33 @@
     <string name="read_menu_existing_custom_button">Existing custom</string>
     <string name="read_menu_button_script">Button JS</string>
     <string name="read_menu_custom_button_save_invalid">Name and button JS cannot be empty</string>
-    <string name="read_menu_custom_button_help"><![CDATA[自定义按键说明
+    <string name="read_menu_custom_button_help"><![CDATA[Custom button guide
 
-触发方式：
-1. 短按按键：执行「按钮 JS」里的 function run()。
-2. 长按按键：打开登录入口。登录 UI 使用 loginUi；点击登录按钮后执行 loginUrl 里的 function login()。
-3. 如果 loginUi 为空，但 loginUrl 中定义了 function login()，长按时仍可直接执行登录逻辑。
+Triggers:
+1. Short press: runs function run() in the Button JS.
+2. Long press: opens the login entry. The login UI uses loginUi; tapping the login button runs function login() in loginUrl.
+3. If loginUi is empty but loginUrl defines function login(), a long press runs the login logic directly.
 
-短按 run() 可直接使用：
-- book：当前书籍。常用字段：book.name、book.author、book.bookUrl、book.origin、book.originName、book.kind、book.customTag、book.coverUrl、book.intro、book.latestChapterTitle、book.totalChapterNum、book.durChapterIndex。
-- chapter：当前章节。常用字段：chapter.title、chapter.index、chapter.url、chapter.baseUrl、chapter.bookUrl、chapter.tag、chapter.wordCount、chapter.variable。
-- content / src / result：当前章节正文，三者内容相同。
-- title：当前章节标题，等同于 chapter.title。
-- baseUrl：当前章节请求地址，优先使用章节绝对地址。
-- bookSource / readSource：当前正在阅读的书源对象，可能为空。
-- button：当前自定义按键对象。常用字段：button.id、button.name、button.loginUrl、button.loginUi、button.jsLib、button.timeoutMillisecond。
-- source：当前按键源对象。常用方法：source.getKey()、source.getTag()、source.get(key)、source.put(key,value)、source.getVariable()、source.putVariable(value)、source.login()。
-- java：阅读页辅助对象。常用方法：java.copyText(text)、java.showBrowser(url, html)、java.refreshBookInfo()、java.refreshBookToc()、java.refreshContent()。
-- cache / cookie：缓存与 Cookie 工具。
+Available to run() on short press:
+- book: the current book. Common fields: book.name, book.author, book.bookUrl, book.origin, book.originName, book.kind, book.customTag, book.coverUrl, book.intro, book.latestChapterTitle, book.totalChapterNum, book.durChapterIndex.
+- chapter: the current chapter. Common fields: chapter.title, chapter.index, chapter.url, chapter.baseUrl, chapter.bookUrl, chapter.tag, chapter.wordCount, chapter.variable.
+- content / src / result: the current chapter text; all three are identical.
+- title: the current chapter title; same as chapter.title.
+- baseUrl: the request URL of the current chapter; prefers the chapter\'s absolute URL.
+- bookSource / readSource: the book source being read; may be null.
+- button: the current custom button. Common fields: button.id, button.name, button.loginUrl, button.loginUi, button.jsLib, button.timeoutMillisecond.
+- source: the current button source. Common methods: source.getKey(), source.getTag(), source.get(key), source.put(key,value), source.getVariable(), source.putVariable(value), source.login().
+- java: reading page helper. Common methods: java.copyText(text), java.showBrowser(url, html), java.refreshBookInfo(), java.refreshBookToc(), java.refreshContent().
+- cache / cookie: cache and cookie helpers.
 
-长按登录可直接使用：
-- book：当前书籍。
-- chapter：当前章节。
-- result：登录表单数据 Map，例如 result.bookName。
-- isLongClick：是否长按触发。
-- source / java / cache / cookie：同上。
+Available to long-press login:
+- book: the current book.
+- chapter: the current chapter.
+- result: the login form data map, e.g. result.bookName.
+- isLongClick: whether a long press triggered it.
+- source / java / cache / cookie: same as above.
 
-短按测试例程，填入「按钮 JS」：
+Short press test, put this in Button JS:
 function run() {
     var info = {
         bookName: book ? book.name : "",
@@ -1542,20 +1540,20 @@ function run() {
     };
     var text = JSON.stringify(info, null, 2);
     java.copyText(text);
-    java.showBrowser(baseUrl || "about:blank", "<pre style='white-space:pre-wrap'>" + text + "</pre>");
+    java.showBrowser(baseUrl || "about:blank", "<pre style=\'white-space:pre-wrap\'>" + text + "</pre>");
     return text;
 }
 
-长按登录测试：
-1. loginUi 填入：
+Long press login test:
+1. loginUi:
 @js:
 JSON.stringify([
-    {name:"bookName", type:"text", viewName:"书名", default:book ? book.name : ""},
-    {name:"chapterTitle", type:"text", viewName:"章节名", default:chapter ? chapter.title : ""},
-    {name:"copyInfo", type:"button", viewName:"复制当前登录信息", action:"java.copyText(JSON.stringify({bookName:book?book.name:'', chapterTitle:chapter?chapter.title:'', form:result, isLongClick:isLongClick}, null, 2))"}
+    {name:"bookName", type:"text", viewName:"Title", default:book ? book.name : ""},
+    {name:"chapterTitle", type:"text", viewName:"Chapter", default:chapter ? chapter.title : ""},
+    {name:"copyInfo", type:"button", viewName:"Copy login info", action:"java.copyText(JSON.stringify({bookName:book?book.name:\'\', chapterTitle:chapter?chapter.title:\'\', form:result, isLongClick:isLongClick}, null, 2))"}
 ])
 
-2. loginUrl 填入：
+2. loginUrl:
 function login() {
     var info = {
         bookName: book ? book.name : "",
@@ -1569,7 +1567,7 @@ function login() {
     return true;
 }
 
-注意：自定义按键用于读取和辅助操作，不建议直接修改正文内容。]]></string>
+Note: custom buttons are meant for reading and helper actions; do not modify the chapter text directly.]]></string>
     <string name="read_menu_custom_button_missing">Custom button does not exist</string>
     <string name="read_menu_no_current_chapter">No current chapter</string>
     <string name="read_menu_move_to_first">Move to first</string>
@@ -1620,8 +1618,8 @@ function login() {
     <string name="update_book_fail">Update failed</string>
     <string name="notification_permission_rationale">Reading requires sending notifications to show reading control and download progress</string>
     <string name="webdav_after_local_restore_confirm">The webDav book source is newer than the local one, whether to restore it or not</string>
-    <string name="c_whitelist">白名单(contentWhitelist)</string>
-    <string name="c_blacklist">黑名单(contentBlacklist)</string>
+    <string name="c_whitelist">Whitelist (contentWhitelist)</string>
+    <string name="c_blacklist">Blacklist (contentBlacklist)</string>
     <string name="confirm">Confirm</string>
     <string name="jump_to_another_app">Jump to another app</string>
     <string name="clear_webview_data">Clear WebView Data</string>
@@ -1630,8 +1628,8 @@ function login() {
     <string name="dict_rule">Dict rule</string>
     <string name="config_dict_rule">Config dict rule</string>
     <string name="create">Create</string>
-    <string name="url_rule">url规则(urlRule)</string>
-    <string name="show_rule">显示规则(showRule)</string>
+    <string name="url_rule">URL rule (urlRule)</string>
+    <string name="show_rule">Display rule (showRule)</string>
     <string name="config_txt_toc_rule">Configure txt catalog rules</string>
     <string name="import_dict_rule">Import dict rule</string>
     <string name="keep_group">Keep group</string>
@@ -1649,8 +1647,8 @@ function login() {
     <string name="file_manage_summary">Managing files in the application\'s private folder</string>
     <string name="create_folder">Create Folder</string>
     <string name="allow_drop_down_refresh">Allow drop-down refresh</string>
-    <string name="only_update_read">仅更新已读完</string>
-    <string name="ps_only_update_read">自动刷新时，只更新已读完的书籍</string>
+    <string name="only_update_read">Update finished books only</string>
+    <string name="ps_only_update_read">When auto-refreshing, update only books you have finished</string>
     <string name="text_underline">Text underline</string>
     <string name="underline_stroke_width">Underline thickness</string>
     <string name="underline_dash_length">Dash length</string>
@@ -1664,7 +1662,7 @@ function login() {
     <string name="respondTime">respondTime: %1$d ms</string>
     <string name="load_word_count">Load word count</string>
     <string name="replace_exclude_scope">Exclude range, optional title or source URL</string>
-    <string name="format_js_rule">格式化规则(formatJs)</string>
+    <string name="format_js_rule">Formatting rule (formatJs)</string>
     <string name="adjust_pos">Adjustment position</string>
     <string name="error_scope_input">Please enter the correct range</string>
     <string name="custom_export">Custom Export</string>
@@ -1721,185 +1719,183 @@ function login() {
     <string name="record_heap_dump_s">Saving a heap dump when the application crashes by OOM</string>
     <string name="record_heap_dump_t">Capture heap dump</string>
     <string name="font_weight_text">N/B/L</string>
-    <string name="enable_optimize_render">启用绘制优化</string>
-    <string name="ignore_battery_permission_rationale">阅读需要请求后台权限以保持服务正常运行</string>
+    <string name="enable_optimize_render">Enable rendering optimization</string>
+    <string name="ignore_battery_permission_rationale">Legado needs background permission to keep its service running</string>
     <string name="simulated_reading">Simulated Reading</string>
     <string name="switch_on">Switch</string>
     <string name="start_from">Start from</string>
     <string name="daily_chapters">Daily Chapters</string>
     <string name="start_chapter">Start Chapter</string>
-    <string name="update_to_variant_title">检查更新查找版本</string>
-    <string name="update_to_variant_summary">切换正式版/测试版</string>
-    <string name="default_version">当前</string>
-    <string name="official_version">正式版</string>
-    <string name="beta_release_version">测试版</string>
-    <string name="beta_releaseA_version">共存版</string>
+    <string name="update_to_variant_title">Check for updates across channels</string>
+    <string name="update_to_variant_summary">Switch between stable and beta</string>
+    <string name="default_version">Current</string>
+    <string name="official_version">Stable</string>
+    <string name="beta_release_version">Beta</string>
+    <string name="beta_releaseA_version">Coexist</string>
     <string name="beta_releaseS_version" translatable="false">正式版</string>
-    <string name="stream_read_aloud_audio">流式播放音频</string>
-    <string name="stream_read_aloud_audio_summary">即边下边播，网络不好时播放会断断续续，仅TTS源有效</string>
-    <string name="pause_read_aloud_while_phone_calls_title">来电期间暂停朗读</string>
-    <string name="pause_read_aloud_while_phone_calls_summary">在通话期间暂停朗读，需要读取手机状态权限</string>
-    <string name="read_aloud_read_phone_state_permission_rationale">阅读需要读取手机状态实现来电期间暂停朗读功能</string>
-    <string name="read_aloud_by_media_button_title">耳机按键启动朗读</string>
-    <string name="read_aloud_by_media_button_summary">通过耳机按键来启动朗读</string>
-    <string name="group_sources_by_domain">按域名分组显示</string>
-    <string name="duplicate_check">查重书源</string>
-    <string name="duplicate_by_url">按URL查重</string>
-    <string name="duplicate_by_name">按名称查重</string>
-    <string name="duplicate_by_url_and_name">按URL+名称查重</string>
-    <string name="duplicate_result">查重结果</string>
-    <string name="duplicate_summary">发现 %1$s 组重复，共 %2$s 个多余书源</string>
-    <string name="duplicate_delete_extra">删除重复项</string>
-    <string name="duplicate_deleted">已删除 %1$s 个重复书源</string>
-    <string name="duplicate_none_found">未发现重复书源</string>
-    <string name="theme_config">主题配置</string>
-    <string name="show_manga_ui">漫画浏览</string>
-    <string name="disable_manga_scale">禁用漫画缩放</string>
-    <string name="disable_manga_click_scroll">禁用点击翻页</string>
-    <string name="enable_auto_page_scroll">开启自动翻页</string>
-    <string name="manga_auto_page_speed">翻页速度 %s</string>
-    <string name="enable_auto_scroll">开启滚动</string>
-    <string name="manga_footer_config">页脚配置</string>
-    <string name="setting_manga_auto_page_speed">设置自动翻页速度</string>
-    <string name="manga_config">配置</string>
-    <string name="manga_page_mode">翻页方式</string>
-    <string name="book_reader_info_bar">页数. %1$d/%2$d  章节. %3$d/%4$d -> %5$s%%</string>
+    <string name="stream_read_aloud_audio">Stream audio while reading</string>
+    <string name="stream_read_aloud_audio_summary">Play while downloading. Playback stutters on poor networks. TTS sources only.</string>
+    <string name="pause_read_aloud_while_phone_calls_title">Pause reading aloud during calls</string>
+    <string name="pause_read_aloud_while_phone_calls_summary">Pause reading aloud during a call. Requires phone state permission.</string>
+    <string name="read_aloud_read_phone_state_permission_rationale">Legado needs phone state access to pause reading aloud during calls</string>
+    <string name="read_aloud_by_media_button_title">Start reading aloud with the headset button</string>
+    <string name="read_aloud_by_media_button_summary">Use the headset button to start reading aloud</string>
+    <string name="group_sources_by_domain">Group by domain</string>
+    <string name="duplicate_check">Find duplicate book sources</string>
+    <string name="duplicate_by_url">By URL</string>
+    <string name="duplicate_by_name">By name</string>
+    <string name="duplicate_by_url_and_name">By URL and name</string>
+    <string name="duplicate_result">Duplicate results</string>
+    <string name="duplicate_summary">Found %1$s duplicate groups, %2$s extra book sources</string>
+    <string name="duplicate_delete_extra">Delete duplicates</string>
+    <string name="duplicate_deleted">Deleted %1$s duplicate book sources</string>
+    <string name="duplicate_none_found">No duplicate book sources found</string>
+    <string name="theme_config">Theme configuration</string>
+    <string name="show_manga_ui">Manga browsing</string>
+    <string name="disable_manga_scale">Disable manga zoom</string>
+    <string name="disable_manga_click_scroll">Disable tap to turn page</string>
+    <string name="enable_auto_page_scroll">Enable auto page turn</string>
+    <string name="manga_auto_page_speed">Page turn speed %s</string>
+    <string name="enable_auto_scroll">Enable scrolling</string>
+    <string name="manga_footer_config">Footer settings</string>
+    <string name="setting_manga_auto_page_speed">Set auto page turn speed</string>
+    <string name="manga_config">Settings</string>
+    <string name="manga_page_mode">Page turn mode</string>
+    <string name="book_reader_info_bar">Page. %1$d/%2$d Chapter. %3$d/%4$d -&gt; %5$s%%</string>
     <string name="menu_download_after">Download the chapter after</string>
     <string name="menu_download_all">Download all chapter</string>
-    <string name="manga_header_chapter">《章节和文案》隐藏</string>
-    <string name="manga_check_chapter_label">《章节.》文案</string>
-    <string name="manga_check_chapter">章节</string>
-    <string name="manga_check_chapter_name">章节名称</string>
-    <string name="manga_header_page">《页数和文案》隐藏</string>
-    <string name="manga_check_page_label">《页数.》文案</string>
-    <string name="manga_check_page_number">页数</string>
-    <string name="manga_header_progress">《总进度和文案》隐藏</string>
-    <string name="manga_check_progress_label">《总进度.》文案</string>
-    <string name="manga_check_progress">总进度</string>
-    <string name="manga_header_footer">页脚</string>
-    <string name="manga_header_footer_alignment">页脚对齐</string>
-    <string name="manga_radio_left">靠左</string>
-    <string name="manga_radio_center">居中</string>
-    <string name="enable_manga_horizontal_scroll">水平滚动</string>
-    <string name="manga_color_filter">滤镜</string>
-    <string name="hide_manga_title">隐藏漫画列表标题</string>
-    <string name="refresh_explore">刷新发现</string>
+    <string name="manga_header_chapter">Chapter and label</string>
+    <string name="manga_check_chapter_label">Chapter label</string>
+    <string name="manga_check_chapter">Chapter</string>
+    <string name="manga_check_chapter_name">Chapter name</string>
+    <string name="manga_header_page">Page and label</string>
+    <string name="manga_check_page_label">Page label</string>
+    <string name="manga_check_page_number">Page number</string>
+    <string name="manga_header_progress">Total progress and label</string>
+    <string name="manga_check_progress_label">Progress label</string>
+    <string name="manga_check_progress">Total progress</string>
+    <string name="manga_header_footer">Footer</string>
+    <string name="manga_header_footer_alignment">Footer alignment</string>
+    <string name="manga_radio_left">Left</string>
+    <string name="manga_radio_center">Center</string>
+    <string name="enable_manga_horizontal_scroll">Horizontal scrolling</string>
+    <string name="manga_color_filter">Color filter</string>
+    <string name="hide_manga_title">Hide manga list title</string>
+    <string name="refresh_explore">Refresh discovery</string>
     <string name="padding_display_cutouts">Padding display cutouts</string>
     <string name="read_aloud_pause_resume">Pause/Resume Speech</string>
-    <string name="manga_epaper">墨水屏</string>
-    <string name="manga_epaper_stting">墨水屏设置</string>
-    <string name="manga_epaper_value">阈值</string>
-    <string name="disable_horizontal_page_snap">禁用水平翻页效果</string>
-    <string name="enable_manga_gray">开启图片灰色</string>
-    <string name="play_mode">播放模式</string>
-    <string name="speed_control">语速控制</string>
-    <string name="next">下一首</string>
-    <string name="previous">上一首</string>
+    <string name="manga_epaper">E-ink</string>
+    <string name="manga_epaper_stting">E-ink settings</string>
+    <string name="manga_epaper_value">Threshold</string>
+    <string name="disable_horizontal_page_snap">Disable horizontal page snapping</string>
+    <string name="enable_manga_gray">Show images in grayscale</string>
+    <string name="play_mode">Playback mode</string>
+    <string name="speed_control">Speed</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
     <string name="custom_hosts">Custom Hosts</string>
     <string name="custom_hosts_summary">Domain name to IP mapping</string>
-    <string name="source_tab_start">启动</string>
-    <string name="r_startHtml">启动页html文本（startHtml）</string>
-    <string name="r_startStyle">启动页style文本（startStyle）</string>
-    <string name="r_startJs">启动页Js（startJs）</string>
-    <string name="load_with_web_log">输出 WebLog</string>
-    <string name="auto_update">自动更新</string>
-    <string name="time_day">天</string>
-    <string name="update_interval">间隔：</string>
-    <string name="silent_update">静默更新</string>
-    <string name="show_web_log">输出日志</string>
-    <string name="please_focus_cursor_on_textbox">请将光标聚焦在文本框</string>
-    <string name="focus_lost_on_textbox">在文本框丢失光标焦点</string>
-    <string name="edit_code">编辑代码</string>
-    <string name="edit_theme_monokai">莫奈亮光</string>
-    <string name="edit_theme_monokai_dimmed">莫奈柔光</string>
-    <string name="change_theme">选择主题</string>
-    <string name="edit_theme_modern_dark">现代深色</string>
-    <string name="edit_theme_modern_light">现代浅色</string>
-    <string name="edit_theme_solarized_dark">日光深色</string>
-    <string name="edit_theme_solarized_light">日光浅色</string>
-    <string name="edit_theme_abyss">渊默如海</string>
-    <string name="edit_theme_quiet_light">素影清晖</string>
-    <string name="search_result">搜索结果:</string>
-    <string name="find">查找</string>
-    <string name="btn_previous">上个</string>
-    <string name="btn_next">下个</string>
-    <string name="replace_all">全部</string>
-    <string name="format_code">格式化</string>
-    <string name="config_settings">配置</string>
-    <string name="auto_wrap">自动换行</string>
-    <string name="font_size">字体大小 %d</string>
-    <string name="view_code">查看代码</string>
-    <string name="show_bookname">显示书名</string>
-    <string name="float_permission_rationale">阅读需要悬浮窗权限来显示播放窗口</string>
-    <string name="video">视频</string>
-    <string name="float_window">悬浮窗</string>
-    <string name="video_play">视频播放</string>
-    <string name="no_more_chapter">没有更多章节</string>
-    <string name="overlay">叠加</string>
-    <string name="margin">间距</string>
-    <string name="replace_to_js">js处理</string>
-    <string name="layout_type">样式：</string>
-    <string name="layout_list_compact">紧凑列表</string>
-    <string name="enable_preload">预加载</string>
-    <string name="is_event_listener">事件监听</string>
-    <string name="rule_call_back">回调操作（callBackJs）</string>
-    <string name="time_hour">小时</string>
-    <string name="custom_button">定制按钮</string>
-    <string name="book_cloud_entry_mode">云端入口</string>
-    <string name="book_cloud_library_chapter_mode">书库容器</string>
-    <string name="book_cloud_cache_package_mode">云端备份</string>
-    <string name="change_book_source_action">更换书源</string>
-    <string name="welcome_show_time">欢迎页显示时间</string>
-    <string name="welcome_show_time_summary">设为0不显示欢迎页</string>
-    <string name="domain">域名</string>
-    <string name="write_source_comment">写入源注释</string>
-    <string name="auto_play">自动播放</string>
-    <string name="start_full">直接全屏播放</string>
-    <string name="video_setting">视频设置</string>
-    <string name="video_setting_summary">自动播放、全屏播放等配置</string>
-    <string name="history">历史记录</string>
+    <string name="source_tab_start">Startup</string>
+    <string name="r_startHtml">Startup page HTML (startHtml)</string>
+    <string name="r_startStyle">Startup page style (startStyle)</string>
+    <string name="r_startJs">Startup page JS (startJs)</string>
+    <string name="load_with_web_log">Output WebLog</string>
+    <string name="auto_update">Auto update</string>
+    <string name="time_day">days</string>
+    <string name="update_interval">Interval:</string>
+    <string name="silent_update">Silent update</string>
+    <string name="show_web_log">Output log</string>
+    <string name="please_focus_cursor_on_textbox">Place the cursor in the text box</string>
+    <string name="focus_lost_on_textbox">Cursor left the text box</string>
+    <string name="edit_code">Edit code</string>
+    <string name="edit_theme_monokai">Monokai Light</string>
+    <string name="edit_theme_monokai_dimmed">Monokai Dimmed</string>
+    <string name="change_theme">Choose theme</string>
+    <string name="edit_theme_modern_dark">Modern Dark</string>
+    <string name="edit_theme_modern_light">Modern Light</string>
+    <string name="edit_theme_solarized_dark">Solarized Dark</string>
+    <string name="edit_theme_solarized_light">Solarized Light</string>
+    <string name="edit_theme_abyss">Abyss</string>
+    <string name="edit_theme_quiet_light">Quiet Light</string>
+    <string name="search_result">Search results:</string>
+    <string name="find">Find</string>
+    <string name="btn_previous">Previous</string>
+    <string name="btn_next">Next</string>
+    <string name="replace_all">All</string>
+    <string name="format_code">Format</string>
+    <string name="config_settings">Settings</string>
+    <string name="auto_wrap">Word wrap</string>
+    <string name="font_size">Font size %d</string>
+    <string name="view_code">View code</string>
+    <string name="show_bookname">Show book title</string>
+    <string name="float_permission_rationale">Legado needs overlay permission to show the playback window</string>
+    <string name="video">Video</string>
+    <string name="float_window">Floating window</string>
+    <string name="video_play">Video playback</string>
+    <string name="no_more_chapter">No more chapters</string>
+    <string name="overlay">Overlay</string>
+    <string name="margin">Spacing</string>
+    <string name="replace_to_js">JS processing</string>
+    <string name="layout_type">Layout:</string>
+    <string name="layout_list_compact">Compact list</string>
+    <string name="enable_preload">Preload</string>
+    <string name="is_event_listener">Event listener</string>
+    <string name="rule_call_back">Callback (callBackJs)</string>
+    <string name="time_hour">hours</string>
+    <string name="custom_button">Custom button</string>
+    <string name="book_cloud_entry_mode">Cloud entry</string>
+    <string name="book_cloud_library_chapter_mode">Library container</string>
+    <string name="book_cloud_cache_package_mode">Cloud backup</string>
+    <string name="change_book_source_action">Change book source</string>
+    <string name="welcome_show_time">Welcome screen duration</string>
+    <string name="welcome_show_time_summary">Set to 0 to hide the welcome screen</string>
+    <string name="domain">Domain</string>
+    <string name="write_source_comment">Write source comment</string>
+    <string name="auto_play">Autoplay</string>
+    <string name="start_full">Play in fullscreen</string>
+    <string name="video_setting">Video settings</string>
+    <string name="video_setting_summary">Autoplay, fullscreen playback, and more</string>
+    <string name="history">History</string>
     <string name="app_name_sigma">阅读Shimmer</string>
-    <string name="about_description_sigma">\u3000\u3000阅读Shimmer 是一个独立的 Android 阅读器，专注阅读体验、书源工具与 AI 辅助能力。</string>
-    <string name="contributors_summary_sigma">当前维护仓库：Kdkdmwnwdkd/-legado-build，详情请在 GitHub 中查看</string>
-    <string name="app_share_description_sigma">
-        阅读Shimmer 下载地址：\nhttps://github.com/Kdkdmwnwdkd/-legado-build/releases
-    </string>
-    <string name="sure_cache_book">是否确认开始缓存？</string>
-    <string name="non_printable_set">不可视字符设定</string>
-    <string name="whitespace_leading">行首</string>
-    <string name="whitespace_inner">行中</string>
-    <string name="whitespace_trailing">行尾</string>
-    <string name="whitespace_empty">空行</string>
-    <string name="line_separator">换行</string>
-    <string name="whitespace_selection">选中</string>
-    <string name="press_speed">长按倍速</string>
-    <string name="press_speed_summary">长按倍速 %.1f</string>
-    <string name="full_bottom_progress">全屏时显示底部进度条</string>
-    <string name="json_format">json格式</string>
-    <string name="open_other_video_player">其它播放器打开</string>
-    <string name="show_source_comment">显示源注释</string>
-    <string name="adapt_special_style">适配特殊样式</string>
-    <string name="show_line_number">展示%d行</string>
-    <string name="setting_show_line_number">设置辅助按键展示的行数</string>
-    <string name="menu_page">第 %d 页</string>
-    <string name="change_page">选择页数</string>
-    <string name="auto_check_new_backup_t">自动检查新备份</string>
-    <string name="auto_check_new_backup_s">打开软件时检查是否有新备份，有新备份时提示是否更新</string>
-    <string name="r_preloadJs">预注入Js（preloadJs）</string>
-    <string name="cache_first">优先加载缓存</string>
-    <string name="rule_sub_content">副文规则（subContent）</string>
-    <string name="system_auto">跟随系统</string>
-    <string name="sys_image_picker">系统图片选择器</string>
-    <string name="immersion_nav_bar">沉浸式操作栏</string>
-    <string name="day_nav_bar_immersion">白天操作栏颜色透明</string>
-    <string name="night_nav_bar_immersion">夜间操作栏颜色透明</string>
-    <string name="manual_input_img_src">手动输入图片链接</string>
-    <string name="enter_img_src_path">请输入图片链接</string>
-    <string name="empty_img_src_input">图片链接不能为空</string>
-    <string name="invalid_file_path">文件路径无效</string>
-    <string name="is_system_tts_no_export">无法导出系统tts</string>
-    <string name="click_image_way">点击图片方式</string>
-    <string name="auto_update_summary">每天自动检查软件是否更新</string>
+    <string name="about_description_sigma">阅读Shimmer is an independent Android reader focused on the reading experience, book source tools, and AI assistance.</string>
+    <string name="contributors_summary_sigma">Maintained at Kdkdmwnwdkd/-legado-build; see GitHub for details</string>
+    <string name="app_share_description_sigma">阅读Shimmer download link:\nhttps://github.com/Kdkdmwnwdkd/-legado-build/releases</string>
+    <string name="sure_cache_book">Start caching this book?</string>
+    <string name="non_printable_set">Non-printable characters</string>
+    <string name="whitespace_leading">Leading</string>
+    <string name="whitespace_inner">Inner</string>
+    <string name="whitespace_trailing">Trailing</string>
+    <string name="whitespace_empty">Blank lines</string>
+    <string name="line_separator">Line break</string>
+    <string name="whitespace_selection">Selection</string>
+    <string name="press_speed">Long-press speed</string>
+    <string name="press_speed_summary">Long-press speed %.1f</string>
+    <string name="full_bottom_progress">Show bottom progress bar in fullscreen</string>
+    <string name="json_format">JSON format</string>
+    <string name="open_other_video_player">Open in another player</string>
+    <string name="show_source_comment">Show source comment</string>
+    <string name="adapt_special_style">Adapt special styles</string>
+    <string name="show_line_number">Show %d lines</string>
+    <string name="setting_show_line_number">Number of lines shown by auxiliary buttons</string>
+    <string name="menu_page">Page %d</string>
+    <string name="change_page">Choose page</string>
+    <string name="auto_check_new_backup_t">Check for new backups automatically</string>
+    <string name="auto_check_new_backup_s">Check for new backups at launch and prompt to restore</string>
+    <string name="r_preloadJs">Preload JS (preloadJs)</string>
+    <string name="cache_first">Load cache first</string>
+    <string name="rule_sub_content">Sub-content rule (subContent)</string>
+    <string name="system_auto">Follow system</string>
+    <string name="sys_image_picker">System image picker</string>
+    <string name="immersion_nav_bar">Immersive navigation bar</string>
+    <string name="day_nav_bar_immersion">Transparent navigation bar in day mode</string>
+    <string name="night_nav_bar_immersion">Transparent navigation bar in night mode</string>
+    <string name="manual_input_img_src">Enter image URL manually</string>
+    <string name="enter_img_src_path">Enter an image URL</string>
+    <string name="empty_img_src_input">Image URL cannot be empty</string>
+    <string name="invalid_file_path">Invalid file path</string>
+    <string name="is_system_tts_no_export">The system TTS engine cannot be exported</string>
+    <string name="click_image_way">Image tap action</string>
+    <string name="auto_update_summary">Check for app updates daily</string>
     <string name="ai_import_default_skill">Install default 阅读Shimmer skill</string>
     <string name="ai_import_default_skill_summary">Download a real SKILL.md from DandanLLab/legadoSkill</string>
     <string name="ai_skill_prompt">Manage skills</string>
@@ -1983,9 +1979,9 @@ function login() {
     <string name="bottom_bar_layout_floating">Floating bottom bar</string>
     <string name="bottom_bar_layout_sidebar">Sidebar</string>
     <string name="bottom_bar_opacity">Opacity</string>
-    <string name="bottom_bar_items_manage">底栏按钮管理</string>
-    <string name="bottom_bar_item_locked">始终显示</string>
-    <string name="bottom_bar_item_hidden">已隐藏</string>
+    <string name="bottom_bar_items_manage">Bottom bar buttons</string>
+    <string name="bottom_bar_item_locked">Always visible</string>
+    <string name="bottom_bar_item_hidden">Hidden</string>
     <string name="theme_day">Day theme</string>
     <string name="theme_night">Night theme</string>
     <string name="theme_day_short">Day</string>
@@ -2431,14 +2427,14 @@ Selected text or question:
     <string name="appearance_kit_delete_confirm">Delete app theme \"%s\"?</string>
     <string name="theme_red_invalid">Invalid RED theme package</string>
     <string name="theme_red_private_encrypted_unsupported">This RED app theme uses private encryption and cannot be imported yet</string>
-    <string name="share_note_template">模板</string>
-    <string name="share_note_manage_templates">管理模板</string>
-    <string name="share_note_loading_preview">正在加载预览...</string>
-    <string name="share_note_exporting">正在生成图片...</string>
-    <string name="share_note_saved">已保存到相册</string>
-    <string name="share_note_no_template">暂无可用模板</string>
-    <string name="share_note_render_failed">生成分享图片失败：%1$s</string>
-    <string name="share_note_save_failed">保存图片失败：%1$s</string>
+    <string name="share_note_template">Template</string>
+    <string name="share_note_manage_templates">Manage templates</string>
+    <string name="share_note_loading_preview">Loading preview...</string>
+    <string name="share_note_exporting">Generating image...</string>
+    <string name="share_note_saved">Saved to gallery</string>
+    <string name="share_note_no_template">No templates available</string>
+    <string name="share_note_render_failed">Failed to create the share image: %1$s</string>
+    <string name="share_note_save_failed">Failed to save the image: %1$s</string>
     <string name="continue_">Continue</string>
     <string name="import_">Import</string>
     <string name="bubble_package">Bubble package</string>
@@ -2457,55 +2453,55 @@ Selected text or question:
     <string name="paragraph_import_conflict_overwrite">Overwrite existing rules</string>
     <string name="paragraph_import_conflict_overwrite_description">Keep the existing ID, order, and book bindings</string>
     <string name="paragraph_import_result">Added: %1$d\nOverwritten: %2$d\nSkipped: %3$d\nRenamed: %4$d</string>
-    <string name="public_web_relay">公网 Web 访问</string>
-    <string name="public_web_relay_summary">通过 Cloudflare Worker 安全访问本设备的 Legado Web</string>
-    <string name="public_web_relay_connection">连接</string>
-    <string name="public_web_relay_enable">开启公网访问</string>
-    <string name="public_web_relay_worker_url">Worker 地址</string>
-    <string name="public_web_relay_device_name">设备名称</string>
-    <string name="public_web_relay_device_name_hint">例如：我的手机</string>
-    <string name="public_web_relay_status">当前状态</string>
-    <string name="public_web_relay_device_id">设备 ID</string>
-    <string name="public_web_relay_test">测试连接</string>
-    <string name="public_web_relay_copy_address">复制设备地址</string>
-    <string name="public_web_relay_save_reconnect">保存并重新连接</string>
-    <string name="public_web_relay_pairing">设备配对</string>
-    <string name="public_web_relay_pairing_summary">输入部署 Worker 时设置的管理员令牌，仅用于本次配对，不会保存到设备。配对后 Worker 只保存设备鉴权键，不会获得设备原始密钥。</string>
-    <string name="public_web_relay_admin_token">一次性管理员令牌</string>
-    <string name="public_web_relay_admin_token_hint">至少 32 个字符</string>
-    <string name="public_web_relay_admin_token_invalid">管理员令牌至少需要 32 个字符</string>
-    <string name="public_web_relay_pair">配对此设备</string>
-    <string name="public_web_relay_paired">设备配对成功</string>
-    <string name="public_web_relay_create_share">创建访问地址</string>
-    <string name="public_web_relay_permanent_share">永久地址（可随时撤销）</string>
-    <string name="public_web_relay_progress_sync">同步阅读进度</string>
-    <string name="public_web_relay_progress_sync_summary">允许此地址把 Web 阅读位置写回 App</string>
-    <string name="public_web_relay_share_options_new_link">永久和进度权限只对新创建的地址生效；已有地址请撤销后重新创建。</string>
-    <string name="public_web_relay_vivo_background_hint">vivo/OriginOS 请在系统中允许“后台高耗电”、自启动和后台联网，否则息屏后系统可能冻结公网连接。</string>
-    <string name="public_web_relay_open_battery_settings">打开电池优化设置</string>
-    <string name="public_web_relay_share_created">只读分享链接已创建</string>
-    <string name="public_web_relay_copy_share">复制分享链接</string>
-    <string name="public_web_relay_share_qr">分享二维码</string>
-    <string name="public_web_relay_revoke_share">撤销此链接</string>
-    <string name="public_web_relay_share_revoked">分享链接已撤销</string>
-    <string name="public_web_relay_security">安全说明</string>
-    <string name="public_web_relay_security_summary">功能默认关闭，仅接受 HTTPS Worker 地址。设备密钥由 AndroidKeyStore 加密且不进入备份；App 会再次拒绝未知路径、写请求、超限请求和危险请求头。首版只允许读取书架、目录、正文和阅读配置，封面、正文图片、写入和调试接口均保持关闭。</string>
-    <string name="public_web_relay_android_limit">Android 15/16 以及部分厂商系统可能限制长时间后台连接。通知消失或状态变为离线时，需要检查后台运行和电池优化权限。</string>
-    <string name="public_web_relay_disabled">已关闭</string>
-    <string name="public_web_relay_unsupported">当前系统不支持 AndroidKeyStore AES-GCM（需要 Android 6.0 或更高版本）</string>
-    <string name="public_web_relay_unavailable">不可用</string>
-    <string name="public_web_relay_waiting_network">等待可用网络</string>
-    <string name="public_web_relay_connecting">正在连接</string>
-    <string name="public_web_relay_connecting_attempt">正在连接（第 %1$d 次）</string>
-    <string name="public_web_relay_authenticating">正在进行设备鉴权</string>
-    <string name="public_web_relay_connected">已连接</string>
-    <string name="public_web_relay_connected_latency">已连接 · 握手 %1$d ms</string>
-    <string name="public_web_relay_test_succeeded">连接测试成功</string>
-    <string name="public_web_relay_test_succeeded_latency">连接测试成功 · 握手 %1$d ms</string>
-    <string name="public_web_relay_reconnecting">连接断开，%1$d 秒后重试</string>
-    <string name="public_web_relay_config_error">配置错误：%1$s</string>
-    <string name="public_web_relay_failed">连接失败：%1$s</string>
-    <string name="public_web_relay_invalid_config">公网访问配置无效</string>
+    <string name="public_web_relay">Public web access</string>
+    <string name="public_web_relay_summary">Access this device\'s Legado Web securely through a Cloudflare Worker</string>
+    <string name="public_web_relay_connection">Connection</string>
+    <string name="public_web_relay_enable">Enable public access</string>
+    <string name="public_web_relay_worker_url">Worker URL</string>
+    <string name="public_web_relay_device_name">Device name</string>
+    <string name="public_web_relay_device_name_hint">e.g. My phone</string>
+    <string name="public_web_relay_status">Status</string>
+    <string name="public_web_relay_device_id">Device ID</string>
+    <string name="public_web_relay_test">Test connection</string>
+    <string name="public_web_relay_copy_address">Copy device address</string>
+    <string name="public_web_relay_save_reconnect">Save and reconnect</string>
+    <string name="public_web_relay_pairing">Device pairing</string>
+    <string name="public_web_relay_pairing_summary">Enter the admin token set when deploying the Worker. It is used only for this pairing and is not stored on the device. Afterwards the Worker keeps only a device auth key, never the device\'s original secret.</string>
+    <string name="public_web_relay_admin_token">One-time admin token</string>
+    <string name="public_web_relay_admin_token_hint">At least 32 characters</string>
+    <string name="public_web_relay_admin_token_invalid">The admin token must be at least 32 characters</string>
+    <string name="public_web_relay_pair">Pair this device</string>
+    <string name="public_web_relay_paired">Device paired</string>
+    <string name="public_web_relay_create_share">Create access link</string>
+    <string name="public_web_relay_permanent_share">Permanent link (revocable)</string>
+    <string name="public_web_relay_progress_sync">Sync reading progress</string>
+    <string name="public_web_relay_progress_sync_summary">Allow this link to write web reading positions back to the app</string>
+    <string name="public_web_relay_share_options_new_link">Permanent and progress permissions apply only to newly created links. Revoke and recreate existing links.</string>
+    <string name="public_web_relay_vivo_background_hint">On vivo/OriginOS, allow high background power usage, autostart, and background networking, or the system may freeze the connection when the screen turns off.</string>
+    <string name="public_web_relay_open_battery_settings">Open battery optimization settings</string>
+    <string name="public_web_relay_share_created">Read-only share link created</string>
+    <string name="public_web_relay_copy_share">Copy share link</string>
+    <string name="public_web_relay_share_qr">Share QR code</string>
+    <string name="public_web_relay_revoke_share">Revoke this link</string>
+    <string name="public_web_relay_share_revoked">Share link revoked</string>
+    <string name="public_web_relay_security">Security</string>
+    <string name="public_web_relay_security_summary">Disabled by default; only HTTPS Worker URLs are accepted. The device key is encrypted by AndroidKeyStore and excluded from backups; the app also rejects unknown paths, write requests, oversized requests, and dangerous headers. The first release allows reading only the bookshelf, TOC, content, and reading settings. Covers, inline images, writes, and debug endpoints stay off.</string>
+    <string name="public_web_relay_android_limit">Android 15/16 and some vendor ROMs may limit long-lived background connections. If the notification disappears or the status turns offline, check background running and battery optimization permissions.</string>
+    <string name="public_web_relay_disabled">Off</string>
+    <string name="public_web_relay_unsupported">This system does not support AndroidKeyStore AES-GCM (Android 6.0 or later required)</string>
+    <string name="public_web_relay_unavailable">Unavailable</string>
+    <string name="public_web_relay_waiting_network">Waiting for network</string>
+    <string name="public_web_relay_connecting">Connecting</string>
+    <string name="public_web_relay_connecting_attempt">Connecting (attempt %1$d)</string>
+    <string name="public_web_relay_authenticating">Authenticating device</string>
+    <string name="public_web_relay_connected">Connected</string>
+    <string name="public_web_relay_connected_latency">Connected · handshake %1$d ms</string>
+    <string name="public_web_relay_test_succeeded">Connection test succeeded</string>
+    <string name="public_web_relay_test_succeeded_latency">Connection test succeeded · handshake %1$d ms</string>
+    <string name="public_web_relay_reconnecting">Disconnected, retrying in %1$d s</string>
+    <string name="public_web_relay_config_error">Configuration error: %1$s</string>
+    <string name="public_web_relay_failed">Connection failed: %1$s</string>
+    <string name="public_web_relay_invalid_config">Invalid public access configuration</string>
     <string name="shibboleth">Import code</string>
     <string name="shibboleth_https_only">Only HTTPS direct links can be converted to an import code</string>
     <string name="shibboleth_invalid">Invalid import code</string>
