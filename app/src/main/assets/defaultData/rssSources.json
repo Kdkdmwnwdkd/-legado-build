@@ -5,7 +5,7 @@
     "enabled": true,
     "singleUrl": true,
     "sourceGroup": "legado",
-    "sourceIcon": "https://cdn.jsdelivr.net/gh/gedoor/legado@master/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+    "sourceIcon": "",
     "sourceName": "使用说明",
     "sourceUrl": "https://www.yuque.com/legado"
   },
@@ -25,7 +25,7 @@
     "preload": false,
     "showWebLog": false,
     "singleUrl": true,
-    "sourceIcon": "https://gitee.com/lyc486/yuedu/raw/master/ycktb.gif",
+    "sourceIcon": "",
     "sourceName": "源仓库",
     "sourceUrl": "http@js:eval(String(cache.getFromMemory('yckdm')))",
     "type": 0
@@ -36,7 +36,7 @@
     "enabled": true,
     "singleUrl": true,
     "sourceComment": "版本：在线版\n——洛娅橙",
-    "sourceIcon": "https://gitee.com/lyc486/yuedu/raw/master/drtb.gif",
+    "sourceIcon": "",
     "sourceName": "导入",
     "sourceUrl": "https://lyc.ydz6.com/b/daoru"
   },
@@ -46,7 +46,7 @@
     "enabled": true,
     "singleUrl": true,
     "sourceGroup": "legado",
-    "sourceIcon": "https://cdn.jsdelivr.net/gh/mgz0227/meowcloud/icon.png",
+    "sourceIcon": "",
     "sourceName": "Meow云",
     "sourceUrl": "https://pan.miaogongzi.net"
   }
