@@ -1,8 +1,10 @@
 package io.legado.app.help.book.highlight
 
 import android.net.Uri
+import io.legado.app.R
 import io.legado.app.utils.FileDoc
 import io.legado.app.utils.openInputStream
+import splitties.init.appCtx
 
 object HighlightImport {
     fun isHighlightFile(file: FileDoc): Boolean = file.name.endsWith(".red", true) && runCatching {
@@ -45,7 +47,13 @@ object HighlightImport {
                 }
             }.onFailure {
                 report.skippedFiles++
-                report.messages.add(file.name + "：" + (it.message ?: "无法读取"))
+                report.messages.add(
+                    appCtx.getString(
+                        R.string.highlight_file_read_failed,
+                        file.name,
+                        it.message ?: appCtx.getString(R.string.common_unable_to_read)
+                    )
+                )
             }
         }
         return report

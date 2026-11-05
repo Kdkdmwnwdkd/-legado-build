@@ -37,7 +37,7 @@ class AiWorldBookManageActivity : BaseActivity<ActivityAiWorldBookManageBinding>
                     uri.readText(this@AiWorldBookManageActivity)
                 }.onSuccess(::emitImportPayload)
                     .onFailure {
-                        toastOnUi(it.localizedMessage ?: "世界书文件读取失败")
+                        toastOnUi(it.localizedMessage ?: getString(R.string.ai_world_book_file_read_failed))
                     }
             }
         }
@@ -87,7 +87,7 @@ class AiWorldBookManageActivity : BaseActivity<ActivityAiWorldBookManageBinding>
                 }
             }.onSuccess(::emitImportPayload)
                 .onFailure {
-                    toastOnUi(it.localizedMessage ?: "世界书下载失败")
+                    toastOnUi(it.localizedMessage ?: getString(R.string.ai_world_book_download_failed))
                 }
         }
     }

@@ -2,6 +2,7 @@ package io.legado.app.api.controller
 
 
 import android.text.TextUtils
+import io.legado.app.R
 import io.legado.app.api.ReturnData
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.BookSource
@@ -9,6 +10,7 @@ import io.legado.app.help.source.SourceHelp
 import io.legado.app.utils.GSON
 import io.legado.app.utils.fromJsonArray
 import io.legado.app.utils.fromJsonObject
+import splitties.init.appCtx
 
 object BookSourceController {
 
@@ -73,7 +75,9 @@ object BookSourceController {
                 SourceHelp.deleteBookSources(it)
             }
         }.onFailure {
-            return ReturnData().setErrorMsg(it.localizedMessage ?: "数据格式错误")
+            return ReturnData().setErrorMsg(
+                it.localizedMessage ?: appCtx.getString(R.string.data_format_error)
+            )
         }
         return ReturnData().setData("已执行"/*okSources*/)
     }

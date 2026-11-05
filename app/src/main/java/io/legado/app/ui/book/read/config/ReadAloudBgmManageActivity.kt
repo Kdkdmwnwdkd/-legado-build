@@ -84,7 +84,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
                     toastOnUi(R.string.toast_import_done)
                 }.onFailure {
                     finishImportingAndLoad()
-                    toastOnUi(it.localizedMessage ?: "导入失败")
+                    toastOnUi(it.localizedMessage ?: getString(R.string.import_failed))
                 }
             }
         }
@@ -112,7 +112,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
                 toastOnUi(appCtx.getString(R.string.toast_imported_count_label, success, currentAssetLabel))
             }.onFailure {
                 finishImportingAndLoad()
-                toastOnUi(it.localizedMessage ?: "批量导入失败")
+                toastOnUi(it.localizedMessage ?: getString(R.string.batch_import_failed))
             }
         }
     }
@@ -297,7 +297,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
                     toastOnUi(appCtx.getString(R.string.toast_imported_count_label, count, label))
                 }.onFailure {
                     finishImportingAndLoad()
-                    toastOnUi(it.localizedMessage ?: "音频包导入失败")
+                    toastOnUi(it.localizedMessage ?: getString(R.string.ai_bgm_pack_import_failed))
                 }
             }
         }
@@ -329,7 +329,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
                     )
                 }
             }.onFailure {
-                toastOnUi(it.localizedMessage ?: "${label} ZIP 导出失败")
+                toastOnUi(it.localizedMessage ?: getString(R.string.ai_bgm_zip_export_failed, label))
             }
         }
     }
@@ -619,7 +619,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
             if (!file.exists() || file.length() <= 0L) return@mapNotNull null
             val groupName = exportGroups[track.groupId]?.name
                 ?.takeUnless { it == "默认分组" }
-                ?: "默认分组"
+                ?: getString(R.string.default_group)
             val extension = track.fileName.substringAfterLast('.', "mp3").lowercase(Locale.ROOT)
             val safeFileName = track.fileName
                 .ifBlank { "${track.displayName()}.$extension" }
@@ -929,7 +929,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
         val firstSegment = entryName.split('/').firstOrNull()
             ?.trim()
             ?.takeIf { it.isNotBlank() && it != entryName.substringAfterLast('/') }
-        return firstSegment ?: "默认分组"
+        return firstSegment ?: getString(R.string.default_group)
     }
 
     private fun fallbackTrackName(fileName: String): String {
@@ -961,7 +961,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
 
     private fun groupName(groupId: Long): String {
         if (groupId == 0L) return "默认分组"
-        return groups.firstOrNull { it.id == groupId }?.displayName() ?: "默认分组"
+        return groups.firstOrNull { it.id == groupId }?.displayName() ?: getString(R.string.default_group)
     }
 
     private fun ReadAloudBgmGroup.isDefaultGroup(): Boolean {

@@ -6,6 +6,7 @@ import androidx.compose.runtime.Immutable
 import io.legado.app.R
 import io.legado.app.ui.main.ai.AiChatMessage
 import org.json.JSONObject
+import splitties.init.appCtx
 
 @Immutable
 sealed class AiChatUiItem {
@@ -449,7 +450,7 @@ private fun parseToolDisplayPayload(
             AiToolDisplayPayload(
                 type = AiToolPreviewType.ImageResult,
                 title = "角色头像",
-                summary = image?.prompt?.takeIf { it.isNotBlank() } ?: "已更新角色头像",
+                summary = image?.prompt?.takeIf { it.isNotBlank() } ?: appCtx.getString(R.string.ai_avatar_updated),
                 raw = raw,
                 images = listOfNotNull(image)
             )

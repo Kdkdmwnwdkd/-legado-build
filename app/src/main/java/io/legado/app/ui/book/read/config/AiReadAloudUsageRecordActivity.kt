@@ -110,7 +110,7 @@ class AiReadAloudUsageRecordActivity : BaseActivity<ActivityThemeManageBinding>(
         val totalCached = records.sumOf { it.cachedInputTokens }
         val totalOutput = records.sumOf { it.outputTokens }
         val total = records.sumOf { it.totalTokens.takeIf { value -> value > 0 } ?: (it.inputTokens + it.outputTokens) }
-        val typeText = typeLabel(typeFilter).takeIf { typeFilter.isNotBlank() } ?: "全部类型"
+        val typeText = typeLabel(typeFilter).takeIf { typeFilter.isNotBlank() } ?: getString(R.string.ai_usage_all_types)
         val bookText = if (currentBookOnly) "当前书" else "全部书籍"
         binding.tvSummary.text = "$typeText · $bookText · ${records.size} 条 · 输入 $totalInput · 缓存 $totalCached · 输出 $totalOutput · 总 $total · 已选 ${selectedIds.size}"
     }

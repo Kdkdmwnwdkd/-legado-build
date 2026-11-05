@@ -1,5 +1,6 @@
 package io.legado.app.help.ai
 
+import io.legado.app.R
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.AiReadAloudUsageRecord
 import io.legado.app.data.entities.Book
@@ -18,6 +19,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import splitties.init.appCtx
 
 object AiReadAloudBgmService {
 
@@ -486,12 +488,12 @@ object AiReadAloudBgmService {
         soundEffectCandidates: List<ReadAloudSoundEffectCandidate>
     ): String {
         val catalogText = catalog.bgmTracks.joinToString("\n") { track ->
-            val group = catalog.groups.firstOrNull { it.id == track.groupId }?.displayName() ?: "默认分组"
+            val group = catalog.groups.firstOrNull { it.id == track.groupId }?.displayName() ?: appCtx.getString(R.string.default_group)
             val tags = track.tags.ifBlank { "-" }
             "${track.id}|${track.displayName()}|$group|$tags|${track.durationMs / 1000}s|vol=${track.defaultVolume}"
         }.ifBlank { "无可用配乐" }
         val sfxCatalogText = catalog.soundEffectTracks.joinToString("\n") { track ->
-            val group = catalog.groups.firstOrNull { it.id == track.groupId }?.displayName() ?: "默认分组"
+            val group = catalog.groups.firstOrNull { it.id == track.groupId }?.displayName() ?: appCtx.getString(R.string.default_group)
             val tags = track.tags.ifBlank { "-" }
             "${track.id}|${track.displayName()}|$group|$tags|${track.durationMs / 1000}s|vol=${track.defaultVolume}"
         }.ifBlank { "无可用音效" }
@@ -787,7 +789,7 @@ object AiReadAloudBgmService {
             put("trackId", track.id)
             put("name", track.displayName())
             put("groupId", track.groupId)
-            put("groupName", groups.firstOrNull { it.id == track.groupId }?.displayName() ?: "默认分组")
+            put("groupName", groups.firstOrNull { it.id == track.groupId }?.displayName() ?: appCtx.getString(R.string.default_group))
             put("tags", JSONArray().apply {
                 track.tags.split(',', '，')
                     .map { it.trim() }

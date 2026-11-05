@@ -325,7 +325,7 @@ class ShareNoteTemplateManageActivity : BaseActivity<ActivityThemeManageBinding>
                     )
                 }
             }.onFailure {
-                toastOnUi(it.localizedMessage ?: "导出失败")
+                toastOnUi(it.localizedMessage ?: getString(R.string.export_failed))
             }
         }
     }

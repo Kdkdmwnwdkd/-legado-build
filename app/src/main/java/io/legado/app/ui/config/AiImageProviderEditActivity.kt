@@ -224,7 +224,7 @@ class AiImageProviderEditActivity : BaseActivity<ActivityAiImageProviderEditBind
     }
 
     private fun summary(value: String): String {
-        return value.trim().lineSequence().firstOrNull()?.take(36)?.ifBlank { null } ?: "未设置"
+        return value.trim().lineSequence().firstOrNull()?.take(36)?.ifBlank { null } ?: getString(R.string.not_filled)
     }
 
     private enum class Field {

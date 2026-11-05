@@ -124,7 +124,7 @@ class SpeakerGroupManageActivity : BaseActivity<ViewBinding>(
             ) { groupList, itemList, ttsList ->
                 Triple(groupList, itemList, ttsList)
             }
-                .catch { toastOnUi(it.localizedMessage ?: "读取发言人分组失败") }
+                .catch { toastOnUi(it.localizedMessage ?: getString(R.string.speaker_group_read_failed)) }
                 .flowOn(IO)
                 .collect { (groupList, itemList, ttsList) ->
                     groups = groupList
@@ -295,7 +295,11 @@ class SpeakerGroupManageDialog : BaseDialogFragment(0), SpeakerGroupManageAction
             ) { groupList, itemList, ttsList ->
                 Triple(groupList, itemList, ttsList)
             }
-                .catch { requireContext().toastOnUi(it.localizedMessage ?: "读取发言人分组失败") }
+                .catch {
+                requireContext().toastOnUi(
+                    it.localizedMessage ?: getString(R.string.speaker_group_read_failed)
+                )
+            }
                 .flowOn(IO)
                 .collect { (groupList, itemList, ttsList) ->
                     groups = groupList

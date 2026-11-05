@@ -4814,7 +4814,7 @@ class ReadBookActivity : BaseReadBookActivity(),
             LibraryCloudState.DISABLED -> "未配置书库容器"
             LibraryCloudState.READY -> "云端书库可用"
             LibraryCloudState.ERROR -> session.errorMessage?.let { "云端书库读取失败\n$it" }
-                ?: "云端书库读取失败"
+                ?: appCtx.getString(R.string.cloud_shelf_read_failed)
         }
     }
 

@@ -25,6 +25,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.LinkOption
 import java.util.UUID
+import io.legado.app.R
 
 object RestoreJournal {
 
@@ -319,7 +320,7 @@ object RestoreJournal {
                     failures.add(error)
                     AppLog.put(
                         "恢复备份回滚条目失败: ${entry.targetPath}\n" +
-                            (error.localizedMessage ?: "未知错误"),
+                            (error.localizedMessage ?: appCtx.getString(R.string.unknown_error)),
                         error
                     )
                 }

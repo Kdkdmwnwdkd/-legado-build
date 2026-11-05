@@ -1,5 +1,6 @@
 package io.legado.app.help.ai
 
+import io.legado.app.R
 import io.legado.app.constant.AppLog
 import io.legado.app.constant.EventBus
 import io.legado.app.data.appDb
@@ -35,6 +36,7 @@ import kotlinx.coroutines.sync.withPermit
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.concurrent.ConcurrentHashMap
+import splitties.init.appCtx
 
 object AiReadAloudRoleService {
 
@@ -635,19 +637,20 @@ object AiReadAloudRoleService {
             val count = fallbackSegments.size
             postPreview(
                 AiReadAloudRoleState.STATUS_FAILED,
-                oldCache.lastError.ifBlank { "AI分角色连续失败，请重新分配当前章节" },
+                oldCache.lastError.ifBlank { appCtx.getString(R.string.ai_role_assign_failed_retry) },
                 AiReadAloudRoleState.SOURCE_FALLBACK,
                 preview,
-                error = oldCache.lastError.ifBlank { "AI分角色连续失败" }
+                error = oldCache.lastError.ifBlank { appCtx.getString(R.string.ai_role_assign_failed) }
             )
             return EnsureResult(
                 AiReadAloudRoleState.STATUS_FAILED,
-                error = oldCache.lastError.ifBlank { "AI分角色连续失败" },
+                error = oldCache.lastError.ifBlank { appCtx.getString(R.string.ai_role_assign_failed) },
                 cacheKey = cacheKey
             )
         }
         if ((oldCache?.retryCount ?: 0) >= 3) {
-            val error = oldCache?.lastError?.ifBlank { "AI分角色连续失败" } ?: "AI分角色连续失败"
+            val error = oldCache?.lastError?.ifBlank { appCtx.getString(R.string.ai_role_assign_failed) }
+                ?: appCtx.getString(R.string.ai_role_assign_failed)
             postState(currentBook, currentChapter, stage, AiReadAloudRoleState.STATUS_FAILED, error, cleanParagraphs.size, error = error)
             return EnsureResult(AiReadAloudRoleState.STATUS_FAILED, error = error, cacheKey = cacheKey)
         }

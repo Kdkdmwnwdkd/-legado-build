@@ -238,7 +238,7 @@ object Restore {
                 .onFailure { error ->
                     AppLog.put(
                         "备份中的直链上传规则无效，已保留当前配置\n" +
-                            (error.localizedMessage ?: "未知错误"),
+                            (error.localizedMessage ?: appCtx.getString(R.string.unknown_error)),
                         error
                     )
                     appCtx.toastOnUi(R.string.toast_direct_link_rule_invalid)

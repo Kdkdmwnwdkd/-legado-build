@@ -1,5 +1,6 @@
 package io.legado.app.help.http.dns
 
+import io.legado.app.R
 import okhttp3.Dns
 import java.net.InetAddress
 import java.net.SocketTimeoutException
@@ -10,6 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 import javax.net.ssl.SSLException
+import splitties.init.appCtx
 
 data class DnsProbeSample(val milliseconds: Double?, val addressCount: Int, val error: String?)
 
@@ -46,7 +48,7 @@ object DnsBenchmark {
                 if (Thread.currentThread().isInterrupted) throw InterruptedException()
                 sample(resolver, host)
             }
-            return DnsProbeResult(provider?.name ?: "系统 DNS", provider, host, samples)
+            return DnsProbeResult(provider?.name ?: appCtx.getString(R.string.system_dns), provider, host, samples)
         } finally { transport?.close() }
     }
 
