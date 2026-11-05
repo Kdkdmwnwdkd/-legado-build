@@ -2870,4 +2870,5 @@ Type &quot;%2$s&quot; to confirm.</string>
     <string name="webdav_unknown_error">Unknown error, code: %1$d</string>
     <string name="reader_asset_summary">%1$d items · Asset library %2$s</string>
     <string name="ai_role_assign_failed_retry">AI role assignment keeps failing. Please reassign roles for this chapter.</string>
+    <string name="rss_source_empty_hint">No feeds yet. Tap the gear icon in the top right to add one.</string>
 </resources>

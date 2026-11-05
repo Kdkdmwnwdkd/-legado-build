@@ -65,7 +65,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:padding="24dp"
-                    android:text="@string/rss_source_empty"
+                    android:text="@string/rss_source_empty_hint"
                     android:textColor="@color/secondaryText"
                     android:textSize="14sp"
                     android:visibility="gone" />
