@@ -1,23 +1,25 @@
 package io.legado.app.help.http.dns
 
+import androidx.annotation.StringRes
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import io.legado.app.R
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.net.IDN
 import java.net.InetAddress
 import java.util.Locale
 
-enum class DnsScope(val key: String, val title: String) {
-    READING("reading", "书源、搜索与正文"),
-    IMAGE("image", "封面、漫画与正文图片"),
-    AI("ai", "AI、MCP 与 AI 工具"),
-    MEDIA("media", "HTTP 朗读与音视频"),
-    WEBSOCKET("websocket", "脚本 WebSocket"),
-    SYNC("sync", "WebDAV 与云同步"),
-    IMPORT("import", "在线导入"),
-    RELAY("relay", "远程分享与中继"),
-    OTHER("other", "其它应用请求")
+enum class DnsScope(val key: String, @param:StringRes val titleRes: Int) {
+    READING("reading", R.string.dns_scope_reading),
+    IMAGE("image", R.string.dns_scope_image),
+    AI("ai", R.string.dns_scope_ai),
+    MEDIA("media", R.string.dns_scope_media),
+    WEBSOCKET("websocket", R.string.dns_scope_websocket),
+    SYNC("sync", R.string.dns_scope_sync),
+    IMPORT("import", R.string.dns_scope_import),
+    RELAY("relay", R.string.dns_scope_relay),
+    OTHER("other", R.string.dns_scope_other)
 }
 
 data class DnsDomainRule(val pattern: String, val doh: Boolean) {
@@ -36,8 +38,8 @@ data class DnsDomainRule(val pattern: String, val doh: Boolean) {
 data class DohProvider(val id: String, val name: String, val url: String, val bootstrap: List<String>) {
     companion object {
         val presets = listOf(
-            DohProvider("alidns", "阿里 DNS", "https://dns.alidns.com/dns-query", listOf("223.5.5.5", "223.6.6.6")),
-            DohProvider("dnspod", "腾讯 DNSPod", "https://doh.pub/dns-query", listOf("1.12.12.12", "120.53.53.53")),
+            DohProvider("alidns", "AliDNS", "https://dns.alidns.com/dns-query", listOf("223.5.5.5", "223.6.6.6")),
+            DohProvider("dnspod", "DNSPod", "https://doh.pub/dns-query", listOf("1.12.12.12", "120.53.53.53")),
             DohProvider("cloudflare", "Cloudflare", "https://cloudflare-dns.com/dns-query", listOf("1.1.1.1", "1.0.0.1")),
             DohProvider("google", "Google", "https://dns.google/dns-query", listOf("8.8.8.8", "8.8.4.4"))
         )

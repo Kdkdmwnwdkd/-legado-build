@@ -49,7 +49,7 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (NetworkDnsStore.hasInvalidSettings(requireContext())) lastError = "已保存的 DNS 配置无效，当前使用系统 DNS，请重新保存配置。"
+        if (NetworkDnsStore.hasInvalidSettings(requireContext())) lastError = getString(R.string.dns_invalid_saved_settings)
     }
 
     override fun onDestroyView() {
@@ -70,45 +70,140 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
         val running = benchmarkJob?.isActive == true
         val sections = mutableListOf(
             SettingSectionSpec(items = listOf(
-                SettingSwitchSpec(PreferKey.networkDnsConfig, "启用 DoH", config.enabled,
-                    { save(config.copy(enabled = it)) }, "保存后重启生效；未启用时跟随系统 DNS"),
-                action("dns_provider", "DoH 服务", selected?.name ?: "自定义服务", ::chooseProvider),
-                action("dns_custom", "服务地址与启动 IP", selected?.url ?: "已保存自定义 HTTPS 地址", ::editEndpoint),
-                action("dns_restart", "重启并应用", lastError ?: "分流规则、Hosts 和网络组件在重启后一起生效") {
-                    showComposeConfirmDialog("重启应用", "已保存的网络设置将在重启后生效。", onPositive = ::restartWithSavedSettings)
+                SettingSwitchSpec(
+                    PreferKey.networkDnsConfig,
+                    getString(R.string.dns_enable_title),
+                    config.enabled,
+                    { save(config.copy(enabled = it)) },
+                    getString(R.string.dns_enable_summary)
+                ),
+                action(
+                    "dns_provider",
+                    getString(R.string.dns_provider_title),
+                    selected?.name ?: getString(R.string.dns_custom_service),
+                    ::chooseProvider
+                ),
+                action(
+                    "dns_custom",
+                    getString(R.string.dns_endpoint_title),
+                    selected?.url ?: getString(R.string.dns_custom_saved),
+                    ::editEndpoint
+                ),
+                action(
+                    "dns_restart",
+                    getString(R.string.dns_restart_title),
+                    lastError ?: getString(R.string.dns_restart_hint)
+                ) {
+                    showComposeConfirmDialog(
+                        getString(R.string.dns_restart_confirm_title),
+                        getString(R.string.dns_restart_confirm_message),
+                        onPositive = ::restartWithSavedSettings
+                    )
                 }
             )),
-            SettingSectionSpec(title = "按功能选择", items = DnsScope.entries.map { scope ->
-                SettingSwitchSpec("dns_scope_${scope.key}", scope.title, scope in config.scopes,
-                    { checked -> save(config.copy(scopes = if (checked) config.scopes + scope else config.scopes - scope)) },
-                    if (scope in config.scopes) "DoH 开启后使用 DoH" else "使用系统 DNS")
+            SettingSectionSpec(title = getString(R.string.dns_by_feature), items = DnsScope.entries.map { scope ->
+                SettingSwitchSpec(
+                    "dns_scope_${scope.key}",
+                    getString(scope.titleRes),
+                    scope in config.scopes,
+                    { checked ->
+                        save(config.copy(scopes = if (checked) config.scopes + scope else config.scopes - scope))
+                    },
+                    getString(if (scope in config.scopes) R.string.dns_scope_on_summary else R.string.dns_scope_off_summary)
+                )
             }),
-            SettingSectionSpec(title = "域名例外", items = listOf(
-                action("dns_rule_add", "添加域名规则", "可为域名指定 DoH 或系统 DNS，优先于功能选择") { editRule(null) }
+            SettingSectionSpec(title = getString(R.string.dns_domain_exceptions), items = listOf(
+                action(
+                    "dns_rule_add",
+                    getString(R.string.dns_add_rule),
+                    getString(R.string.dns_add_rule_summary)
+                ) { editRule(null) }
             ) + config.rules.map { rule ->
-                action("dns_rule_${rule.pattern}", rule.pattern, if (rule.doh) "使用 DoH" else "使用系统 DNS") { editRule(rule) }
+                action(
+                    "dns_rule_${rule.pattern}",
+                    rule.pattern,
+                    getString(if (rule.doh) R.string.dns_use_doh else R.string.dns_use_system)
+                ) { editRule(rule) }
             }),
-            SettingSectionSpec(title = "DNS 测速", items = buildList {
-                add(action("dns_test_host", "测试域名", stringSetting(TEST_HOST, "example.com")) { editTestHost() })
-                add(action("dns_benchmark", if (running) "停止测速" else "开始测速",
-                    if (running) progress else "系统 DNS 与各 DoH 服务各查询 3 次，只比较解析耗时") {
-                    if (running) { cancelBenchmark(); refreshSettings() } else startBenchmark()
-                })
+            SettingSectionSpec(title = getString(R.string.dns_benchmark_section), items = buildList {
+                add(
+                    action(
+                        "dns_test_host",
+                        getString(R.string.dns_test_host_title),
+                        stringSetting(TEST_HOST, "example.com")
+                    ) { editTestHost() }
+                )
+                add(
+                    action(
+                        "dns_benchmark",
+                        getString(if (running) R.string.dns_benchmark_stop else R.string.dns_benchmark_start),
+                        if (running) progress else getString(R.string.dns_benchmark_summary)
+                    ) {
+                        if (running) {
+                            cancelBenchmark()
+                            refreshSettings()
+                        } else {
+                            startBenchmark()
+                        }
+                    }
+                )
                 results.forEach { result ->
-                    add(action("dns_result_${result.provider?.id ?: "system"}", result.name,
-                        "成功 ${result.successCount}/${result.samples.size} · 首次 ${ms(result.firstMilliseconds)} · 中位数 ${ms(result.medianMilliseconds)}") {
-                        showResult(result)
-                    })
+                    add(
+                        action(
+                            "dns_result_${result.provider?.id ?: "system"}",
+                            result.name,
+                            getString(
+                                R.string.dns_result_summary,
+                                result.successCount,
+                                result.samples.size,
+                                ms(result.firstMilliseconds),
+                                ms(result.medianMilliseconds)
+                            )
+                        ) { showResult(result) }
+                    )
                 }
             }),
-            SettingSectionSpec(title = "高级", items = listOf(
-                SettingSwitchSpec("dns_ipv6", "查询 IPv6 地址", config.includeIpv6, { save(config.copy(includeIpv6 = it)) }, "同时查询 A 和 AAAA；系统 DNS 由系统决定"),
-                SettingSwitchSpec("dns_local", "局域网名称使用系统 DNS", config.localNamesUseSystem, { save(config.copy(localNamesUseSystem = it)) }, "单标签域名、localhost、.local、.lan 等；域名例外可覆盖"),
-                SettingSwitchSpec("dns_fallback", "DoH 失败时回退系统 DNS", config.fallbackToSystem, { save(config.copy(fallbackToSystem = it)) }, "关闭时解析失败会报错；测速始终不回退"),
-                action(PreferKey.customHosts, "自定义 Hosts", "指定地址优先于 DoH 和域名规则", ::editHosts),
-                SettingSwitchSpec(PreferKey.cronet, "优先使用 Cronet", booleanSetting(PreferKey.cronet, false),
-                    { updateBooleanSetting(PreferKey.cronet, it) }, "DoH、Hosts、指定 IP 或显式代理请求自动使用 OkHttp；重启后生效"),
-                action("dns_help", "覆盖范围与测速说明", "WebView、代理、书源指定 IP 和系统 DNS 的区别", ::showHelp)
+            SettingSectionSpec(title = getString(R.string.dns_advanced), items = listOf(
+                SettingSwitchSpec(
+                    "dns_ipv6",
+                    getString(R.string.dns_ipv6_title),
+                    config.includeIpv6,
+                    { save(config.copy(includeIpv6 = it)) },
+                    getString(R.string.dns_ipv6_summary)
+                ),
+                SettingSwitchSpec(
+                    "dns_local",
+                    getString(R.string.dns_local_title),
+                    config.localNamesUseSystem,
+                    { save(config.copy(localNamesUseSystem = it)) },
+                    getString(R.string.dns_local_summary)
+                ),
+                SettingSwitchSpec(
+                    "dns_fallback",
+                    getString(R.string.dns_fallback_title),
+                    config.fallbackToSystem,
+                    { save(config.copy(fallbackToSystem = it)) },
+                    getString(R.string.dns_fallback_summary)
+                ),
+                action(
+                    PreferKey.customHosts,
+                    getString(R.string.dns_custom_hosts),
+                    getString(R.string.dns_custom_hosts_summary),
+                    ::editHosts
+                ),
+                SettingSwitchSpec(
+                    PreferKey.cronet,
+                    getString(R.string.dns_cronet_title),
+                    booleanSetting(PreferKey.cronet, false),
+                    { updateBooleanSetting(PreferKey.cronet, it) },
+                    getString(R.string.dns_cronet_summary)
+                ),
+                action(
+                    "dns_help",
+                    getString(R.string.dns_help_title),
+                    getString(R.string.dns_help_summary),
+                    ::showHelp
+                )
             ))
         )
         return SettingPageSpec(titleRes, sections)
@@ -120,7 +215,7 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
     private fun save(config: NetworkDnsConfig) {
         runCatching { NetworkDnsStore.save(requireContext(), config) }
             .onSuccess { lastError = null }
-            .onFailure { lastError = it.message ?: "DNS 配置无效" }
+            .onFailure { lastError = it.message ?: getString(R.string.dns_config_invalid) }
         refreshSettings()
     }
 
@@ -132,7 +227,7 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
             try {
                 val saved = withContext(Dispatchers.IO) { NetworkDnsStore.persistBeforeRestart(context) }
                 if (saved) context.restart() else {
-                    lastError = "设置未能写入，请稍后重试。"
+                    lastError = getString(R.string.dns_save_failed_retry)
                     refreshSettings()
                 }
             } finally { applyingSettings = false }
@@ -141,7 +236,9 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
 
     private fun chooseProvider() {
         val config = NetworkDnsStore.load(requireContext())
-        showComposeChoiceListDialog("DoH 服务", DohProvider.presets.map { it.name } + "自定义",
+        showComposeChoiceListDialog(
+            getString(R.string.dns_provider_title),
+            DohProvider.presets.map { it.name } + getString(R.string.dns_custom_service),
             selectedIndex = DohProvider.presets.indexOfFirst { it.url == config.endpoint && it.bootstrap == config.bootstrap }
                 .let { if (it < 0) DohProvider.presets.size else it },
             onSelected = { index ->
@@ -151,26 +248,38 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
 
     private fun editEndpoint() {
         val config = NetworkDnsStore.load(requireContext())
-        fun candidate(values: List<String>): NetworkDnsConfig = config.copy(endpoint = values[0].trim(),
-            bootstrap = values[1].split(Regex("[,，\\s]+")).filter { it.isNotBlank() })
-        showComposeTextFormDialog("DoH 服务", labels = listOf("HTTPS 查询地址", "启动 IP（可选，多个用逗号分隔）"),
+        fun candidate(values: List<String>): NetworkDnsConfig = config.copy(
+            endpoint = values[0].trim(),
+            bootstrap = values[1].split(Regex("[,，\\s]+")).filter { it.isNotBlank() }
+        )
+        showComposeTextFormDialog(
+            getString(R.string.dns_provider_title),
+            labels = listOf(
+                getString(R.string.dns_endpoint_label_url),
+                getString(R.string.dns_endpoint_label_bootstrap)
+            ),
             initialValues = listOf(config.endpoint, config.bootstrap.joinToString(", ")),
-            message = "启动 IP 用于连接 DoH 服务，仍校验原域名证书；留空时可能先由系统解析服务域名。",
+            message = getString(R.string.dns_endpoint_message),
             validateInput = { values -> runCatching { candidate(values).validated() }.isSuccess },
             onPositive = { save(candidate(it)) })
     }
 
     private fun editRule(original: DnsDomainRule?) {
-        showComposeTextInputDialog("域名规则", hint = "example.com 或 *.example.com", initialValue = original?.pattern.orEmpty(),
-            message = "精确域名优先；通配符只匹配子域名。DoH 总开关关闭时全部跟随系统。",
+        showComposeTextInputDialog(
+            getString(R.string.dns_rule_title),
+            hint = "example.com / *.example.com",
+            initialValue = original?.pattern.orEmpty(),
+            message = getString(R.string.dns_rule_message),
             validateInput = { runCatching { DnsDomainRule(it, false).normalized() }.isSuccess },
-            neutralText = if (original == null) null else "删除规则",
+            neutralText = if (original == null) null else getString(R.string.dns_rule_delete),
             onNeutral = if (original == null) null else { {
                 val config = NetworkDnsStore.load(requireContext())
                 save(config.copy(rules = config.rules.filterNot { it.pattern == original.pattern }))
             } },
             onPositive = { pattern ->
-                showComposeChoiceListDialog("${pattern.trim()} 使用", listOf("DoH", "系统 DNS"),
+                showComposeChoiceListDialog(
+                    getString(R.string.dns_rule_use_title, pattern.trim()),
+                    listOf("DoH", getString(R.string.dns_use_system)),
                     selectedIndex = if (original?.doh != false) 0 else 1,
                     onSelected = { index ->
                         val rule = DnsDomainRule(pattern, index == 0).normalized()
@@ -181,15 +290,21 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
     }
 
     private fun editHosts() {
-        showComposeTextInputDialog("自定义 Hosts", initialValue = stringSetting(PreferKey.customHosts, ""),
-            hint = "{\"example.com\": [\"192.0.2.1\"]}", minLines = 4, maxLines = 12,
-            message = "保存后重启生效，保留已有 Hosts 格式。",
+        showComposeTextInputDialog(
+            getString(R.string.dns_custom_hosts),
+            initialValue = stringSetting(PreferKey.customHosts, ""),
+            hint = "{\"example.com\": [\"192.0.2.1\"]}",
+            minLines = 4,
+            maxLines = 12,
+            message = getString(R.string.dns_hosts_message),
             validateInput = { runCatching { DnsHosts.parse(it, strict = true) }.isSuccess },
             onPositive = { updateStringSetting(PreferKey.customHosts, it.trim()) })
     }
 
     private fun editTestHost() {
-        showComposeTextInputDialog("测试域名", initialValue = stringSetting(TEST_HOST, "example.com"),
+        showComposeTextInputDialog(
+            getString(R.string.dns_test_host_title),
+            initialValue = stringSetting(TEST_HOST, "example.com"),
             validateInput = { DnsNames.host(it)?.let { host -> DnsNames.literal(host) == null } == true },
             onPositive = {
                 cancelBenchmark()
@@ -208,14 +323,19 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
         benchmarkJob = viewLifecycleOwner.lifecycleScope.launch(start = CoroutineStart.LAZY) {
             try {
                 for (provider in DnsBenchmark.providers(config)) {
-                    progress = "正在查询 ${provider?.name ?: "系统 DNS"} · $host"
+                    progress = getString(
+                        R.string.dns_probe_progress,
+                        provider?.name ?: getString(R.string.system_dns),
+                        host
+                    )
                     refreshSettings()
                     val result = runInterruptible(Dispatchers.IO) { DnsBenchmark.measure(config, provider, host) }
                     if (generation == benchmarkGeneration) results = results + result
                 }
-            } catch (cancelled: CancellationException) { throw cancelled }
-            catch (_: Exception) {
-                if (generation == benchmarkGeneration) lastError = "测速未完成，请检查测试域名和网络后重试。"
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (_: Exception) {
+                if (generation == benchmarkGeneration) lastError = getString(R.string.dns_benchmark_failed)
             } finally {
                 if (generation == benchmarkGeneration) {
                     benchmarkJob = null
@@ -229,12 +349,26 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
     }
 
     private fun showResult(result: DnsProbeResult) {
-        val details = "测试域名：${result.hostname}\n" + result.samples.mapIndexed { index, sample ->
-            "第 ${index + 1} 次：${sample.milliseconds?.let { "${ms(it)}，${sample.addressCount} 个地址" } ?: sample.error}"
-        }.joinToString("\n")
+        val details = getString(R.string.dns_result_message_title, result.hostname) + "\n" +
+            result.samples.mapIndexed { index, sample ->
+                getString(
+                    R.string.dns_result_sample,
+                    index + 1,
+                    sample.milliseconds?.let {
+                        getString(R.string.dns_result_sample_ok, ms(it), sample.addressCount)
+                    } ?: sample.error.orEmpty()
+                )
+            }.joinToString("\n")
         val provider = result.provider
-        showComposeActionListDialog(result.name, if (provider == null) listOf("关闭") else listOf("选为 DoH 服务", "关闭"),
-            message = details, onSelected = { index ->
+        showComposeActionListDialog(
+            result.name,
+            if (provider == null) {
+                listOf(getString(R.string.dns_close))
+            } else {
+                listOf(getString(R.string.dns_result_choose), getString(R.string.dns_close))
+            },
+            message = details,
+            onSelected = { index ->
                 if (index == 0 && provider != null) {
                     val config = NetworkDnsStore.load(requireContext())
                     save(config.copy(endpoint = provider.url, bootstrap = provider.bootstrap))
@@ -243,14 +377,14 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
     }
 
     private fun showHelp() {
-        showComposeConfirmDialog("覆盖范围与测速说明", message =
-            "书源指定 IP、Hosts 优先于域名规则，域名规则优先于功能选择。\n\n" +
-            "分流只控制应用实际发起的原生请求。登录页、WebView 子资源、模板的外部脚本请求、系统或第三方 TTS 不会自动跟随。代理通常负责目标域名解析；应用可能只解析代理服务器。\n\n" +
-            "测速使用当前保存的服务与 IPv6 选项，直接查询域名，不使用 Hosts、业务分流或系统回退。DoH 不使用本地 HTTP 缓存，首次包含建连，复测可复用连接；系统 DNS 的缓存由系统控制。结果是 DNS 查询耗时，不代表下载速度。\n\n" +
-            "网络设置、Hosts、Cronet 保存后重启生效；测速结果不会自动更换服务商。",
+        showComposeConfirmDialog(
+            getString(R.string.dns_help_title),
+            message = getString(R.string.dns_help_body),
             showNegative = false, onPositive = {})
     }
 
-    private fun ms(value: Double?): String = value?.let { String.format(Locale.ROOT, "%.1f ms", it) } ?: "失败"
+    private fun ms(value: Double?): String =
+        value?.let { String.format(Locale.ROOT, "%.1f ms", it) } ?: getString(R.string.dns_probe_failed)
+
     companion object { private const val TEST_HOST = "networkDnsTestHost" }
 }
