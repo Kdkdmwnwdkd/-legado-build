@@ -11,6 +11,7 @@ import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.compose.ui.res.stringResource
 import androidx.core.view.ViewCompat
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -3048,7 +3049,7 @@ private fun RolePreviewParagraphGroup(
                     modifier = Modifier.weight(1f)
                 )
                 if (current) {
-                    Text("当前朗读", color = colors.accent, fontSize = 11.sp)
+                    Text(stringResource(R.string.current_reading), color = colors.accent, fontSize = 11.sp)
                 }
             }
             segments.forEach { segment ->
@@ -3212,7 +3213,7 @@ private fun RoleSegmentEditDialog(
                             value = query,
                             onValueChange = { query = it },
                             singleLine = true,
-                            label = { Text("搜索角色") },
+                            label = { Text(stringResource(R.string.search_character)) },
                             modifier = Modifier.fillMaxWidth()
                         )
                         LazyColumn(
@@ -3260,8 +3261,7 @@ private fun RoleSegmentEditDialog(
                         color = if (canSave) colors.accent.copy(alpha = 0.20f) else colors.panel.copy(alpha = 0.55f),
                         border = BorderStroke(1.dp, if (canSave) colors.accent.copy(alpha = 0.35f) else colors.panelBorder)
                     ) {
-                        Text(
-                            text = "保存",
+                        Text(text = stringResource(R.string.action_save),
                             color = if (canSave) colors.accent else colors.subtleText,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -3345,7 +3345,7 @@ private fun RoleCharacterChoiceRow(
                 }
             }
             if (selected) {
-                Text("已选", color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.selected), color = colors.accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }
@@ -3538,8 +3538,7 @@ private fun ModeChip(
                 maxLines = 1
             )
             if (fullscreenHint) {
-                Text(
-                    text = "全屏",
+                Text(text = stringResource(R.string.fullscreen),
                     color = colors.accentText.copy(alpha = 0.78f),
                     fontSize = 8.sp,
                     maxLines = 1,

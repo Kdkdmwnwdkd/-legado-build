@@ -69,6 +69,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -251,7 +252,7 @@ fun CharacterScaffold(
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextButton(onClick = onBack) {
-                Text("返回", color = style.colors.text)
+                Text(stringResource(R.string.back), color = style.colors.text)
             }
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -304,7 +305,7 @@ fun CharacterManageScreen(
         subtitle = bookName,
         onBack = onBack,
         actions = {
-            TextButton(onClick = onOpenRelations) { Text("关系网", color = style.colors.accent) }
+            TextButton(onClick = onOpenRelations) { Text(stringResource(R.string.character_relation_map), color = style.colors.accent) }
         }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -450,7 +451,7 @@ private fun CharacterRoleSectionHeader(title: String, count: Int) {
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1f)
         )
-        Text("$count 个", color = style.colors.subText, fontSize = 12.sp)
+        Text(stringResource(R.string.count_items, count), color = style.colors.subText, fontSize = 12.sp)
     }
 }
 
@@ -469,7 +470,7 @@ private fun CharacterSummaryHeader(count: Int, onAdd: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("本书角色库", color = style.colors.text, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.character_library), color = style.colors.text, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                 Text(
                     text = if (count == 0) "角色卡会只绑定当前书籍" else "已记录 $count 个角色",
                     color = style.colors.subText,
@@ -481,7 +482,7 @@ private fun CharacterSummaryHeader(count: Int, onAdd: () -> Unit) {
                 onClick = onAdd,
                 colors = ButtonDefaults.buttonColors(containerColor = style.colors.accent)
             ) {
-                Text("添加")
+                Text(stringResource(R.string.add))
             }
         }
     }
@@ -551,7 +552,7 @@ fun CharacterListCard(
             }
             var expanded by remember { mutableStateOf(false) }
             TextButton(onClick = { expanded = true }) {
-                Text("更多", color = style.colors.subText)
+                Text(stringResource(R.string.more), color = style.colors.subText)
             }
             if (expanded) {
                 CharacterMoreDialog(
@@ -590,7 +591,7 @@ private fun CharacterMoreDialog(
                 MoreActionRow("删除角色", "同时删除与此角色相关的关系", onDelete, danger = true)
             }
         },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("关闭", color = style.colors.accent) } }
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.close), color = style.colors.accent) } }
     )
 }
 
@@ -631,7 +632,7 @@ fun CharacterCardScreen(
         onBack = onBack,
         actions = {
             TextButton(onClick = onEdit, enabled = character != null) {
-                Text("编辑", color = if (character == null) style.colors.subText else style.colors.accent)
+                Text(stringResource(R.string.edit), color = if (character == null) style.colors.subText else style.colors.accent)
             }
         }
     ) {
@@ -783,7 +784,7 @@ private fun CharacterSpeechRouteQuickSwitch(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("角色配音", color = style.colors.subText, fontSize = 12.sp)
+                Text(stringResource(R.string.character_voice), color = style.colors.subText, fontSize = 12.sp)
                 Text(
                     text = speechRouteSummary(route, groups, defaultText = "使用默认朗读引擎"),
                     color = style.colors.text,
@@ -876,7 +877,7 @@ fun CharacterEditScreen(
         title = title,
         onBack = onBack,
         actions = {
-            TextButton(onClick = onSave) { Text("保存", color = style.colors.accent) }
+            TextButton(onClick = onSave) { Text(stringResource(R.string.action_save), color = style.colors.accent) }
         }
     ) {
         LazyColumn(
@@ -895,7 +896,7 @@ fun CharacterEditScreen(
                     ) {
                         CharacterAvatar(draft.avatar, draft.name, 82)
                         Column(modifier = Modifier.padding(start = 14.dp)) {
-                            Text("角色头像", color = style.colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                            Text(stringResource(R.string.character_avatar), color = style.colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                             Row(
                                 modifier = Modifier
                                     .padding(top = 8.dp)
@@ -945,7 +946,7 @@ private fun CharacterSpeechRouteEditor(
     var pickerVisible by remember { mutableStateOf(false) }
     Surface(color = style.colors.card, shape = RoundedCornerShape(style.radius)) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("角色配音", color = style.colors.subText, fontSize = 13.sp)
+            Text(stringResource(R.string.character_voice), color = style.colors.subText, fontSize = 13.sp)
             Text(
                 text = speechRouteSummary(route, groups, defaultText = "使用书籍或全局默认朗读引擎"),
                 color = style.colors.text,
@@ -992,7 +993,7 @@ private fun GenderSelector(gender: String, onGenderChange: (String) -> Unit) {
     val current = BookCharacter.normalizeGender(gender)
     Surface(color = style.colors.card, shape = RoundedCornerShape(style.radius)) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("角色性别", color = style.colors.subText, fontSize = 13.sp)
+            Text(stringResource(R.string.character_gender), color = style.colors.subText, fontSize = 13.sp)
             Row(
                 modifier = Modifier.padding(top = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -1039,7 +1040,7 @@ private fun RoleSelector(role: Int, onRoleChange: (Int) -> Unit) {
     val style = rememberCharacterStyle()
     Surface(color = style.colors.card, shape = RoundedCornerShape(style.radius)) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("角色类型", color = style.colors.subText, fontSize = 13.sp)
+            Text(stringResource(R.string.character_type), color = style.colors.subText, fontSize = 13.sp)
             Row(
                 modifier = Modifier.padding(top = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -1147,7 +1148,7 @@ fun CharacterRelationScreen(
         subtitle = "主角视角 · ${graphCharacters.size} 个角色 · ${relations.size} 条关系",
         onBack = onBack,
         actions = {
-            TextButton(onClick = onAddRelation) { Text("添加关系", color = style.colors.accent) }
+            TextButton(onClick = onAddRelation) { Text(stringResource(R.string.character_add_relation), color = style.colors.accent) }
         }
     ) {
         Column(
@@ -1802,8 +1803,13 @@ private fun RelationListPanel(
                     .clickable { expanded = !expanded },
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("关系列表", color = style.colors.text, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
-                Text("${relations.size} 条", color = style.colors.subText, fontSize = 12.sp, modifier = Modifier.padding(end = 12.dp))
+                Text(stringResource(R.string.character_relation_list), color = style.colors.text, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+                Text(
+                    stringResource(R.string.relation_count, relations.size),
+                    color = style.colors.subText,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(end = 12.dp)
+                )
                 Text(if (expanded) "收起" else "展开", color = style.colors.accent, fontSize = 13.sp)
             }
             if (!expanded) {
@@ -1838,8 +1844,8 @@ private fun RelationListPanel(
                                     Text("$from → $to", color = style.colors.text, fontSize = 14.sp, maxLines = 1)
                                     Text(relation.displayName(), color = style.colors.subText, fontSize = 12.sp, maxLines = 1)
                                 }
-                                TextButton(onClick = { onEdit(relation) }) { Text("编辑", color = style.colors.accent) }
-                                TextButton(onClick = { onDelete(relation) }) { Text("删除", color = style.colors.danger) }
+                                TextButton(onClick = { onEdit(relation) }) { Text(stringResource(R.string.edit), color = style.colors.accent) }
+                                TextButton(onClick = { onDelete(relation) }) { Text(stringResource(R.string.delete), color = style.colors.danger) }
                             }
                         }
                     }
@@ -1867,16 +1873,21 @@ private fun RelationDetailDialog(
         text = {
             Column {
                 Text("$from → $to")
-                Text("属性：${relation.relationType.ifBlank { "未填写" }}")
-                Text("强度：${relation.strength}")
+                Text(
+                    stringResource(
+                        R.string.relation_attribute,
+                        relation.relationType.ifBlank { stringResource(R.string.not_filled) }
+                    )
+                )
+                Text(stringResource(R.string.relation_strength, relation.strength))
                 if (relation.description.isNotBlank()) {
                     Spacer(Modifier.height(8.dp))
                     Text(relation.description)
                 }
             }
         },
-        confirmButton = { TextButton(onClick = onEdit) { Text("编辑") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("关闭") } }
+        confirmButton = { TextButton(onClick = onEdit) { Text(stringResource(R.string.edit)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.close)) } }
     )
 }
 
@@ -1947,7 +1958,11 @@ private fun RelationEditSheet(
                 item { CharacterTextField("关系属性", editing.relationType, { editing = editing.copy(relationType = it) }, singleLine = true) }
                 item {
                     Column {
-                        Text("关系强度 ${editing.strength}", color = style.colors.subText, fontSize = 13.sp)
+                        Text(
+                            stringResource(R.string.relation_strength_label, editing.strength),
+                            color = style.colors.subText,
+                            fontSize = 13.sp
+                        )
                         LegadoMiuixSlider(
                             value = editing.strength.toFloat(),
                             onValueChange = { editing = editing.copy(strength = it.roundToInt().coerceIn(0, 100)) },
@@ -2056,7 +2071,7 @@ private fun CharacterSelectField(
                         Text(it, color = style.colors.subText, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 }
-                Text("更换", color = style.colors.accent, fontSize = 13.sp)
+                Text(stringResource(R.string.change), color = style.colors.accent, fontSize = 13.sp)
             }
         }
     }
@@ -2124,14 +2139,14 @@ private fun CharacterSelectDialog(
                                 )
                             }
                             if (selected) {
-                                Text("已选", color = style.colors.accent, fontSize = 12.sp)
+                                Text(stringResource(R.string.selected), color = style.colors.accent, fontSize = 12.sp)
                             }
                         }
                     }
                 }
             }
         },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("关闭", color = style.colors.accent) } }
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.close), color = style.colors.accent) } }
     )
 }
 

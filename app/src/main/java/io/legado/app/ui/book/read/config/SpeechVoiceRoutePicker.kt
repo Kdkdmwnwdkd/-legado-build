@@ -29,12 +29,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import io.legado.app.R
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.readaloud.speech.SpeechEmotion
 import io.legado.app.help.readaloud.speech.SpeechRoute
@@ -90,7 +92,7 @@ fun SpeechVoiceRoutePickerDialog(
                             modifier = Modifier.weight(1f)
                         )
                         TextButton(onClick = onDismiss) {
-                            Text("关闭", color = colors.subText)
+                            Text(stringResource(R.string.close), color = colors.subText)
                         }
                     }
                 }
@@ -169,7 +171,7 @@ private fun EnginePickerList(
                 .heightIn(min = 160.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text("暂无朗读引擎", color = colors.subText, fontSize = 14.sp)
+            Text(stringResource(R.string.no_tts_engine), color = colors.subText, fontSize = 14.sp)
         }
         return
     }
@@ -230,7 +232,7 @@ private fun SpeakerPickerList(
                 .padding(bottom = 10.dp),
             singleLine = true,
             placeholder = {
-                Text("搜索发言人 / toneID / 情绪", color = colors.subText, fontSize = 13.sp)
+                Text(stringResource(R.string.search_speaker_emotion_hint), color = colors.subText, fontSize = 13.sp)
             }
         )
         if (group.warning.isNotBlank()) {

@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -350,9 +351,9 @@ private fun HttpTtsEditScreen(
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.weight(1f)
                 )
-                TextButton(onClick = onFullEdit) { Text("全屏", color = colors.accent) }
-                TextButton(onClick = onSave) { Text("保存", color = colors.accent) }
-                TextButton(onClick = onClose) { Text("关闭", color = colors.subText) }
+                TextButton(onClick = onFullEdit) { Text(stringResource(R.string.fullscreen), color = colors.accent) }
+                TextButton(onClick = onSave) { Text(stringResource(R.string.action_save), color = colors.accent) }
+                TextButton(onClick = onClose) { Text(stringResource(R.string.close), color = colors.subText) }
             }
             Row(
                 modifier = Modifier.horizontalScroll(rememberScrollState()).padding(top = 8.dp),
@@ -435,8 +436,8 @@ private fun EditField(
             },
         shape = RoundedCornerShape(LocalContext.current.composeActionRadius()),
         supportingText = when (field) {
-            HttpTtsField.Speakers -> ({ Text("可为空；为空时该 HTTP TTS 会作为普通发言人使用。", color = colors.subText) })
-            HttpTtsField.Emotions -> ({ Text("可为空；填写后角色和快捷选择可选默认情绪。", color = colors.subText) })
+            HttpTtsField.Speakers -> ({ Text(stringResource(R.string.http_tts_tone_hint), color = colors.subText) })
+            HttpTtsField.Emotions -> ({ Text(stringResource(R.string.http_tts_emotion_hint), color = colors.subText) })
             else -> null
         }
     )
