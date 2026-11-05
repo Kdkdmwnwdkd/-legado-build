@@ -2720,4 +2720,47 @@ bookUrl：%7$s
     <string name="toast_pick_asset_kind">请选择%1$s素材</string>
     <string name="asset_kind_font">字体</string>
     <string name="asset_kind_image">图片</string>
+
+    <!--Compose 界面文案-->
+    <string name="character_relation_map">关系网</string>
+    <string name="character_library">本书角色库</string>
+    <string name="character_voice">角色配音</string>
+    <string name="character_avatar">角色头像</string>
+    <string name="character_gender">角色性别</string>
+    <string name="character_type">角色类型</string>
+    <string name="character_add_relation">添加关系</string>
+    <string name="character_relation_list">关系列表</string>
+    <string name="change">更换</string>
+    <string name="selected">已选</string>
+    <string name="remove">移除</string>
+    <string name="speaker_manage">发言人管理</string>
+    <string name="no_speaker_group">暂无发言人分组</string>
+    <string name="more_speakers_hidden">还有 %1$s 个发言人未展开</string>
+    <string name="enable_group">启用分组</string>
+    <string name="add_speaker">添加发言人</string>
+    <string name="search_speaker_hint">搜索发言人 / 分组 / toneID</string>
+    <string name="no_matching_speaker">没有匹配的发言人</string>
+    <string name="already_in_group">已在组内</string>
+    <string name="delete_group">删除分组</string>
+    <string name="delete_group_confirm">确定删除“%1$s”？不会删除原始 TTS 引擎。</string>
+    <string name="fullscreen">全屏</string>
+    <string name="current">当前</string>
+    <string name="no_tts_engine">暂无朗读引擎</string>
+    <string name="current_reading">当前朗读</string>
+    <string name="search_character">搜索角色</string>
+    <string name="search_speaker_emotion_hint">搜索发言人 / toneID / 情绪</string>
+    <string name="bubble">气泡</string>
+    <string name="search_worldbook_hint">搜索世界书、条目、关键词</string>
+    <string name="no_entry">暂无条目</string>
+    <string name="http_tts_tone_hint">可为空；为空时该 HTTP TTS 会作为普通发言人使用。</string>
+    <string name="http_tts_emotion_hint">可为空；填写后角色和快捷选择可选默认情绪。</string>
+    <string name="count_items">%1$s 个</string>
+    <string name="relation_count">%1$s 条</string>
+    <string name="relation_attribute">属性：%1$s</string>
+    <string name="relation_strength">强度：%1$s</string>
+    <string name="relation_strength_label">关系强度 %1$s</string>
+    <string name="not_filled">未填写</string>
+
+    <!--世界书正则-->
+    <string name="regex_invalid_cannot_save">正则表达式有错误，不能保存。</string>
 </resources>

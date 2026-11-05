@@ -2781,4 +2781,47 @@ Type &quot;%2$s&quot; to confirm.</string>
     <string name="toast_pick_asset_kind">%1$s assets only</string>
     <string name="asset_kind_font">Font</string>
     <string name="asset_kind_image">Image</string>
+
+    <!--Compose UI labels-->
+    <string name="character_relation_map">Relations</string>
+    <string name="character_library">Characters in this book</string>
+    <string name="character_voice">Character voice</string>
+    <string name="character_avatar">Character avatar</string>
+    <string name="character_gender">Gender</string>
+    <string name="character_type">Character type</string>
+    <string name="character_add_relation">Add relation</string>
+    <string name="character_relation_list">Relations</string>
+    <string name="change">Change</string>
+    <string name="selected">Selected</string>
+    <string name="remove">Remove</string>
+    <string name="speaker_manage">Manage speakers</string>
+    <string name="no_speaker_group">No speaker groups</string>
+    <string name="more_speakers_hidden">%1$s more speakers not expanded</string>
+    <string name="enable_group">Enable group</string>
+    <string name="add_speaker">Add speaker</string>
+    <string name="search_speaker_hint">Search speakers / groups / toneID</string>
+    <string name="no_matching_speaker">No matching speakers</string>
+    <string name="already_in_group">Already in group</string>
+    <string name="delete_group">Delete group</string>
+    <string name="delete_group_confirm">Delete "%1$s"? The original TTS engine will not be deleted.</string>
+    <string name="fullscreen">Full screen</string>
+    <string name="current">Current</string>
+    <string name="no_tts_engine">No read-aloud engine</string>
+    <string name="current_reading">Now reading</string>
+    <string name="search_character">Search characters</string>
+    <string name="search_speaker_emotion_hint">Search speakers / toneID / emotion</string>
+    <string name="bubble">Bubble</string>
+    <string name="search_worldbook_hint">Search world books, entries, keywords</string>
+    <string name="no_entry">No entries</string>
+    <string name="http_tts_tone_hint">Optional. When empty, this HTTP TTS is used as a normal speaker.</string>
+    <string name="http_tts_emotion_hint">Optional. When filled in, characters and quick picks can use a default emotion.</string>
+    <string name="count_items">%1$s</string>
+    <string name="relation_count">%1$s</string>
+    <string name="relation_attribute">Attribute: %1$s</string>
+    <string name="relation_strength">Strength: %1$s</string>
+    <string name="relation_strength_label">Relation strength: %1$s</string>
+    <string name="not_filled">Not set</string>
+
+    <!--World book regex-->
+    <string name="regex_invalid_cannot_save">The regular expression is invalid and cannot be saved.</string>
 </resources>

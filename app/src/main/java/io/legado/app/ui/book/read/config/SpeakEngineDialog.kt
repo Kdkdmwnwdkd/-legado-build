@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -391,7 +392,7 @@ private fun SpeakEngineScreen(
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.weight(1f)
                 )
-                TextButton(onClick = actions::close) { Text("关闭", color = colors.subText) }
+                TextButton(onClick = actions::close) { Text(stringResource(R.string.close), color = colors.subText) }
             }
             Text(
                 text = speechRouteSummary(currentRoute, groups, defaultText = "系统默认"),
@@ -525,7 +526,7 @@ private fun ImportChoiceDialog(
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.weight(1f)
                     )
-                    TextButton(onClick = onDismiss) { Text("关闭", color = colors.subText) }
+                    TextButton(onClick = onDismiss) { Text(stringResource(R.string.close), color = colors.subText) }
                 }
                 ImportChoiceRow("默认规则", "导入内置 HTTP TTS 规则", colors, onDefault)
                 ImportChoiceRow("本地导入", "从本机 txt/json 文件导入", colors, onLocal)
@@ -580,7 +581,7 @@ private fun EngineGroupRow(
                     Text(group.subtitle, color = colors.subText, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 if (selected) {
-                    Text("当前", color = colors.accent, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.current), color = colors.accent, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
             val explicitCount = group.options.count { it.explicitSpeaker }
@@ -641,7 +642,7 @@ private fun EngineDetail(
 ) {
     if (group == null) {
         Box(modifier = Modifier.fillMaxWidth().height(220.dp), contentAlignment = Alignment.Center) {
-            Text("暂无朗读引擎", color = colors.subText, fontSize = 14.sp)
+            Text(stringResource(R.string.no_tts_engine), color = colors.subText, fontSize = 14.sp)
         }
         return
     }

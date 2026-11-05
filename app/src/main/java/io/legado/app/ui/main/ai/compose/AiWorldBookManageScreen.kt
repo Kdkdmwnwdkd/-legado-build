@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -539,7 +540,7 @@ private fun SearchField(
         value = query,
         onValueChange = onQueryChange,
         singleLine = true,
-        placeholder = { Text("搜索世界书、条目、关键词") },
+        placeholder = { Text(stringResource(R.string.search_worldbook_hint)) },
         leadingIcon = {
             Icon(
                 painter = painterResource(R.drawable.ic_search),
@@ -623,7 +624,7 @@ private fun WorldBookCard(
         if (expanded) {
             Spacer(modifier = Modifier.height(10.dp))
             if (book.entries.isEmpty()) {
-                Text("暂无条目", color = style.colors.secondaryText, fontSize = 13.sp)
+                Text(stringResource(R.string.no_entry), color = style.colors.secondaryText, fontSize = 13.sp)
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     book.entries.forEach { entry ->
@@ -934,7 +935,11 @@ private fun WorldBookEntryEditor(
                     )
                 }
                 if (!regexOk) {
-                    Text("正则表达式有错误，不能保存。", color = style.colors.danger, fontSize = 13.sp)
+                    Text(
+                        stringResource(R.string.regex_invalid_cannot_save),
+                        color = style.colors.danger,
+                        fontSize = 13.sp
+                    )
                 }
                 SaveBar(
                     enabled = title.trim().isNotBlank() && content.trim().isNotBlank() && regexOk,
@@ -1044,7 +1049,7 @@ private fun SaveBar(
         horizontalArrangement = Arrangement.End
     ) {
         TextButton(onClick = onCancel) {
-            Text("取消", color = style.colors.secondaryText)
+            Text(stringResource(R.string.cancel), color = style.colors.secondaryText)
         }
         Spacer(modifier = Modifier.width(8.dp))
         Button(
@@ -1052,7 +1057,7 @@ private fun SaveBar(
             onClick = onSave,
             colors = ButtonDefaults.buttonColors(containerColor = style.colors.accent)
         ) {
-            Text("保存")
+            Text(stringResource(R.string.action_save))
         }
     }
 }

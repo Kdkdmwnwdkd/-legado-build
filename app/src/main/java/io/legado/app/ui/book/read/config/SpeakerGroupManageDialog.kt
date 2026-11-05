@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -468,7 +469,7 @@ private fun SpeakerGroupManageScreen(
             Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("发言人管理", color = colors.text, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.speaker_manage), color = colors.text, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
                     Text(
                         "多角色自动分配会优先使用这里启用的发言人",
                         color = colors.subText,
@@ -476,7 +477,7 @@ private fun SpeakerGroupManageScreen(
                         modifier = Modifier.padding(top = 4.dp)
                     )
                 }
-                TextButton(onClick = actions::close) { Text("关闭", color = colors.subText) }
+                TextButton(onClick = actions::close) { Text(stringResource(R.string.close), color = colors.subText) }
             }
             Row(
                 modifier = Modifier.padding(top = 12.dp),
@@ -486,7 +487,7 @@ private fun SpeakerGroupManageScreen(
             }
             if (groups.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("暂无发言人分组", color = colors.subText, fontSize = 14.sp)
+                    Text(stringResource(R.string.no_speaker_group), color = colors.subText, fontSize = 14.sp)
                 }
             } else {
                 LazyColumn(
@@ -584,7 +585,11 @@ private fun SpeakerGroupCard(
                         SpeakerItemRow(item = item, colors = colors, onDelete = { actions.deleteItem(item) })
                     }
                     if (items.size > 8) {
-                        Text("还有 ${items.size - 8} 个发言人未展开", color = colors.subText, fontSize = 11.sp)
+                        Text(
+                            stringResource(R.string.more_speakers_hidden, items.size - 8),
+                            color = colors.subText,
+                            fontSize = 11.sp
+                        )
                     }
                 }
             }
@@ -632,7 +637,7 @@ private fun SpeakerItemRow(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            TextButton(onClick = onDelete) { Text("移除", color = colors.danger, fontSize = 12.sp) }
+            TextButton(onClick = onDelete) { Text(stringResource(R.string.remove), color = colors.danger, fontSize = 12.sp) }
         }
     }
 }
@@ -659,12 +664,12 @@ private fun GroupEditorDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("分组名称") },
+                    label = { Text(stringResource(R.string.group_name)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("启用分组", color = colors.text, fontSize = 14.sp, modifier = Modifier.weight(1f))
+                    Text(stringResource(R.string.enable_group), color = colors.text, fontSize = 14.sp, modifier = Modifier.weight(1f))
                     LegadoMiuixSwitch(
                         checked = enabled,
                         onCheckedChange = { enabled = it },
@@ -716,10 +721,10 @@ private fun SpeakerMultiSelectDialog(
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("添加发言人", color = colors.text, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(R.string.add_speaker), color = colors.text, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                         Text(targetGroup.displayName(), color = colors.subText, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
-                    TextButton(onClick = onDismiss) { Text("关闭", color = colors.subText) }
+                    TextButton(onClick = onDismiss) { Text(stringResource(R.string.close), color = colors.subText) }
                 }
                 Row(
                     modifier = Modifier
@@ -740,7 +745,7 @@ private fun SpeakerMultiSelectDialog(
                 OutlinedTextField(
                     value = searchText,
                     onValueChange = { searchText = it },
-                    label = { Text("搜索发言人 / 分组 / toneID") },
+                    label = { Text(stringResource(R.string.search_speaker_hint)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
                 )
@@ -757,7 +762,7 @@ private fun SpeakerMultiSelectDialog(
                                 modifier = Modifier.fillMaxWidth().heightIn(min = 160.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text("没有匹配的发言人", color = colors.subText, fontSize = 14.sp)
+                                Text(stringResource(R.string.no_matching_speaker), color = colors.subText, fontSize = 14.sp)
                             }
                         }
                     } else {
@@ -935,7 +940,7 @@ private fun SpeakerOptionSelectRow(
                 )
             }
             if (exists) {
-                Text("已在组内", color = colors.subText, fontSize = 11.sp)
+                Text(stringResource(R.string.already_in_group), color = colors.subText, fontSize = 11.sp)
             }
         }
     }
@@ -956,8 +961,12 @@ private fun ConfirmDeleteGroupDialog(
             border = BorderStroke(1.dp, colors.stroke)
         ) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text("删除分组", color = colors.text, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
-                Text("确定删除“${group.displayName()}”？不会删除原始 TTS 引擎。", color = colors.subText, fontSize = 13.sp)
+                Text(stringResource(R.string.delete_group), color = colors.text, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    stringResource(R.string.delete_group_confirm, group.displayName()),
+                    color = colors.subText,
+                    fontSize = 13.sp
+                )
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     SpeakerSubActionButton("取消", colors, Modifier.weight(1f), onClick = onDismiss)
                     SpeakerSubActionButton("删除", colors, Modifier.weight(1f), danger = true, onClick = onConfirm)

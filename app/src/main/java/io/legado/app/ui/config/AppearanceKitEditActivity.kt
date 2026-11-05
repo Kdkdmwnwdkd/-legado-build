@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -218,7 +219,7 @@ private fun AppearanceKitEditScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(14.dp),
-                    label = { Text("名称") },
+                    label = { Text(stringResource(R.string.name)) },
                     singleLine = true
                 )
                 PresetRow(kit.binding.preset, palette) {
@@ -282,8 +283,7 @@ private fun SettingPanel(
 
 @Composable
 private fun SaveButton(palette: AppSettingPalette, onClick: () -> Unit) {
-    Text(
-        text = "保存",
+    Text(text = stringResource(R.string.action_save),
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
@@ -297,8 +297,7 @@ private fun SaveButton(palette: AppSettingPalette, onClick: () -> Unit) {
 
 @Composable
 private fun DeleteButton(palette: AppSettingPalette, onClick: () -> Unit) {
-    Text(
-        text = "删除",
+    Text(text = stringResource(R.string.delete),
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
