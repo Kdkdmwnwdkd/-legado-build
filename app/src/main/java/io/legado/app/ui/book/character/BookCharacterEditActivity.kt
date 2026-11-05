@@ -66,6 +66,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.FileOutputStream
+import splitties.init.appCtx
 
 class BookCharacterEditActivity : BaseActivity<ViewBinding>(
     fullScreen = false,
@@ -395,7 +396,7 @@ class BookCharacterEditActivity : BaseActivity<ViewBinding>(
                 draft = draft.copy(avatar = AiImageGalleryManager.imageUri(image.id))
                 toastOnUi(R.string.toast_character_avatar_saved)
             }.onFailure {
-                toastOnUi("生成角色头像失败：${it.localizedMessage ?: it.javaClass.simpleName}")
+                toastOnUi(appCtx.getString(R.string.toast_generate_avatar_failed, it.localizedMessage ?: it.javaClass.simpleName))
             }
         }
     }

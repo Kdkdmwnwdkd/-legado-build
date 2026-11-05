@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.withContext
 import java.util.Collections
 import kotlin.math.max
+import splitties.init.appCtx
 
 class ImportBookViewModel(application: Application) : BaseViewModel(application) {
     var rootDoc: FileDoc? = null
@@ -230,7 +231,7 @@ class ImportBookViewModel(application: Application) : BaseViewModel(application)
             }
             dataCallback?.setItems(docList!!)
         }.onError {
-            context.toastOnUi("获取文件列表出错\n${it.localizedMessage}")
+            context.toastOnUi(appCtx.getString(R.string.toast_list_files_failed, it.localizedMessage))
         }
     }
 
@@ -271,7 +272,7 @@ class ImportBookViewModel(application: Application) : BaseViewModel(application)
                 }.takeWhile {
                     n > 0
                 }.catch {
-                    context.toastOnUi("扫描文件夹出错\n${it.localizedMessage}")
+                    context.toastOnUi(appCtx.getString(R.string.toast_scan_folder_failed, it.localizedMessage))
                 }.collect()
         } finally {
             dataCallback?.onScanFinish()

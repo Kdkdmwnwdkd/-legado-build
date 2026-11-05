@@ -109,7 +109,12 @@ class ComposeDirectLinkUploadDialog : ComposeDialogFragment() {
             }
             result.onSuccess { appCtx.sendToClip(it) }
                 .onFailure {
-                    toastOnUi("复制失败：${it.localizedMessage ?: "规则格式不正确"}")
+                    toastOnUi(
+                        getString(
+                            R.string.toast_copy_failed,
+                            it.localizedMessage ?: getString(R.string.toast_rule_format_invalid)
+                        )
+                    )
                 }
         }
     }
@@ -125,7 +130,12 @@ class ComposeDirectLinkUploadDialog : ComposeDialogFragment() {
             result.onSuccess {
                 dismissAllowingStateLoss()
             }.onFailure {
-                toastOnUi("格式不对：${it.localizedMessage ?: "规则校验失败"}")
+                toastOnUi(
+                    getString(
+                        R.string.toast_format_error_detail,
+                        it.localizedMessage ?: getString(R.string.toast_rule_check_failed)
+                    )
+                )
             }
         }
     }
@@ -136,7 +146,12 @@ class ComposeDirectLinkUploadDialog : ComposeDialogFragment() {
             result.onSuccess {
                 dismissAllowingStateLoss()
             }.onFailure {
-                toastOnUi("保存失败：${it.localizedMessage ?: "规则校验失败"}")
+                toastOnUi(
+                    getString(
+                        R.string.toast_save_failed_colon,
+                        it.localizedMessage ?: getString(R.string.toast_rule_check_failed)
+                    )
+                )
             }
         }
     }

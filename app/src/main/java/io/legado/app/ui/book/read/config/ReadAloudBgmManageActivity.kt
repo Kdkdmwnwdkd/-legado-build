@@ -48,6 +48,7 @@ import java.util.Locale
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
+import splitties.init.appCtx
 
 class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
 
@@ -108,7 +109,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
                 selectedIds.clear()
                 if (success > 0) notifyAudioChanged()
                 finishImportingAndLoad()
-                toastOnUi("已导入 $success 个${currentAssetLabel}")
+                toastOnUi(appCtx.getString(R.string.toast_imported_count_label, success, currentAssetLabel))
             }.onFailure {
                 finishImportingAndLoad()
                 toastOnUi(it.localizedMessage ?: "批量导入失败")
@@ -127,7 +128,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
         pendingExportPackageFile?.delete()
         pendingExportPackageFile = null
         result.uri?.let {
-            toastOnUi("已导出${currentAssetLabel} ZIP")
+            toastOnUi(appCtx.getString(R.string.toast_exported_zip, currentAssetLabel))
         }
     }
 
@@ -293,7 +294,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
                     updateAssetTabs()
                     notifyAudioChanged()
                     finishImportingAndLoad()
-                    toastOnUi("已导入 $count 个${label}")
+                    toastOnUi(appCtx.getString(R.string.toast_imported_count_label, count, label))
                 }.onFailure {
                     finishImportingAndLoad()
                     toastOnUi(it.localizedMessage ?: "音频包导入失败")
@@ -856,7 +857,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
     private fun moveSelected() {
         val ids = selectedIds.toList()
         if (ids.isEmpty()) {
-            toastOnUi("请先长按选择${currentAssetLabel}")
+            toastOnUi(appCtx.getString(R.string.toast_long_press_select, currentAssetLabel))
             return
         }
         moveTracks(ids)
@@ -879,7 +880,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
     private fun deleteSelected() {
         val ids = selectedIds.toList()
         if (ids.isEmpty()) {
-            toastOnUi("请先长按选择${currentAssetLabel}")
+            toastOnUi(appCtx.getString(R.string.toast_long_press_select, currentAssetLabel))
             return
         }
         confirmDelete(ids)

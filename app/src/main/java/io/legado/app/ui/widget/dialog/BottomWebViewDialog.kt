@@ -106,6 +106,7 @@ import java.lang.ref.WeakReference
 import java.net.URLDecoder
 import java.util.Date
 import androidx.core.graphics.createBitmap
+import splitties.init.appCtx
 
 class BottomWebViewDialog() : BottomSheetDialogFragment(R.layout.dialog_web_view), WebJsExtensions.Callback {
 
@@ -781,7 +782,7 @@ class BottomWebViewDialog() : BottomSheetDialogFragment(R.layout.dialog_web_view
         }.onError {
             if (!ownsPage(lease, page)) return@onError
             ACache.get().remove(imagePathKey)
-            context.toastOnUi("保存图片失败:${it.localizedMessage}")
+            context.toastOnUi(appCtx.getString(R.string.toast_save_image_failed_colon, it.localizedMessage))
         }.onSuccess {
             if (ownsPage(lease, page)) context.toastOnUi(R.string.toast_save_success)
         }

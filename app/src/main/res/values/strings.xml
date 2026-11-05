@@ -2731,4 +2731,54 @@ Selected text or question:
     <string name="delete_cloud_chapter_message">This will delete the cloud chapter: %1$s
 Type &quot;%2$s&quot; to confirm.</string>
     <string name="toast_type_delete_to_confirm">Type %1$s to confirm</string>
+
+    <!--Toast messages with args-->
+    <string name="toast_read_file_failed">%1$s\nFailed to read the file\n%2$s</string>
+    <string name="toast_adult_site_blocked">%1$s is an 18+ site and cannot be imported.</string>
+    <string name="toast_replace_failed_item">Failed to apply replacement: %1$s</string>
+    <string name="toast_cloud_restore_failed">Cloud restore failed\n%1$s</string>
+    <string name="toast_save_failed">Save failed\n%1$s</string>
+    <string name="toast_save_image_failed">Failed to save image\n%1$s</string>
+    <string name="toast_save_image_failed_colon">Failed to save image: %1$s</string>
+    <string name="toast_webdav_init_failed">WebDAV initialization failed: %1$s</string>
+    <string name="toast_delete_cloud_chapter_failed">Failed to delete cloud chapter\n%1$s</string>
+    <string name="toast_import_books_failed">Failed to import books\n%1$s</string>
+    <string name="toast_import_failed">Import failed\n%1$s</string>
+    <string name="toast_import_replace_rules_failed">Failed to import replace rules\n%1$s</string>
+    <string name="toast_import_sources_failed">Failed to import sources\n%1$s</string>
+    <string name="toast_export_books_failed">Failed to export books\n%1$s</string>
+    <string name="toast_export_success_as">Exported as %1$s</string>
+    <string name="toast_imported_count_label">Imported %1$s %2$s</string>
+    <string name="toast_imported_containers">Imported %1$s library containers</string>
+    <string name="toast_imported_image_rules">Imported %1$s image rules</string>
+    <string name="toast_imported_name">Imported: %1$s</string>
+    <string name="toast_exported_zip">Exported %1$s ZIP</string>
+    <string name="toast_speakers_added">Added %1$s speakers</string>
+    <string name="toast_cleared_invalid_tts">Cleared invalid read-aloud settings for %1$s</string>
+    <string name="toast_restore_backup_failed">Failed to restore backup\n%1$s</string>
+    <string name="toast_imported_books">Imported %1$s books</string>
+    <string name="toast_imported_sources">Imported %1$s sources</string>
+    <string name="toast_imported_replace_rules">Imported %1$s replace rules</string>
+    <string name="toast_scan_folder_failed">Failed to scan folder\n%1$s</string>
+    <string name="toast_replace_rule_failed">Replace rule %1$s failed</string>
+    <string name="toast_tts_timer">Read-aloud timer: %1$s minutes</string>
+    <string name="toast_tts_five_errors">Read-aloud failed 5 times in a row. Last error: %1$s</string>
+    <string name="toast_clear_cache_failed">Failed to clear cache\n%1$s</string>
+    <string name="toast_generate_avatar_failed">Failed to generate character avatar: %1$s</string>
+    <string name="toast_login_failed">Login failed\n%1$s</string>
+    <string name="toast_change_source_failed">Failed to switch source\n%1$s</string>
+    <string name="toast_webdav_fetch_failed">Failed to fetch WebDAV books\n%1$s</string>
+    <string name="toast_list_files_failed">Failed to list files\n%1$s</string>
+    <string name="toast_long_press_select">Long-press to select %1$s first</string>
+    <string name="toast_read_cloud_chapter_failed">Failed to read cloud chapter\n%1$s</string>
+
+    <!--Nested toast messages-->
+    <string name="toast_copy_failed">Copy failed: %1$s</string>
+    <string name="toast_format_error_detail">Invalid format: %1$s</string>
+    <string name="toast_save_failed_colon">Save failed: %1$s</string>
+    <string name="toast_rule_format_invalid">Invalid rule format</string>
+    <string name="toast_rule_check_failed">Rule validation failed</string>
+    <string name="toast_pick_asset_kind">%1$s assets only</string>
+    <string name="asset_kind_font">Font</string>
+    <string name="asset_kind_image">Image</string>
 </resources>

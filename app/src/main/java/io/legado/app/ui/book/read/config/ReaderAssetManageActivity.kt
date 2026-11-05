@@ -58,6 +58,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import splitties.init.appCtx
 
 /** One shared library, with optional image/font picker modes used by both editors. */
 class ReaderAssetManageActivity : BaseActivity<ActivityReaderAssetManageBinding>() {
@@ -182,7 +183,7 @@ class ReaderAssetManageActivity : BaseActivity<ActivityReaderAssetManageBinding>
     private fun importOne(uri: Uri) = work {
         val asset = withContext(Dispatchers.IO) { ReaderAssets.importUri(uri) }
         changed()
-        if (pickKind.isNotBlank()) select(asset) else toastOnUi("已导入：${asset.name}")
+        if (pickKind.isNotBlank()) select(asset) else toastOnUi(appCtx.getString(R.string.toast_imported_name, asset.name))
     }
 
     private fun importFolder() {
@@ -227,7 +228,12 @@ class ReaderAssetManageActivity : BaseActivity<ActivityReaderAssetManageBinding>
 
     private fun select(asset: ReaderAsset) {
         if (pickKind.isBlank()) { copyReference(asset); return }
-        if (pickKind != "any" && asset.kind != pickKind) { toastOnUi("请选择${if (pickKind == "font") "字体" else "图片"}素材"); return }
+        if (pickKind != "any" && asset.kind != pickKind) {
+            val kind = if (pickKind == "font") getString(R.string.asset_kind_font)
+            else getString(R.string.asset_kind_image)
+            toastOnUi(getString(R.string.toast_pick_asset_kind, kind))
+            return
+        }
         setResult(RESULT_OK, Intent().putExtra("assetId", asset.id).putExtra("kind", asset.kind))
         finish()
     }

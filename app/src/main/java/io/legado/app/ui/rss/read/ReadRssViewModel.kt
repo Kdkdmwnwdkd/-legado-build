@@ -204,7 +204,7 @@ class ReadRssViewModel(application: Application) : BaseViewModel(application) {
             uri.writeBytes(context, fileName, byteArray)
         }.onError {
             ACache.get().remove(imagePathKey)
-            context.toastOnUi("保存图片失败:${it.localizedMessage}")
+            context.toastOnUi(appCtx.getString(R.string.toast_save_image_failed_colon, it.localizedMessage))
         }.onSuccess {
             context.toastOnUi(R.string.toast_save_success)
         }

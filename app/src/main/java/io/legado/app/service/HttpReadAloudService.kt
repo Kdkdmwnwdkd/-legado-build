@@ -1197,7 +1197,7 @@ class HttpReadAloudService : BaseReadAloudService(),
         deleteCurrentSpeakFile()
         playErrorNo++
         if (playErrorNo >= 5) {
-            toastOnUi("朗读连续5次错误, 最后一次错误代码(${error.localizedMessage})")
+            toastOnUi(appCtx.getString(R.string.toast_tts_five_errors, error.localizedMessage))
             AppLog.put("朗读连续5次错误, 最后一次错误代码(${error.localizedMessage})", error)
             postReadAloudPlaybackPhase(ReadAloudPlaybackState.PHASE_ERROR, message = error.localizedMessage ?: "")
             pauseReadAloud()

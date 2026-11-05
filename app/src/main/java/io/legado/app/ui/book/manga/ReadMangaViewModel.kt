@@ -202,7 +202,7 @@ class ReadMangaViewModel(application: Application) : BaseViewModel(application) 
                 // 换源完成
             }.catch {
                 AppLog.put("自动换源失败\n${it.localizedMessage}", it)
-                context.toastOnUi("自动换源失败\n${it.localizedMessage}")
+                context.toastOnUi(appCtx.getString(R.string.toast_change_source_failed, it.localizedMessage))
             }.collect()
         }
     }

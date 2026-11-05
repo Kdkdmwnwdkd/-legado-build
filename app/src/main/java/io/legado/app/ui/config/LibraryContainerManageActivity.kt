@@ -41,6 +41,7 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 import kotlin.math.ceil
 import kotlin.math.max
+import splitties.init.appCtx
 
 class LibraryContainerManageActivity : BaseActivity<ActivityS3ContainerManageBinding>() {
 
@@ -219,7 +220,7 @@ class LibraryContainerManageActivity : BaseActivity<ActivityS3ContainerManageBin
     private fun showImportResult(count: Int) {
         if (count > 0) {
             reload()
-            toastOnUi("已导入 $count 个书库容器")
+            toastOnUi(appCtx.getString(R.string.toast_imported_containers, count))
         } else {
             toastOnUi(R.string.wrong_format)
         }

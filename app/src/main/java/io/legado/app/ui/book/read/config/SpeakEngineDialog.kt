@@ -100,6 +100,7 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import java.io.File
+import splitties.init.appCtx
 
 /**
  * TTS 引擎管理。
@@ -222,7 +223,7 @@ class SpeakEngineDialog : BaseDialogFragment(0), SpeakEngineDialogActions {
                             if (result.speakerGroupItemCount > 0) add("${result.speakerGroupItemCount} 个发言人分组条目")
                             if (result.globalCleared) add("通用朗读引擎")
                         }.joinToString("、")
-                        appContext.toastOnUi("已清理 $message 的失效朗读配置")
+                        appContext.toastOnUi(appCtx.getString(R.string.toast_cleared_invalid_tts, message))
                     }
                     notifyReadAloudEngineChanged()
                 }

@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.annotation.CallSuper
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import io.legado.app.R
 import io.legado.app.base.BaseViewModel
 import io.legado.app.constant.AppConst
 import io.legado.app.constant.AppLog
@@ -56,6 +57,7 @@ import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 import kotlin.math.min
+import splitties.init.appCtx
 
 @Suppress("MemberVisibilityCanBePrivate")
 open class ChangeBookSourceViewModel(application: Application) : BaseViewModel(application) {
@@ -557,7 +559,7 @@ open class ChangeBookSourceViewModel(application: Application) : BaseViewModel(a
         }.onSuccess {
             onSuccess.invoke(it.first, it.second, it.third)
         }.onError {
-            context.toastOnUi("自动换源失败\n${it.localizedMessage}")
+            context.toastOnUi(appCtx.getString(R.string.toast_change_source_failed, it.localizedMessage))
         }
     }
 

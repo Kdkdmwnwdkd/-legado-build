@@ -32,6 +32,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.UUID
+import splitties.init.appCtx
 
 class AiImageProviderManageActivity : BaseActivity<ActivityAiProviderManageBinding>() {
 
@@ -379,7 +380,7 @@ class AiImageProviderManageActivity : BaseActivity<ActivityAiProviderManageBindi
         }
         notifyAiConfigChanged()
         reload()
-        toastOnUi("已导入 ${validRules.size} 个生图规则")
+        toastOnUi(appCtx.getString(R.string.toast_imported_image_rules, validRules.size))
     }
 
     private fun exportRule(provider: AiImageProviderConfig) {

@@ -2670,4 +2670,54 @@ bookUrl：%7$s
     <string name="delete_cloud_chapter_message">将删除云端章节：%1$s
 请输入“%2$s”确认。</string>
     <string name="toast_type_delete_to_confirm">请输入 %1$s 后再确认</string>
+
+    <!--带参数的提示消息-->
+    <string name="toast_read_file_failed">%1$s\n读取文件出错\n%2$s</string>
+    <string name="toast_adult_site_blocked">%1$s是18+网址,禁止导入.</string>
+    <string name="toast_replace_failed_item">%1$s替换出错</string>
+    <string name="toast_cloud_restore_failed">云端恢复出错\n%1$s</string>
+    <string name="toast_save_failed">保存出错\n%1$s</string>
+    <string name="toast_save_image_failed">保存图片出错\n%1$s</string>
+    <string name="toast_save_image_failed_colon">保存图片失败:%1$s</string>
+    <string name="toast_webdav_init_failed">初始化webDav出错:%1$s</string>
+    <string name="toast_delete_cloud_chapter_failed">删除云端章节失败\n%1$s</string>
+    <string name="toast_import_books_failed">导入书架失败\n%1$s</string>
+    <string name="toast_import_failed">导入出错\n%1$s</string>
+    <string name="toast_import_replace_rules_failed">导入替换规则失败\n%1$s</string>
+    <string name="toast_import_sources_failed">导入源失败\n%1$s</string>
+    <string name="toast_export_books_failed">导出书籍出错\n%1$s</string>
+    <string name="toast_export_success_as">导出成功, 文件名为 %1$s</string>
+    <string name="toast_imported_count_label">已导入 %1$s 个%2$s</string>
+    <string name="toast_imported_containers">已导入 %1$s 个书库容器</string>
+    <string name="toast_imported_image_rules">已导入 %1$s 个生图规则</string>
+    <string name="toast_imported_name">已导入：%1$s</string>
+    <string name="toast_exported_zip">已导出%1$s ZIP</string>
+    <string name="toast_speakers_added">已添加 %1$s 个发言人</string>
+    <string name="toast_cleared_invalid_tts">已清理 %1$s 的失效朗读配置</string>
+    <string name="toast_restore_backup_failed">恢复备份出错\n%1$s</string>
+    <string name="toast_imported_books">成功导入书架%1$s</string>
+    <string name="toast_imported_sources">成功导入书源%1$s</string>
+    <string name="toast_imported_replace_rules">成功导入替换规则%1$s</string>
+    <string name="toast_scan_folder_failed">扫描文件夹出错\n%1$s</string>
+    <string name="toast_replace_rule_failed">替换净化: 规则 %1$s替换出错</string>
+    <string name="toast_tts_timer">朗读定时 %1$s 分钟</string>
+    <string name="toast_tts_five_errors">朗读连续5次错误, 最后一次错误代码(%1$s)</string>
+    <string name="toast_clear_cache_failed">清理缓存出错\n%1$s</string>
+    <string name="toast_generate_avatar_failed">生成角色头像失败：%1$s</string>
+    <string name="toast_login_failed">登录出错\n%1$s</string>
+    <string name="toast_change_source_failed">自动换源失败\n%1$s</string>
+    <string name="toast_webdav_fetch_failed">获取webDav书籍出错\n%1$s</string>
+    <string name="toast_list_files_failed">获取文件列表出错\n%1$s</string>
+    <string name="toast_long_press_select">请先长按选择%1$s</string>
+    <string name="toast_read_cloud_chapter_failed">读取云端章节失败\n%1$s</string>
+
+    <!--嵌套提示消息-->
+    <string name="toast_copy_failed">复制失败：%1$s</string>
+    <string name="toast_format_error_detail">格式不对：%1$s</string>
+    <string name="toast_save_failed_colon">保存失败：%1$s</string>
+    <string name="toast_rule_format_invalid">规则格式不正确</string>
+    <string name="toast_rule_check_failed">规则校验失败</string>
+    <string name="toast_pick_asset_kind">请选择%1$s素材</string>
+    <string name="asset_kind_font">字体</string>
+    <string name="asset_kind_image">图片</string>
 </resources>
