@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="network_dns_title">网络与 DNS</string>
+    <string name="network_dns_summary">DoH 分流、域名规则、Hosts 与 DNS 测速</string>
+</resources>
