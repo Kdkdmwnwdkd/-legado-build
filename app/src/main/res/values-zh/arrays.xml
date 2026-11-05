@@ -122,4 +122,31 @@
         <item>自定义</item>
     </string-array>
 
+    <string-array name="ai_read_aloud_role_mode_title">
+        <item>全文批处理</item>
+        <item>并发查找模式</item>
+    </string-array>
+
+    <string-array name="layout_type">
+        <item>列表</item>
+        <item>单列</item>
+        <item>双列</item>
+        <item>瀑布</item>
+        <item>三列</item>
+    </string-array>
+
+    <string-array name="rss_type">
+        <item>网页</item>
+        <item>图片</item>
+        <item>视频</item>
+    </string-array>
+
+    <string-array name="click_image_way_title">
+        <item>默认行为</item>
+        <item>预览图片</item>
+        <item>兼容旧版</item>
+        <item>关闭点击</item>
+        <item>双击生效</item>
+    </string-array>
+
 </resources>
