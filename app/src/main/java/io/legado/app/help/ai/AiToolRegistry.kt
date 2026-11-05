@@ -1,7 +1,9 @@
 package io.legado.app.help.ai
 
+import io.legado.app.R
 import io.legado.app.help.config.AppConfig
 import org.json.JSONObject
+import splitties.init.appCtx
 
 data class AiResolvedTool(
     val name: String,
@@ -367,8 +369,8 @@ object AiToolRegistry {
 
     fun groupLabelOfTool(name: String): String {
         return when {
-            name.startsWith("mcp_") -> "MCP 工具"
-            else -> nativeToolGroups[name] ?: "其他"
+            name.startsWith("mcp_") -> appCtx.getString(R.string.ai_tool_group_mcp)
+            else -> nativeToolGroups[name] ?: appCtx.getString(R.string.common_other)
         }
     }
 

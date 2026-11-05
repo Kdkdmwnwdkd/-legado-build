@@ -487,7 +487,7 @@ class AiConfigFragment : ComposeSettingFragment() {
     }
 
     private fun imageProviderLabel(): String {
-        return AppConfig.aiCurrentImageProvider?.displayName() ?: "未配置"
+        return AppConfig.aiCurrentImageProvider?.displayName() ?: getString(R.string.common_not_configured)
     }
 
     private fun showEditMcpServerDialog(server: AiMcpServerConfig? = null) {

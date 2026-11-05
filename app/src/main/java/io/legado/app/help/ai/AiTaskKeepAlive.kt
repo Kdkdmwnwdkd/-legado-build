@@ -7,6 +7,7 @@ import io.legado.app.utils.startForegroundServiceCompat
 import splitties.init.appCtx
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import io.legado.app.R
 
 object AiTaskKeepAlive {
 
@@ -42,7 +43,7 @@ object AiTaskKeepAlive {
         get() = activeTaskSnapshot().size
 
     val title: String
-        get() = latestTask()?.title ?: "AI任务处理中"
+        get() = latestTask()?.title ?: appCtx.getString(R.string.ai_task_processing)
 
     val content: String
         get() = latestTask()?.displayText ?: title

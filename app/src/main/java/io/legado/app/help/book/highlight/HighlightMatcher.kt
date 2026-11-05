@@ -1,5 +1,6 @@
 package io.legado.app.help.book.highlight
 
+import io.legado.app.R
 import org.jcodings.specific.UTF8Encoding
 import org.joni.Matcher
 import org.joni.Option
@@ -8,6 +9,7 @@ import org.joni.Syntax
 import org.joni.WarnCallback
 import org.joni.constants.SyntaxProperties
 import org.joni.exception.SyntaxException
+import splitties.init.appCtx
 
 /** Matching never changes text offsets; overlapping rules retain their list order. */
 class HighlightMatcher(rules: List<HighlightRule>) {
@@ -279,7 +281,7 @@ class HighlightMatcher(rules: List<HighlightRule>) {
 
         fun validationError(rule: HighlightRule): String? {
             if (rule.keyword.isEmpty() && !rule.titleOnly) return "正文匹配内容不能为空"
-            return runCatching { compile(rule); null }.getOrElse { it.message ?: "正则表达式无效" }
+            return runCatching { compile(rule); null }.getOrElse { it.message ?: appCtx.getString(R.string.invalid_regex) }
         }
     }
 }

@@ -425,7 +425,7 @@ class BookCharacterEditActivity : BaseActivity<ViewBinding>(
                     draft = draft.copy(avatar = file.absolutePath)
                 }
             }.onFailure {
-                toastOnUi(it.localizedMessage ?: "头像导入失败")
+                toastOnUi(it.localizedMessage ?: appCtx.getString(R.string.ai_avatar_import_failed))
             }
         }
     }

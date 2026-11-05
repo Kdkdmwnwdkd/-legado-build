@@ -2,11 +2,13 @@ package io.legado.app.ui.book.changesource
 
 import android.app.Application
 import android.os.Bundle
+import io.legado.app.R
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.Book
 import io.legado.app.data.entities.BookChapter
 import io.legado.app.exception.NoStackTraceException
 import io.legado.app.model.webBook.WebBook
+import splitties.init.appCtx
 
 @Suppress("MemberVisibilityCanBePrivate")
 class ChangeChapterSourceViewModel(application: Application) :
@@ -39,7 +41,7 @@ class ChangeChapterSourceViewModel(application: Application) :
         }.onSuccess {
             success.invoke(it)
         }.onError {
-            error.invoke(it.localizedMessage ?: "获取正文出错")
+            error.invoke(it.localizedMessage ?: appCtx.getString(R.string.get_content_failed))
         }
     }
 

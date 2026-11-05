@@ -793,7 +793,7 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
                             )
                             Text(
                                 text = selectedGroup?.let { "从《${it.bookName.ifBlank { it.label }}》选择角色" }
-                                    ?: "先选择书籍，再选择要添加到侧边栏的角色",
+                                    ?: getString(R.string.ai_chat_select_book_first),
                                 color = style.colors.secondaryText,
                                 fontSize = 12.sp,
                                 maxLines = 1,

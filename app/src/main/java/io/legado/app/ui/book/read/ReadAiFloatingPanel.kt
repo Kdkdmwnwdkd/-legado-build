@@ -107,6 +107,7 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.max
 import kotlin.math.min
+import splitties.init.appCtx
 
 class ReadAiFloatingPanel @JvmOverloads constructor(
     context: Context,
@@ -1697,10 +1698,11 @@ private fun ReadAiMessage.toProcessStep(): AiProcessStepUi {
             type = AiProcessStepType.Tool,
             title = statusName?.takeIf { it.isNotBlank() }
                 ?: statusLabel?.takeIf { it.isNotBlank() }
-                ?: "工具调用",
+                ?: appCtx.getString(R.string.ai_tool_call_label),
             subtitle = summarizeReadAiProcessDetail(
                 detail,
-                statusLabel?.takeIf { it.isNotBlank() } ?: if (pending) "调用中" else "已完成"
+                statusLabel?.takeIf { it.isNotBlank() } ?: if (pending) appCtx.getString(R.string.ai_tool_status_calling)
+                else appCtx.getString(R.string.ai_tool_status_done)
             ),
             detail = detail,
             pending = pending,

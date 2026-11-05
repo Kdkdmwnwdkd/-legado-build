@@ -1818,7 +1818,7 @@ private fun RelationListPanel(
                     val from = characters.firstOrNull { it.id == relation.fromCharacterId }?.displayName().orEmpty()
                     val to = characters.firstOrNull { it.id == relation.toCharacterId }?.displayName().orEmpty()
                     "$from → $to · ${relation.displayName()}"
-                } ?: "暂无关系，点击右上角添加"
+                } ?: stringResource(R.string.ai_relation_empty)
                 Text(
                     text = summary,
                     color = style.colors.subText,
@@ -2060,7 +2060,7 @@ private fun CharacterSelectField(
                         .padding(start = if (selected != null) 10.dp else 0.dp)
                 ) {
                     Text(
-                        text = selected?.displayName() ?: "请选择角色",
+                        text = selected?.displayName() ?: stringResource(R.string.ai_select_character),
                         color = style.colors.text,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.SemiBold,

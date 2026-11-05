@@ -171,7 +171,9 @@ fun AiWorldBookManageRoute(
             jsonEditor = null
             context.toastOnUi(R.string.toast_worldbook_imported)
         }.onFailure {
-            context.toastOnUi(it.localizedMessage ?: "世界书 JSON 解析失败")
+            context.toastOnUi(
+                it.localizedMessage ?: context.getString(R.string.ai_world_book_json_invalid)
+            )
         }
     }
 

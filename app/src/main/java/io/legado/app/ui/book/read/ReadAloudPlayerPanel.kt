@@ -175,6 +175,7 @@ import io.legado.app.utils.startActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
+import splitties.init.appCtx
 
 class ReadAloudPlayerPanel @JvmOverloads constructor(
     context: Context,
@@ -1387,8 +1388,8 @@ class ReadAloudPlayerPanel @JvmOverloads constructor(
             roleBlockingCurrentContent = roleBlockingCurrentContent,
             roleBlockingText = currentRoleState?.message
                 ?.ifBlank { roleStatusText }
-                ?.ifBlank { "当前章节角色分配中" }
-                ?: "当前章节角色分配中",
+                ?.ifBlank { appCtx.getString(R.string.ai_role_assign_running) }
+                ?: appCtx.getString(R.string.ai_role_assign_running),
             roleState = roleState.takeIf { multiRoleEnabled },
             multiRoleEnabled = multiRoleEnabled,
             speakerLoudnessEnabled = AppConfig.readAloudSpeakerLoudnessEnabled,

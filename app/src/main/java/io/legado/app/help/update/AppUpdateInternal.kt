@@ -1,6 +1,7 @@
 package io.legado.app.help.update
 
 import androidx.annotation.Keep
+import io.legado.app.R
 import io.legado.app.exception.NoStackTraceException
 import io.legado.app.help.http.addHeaders
 import io.legado.app.help.http.newCallResponse
@@ -8,6 +9,7 @@ import io.legado.app.help.http.okHttpClient
 import io.legado.app.help.http.text
 import io.legado.app.utils.GSON
 import io.legado.app.utils.fromJsonObject
+import splitties.init.appCtx
 
 object AppUpdateInternal {
 
@@ -37,16 +39,16 @@ object AppUpdateInternal {
                 throw NoStackTraceException("获取内测版本出错" + it.localizedMessage)
             }
         val fileName = metadata.fileName?.takeIf { it.isNotBlank() }
-            ?: throw NoStackTraceException("内测版本文件名缺失")
+            ?: throw NoStackTraceException(appCtx.getString(R.string.beta_update_file_name_missing))
         val tagName = metadata.versionName
             ?.takeIf { it.isNotBlank() }
             ?: metadata.tagName?.takeIf { it.isNotBlank() }
             ?: versionNameFromFileName(fileName)
-            ?: throw NoStackTraceException("内测版本号缺失")
+            ?: throw NoStackTraceException(appCtx.getString(R.string.beta_update_version_missing))
         val downloadUrl = resolveUrl(baseUrl, metadata.downloadUrl, "download")
         val updateInfo = AppUpdate.UpdateInfo(
             tagName = tagName,
-            updateLog = metadata.updateLog?.takeIf { it.isNotBlank() } ?: "内测版更新",
+            updateLog = metadata.updateLog?.takeIf { it.isNotBlank() } ?: appCtx.getString(R.string.beta_update_log),
             downloadUrl = downloadUrl,
             fileName = fileName,
             versionCode = metadata.versionCode ?: AppUpdate.versionCodeFromFileName(fileName),

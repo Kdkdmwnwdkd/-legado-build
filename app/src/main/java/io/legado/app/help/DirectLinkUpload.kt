@@ -17,6 +17,7 @@ import io.legado.app.utils.externalCache
 import kotlinx.coroutines.currentCoroutineContext
 import splitties.init.appCtx
 import java.io.File
+import io.legado.app.R
 
 @Suppress("MemberVisibilityCanBePrivate")
 object DirectLinkUpload {
@@ -36,15 +37,18 @@ object DirectLinkUpload {
     ): String {
         val url = safeString(rule.uploadUrl)
         if (url.isBlank()) {
-            throw NoStackTraceException("上传url未配置")
+            throw NoStackTraceException(appCtx.getString(R.string.direct_link_upload_url_missing))
         }
         val downloadUrlRule = safeString(rule.downloadUrlRule)
         if (downloadUrlRule.isBlank()) {
-            throw NoStackTraceException("下载地址规则未配置")
+            throw NoStackTraceException(appCtx.getString(R.string.direct_link_download_rule_missing))
         }
         val safeRule = DirectLinkUploadRuleCodec.canonicalize(rule).getOrElse {
             throw NoStackTraceException(
-                "直链上传规则无效：${it.localizedMessage ?: "格式不正确"}"
+                appCtx.getString(
+                    R.string.direct_link_rule_invalid,
+                    it.localizedMessage ?: appCtx.getString(R.string.direct_link_rule_format_invalid)
+                )
             )
         }
         val safeUploadUrl = safeRule.uploadUrl

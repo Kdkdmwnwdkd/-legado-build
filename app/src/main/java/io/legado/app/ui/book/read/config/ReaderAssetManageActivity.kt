@@ -355,7 +355,14 @@ class ReaderAssetManageActivity : BaseActivity<ActivityReaderAssetManageBinding>
             btnUp.visibility = if (navigation.isEmpty()) View.GONE else View.VISIBLE
             tvHint.setText(if (filter == "folder") R.string.reader_assets_folder_hint else R.string.reader_assets_hint)
             tvSummary.text = if (busy || loading) getString(R.string.reader_assets_busy) else navigation.lastOrNull()?.let { "${it.name} · ${entries.size} 项" }
-                ?: "${entries.size} 项 · 素材库 ${Formatter.formatFileSize(this@ReaderAssetManageActivity, library.assets.sumOf { it.size })}"
+                ?: getString(
+                    R.string.reader_asset_summary,
+                    entries.size,
+                    Formatter.formatFileSize(
+                        this@ReaderAssetManageActivity,
+                        library.assets.sumOf { it.size }
+                    )
+                )
             tvEmpty.visibility = if (entries.isEmpty()) View.VISIBLE else View.GONE
             tvEmpty.setText(when {
                 !loaded && (busy || loading) -> R.string.reader_assets_loading

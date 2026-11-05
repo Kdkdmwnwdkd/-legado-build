@@ -1,5 +1,6 @@
 package io.legado.app.lib.webdav
 
+import io.legado.app.R
 import io.legado.app.help.http.dns.DnsScope
 import android.annotation.SuppressLint
 import android.net.Uri
@@ -37,6 +38,7 @@ import java.net.URL
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
+import splitties.init.appCtx
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class WebDav(
@@ -451,7 +453,9 @@ open class WebDav(
                     message ?: "$path doesn't exist. code:${response.code}"
                 )
             }
-            throw WebDavException(message ?: "未知错误 code:${response.code}")
+            throw WebDavException(
+                message ?: appCtx.getString(R.string.webdav_unknown_error, response.code)
+            )
         }
     }
 

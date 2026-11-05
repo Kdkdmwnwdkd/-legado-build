@@ -57,7 +57,7 @@ class RssFavoritesFragment() : VMBaseFragment<RssFavoritesViewModel>(R.layout.fr
 
     private fun loadArticles() {
         lifecycleScope.launch {
-            val group = arguments?.getString("group") ?: "默认分组"
+            val group = arguments?.getString("group") ?: getString(R.string.default_group)
             appDb.rssStarDao.flowByGroup(group).catch {
                 AppLog.put("订阅文章界面获取数据失败\n${it.localizedMessage}", it)
             }.flowOn(IO).collect {
