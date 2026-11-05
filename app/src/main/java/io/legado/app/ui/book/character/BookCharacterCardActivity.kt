@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
+import io.legado.app.R
 import io.legado.app.base.BaseActivity
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.BookCharacter
@@ -62,7 +63,7 @@ class BookCharacterCardActivity : BaseActivity<ViewBinding>(
 
     private fun load() {
         if (characterId <= 0L) {
-            toastOnUi("角色不存在")
+            toastOnUi(R.string.toast_character_missing)
             finish()
             return
         }
@@ -75,7 +76,7 @@ class BookCharacterCardActivity : BaseActivity<ViewBinding>(
             }
             val item = data.first
             if (item == null) {
-                toastOnUi("角色不存在")
+                toastOnUi(R.string.toast_character_missing)
                 finish()
                 return@launch
             }
@@ -96,7 +97,7 @@ class BookCharacterCardActivity : BaseActivity<ViewBinding>(
             }
             ReadAloudConfigChangeNotifier.notifySpeech()
             character = updated
-            toastOnUi("已更新角色配音")
+            toastOnUi(R.string.toast_character_voice_updated)
         }
     }
 

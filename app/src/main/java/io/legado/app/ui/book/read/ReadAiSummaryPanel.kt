@@ -163,7 +163,7 @@ class ReadAiSummaryPanel @JvmOverloads constructor(
     private fun loadSummary(forceRefresh: Boolean) {
         val currentInput = input ?: return
         if (job?.isActive == true) {
-            context.toastOnUi("请等待当前总结完成")
+            context.toastOnUi(R.string.toast_wait_summary)
             return
         }
         val keepAliveId = AiTaskKeepAlive.retain(
@@ -257,7 +257,7 @@ class ReadAiSummaryPanel @JvmOverloads constructor(
 
     private fun selectModel() {
         if (job?.isActive == true) {
-            context.toastOnUi("请等待当前总结完成")
+            context.toastOnUi(R.string.toast_wait_summary)
             return
         }
         val models = AppConfig.aiModelConfigList

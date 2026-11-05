@@ -154,12 +154,12 @@ class AiImageProviderManageActivity : BaseActivity<ActivityAiProviderManageBindi
                 add(
                     AppManagementMenuAction("设为当前生图模型") {
                         if (!provider.enabled) {
-                            toastOnUi("请先启用该生图模型")
+                            toastOnUi(R.string.toast_enable_image_model)
                         } else {
                             AppConfig.aiCurrentImageProviderId = provider.id
                             notifyAiConfigChanged()
                             reload()
-                            toastOnUi("已设为当前生图模型")
+                            toastOnUi(R.string.toast_image_model_set)
                         }
                     }
                 )

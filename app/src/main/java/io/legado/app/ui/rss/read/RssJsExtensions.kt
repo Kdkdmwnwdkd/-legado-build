@@ -4,6 +4,7 @@ import android.webkit.JavascriptInterface
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.script.rhino.runScriptWithContext
+import io.legado.app.R
 import io.legado.app.constant.BookType
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.BaseSource
@@ -102,14 +103,14 @@ open class RssJsExtensions(
             when (name) {
                 "login" -> {
                     if (activity is SourceLoginActivity) {
-                        activity.toastOnUi("已在登录界面")
+                        activity.toastOnUi(R.string.toast_on_login_page)
                         return@launch
                     }
                     val toSource = origin?.let { o ->
                         appDb.bookSourceDao.getBookSource(o)
                     } ?: source
                     if (toSource.loginUrl.isNullOrBlank()) {
-                        activity.toastOnUi("源未配置登录")
+                        activity.toastOnUi(R.string.toast_source_no_login)
                         return@launch
                     }
                     when (toSource) {

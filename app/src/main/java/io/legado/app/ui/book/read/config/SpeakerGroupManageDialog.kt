@@ -150,7 +150,7 @@ class SpeakerGroupManageActivity : BaseActivity<ViewBinding>(
     override fun saveGroup(group: ReadAloudSpeakerGroup?, name: String, enabled: Boolean) {
         val value = name.trim()
         if (value.isBlank()) {
-            toastOnUi("分组名称不能为空")
+            toastOnUi(R.string.toast_group_name_empty)
             return
         }
         lifecycleScope.launch(IO) {
@@ -206,7 +206,7 @@ class SpeakerGroupManageActivity : BaseActivity<ViewBinding>(
 
     override fun addSpeakers(group: ReadAloudSpeakerGroup, options: List<SpeechVoiceOption>) {
         if (options.isEmpty()) {
-            toastOnUi("请先选择发言人")
+            toastOnUi(R.string.toast_select_speaker_first)
             return
         }
         lifecycleScope.launch(IO) {
@@ -321,7 +321,7 @@ class SpeakerGroupManageDialog : BaseDialogFragment(0), SpeakerGroupManageAction
     override fun saveGroup(group: ReadAloudSpeakerGroup?, name: String, enabled: Boolean) {
         val value = name.trim()
         if (value.isBlank()) {
-            requireContext().toastOnUi("分组名称不能为空")
+            requireContext().toastOnUi(R.string.toast_group_name_empty)
             return
         }
         lifecycleScope.launch(IO) {
@@ -380,7 +380,7 @@ class SpeakerGroupManageDialog : BaseDialogFragment(0), SpeakerGroupManageAction
 
     override fun addSpeakers(group: ReadAloudSpeakerGroup, options: List<SpeechVoiceOption>) {
         if (options.isEmpty()) {
-            requireContext().toastOnUi("请先选择发言人")
+            requireContext().toastOnUi(R.string.toast_select_speaker_first)
             return
         }
         lifecycleScope.launch(IO) {

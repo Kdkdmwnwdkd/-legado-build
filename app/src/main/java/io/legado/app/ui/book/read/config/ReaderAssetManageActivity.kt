@@ -187,10 +187,10 @@ class ReaderAssetManageActivity : BaseActivity<ActivityReaderAssetManageBinding>
 
     private fun importFolder() {
         if (!canInteract) return
-        if (navigation.isEmpty()) { toastOnUi("请先打开一个来源文件夹"); return }
+        if (navigation.isEmpty()) { toastOnUi(R.string.toast_open_source_folder); return }
         val files = filteredEntries().mapNotNull { it.local }.filterNot { it.isDir }
         if (files.isEmpty()) { toastOnUi(R.string.reader_assets_search_empty); return }
-        if (files.size > 100) { toastOnUi("一次最多导入 100 个素材，请搜索后分批导入"); return }
+        if (files.size > 100) { toastOnUi(R.string.toast_import_material_limit); return }
         showComposeConfirmDialog(getString(R.string.reader_assets_import_folder),
             getString(R.string.reader_assets_import_folder_hint) + "\n\n${files.size} 个文件", onPositive = { work {
                 val failures = arrayListOf<String>()

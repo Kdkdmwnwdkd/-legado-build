@@ -62,7 +62,7 @@ class UpdateDialog() : ComposeDialogFragment() {
                 val headerValues = arguments?.getStringArrayList("headerValues").orEmpty()
 
                 if (updateBody == null) {
-                    toastOnUi("没有数据")
+                    toastOnUi(R.string.toast_no_data)
                     dismissAllowingStateLoss()
                     return@setContent
                 }

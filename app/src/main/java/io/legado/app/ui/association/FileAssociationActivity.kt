@@ -139,7 +139,7 @@ class FileAssociationActivity :
                     .onGranted {
                         viewModel.dispatchIntent(data)
                     }.onDenied {
-                        toastOnUi("请求存储权限失败。")
+                        toastOnUi(R.string.toast_storage_permission_failed)
                         handler.postDelayed(2000) {
                             finish()
                         }

@@ -10,6 +10,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import io.legado.app.R
 import io.legado.app.data.dao.AiAgentDao
 import io.legado.app.data.dao.AiMemoryDao
 import io.legado.app.data.dao.AiReadAloudRoleCacheDao
@@ -93,7 +94,6 @@ import io.legado.app.data.entities.SearchBook
 import io.legado.app.data.entities.SearchKeyword
 import io.legado.app.data.entities.Server
 import io.legado.app.data.entities.TxtTocRule
-import io.legado.app.R
 import io.legado.app.help.DefaultData
 import io.legado.app.model.AutoTaskRule
 import org.intellij.lang.annotations.Language

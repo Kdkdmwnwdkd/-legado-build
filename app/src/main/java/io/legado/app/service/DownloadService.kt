@@ -72,7 +72,7 @@ class DownloadService : BaseService() {
                 if (completeDownloads.contains(id)) {
                     openDownload(id, downloads[id]?.fileName)
                 } else {
-                    toastOnUi("未完成,下载的文件夹Download")
+                    toastOnUi(R.string.toast_download_incomplete)
                 }
             }
 
@@ -109,7 +109,7 @@ class DownloadService : BaseService() {
             return
         }
         if (downloads.values.any { it.url == url }) {
-            toastOnUi("已在下载列表")
+            toastOnUi(R.string.toast_added_to_downloads)
             return
         }
         kotlin.runCatching {

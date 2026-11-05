@@ -1603,7 +1603,7 @@ class ExploreFragment() : VMBaseFragment<ExploreViewModel>(R.layout.fragment_exp
                             DiscoverySuiteWidgetType.RankedList.value
                         ) && cleanTargets.size !in 3..9
                     ) {
-                        requireContext().toastOnUi("排行榜控件需要选择 3-9 个 Tag")
+                        requireContext().toastOnUi(R.string.toast_rank_tags_range)
                         return@showComposeMultiChoiceDialog
                     }
                     val widget = baseWidget.copy(

@@ -199,7 +199,7 @@ object SourceHelp {
                         openVideoPlayer(source, url, title, isFloat = true)
                     }
                     .onDenied {
-                        appCtx.toastOnUi("授权后重新打开悬浮播放")
+                        appCtx.toastOnUi(R.string.toast_reopen_floating_playback)
                     }
                     .request()
                 return

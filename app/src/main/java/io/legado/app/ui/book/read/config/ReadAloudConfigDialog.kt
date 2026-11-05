@@ -668,7 +668,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                     ReadAloudSpeakerLoudnessManager.reset()
                     updateAiRolePreferences()
                     postReadAloudConfigChanged(EventBus.READ_ALOUD_CONFIG_SCOPE_AUDIO)
-                    toastOnUi("已重置发言人响度学习数据")
+                    toastOnUi(R.string.toast_speaker_loudness_reset)
                 }
             )
         }
@@ -1106,7 +1106,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                     5 -> {
                         AppConfig.aiReadAloudRolePreprocessRules = ""
                         updateAiRolePreferences()
-                        toastOnUi("已恢复内置预处理规则")
+                        toastOnUi(R.string.toast_builtin_preprocess_restored)
                     }
                 }
             }
@@ -1125,7 +1125,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 onNeutral = { showSentencePunctuationDialog(config) },
                 validateContent = { value ->
                     if (parseQuotePairs(value).isEmpty()) {
-                        toastOnUi("至少保留一组引号")
+                        toastOnUi(R.string.toast_keep_one_quote)
                         false
                     } else {
                         true
@@ -1143,7 +1143,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 maxLines = 1,
                 validateInput = { value ->
                     if (value.trim().isBlank()) {
-                        toastOnUi("句末符号不能为空")
+                        toastOnUi(R.string.toast_end_mark_empty)
                         false
                     } else {
                         true
@@ -1223,7 +1223,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 onValue = { value -> onSave(parseRuleItems(value)) },
                 validateContent = { value ->
                     if (parseRuleItems(value).isEmpty()) {
-                        toastOnUi("至少保留一条规则")
+                        toastOnUi(R.string.toast_keep_one_rule)
                         false
                     } else {
                         true
@@ -1263,7 +1263,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 maxLines = 14,
                 validateInput = { value ->
                     if (value.isBlank()) {
-                        toastOnUi("请先输入正文")
+                        toastOnUi(R.string.toast_input_content_first)
                         false
                     } else {
                         true
@@ -1315,12 +1315,12 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
         private fun savePreprocessConfig(config: ReadAloudPreprocessRuleConfig) {
             val json = config.toJsonString()
             if (json.length > 8000) {
-                toastOnUi("预处理规则最多 8000 字")
+                toastOnUi(R.string.toast_preprocess_rule_limit)
                 return
             }
             AppConfig.aiReadAloudRolePreprocessRules = json
             updateAiRolePreferences()
-            toastOnUi("已保存预处理规则")
+            toastOnUi(R.string.toast_preprocess_rule_saved)
         }
 
         private fun parseQuotePairs(value: String): List<ReadAloudQuotePair> {

@@ -9,6 +9,7 @@ import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
 import io.github.rosemoe.sora.widget.CodeEditor
+import io.legado.app.R
 import io.legado.app.base.BaseViewModel
 import io.legado.app.constant.AppLog
 import io.legado.app.help.CacheManager
@@ -108,7 +109,7 @@ class CodeEditViewModel(application: Application) : BaseViewModel(application) {
         execute {
             val text = editor.text.toString()
             if (languageName.contains("markdown")) {
-                context.toastOnUi("markdown不需要格式化")
+                context.toastOnUi(R.string.toast_markdown_no_format)
                 return@execute text
             }
             val isHtml = languageName.contains("html")

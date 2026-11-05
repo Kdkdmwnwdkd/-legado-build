@@ -89,7 +89,7 @@ object ImportOldData {
                         val importCount = importOldReplaceRule(json)
                         context.toastOnUi("成功导入替换规则${importCount}")
                     } else {
-                        context.toastOnUi("未找到替换规则")
+                        context.toastOnUi(R.string.toast_replace_rule_not_found)
                     }
                 }.onFailure {
                     context.toastOnUi("导入替换规则失败\n${it.localizedMessage}")

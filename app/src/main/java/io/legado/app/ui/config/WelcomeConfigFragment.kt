@@ -202,7 +202,7 @@ class WelcomeConfigFragment : ComposeSettingFragment() {
         if (uri.scheme?.lowercase() in listOf("http", "https")) {
             lifecycleScope.launch {
                 kotlin.runCatching {
-                    appCtx.toastOnUi("下载图片中...")
+                    appCtx.toastOnUi(R.string.toast_downloading_image)
                     val analyzeUrl = AnalyzeUrl(uri.toString(), dnsScope = DnsScope.IMAGE)
                     val url = analyzeUrl.urlNoQuery
                     var file = requireContext().externalFiles
@@ -231,7 +231,7 @@ class WelcomeConfigFragment : ComposeSettingFragment() {
                     }
                     putPrefString(preferenceKey, file.absolutePath)
                 }.onSuccess {
-                    appCtx.toastOnUi("设定成功")
+                    appCtx.toastOnUi(R.string.toast_setting_saved)
                 }.onFailure {
                     appCtx.toastOnUi(it.localizedMessage)
                 }

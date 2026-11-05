@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.core.net.toUri
 import com.script.buildScriptBindings
 import com.script.rhino.RhinoScriptEngine
+import io.legado.app.R
 import io.legado.app.constant.AppLog
 import io.legado.app.constant.AppPattern
 import io.legado.app.constant.BookSourceType
@@ -146,7 +147,7 @@ fun Book.getLocalUri(): Uri {
         val treeUri = defaultBookDir.toUri()
         val treeFileDoc = FileDoc.fromUri(treeUri, true)
         if (!treeFileDoc.exists()) {
-            appCtx.toastOnUi("书籍保存目录失效，请重新设置！")
+            appCtx.toastOnUi(R.string.toast_book_folder_invalid)
         } else {
             val fileDoc = treeFileDoc.find(originName, 5, 100)
             if (fileDoc != null) {

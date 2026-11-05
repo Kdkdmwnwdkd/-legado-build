@@ -273,10 +273,10 @@ class LibraryContainerManageActivity : BaseActivity<ActivityS3ContainerManageBin
     private fun exportContainers(items: List<LibraryContainerConfig>, fileName: String) {
         val exportableItems = items.filterNot { it.lockedImported }
         if (exportableItems.size < items.size) {
-            toastOnUi("已跳过加密导入的书库容器")
+            toastOnUi(R.string.toast_encrypted_container_skipped)
         }
         if (exportableItems.isEmpty()) {
-            toastOnUi("没有可导出的书库容器")
+            toastOnUi(R.string.toast_no_container_to_export)
             return
         }
         val selectedId = LibraryContainerManager.selectedId()
@@ -430,7 +430,7 @@ class LibraryContainerManageActivity : BaseActivity<ActivityS3ContainerManageBin
                         item.copy(sourceUrls = selected, lockedImported = true)
                     )
                     reload()
-                    toastOnUi("已保存指定书源")
+                    toastOnUi(R.string.toast_source_saved)
                 }
             )
         }

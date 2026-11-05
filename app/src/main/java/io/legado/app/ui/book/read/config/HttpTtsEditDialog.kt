@@ -136,7 +136,7 @@ class HttpTtsEditDialog() : BaseDialogFragment(0) {
         if (!validate(tts)) return
         viewModel.save(tts) {
             dismissAllowingStateLoss()
-            toastOnUi("保存成功")
+            toastOnUi(R.string.toast_save_success)
         }
     }
 
@@ -144,7 +144,7 @@ class HttpTtsEditDialog() : BaseDialogFragment(0) {
         val tts = draft.toHttpTts(viewModel.id)
         if (!validate(tts)) return
         if (tts.loginUrl.isNullOrBlank()) {
-            toastOnUi("登录url不能为空")
+            toastOnUi(R.string.toast_login_url_empty)
             return
         }
         viewModel.save(tts) {
@@ -157,7 +157,7 @@ class HttpTtsEditDialog() : BaseDialogFragment(0) {
 
     private fun validate(httpTTS: HttpTTS): Boolean {
         if (httpTTS.name.isBlank()) {
-            toastOnUi("名称不能为空")
+            toastOnUi(R.string.toast_name_empty)
             return false
         }
         fun validJsonCatalog(value: String): Boolean {
@@ -165,11 +165,11 @@ class HttpTtsEditDialog() : BaseDialogFragment(0) {
             return text.isBlank() || text.isJsonArray() || text.isJsonObject()
         }
         if (!validJsonCatalog(httpTTS.speakersJson)) {
-            toastOnUi("发言人列表 JSON 必须是数组或对象")
+            toastOnUi(R.string.toast_speaker_json_invalid)
             return false
         }
         if (!validJsonCatalog(httpTTS.emotionsJson)) {
-            toastOnUi("情绪列表 JSON 必须是数组或对象")
+            toastOnUi(R.string.toast_emotion_json_invalid)
             return false
         }
         return true

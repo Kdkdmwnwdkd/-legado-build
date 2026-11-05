@@ -1,6 +1,7 @@
 package io.legado.app.ui.book.import.local
 
 import android.app.Application
+import io.legado.app.R
 import io.legado.app.base.BaseViewModel
 import io.legado.app.constant.AppLog
 import io.legado.app.constant.AppPattern.bookFileRegex
@@ -117,10 +118,10 @@ class ImportBookViewModel(application: Application) : BaseViewModel(application)
             }
             LocalBook.importFiles(fileUris)
         }.onError {
-            context.toastOnUi("添加书架失败，请尝试重新选择文件夹")
+            context.toastOnUi(R.string.toast_add_shelf_failed)
             AppLog.put("添加书架失败\n${it.localizedMessage}", it)
         }.onSuccess {
-            context.toastOnUi("添加书架成功")
+            context.toastOnUi(R.string.toast_add_shelf_success)
         }.onFinally {
             finally.invoke()
         }
@@ -202,10 +203,10 @@ class ImportBookViewModel(application: Application) : BaseViewModel(application)
                 throw NoStackTraceException("ImportFiles Error:\nAll input files occur error")
             }
         }.onError {
-            context.toastOnUi("添加书架失败，请尝试重新选择文件夹")
+            context.toastOnUi(R.string.toast_add_shelf_failed)
             AppLog.put("添加书架失败\n${it.localizedMessage}", it)
         }.onSuccess {
-            context.toastOnUi("添加书架成功")
+            context.toastOnUi(R.string.toast_add_shelf_success)
         }.onFinally {
             importProgressFlow.value = null
             finally.invoke()

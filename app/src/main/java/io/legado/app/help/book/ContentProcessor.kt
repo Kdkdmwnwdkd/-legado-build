@@ -1,6 +1,7 @@
 package io.legado.app.help.book
 
 import android.os.Build
+import io.legado.app.R
 import io.legado.app.constant.AppLog
 import io.legado.app.constant.AppPattern
 import io.legado.app.constant.AppPattern.spaceRegex
@@ -257,7 +258,7 @@ class ContentProcessor private constructor(
                         2 -> mContent = ChineseUtils.s2t(mContent)
                     }
                 } catch (_: Exception) {
-                    appCtx.toastOnUi("简繁转换出错")
+                    appCtx.toastOnUi(R.string.toast_chinese_convert_failed)
                 }
             }
             val useHtmlMap = mutableMapOf<String, String>()

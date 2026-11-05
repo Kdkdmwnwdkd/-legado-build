@@ -8,6 +8,7 @@ import android.webkit.URLUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.script.rhino.runScriptWithContext
+import io.legado.app.R
 import io.legado.app.base.BaseViewModel
 import io.legado.app.constant.AppConst
 import io.legado.app.constant.AppConst.imagePathKey
@@ -137,7 +138,7 @@ class ReadRssViewModel(application: Application) : BaseViewModel(application) {
             return finish.invoke()
         }
         val rssSource = rssSource ?: let {
-            appCtx.toastOnUi("订阅源不存在")
+            appCtx.toastOnUi(R.string.toast_rss_source_missing)
             return finish.invoke()
         }
         val ruleContent = rssSource.ruleContent
@@ -205,7 +206,7 @@ class ReadRssViewModel(application: Application) : BaseViewModel(application) {
             ACache.get().remove(imagePathKey)
             context.toastOnUi("保存图片失败:${it.localizedMessage}")
         }.onSuccess {
-            context.toastOnUi("保存成功")
+            context.toastOnUi(R.string.toast_save_success)
         }
     }
 

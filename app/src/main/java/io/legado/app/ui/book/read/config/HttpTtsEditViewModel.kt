@@ -2,6 +2,7 @@ package io.legado.app.ui.book.read.config
 
 import android.app.Application
 import android.os.Bundle
+import io.legado.app.R
 import io.legado.app.base.BaseViewModel
 import io.legado.app.constant.EventBus
 import io.legado.app.data.appDb
@@ -65,7 +66,7 @@ class HttpTtsEditViewModel(app: Application) : BaseViewModel(app) {
     fun importFromClip(onSuccess: (httpTTS: HttpTTS) -> Unit) {
         val text = context.getClipText()
         if (text.isNullOrBlank()) {
-            context.toastOnUi("剪贴板为空")
+            context.toastOnUi(R.string.toast_clipboard_empty)
         } else {
             importSource(text, onSuccess)
         }

@@ -89,7 +89,7 @@ class RssSourceEditViewModel(application: Application) : BaseViewModel(applicati
             if (it != null) {
                 onSuccess(it)
             } else {
-                context.toastOnUi("格式不对")
+                context.toastOnUi(R.string.toast_format_invalid)
             }
         }
     }

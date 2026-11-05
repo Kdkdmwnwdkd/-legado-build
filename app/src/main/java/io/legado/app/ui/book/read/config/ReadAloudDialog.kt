@@ -129,7 +129,7 @@ class ReadAloudDialog : BaseDialogFragment(R.layout.dialog_read_aloud) {
         }
         ivTimer.setOnClickListener {
             AppConfig.ttsTimer = seekTimer.progress
-            toastOnUi("保存设定时间成功！")
+            toastOnUi(R.string.toast_character_time_saved)
         }
         tvTimer.setOnClickListener {
             val times = intArrayOf(0, 5, 10, 15, 30, 60, 90, 180)

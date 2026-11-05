@@ -2,8 +2,8 @@ package io.legado.app.help.config
 
 import android.content.Context
 import android.net.Uri
-import io.legado.app.R
 import androidx.annotation.Keep
+import io.legado.app.R
 import io.legado.app.constant.PreferKey
 import io.legado.app.data.entities.Book
 import io.legado.app.data.entities.SearchBook

@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import io.legado.app.R
 import io.legado.app.ui.widget.compose.BookCoverImage
 import io.legado.app.ui.widget.compose.releaseComposeImage
 import androidx.compose.ui.window.Dialog
@@ -108,7 +109,7 @@ fun AiToolPreviewDialog(
                         .clickable {
                             val manager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                             manager.setPrimaryClip(ClipData.newPlainText(payload.title, payload.raw))
-                            context.toastOnUi("已复制")
+                            context.toastOnUi(R.string.toast_copied)
                         }
                         .padding(horizontal = 8.dp, vertical = 6.dp)
                 )

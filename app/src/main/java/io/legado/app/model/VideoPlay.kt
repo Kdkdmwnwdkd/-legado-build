@@ -190,7 +190,7 @@ object VideoPlay : CoroutineScope by MainScope(){
         (source as? RssSource)?.let { s ->
             val rssArticle = rssStar?.toRssArticle() ?: rssRecord?.toRssArticle()
             if (rssArticle == null) {
-                appCtx.toastOnUi("未找到订阅")
+                appCtx.toastOnUi(R.string.toast_subscription_not_found)
                 return
             }
             val ruleContent = s.ruleContent
@@ -254,7 +254,7 @@ object VideoPlay : CoroutineScope by MainScope(){
         }
         val book = book
         if (book == null) {
-            appCtx.toastOnUi("未找到书籍")
+            appCtx.toastOnUi(R.string.toast_book_not_found)
             return
         }
         chapter = if (episodes.isNullOrEmpty()) {
@@ -274,7 +274,7 @@ object VideoPlay : CoroutineScope by MainScope(){
         }
         val chapter = chapter
         if (chapter == null) {
-            appCtx.toastOnUi("未找到章节")
+            appCtx.toastOnUi(R.string.toast_no_chapter_found)
             return
         }
         val chapterSource = source as BookSource
@@ -534,7 +534,7 @@ object VideoPlay : CoroutineScope by MainScope(){
         }
         upEpisodes()
         if (source == null) {
-            appCtx.toastOnUi("未找到源")
+            appCtx.toastOnUi(R.string.toast_source_not_found)
             return false
         }
         record?.let{ //订阅源
@@ -573,11 +573,11 @@ object VideoPlay : CoroutineScope by MainScope(){
         val episodes = episodes ?: return false
         val index = chapterInVolumeIndex + offset
         if (index < 0) {
-            appCtx.toastOnUi("已到开头")
+            appCtx.toastOnUi(R.string.toast_at_beginning)
             return false
         }
         if (index >= episodes.size) {
-            appCtx.toastOnUi("已播放完")
+            appCtx.toastOnUi(R.string.toast_playback_finished)
             return false
         }
         chapterInVolumeIndex = index

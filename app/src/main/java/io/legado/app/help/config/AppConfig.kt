@@ -3,6 +3,7 @@ package io.legado.app.help.config
 import android.content.SharedPreferences
 import android.os.Build
 import io.legado.app.BuildConfig
+import io.legado.app.R
 import io.legado.app.constant.AppConst
 import io.legado.app.constant.AppLog
 import io.legado.app.constant.EventBus
@@ -2674,7 +2675,7 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
             * clickActionBL * clickActionBC * clickActionBR != 0
         ) {
             appCtx.putPrefInt(PreferKey.clickActionMC, 0)
-            appCtx.toastOnUi("当前没有配置菜单区域,自动恢复中间区域为菜单.")
+            appCtx.toastOnUi(R.string.toast_menu_area_restored)
         }
     }
 

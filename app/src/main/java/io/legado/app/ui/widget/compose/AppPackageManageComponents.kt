@@ -41,9 +41,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import io.legado.app.R
 import io.legado.app.lib.theme.UiCorner
 import io.legado.app.lib.theme.uiTypeface
-import io.legado.app.R
 import io.legado.app.ui.widget.ModernActionPopup
 
 @Composable

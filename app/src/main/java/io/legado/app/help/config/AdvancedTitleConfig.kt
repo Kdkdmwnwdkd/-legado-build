@@ -1,9 +1,9 @@
 package io.legado.app.help.config
 
-import io.legado.app.R
 import com.airbnb.lottie.LottieCompositionFactory
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
+import io.legado.app.R
 import io.legado.app.constant.PreferKey
 import io.legado.app.data.entities.Book
 import io.legado.app.utils.GSON

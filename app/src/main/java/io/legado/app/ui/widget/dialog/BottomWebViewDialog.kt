@@ -783,7 +783,7 @@ class BottomWebViewDialog() : BottomSheetDialogFragment(R.layout.dialog_web_view
             ACache.get().remove(imagePathKey)
             context.toastOnUi("保存图片失败:${it.localizedMessage}")
         }.onSuccess {
-            if (ownsPage(lease, page)) context.toastOnUi("保存成功")
+            if (ownsPage(lease, page)) context.toastOnUi(R.string.toast_save_success)
         }
     }
 

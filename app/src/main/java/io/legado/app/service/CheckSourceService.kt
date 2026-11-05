@@ -104,7 +104,7 @@ class CheckSourceService : BaseService() {
 
     private fun check(ids: List<String>) {
         if (checkJob?.isActive == true) {
-            toastOnUi("已有书源在校验,等完成后再试")
+            toastOnUi(R.string.toast_source_checking)
             return
         }
         Debug.clearCheckingCache()
