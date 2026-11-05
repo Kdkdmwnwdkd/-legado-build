@@ -2809,4 +2809,5 @@ bookUrl：%7$s
     <string name="webdav_unknown_error">未知错误 code:%1$d</string>
     <string name="reader_asset_summary">%1$d 项 · 素材库 %2$s</string>
     <string name="ai_role_assign_failed_retry">AI分角色连续失败，请重新分配当前章节</string>
+    <string name="rss_source_empty_hint">还没有订阅源。点右上角齿轮图标进入订阅源管理添加。</string>
 </resources>
