@@ -2535,4 +2535,12 @@ bookUrl：%7$s
     <string name="welcome_title">阅读</string>
     <string name="welcome_subtitle">享受美好时光</string>
     <string name="welcome_slogan">品读万千故事</string>
+
+    <!--书源调试提示-->
+    <string name="debug_hint_search">调试搜索&gt;&gt;输入关键字，如：</string>
+    <string name="debug_hint_explore">调试发现&gt;&gt;输入发现URL，如：</string>
+    <string name="debug_hint_info">调试详情页&gt;&gt;输入详情页URL，如：</string>
+    <string name="debug_hint_toc">调试目录页&gt;&gt;输入目录页URL，如：</string>
+    <string name="debug_hint_content">调试正文页&gt;&gt;输入正文页URL，如：</string>
+    <string name="debug_hint_category">调试分类&gt;&gt;输入分类URL，如：</string>
 </resources>
