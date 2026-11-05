@@ -78,6 +78,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import androidx.viewbinding.ViewBinding
+import splitties.init.appCtx
 
 class SpeakerGroupManageActivity : BaseActivity<ViewBinding>(
     fullScreen = false,
@@ -226,7 +227,7 @@ class SpeakerGroupManageActivity : BaseActivity<ViewBinding>(
             }
             launch(kotlinx.coroutines.Dispatchers.Main) {
                 closeSpeakerPicker()
-                toastOnUi("已添加 ${newItems.size} 个发言人")
+                toastOnUi(appCtx.getString(R.string.toast_speakers_added, newItems.size))
             }
         }
     }
@@ -403,7 +404,7 @@ class SpeakerGroupManageDialog : BaseDialogFragment(0), SpeakerGroupManageAction
             }
             launch(kotlinx.coroutines.Dispatchers.Main) {
                 closeSpeakerPicker()
-                requireContext().toastOnUi("已添加 ${newItems.size} 个发言人")
+                requireContext().toastOnUi(appCtx.getString(R.string.toast_speakers_added, newItems.size))
             }
         }
     }

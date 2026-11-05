@@ -277,6 +277,7 @@ import java.text.DateFormat
 import java.util.Date
 import java.io.File
 import java.util.regex.Matcher
+import splitties.init.appCtx
 
 /**
  * 阅读界面
@@ -4578,7 +4579,7 @@ class ReadBookActivity : BaseReadBookActivity(),
                     viewModel.openChapter(chapter.index)
                 }
             }.onFailure {
-                toastOnUi("读取云端章节失败\n${it.localizedMessage}")
+                toastOnUi(appCtx.getString(R.string.toast_read_cloud_chapter_failed, it.localizedMessage))
             }
         }
     }
@@ -4779,7 +4780,7 @@ class ReadBookActivity : BaseReadBookActivity(),
                 toastOnUi(R.string.toast_cloud_chapter_deleted)
                 showLibraryCloudChapters(refresh = false)
             } else {
-                toastOnUi("删除云端章节失败\n${result.exceptionOrNull()?.localizedMessage.orEmpty()}")
+                toastOnUi(appCtx.getString(R.string.toast_delete_cloud_chapter_failed, result.exceptionOrNull()?.localizedMessage.orEmpty()))
             }
         }
     }

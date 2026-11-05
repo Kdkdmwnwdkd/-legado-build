@@ -135,7 +135,7 @@ object SourceHelp {
             is18Plus(it.sourceUrl)
         }
         rssSourcesGroup[true]?.forEach {
-            appCtx.toastOnUi("${it.sourceName}是18+网址,禁止导入.")
+            appCtx.toastOnUi(appCtx.getString(R.string.toast_adult_site_blocked, it.sourceName))
         }
         rssSourcesGroup[false]?.let {
             appDb.rssSourceDao.insert(*it.toTypedArray())
@@ -147,7 +147,7 @@ object SourceHelp {
             is18Plus(it.bookSourceUrl)
         }
         bookSourcesGroup[true]?.forEach {
-            appCtx.toastOnUi("${it.bookSourceName}是18+网址,禁止导入.")
+            appCtx.toastOnUi(appCtx.getString(R.string.toast_adult_site_blocked, it.bookSourceName))
         }
         bookSourcesGroup[false]?.let {
             appDb.bookSourceDao.insert(*it.toTypedArray())

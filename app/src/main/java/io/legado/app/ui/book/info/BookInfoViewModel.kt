@@ -49,6 +49,7 @@ import io.legado.app.utils.postEvent
 import io.legado.app.utils.toastOnUi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
+import splitties.init.appCtx
 
 class BookInfoViewModel(application: Application) : BaseViewModel(application) {
     val bookData = MutableLiveData<Book>()
@@ -643,7 +644,7 @@ class BookInfoViewModel(application: Application) : BaseViewModel(application) {
         }.onSuccess {
             context.toastOnUi(R.string.clear_cache_success)
         }.onError {
-            context.toastOnUi("清理缓存出错\n${it.localizedMessage}")
+            context.toastOnUi(appCtx.getString(R.string.toast_clear_cache_failed, it.localizedMessage))
         }
     }
 

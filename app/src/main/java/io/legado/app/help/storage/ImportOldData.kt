@@ -34,28 +34,28 @@ object ImportOldData {
                         kotlin.runCatching {
                             doc.uri.readText(context).let { json ->
                                 val importCount = importOldBookshelf(json)
-                                context.toastOnUi("成功导入书架${importCount}")
+                                context.toastOnUi(appCtx.getString(R.string.toast_imported_books, importCount))
                             }
                         }.onFailure {
-                            context.toastOnUi("导入书架失败\n${it.localizedMessage}")
+                            context.toastOnUi(appCtx.getString(R.string.toast_import_books_failed, it.localizedMessage))
                         }
                     "myBookSource.json" ->
                         kotlin.runCatching {
                             doc.uri.readText(context).let { json ->
                                 val importCount = importOldSource(json)
-                                context.toastOnUi("成功导入书源${importCount}")
+                                context.toastOnUi(appCtx.getString(R.string.toast_imported_sources, importCount))
                             }
                         }.onFailure {
-                            context.toastOnUi("导入源失败\n${it.localizedMessage}")
+                            context.toastOnUi(appCtx.getString(R.string.toast_import_sources_failed, it.localizedMessage))
                         }
                     "myBookReplaceRule.json" ->
                         kotlin.runCatching {
                             doc.uri.readText(context).let { json ->
                                 val importCount = importOldReplaceRule(json)
-                                context.toastOnUi("成功导入替换规则${importCount}")
+                                context.toastOnUi(appCtx.getString(R.string.toast_imported_replace_rules, importCount))
                             }
                         }.onFailure {
-                            context.toastOnUi("导入替换规则失败\n${it.localizedMessage}")
+                            context.toastOnUi(appCtx.getString(R.string.toast_import_replace_rules_failed, it.localizedMessage))
                         }
                 }
             }
@@ -67,9 +67,9 @@ object ImportOldData {
                         FileUtils.createFileIfNotExist(file, "myBookShelf.json")
                     val json = shelfFile.readText()
                     val importCount = importOldBookshelf(json)
-                    context.toastOnUi("成功导入书架${importCount}")
+                    context.toastOnUi(appCtx.getString(R.string.toast_imported_books, importCount))
                 }.onFailure {
-                    context.toastOnUi("导入书架失败\n${it.localizedMessage}")
+                    context.toastOnUi(appCtx.getString(R.string.toast_import_books_failed, it.localizedMessage))
                 }
 
                 kotlin.runCatching {// Book source
@@ -77,9 +77,9 @@ object ImportOldData {
                         file.getFile("myBookSource.json")
                     val json = sourceFile.readText()
                     val importCount = importOldSource(json)
-                    context.toastOnUi("成功导入书源${importCount}")
+                    context.toastOnUi(appCtx.getString(R.string.toast_imported_sources, importCount))
                 }.onFailure {
-                    context.toastOnUi("导入源失败\n${it.localizedMessage}")
+                    context.toastOnUi(appCtx.getString(R.string.toast_import_sources_failed, it.localizedMessage))
                 }
 
                 kotlin.runCatching {// Replace rules
@@ -87,12 +87,12 @@ object ImportOldData {
                     if (ruleFile.exists()) {
                         val json = ruleFile.readText()
                         val importCount = importOldReplaceRule(json)
-                        context.toastOnUi("成功导入替换规则${importCount}")
+                        context.toastOnUi(appCtx.getString(R.string.toast_imported_replace_rules, importCount))
                     } else {
                         context.toastOnUi(R.string.toast_replace_rule_not_found)
                     }
                 }.onFailure {
-                    context.toastOnUi("导入替换规则失败\n${it.localizedMessage}")
+                    context.toastOnUi(appCtx.getString(R.string.toast_import_replace_rules_failed, it.localizedMessage))
                 }
             }
         }

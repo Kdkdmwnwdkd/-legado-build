@@ -129,7 +129,7 @@ object Restore {
             restoreLocked(Backup.backupPath)
             LocalConfig.lastBackup = System.currentTimeMillis()
         }.onFailure {
-            appCtx.toastOnUi("恢复备份出错\n${it.localizedMessage}")
+            appCtx.toastOnUi(appCtx.getString(R.string.toast_restore_backup_failed, it.localizedMessage))
             AppLog.put("恢复备份出错\n${it.localizedMessage}", it)
         }
     }
@@ -487,7 +487,7 @@ object Restore {
             }
         } catch (e: Exception) {
             AppLog.put("$fileName\n读取解析出错\n${e.localizedMessage}", e)
-            appCtx.toastOnUi("$fileName\n读取文件出错\n${e.localizedMessage}")
+            appCtx.toastOnUi(appCtx.getString(R.string.toast_read_file_failed, fileName, e.localizedMessage))
         }
         return null
     }
@@ -533,7 +533,7 @@ object Restore {
             }
         } catch (e: Exception) {
             AppLog.put("$fileName\n读取解析出错\n${e.localizedMessage}", e)
-            appCtx.toastOnUi("$fileName\n读取文件出错\n${e.localizedMessage}")
+            appCtx.toastOnUi(appCtx.getString(R.string.toast_read_file_failed, fileName, e.localizedMessage))
         }
     }
 

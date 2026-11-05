@@ -59,6 +59,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import splitties.init.appCtx
 
 /**
  * 阅读界面数据处理
@@ -444,7 +445,7 @@ class ReadBookViewModel(application: Application) : BaseViewModel(application) {
                 ReadBook.upMsg(null)
             }.catch {
                 AppLog.put("自动换源失败\n${it.localizedMessage}", it)
-                context.toastOnUi("自动换源失败\n${it.localizedMessage}")
+                context.toastOnUi(appCtx.getString(R.string.toast_change_source_failed, it.localizedMessage))
             }.collect()
         }
     }
@@ -677,7 +678,7 @@ class ReadBookViewModel(application: Application) : BaseViewModel(application) {
             }
         }.onError {
             AppLog.put("保存图片出错\n${it.localizedMessage}", it)
-            context.toastOnUi("保存图片出错\n${it.localizedMessage}")
+            context.toastOnUi(appCtx.getString(R.string.toast_save_image_failed, it.localizedMessage))
         }
     }
 

@@ -1,10 +1,12 @@
 package io.legado.app.ui.book.import.remote
 
 import android.app.Application
+import io.legado.app.R
 import io.legado.app.base.BaseViewModel
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.Server
 import io.legado.app.utils.toastOnUi
+import splitties.init.appCtx
 
 class ServerConfigViewModel(application: Application): BaseViewModel(application) {
 
@@ -34,7 +36,7 @@ class ServerConfigViewModel(application: Application): BaseViewModel(application
         }.onSuccess {
             onSuccess.invoke()
         }.onError {
-            context.toastOnUi("保存出错\n${it.localizedMessage}")
+            context.toastOnUi(appCtx.getString(R.string.toast_save_failed, it.localizedMessage))
         }
     }
 

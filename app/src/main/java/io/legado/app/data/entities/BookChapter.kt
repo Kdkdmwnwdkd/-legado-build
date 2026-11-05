@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.Index
+import io.legado.app.R
 import io.legado.app.constant.AppLog
 import io.legado.app.constant.AppPattern
 import io.legado.app.data.appDb
@@ -172,7 +173,7 @@ data class BookChapter(
                         return@run
                     } catch (e: Exception) {
                         AppLog.put("${item.name}替换出错\n替换内容\n${displayTitle}", e)
-                        appCtx.toastOnUi("${item.name}替换出错")
+                        appCtx.toastOnUi(appCtx.getString(R.string.toast_replace_failed_item, item.name))
                     }
                 }
             }

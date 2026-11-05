@@ -33,6 +33,7 @@ import kotlinx.coroutines.sync.withPermit
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
+import splitties.init.appCtx
 
 class BookshelfViewModel(application: Application) : BaseViewModel(application) {
     val addBookProgressLiveData = MutableLiveData(-1)
@@ -146,7 +147,7 @@ class BookshelfViewModel(application: Application) : BaseViewModel(application) 
         }.onSuccess {
             success(it)
         }.onError {
-            context.toastOnUi("导出书籍出错\n${it.localizedMessage}")
+            context.toastOnUi(appCtx.getString(R.string.toast_export_books_failed, it.localizedMessage))
         }
     }
 

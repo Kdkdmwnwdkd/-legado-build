@@ -312,7 +312,7 @@ abstract class BaseReadAloudService : BaseService(),
         upMediaSessionPlaybackState(PlaybackStateCompat.STATE_PLAYING)
         setTimer(AppConfig.ttsTimer)
         if (AppConfig.ttsTimer > 0) {
-            toastOnUi("朗读定时 ${AppConfig.ttsTimer} 分钟")
+            toastOnUi(appCtx.getString(R.string.toast_tts_timer, AppConfig.ttsTimer))
         }
         execute {
             ImageLoader

@@ -768,7 +768,7 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
             AppCloudStorage.restore(name)
         }.onError {
             AppLog.put("云端恢复出错\n${it.localizedMessage}", it)
-            appCtx.toastOnUi("云端恢复出错\n${it.localizedMessage}")
+            appCtx.toastOnUi(appCtx.getString(R.string.toast_cloud_restore_failed, it.localizedMessage))
         }.onFinally {
             waitDialog.dismiss()
         }

@@ -855,7 +855,7 @@ class BgTextConfigDialog : BaseDialogFragment(0) {
                 }
             }
         }.onSuccess {
-            toastOnUi("导出成功, 文件名为 $exportFileName")
+            toastOnUi(appCtx.getString(R.string.toast_export_success_as, exportFileName))
         }.onError {
             it.printOnDebug()
             AppLog.put("导出失败:${it.localizedMessage}", it)

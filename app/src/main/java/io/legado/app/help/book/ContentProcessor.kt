@@ -191,7 +191,7 @@ class ContentProcessor private constructor(
             }
         }
         AppLog.put("普通正文替换净化: 规则 ${rule.name} 替换出错，保留替换前内容", error)
-        appCtx.toastOnUi("替换净化: 规则 ${rule.name} 替换出错")
+        appCtx.toastOnUi(appCtx.getString(R.string.toast_replace_rule_failed, rule.name))
     }
 
     fun getContent(
@@ -303,7 +303,7 @@ class ContentProcessor private constructor(
                     } catch (_: CancellationException) {
                     } catch (e: Exception) {
                         AppLog.put("替换净化: 规则 ${item.name}替换出错.\n${mContent}", e)
-                        appCtx.toastOnUi("替换净化: 规则 ${item.name}替换出错")
+                        appCtx.toastOnUi(appCtx.getString(R.string.toast_replace_rule_failed, item.name))
                     }
                 }
                 mContent = protectedContent.restore(mContent)
