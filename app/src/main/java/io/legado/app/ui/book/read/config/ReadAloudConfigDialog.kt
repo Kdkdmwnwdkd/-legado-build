@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.StringRes
 import io.legado.app.R
 import io.legado.app.base.BasePrefDialogFragment
 import io.legado.app.constant.EventBus
@@ -47,6 +48,7 @@ import io.legado.app.ui.widget.compose.showComposeConfirmDialog
 import io.legado.app.ui.widget.compose.showComposeNumberPickerDialog
 import io.legado.app.ui.widget.compose.showComposeTextInputDialog
 import io.legado.app.utils.dpToPx
+import splitties.init.appCtx
 import io.legado.app.utils.postEvent
 import io.legado.app.utils.setLayout
 import io.legado.app.utils.showDialogFragment
@@ -60,15 +62,15 @@ private const val KEY_READ_ALOUD_SPEAKER_MANAGE = "readAloudSpeakerManage"
 private const val KEY_READ_ALOUD_LOUDNESS_RESET = "readAloudSpeakerLoudnessReset"
 private const val KEY_MEDIA_BUTTON_PER_NEXT = "mediaButtonPerNext"
 private const val KEY_SYS_TTS_CONFIG = "sysTtsConfig"
-private const val SPEAKER_MANAGE_SUMMARY =
-    "管理多角色可用发言人；未绑定或失效时朗读会自动回退到默认配音，不在正文里反复提示"
+private val SPEAKER_MANAGE_SUMMARY: String
+    get() = appCtx.getString(R.string.ra_cfg_speaker_manage_summary)
 
 enum class ReadAloudConfigGroup(
-    val title: String,
+    @param:StringRes val titleRes: Int,
     val preferenceKeys: Set<String>
 ) {
     Base(
-        "\u57fa\u7840",
+        R.string.ra_cfg_tab_base,
         setOf(
             PreferKey.ignoreAudioFocus,
             PreferKey.pauseReadAloudWhilePhoneCalls,
@@ -78,7 +80,7 @@ enum class ReadAloudConfigGroup(
         )
     ),
     Reading(
-        "\u6717\u8bfb",
+        R.string.ra_cfg_tab_reading,
         setOf(
             PreferKey.readAloudByPage,
             PreferKey.streamReadAloudAudio,
@@ -87,7 +89,7 @@ enum class ReadAloudConfigGroup(
         )
     ),
     AiRole(
-        "\u591a\u89d2\u8272",
+        R.string.ra_cfg_tab_multi_role,
         setOf(
             PreferKey.aiReadAloudRoleEnabled,
             KEY_AI_READ_ALOUD_MODEL_ROUTING,
@@ -117,7 +119,7 @@ enum class ReadAloudConfigGroup(
         )
     ),
     Engine(
-        "\u5f15\u64ce",
+        R.string.ra_cfg_tab_engine,
         setOf(
             PreferKey.ttsEngine,
             KEY_READ_ALOUD_SPEAKER_MANAGE,
@@ -174,7 +176,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
         }
         ReadAloudConfigGroup.values().forEach { group ->
             val tab = TextView(requireContext()).apply {
-                text = group.title
+                text = getString(group.titleRes)
                 gravity = Gravity.CENTER
                 textSize = 14f
                 typeface = requireContext().uiTypeface()
@@ -272,7 +274,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 titleRes = titleRes,
                 sections = listOf(
                     SettingSectionSpec(
-                        title = selectedGroup.title,
+                        title = getString(selectedGroup.titleRes),
                         items = when (selectedGroup) {
                             ReadAloudConfigGroup.Base -> baseItems()
                             ReadAloudConfigGroup.Reading -> readingItems()
@@ -435,7 +437,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 switch(
                     key = PreferKey.ttsFollowSys,
                     title = getString(R.string.flow_sys),
-                    summary = "开启后使用系统语速，语速滑条仅展示当前保存值",
+                    summary = getString(R.string.ra_cfg_follow_sys_rate_summary),
                     defaultValue = true
                 ),
                 slider(
@@ -464,26 +466,26 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
             return listOf(
                 switch(
                     key = PreferKey.aiReadAloudRoleEnabled,
-                    title = "多角色",
-                    summary = if (hasModel) "后台分析当前章节的旁白和角色片段，并缓存结果" else "请先选择多角色模型",
+                    title = getString(R.string.ra_cfg_multi_role),
+                    summary = if (hasModel) getString(R.string.ra_cfg_multi_role_summary_on) else getString(R.string.ra_cfg_multi_role_summary_off),
                     checked = enabled,
                     enabled = hasModel,
                     onCheckedChange = { AppConfig.aiReadAloudRoleEnabled = it }
                 ),
                 action(
                     key = KEY_AI_READ_ALOUD_MODEL_ROUTING,
-                    title = "AI 模型与超时",
+                    title = getString(R.string.ra_cfg_ai_model_timeout),
                     summary = aiReadAloudModelRoutingSummary(),
                     enabled = hasModel,
                     onClick = ::showAiReadAloudModelRoutingDialog
                 ),
                 switch(
                     key = PreferKey.aiReadAloudAutoCreateCharacters,
-                    title = "自动创建角色并分配发言人",
+                    title = getString(R.string.ra_cfg_auto_create),
                     summary = if (AppConfig.aiReadAloudAutoCreateCharacters) {
-                        "新角色会自动建卡，未配置发言人时会从可用目录稳定分配"
+                        getString(R.string.ra_cfg_auto_create_summary_on)
                     } else {
-                        "只使用已有角色卡，不自动创建或分配发言人"
+                        getString(R.string.ra_cfg_auto_create_summary_off)
                     },
                     checked = AppConfig.aiReadAloudAutoCreateCharacters,
                     enabled = enabled,
@@ -491,7 +493,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 ),
                 action(
                     key = PreferKey.aiReadAloudAutoCreateCharacterPrompt,
-                    title = "自动建卡提示词",
+                    title = getString(R.string.ra_cfg_auto_card_prompt),
                     summary = firstLineSummary(
                         value = AppConfig.aiReadAloudAutoCreateCharacterPrompt,
                         useDefault = AppConfig.aiReadAloudUsingDefaultAutoCreateCharacterPrompt
@@ -501,11 +503,11 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 ),
                 switch(
                     key = PreferKey.aiReadAloudAutoCreateAvatar,
-                    title = "自动生成角色头像",
+                    title = getString(R.string.ra_cfg_auto_avatar),
                     summary = when {
-                        !AppConfig.aiReadAloudAutoCreateAvatar -> "关闭后不会为自动创建角色生成头像"
-                        AppConfig.aiEnabledImageProviders.isEmpty() -> "没有可用生图提供商，自动跳过"
-                        else -> "使用当前生图提供商后台生成头像"
+                        !AppConfig.aiReadAloudAutoCreateAvatar -> getString(R.string.ra_cfg_auto_avatar_summary_off)
+                        AppConfig.aiEnabledImageProviders.isEmpty() -> getString(R.string.ra_cfg_auto_avatar_no_provider)
+                        else -> getString(R.string.ra_cfg_auto_avatar_summary_on)
                     },
                     checked = AppConfig.aiReadAloudAutoCreateAvatar,
                     enabled = enabled && AppConfig.aiReadAloudAutoCreateCharacters,
@@ -513,13 +515,13 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 ),
                 action(
                     key = KEY_READ_ALOUD_SPEAKER_MANAGE,
-                    title = "发言人管理",
+                    title = getString(R.string.ra_cfg_speaker_manage),
                     summary = SPEAKER_MANAGE_SUMMARY,
                     onClick = { startActivity<SpeakerGroupManageActivity>() }
                 ),
                 choice(
                     key = PreferKey.aiReadAloudRoleMode,
-                    title = "处理模式",
+                    title = getString(R.string.ra_cfg_process_mode),
                     entriesRes = R.array.ai_read_aloud_role_mode_title,
                     valuesRes = R.array.ai_read_aloud_role_mode_value,
                     selectedValue = AppConfig.aiReadAloudRoleMode,
@@ -527,50 +529,55 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 ),
                 action(
                     key = PreferKey.aiReadAloudRolePreprocess,
-                    title = "预处理规则",
-                    summary = "${if (AppConfig.aiReadAloudRoleUsingDefaultPreprocessRules) "内置默认 · " else ""}引号、冒号、跨段对话、心理活动等预切分规则",
+                    title = getString(R.string.ra_cfg_preprocess_rules),
+                    summary = getString(
+                        R.string.ra_cfg_preprocess_summary,
+                        if (AppConfig.aiReadAloudRoleUsingDefaultPreprocessRules) {
+                            getString(R.string.ra_cfg_builtin_prefix)
+                        } else ""
+                    ),
                     enabled = enabled,
                     onClick = ::showMultiRolePreprocessRulesDialog
                 ),
                 action(
                     key = PreferKey.aiReadAloudRoleThreadCount,
-                    title = "并发请求数",
-                    summary = "${AppConfig.aiReadAloudRoleThreadCount} 个并发请求，越高越快但不省 Token",
+                    title = getString(R.string.ra_cfg_concurrency),
+                    summary = getString(R.string.ra_cfg_concurrency_summary, AppConfig.aiReadAloudRoleThreadCount),
                     visible = !fullMode,
                     enabled = enabled
                 ) {
-                    showAiRoleNumberDialog("并发请求数", AppConfig.aiReadAloudRoleThreadCount, 1, 10) {
+                    showAiRoleNumberDialog(getString(R.string.ra_cfg_concurrency), AppConfig.aiReadAloudRoleThreadCount, 1, 10) {
                         AppConfig.aiReadAloudRoleThreadCount = it
                         updateAiRolePreferences()
                     }
                 },
                 action(
                     key = PreferKey.aiReadAloudRoleContextParagraphs,
-                    title = "上下文段落数",
-                    summary = "上下各 ${AppConfig.aiReadAloudRoleContextParagraphs} 段",
+                    title = getString(R.string.ra_cfg_context_paragraphs),
+                    summary = getString(R.string.ra_cfg_context_summary, AppConfig.aiReadAloudRoleContextParagraphs),
                     visible = !fullMode,
                     enabled = enabled
                 ) {
-                    showAiRoleNumberDialog("上下文段落数", AppConfig.aiReadAloudRoleContextParagraphs, 0, 20) {
+                    showAiRoleNumberDialog(getString(R.string.ra_cfg_context_paragraphs), AppConfig.aiReadAloudRoleContextParagraphs, 0, 20) {
                         AppConfig.aiReadAloudRoleContextParagraphs = it
                         updateAiRolePreferences()
                     }
                 },
                 action(
                     key = PreferKey.aiReadAloudRoleMergeGapParagraphs,
-                    title = "相隔段落合并",
-                    summary = "${AppConfig.aiReadAloudRoleMergeGapParagraphs} 段内合并为同一请求",
+                    title = getString(R.string.ra_cfg_merge_gap),
+                    summary = getString(R.string.ra_cfg_merge_gap_summary, AppConfig.aiReadAloudRoleMergeGapParagraphs),
                     visible = !fullMode,
                     enabled = enabled
                 ) {
-                    showAiRoleNumberDialog("相隔段落合并", AppConfig.aiReadAloudRoleMergeGapParagraphs, 0, 10) {
+                    showAiRoleNumberDialog(getString(R.string.ra_cfg_merge_gap), AppConfig.aiReadAloudRoleMergeGapParagraphs, 0, 10) {
                         AppConfig.aiReadAloudRoleMergeGapParagraphs = it
                         updateAiRolePreferences()
                     }
                 },
                 action(
                     key = PreferKey.aiReadAloudRolePrompt,
-                    title = "预注入分角色提示词",
+                    title = getString(R.string.ra_cfg_role_prompt),
                     summary = firstLineSummary(
                         value = AppConfig.aiReadAloudRolePrompt,
                         useDefault = AppConfig.aiReadAloudRoleUsingDefaultPrompt
@@ -580,9 +587,12 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 ),
                 action(
                     key = KEY_AI_READ_ALOUD_USAGE_RECORDS,
-                    title = "消耗记录",
+                    title = getString(R.string.ra_cfg_usage_records),
                     summary = appDb.aiReadAloudUsageRecordDao.list(limit = 1000).size
-                        .let { if (it > 0) "$it 条记录，可筛选和批量删除" else "暂无消耗记录" },
+                        .let {
+                            if (it > 0) getString(R.string.ra_cfg_usage_records_summary, it)
+                            else getString(R.string.ra_cfg_usage_records_empty)
+                        },
                     onClick = {
                         startActivity(
                             android.content.Intent(requireContext(), AiReadAloudUsageRecordActivity::class.java)
@@ -591,11 +601,11 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 ),
                 switch(
                     key = PreferKey.aiReadAloudBgmEnabled,
-                    title = "智能配乐",
+                    title = getString(R.string.ra_cfg_bgm),
                     summary = if (AppConfig.aiReadAloudBgmEnabled) {
-                        "AI 可按段落范围选择配乐，朗读时淡入淡出"
+                        getString(R.string.ra_cfg_bgm_summary_on)
                     } else {
-                        "关闭后不会请求或播放章节配乐"
+                        getString(R.string.ra_cfg_bgm_summary_off)
                     },
                     checked = AppConfig.aiReadAloudBgmEnabled,
                     enabled = enabled,
@@ -603,8 +613,8 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 ),
                 action(
                     key = KEY_AI_READ_ALOUD_BGM_MANAGE,
-                    title = "智能音频设置",
-                    summary = "$bgmCount 首配乐 · $sfxCount 个音效",
+                    title = getString(R.string.ra_cfg_bgm_manage),
+                    summary = getString(R.string.ra_cfg_bgm_manage_summary, bgmCount, sfxCount),
                     enabled = enabled,
                     onClick = {
                         startActivity(
@@ -614,7 +624,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 ),
                 action(
                     key = PreferKey.aiReadAloudBgmPrompt,
-                    title = "配乐提示词",
+                    title = getString(R.string.ra_cfg_bgm_prompt),
                     summary = firstLineSummary(
                         value = AppConfig.aiReadAloudBgmPrompt,
                         useDefault = AppConfig.aiReadAloudUsingDefaultBgmPrompt
@@ -624,7 +634,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 ),
                 action(
                     key = PreferKey.aiReadAloudSoundEffectPrompt,
-                    title = "音效提示词",
+                    title = getString(R.string.ra_cfg_sfx_prompt),
                     summary = firstLineSummary(
                         value = AppConfig.aiReadAloudSoundEffectPrompt,
                         useDefault = AppConfig.aiReadAloudUsingDefaultSoundEffectPrompt
@@ -634,35 +644,39 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 ),
                 slider(
                     key = PreferKey.aiReadAloudBgmVolume,
-                    title = "配乐音量",
-                    summary = "当前 ${AppConfig.aiReadAloudBgmVolume}%",
+                    title = getString(R.string.ra_cfg_bgm_volume),
+                    summary = getString(R.string.ra_cfg_volume_current, AppConfig.aiReadAloudBgmVolume),
                     value = AppConfig.aiReadAloudBgmVolume,
                     range = 0..100,
                     enabled = audioEnabled
                 ),
                 slider(
                     key = PreferKey.aiReadAloudSfxVolume,
-                    title = "音效音量",
-                    summary = "当前 ${AppConfig.aiReadAloudSfxVolume}%",
+                    title = getString(R.string.ra_cfg_sfx_volume),
+                    summary = getString(R.string.ra_cfg_volume_current, AppConfig.aiReadAloudSfxVolume),
                     value = AppConfig.aiReadAloudSfxVolume,
                     range = 0..100,
                     enabled = audioEnabled
                 ),
                 switch(
                     key = PreferKey.readAloudSpeakerLoudnessEnabled,
-                    title = "发言人响度均衡",
+                    title = getString(R.string.ra_cfg_loudness),
                     summary = if (AppConfig.readAloudSpeakerLoudnessEnabled) {
-                        "自动平衡旁白和角色响度"
+                        getString(R.string.ra_cfg_loudness_summary_on)
                     } else {
-                        "关闭后所有朗读音频按原始音量播放"
+                        getString(R.string.ra_cfg_loudness_summary_off)
                     },
                     checked = AppConfig.readAloudSpeakerLoudnessEnabled,
                     onCheckedChange = { AppConfig.readAloudSpeakerLoudnessEnabled = it }
                 ),
                 action(
                     key = KEY_READ_ALOUD_LOUDNESS_RESET,
-                    title = "重置响度学习",
-                    summary = if (loudnessCount > 0) "已学习 $loudnessCount 个发言人" else "暂无学习数据",
+                    title = getString(R.string.ra_cfg_loudness_reset),
+                    summary = if (loudnessCount > 0) {
+                        getString(R.string.ra_cfg_loudness_learned, loudnessCount)
+                    } else {
+                        getString(R.string.ra_cfg_loudness_empty)
+                    },
                     enabled = loudnessCount > 0
                 ) {
                     ReadAloudSpeakerLoudnessManager.reset()
@@ -683,7 +697,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 ),
                 action(
                     key = KEY_READ_ALOUD_SPEAKER_MANAGE,
-                    title = "发言人管理",
+                    title = getString(R.string.ra_cfg_speaker_manage),
                     summary = SPEAKER_MANAGE_SUMMARY,
                     onClick = { startActivity<SpeakerGroupManageActivity>() }
                 ),
@@ -816,7 +830,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
             value: String,
             useDefault: Boolean
         ): String {
-            val prefix = if (useDefault) "内置默认 · " else ""
+            val prefix = if (useDefault) getString(R.string.ra_cfg_builtin_prefix) else ""
             return prefix + value.lineSequence()
                 .firstOrNull()
                 ?.take(40)
@@ -826,16 +840,37 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
 
         private fun showAiReadAloudModelRoutingDialog() {
             val options = listOf(
-                "多角色主模型：${modelLabel(AppConfig.aiReadAloudRoleModelConfig)}",
-                "多角色备用模型：${optionalModelLabel(AppConfig.aiReadAloudRoleBackupModelId, "不使用")}",
-                "首响超时：${AppConfig.aiReadAloudRoleFirstResponseTimeoutSeconds} 秒",
-                "智能音频模型：${optionalModelLabel(AppConfig.aiReadAloudAudioModelId, "跟随多角色")}",
-                "智能音频备用：${optionalModelLabel(AppConfig.aiReadAloudAudioBackupModelId, "跟随多角色备用")}"
+                getString(R.string.ra_cfg_model_option_role, modelLabel(AppConfig.aiReadAloudRoleModelConfig)),
+                getString(
+                    R.string.ra_cfg_model_option_backup,
+                    optionalModelLabel(
+                        AppConfig.aiReadAloudRoleBackupModelId,
+                        getString(R.string.ra_cfg_none)
+                    )
+                ),
+                getString(
+                    R.string.ra_cfg_model_option_timeout,
+                    AppConfig.aiReadAloudRoleFirstResponseTimeoutSeconds
+                ),
+                getString(
+                    R.string.ra_cfg_model_option_audio,
+                    optionalModelLabel(
+                        AppConfig.aiReadAloudAudioModelId,
+                        getString(R.string.ra_cfg_follow_role)
+                    )
+                ),
+                getString(
+                    R.string.ra_cfg_model_option_audio_backup,
+                    optionalModelLabel(
+                        AppConfig.aiReadAloudAudioBackupModelId,
+                        getString(R.string.ra_cfg_follow_role_backup)
+                    )
+                )
             )
-            showComposeChoiceListDialog("AI 模型与超时", options) { index ->
+            showComposeChoiceListDialog(getString(R.string.ra_cfg_ai_model_timeout), options) { index ->
                 when (index) {
                     0 -> showAiModelPicker(
-                        title = "多角色主模型",
+                        title = getString(R.string.ra_cfg_role_model),
                         currentModelId = AppConfig.aiReadAloudRoleModelId,
                         noneLabel = null
                     ) {
@@ -843,15 +878,15 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                         updateAiRolePreferences()
                     }
                     1 -> showAiModelPicker(
-                        title = "多角色备用模型",
+                        title = getString(R.string.ra_cfg_role_model_backup),
                         currentModelId = AppConfig.aiReadAloudRoleBackupModelId,
-                        noneLabel = "不使用备用模型"
+                        noneLabel = getString(R.string.ra_cfg_role_model_backup_none)
                     ) {
                         AppConfig.aiReadAloudRoleBackupModelId = it
                         updateAiRolePreferences()
                     }
                     2 -> showAiRoleNumberDialog(
-                        title = "首响超时秒数",
+                        title = getString(R.string.ra_cfg_first_timeout),
                         value = AppConfig.aiReadAloudRoleFirstResponseTimeoutSeconds,
                         min = 5,
                         max = 90
@@ -860,17 +895,17 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                         updateAiRolePreferences()
                     }
                     3 -> showAiModelPicker(
-                        title = "智能音频模型",
+                        title = getString(R.string.ra_cfg_audio_model),
                         currentModelId = AppConfig.aiReadAloudAudioModelId,
-                        noneLabel = "跟随多角色主模型"
+                        noneLabel = getString(R.string.ra_cfg_audio_model_follow)
                     ) {
                         AppConfig.aiReadAloudAudioModelId = it
                         updateAiRolePreferences()
                     }
                     4 -> showAiModelPicker(
-                        title = "智能音频备用模型",
+                        title = getString(R.string.ra_cfg_audio_model_backup),
                         currentModelId = AppConfig.aiReadAloudAudioBackupModelId,
-                        noneLabel = "跟随多角色备用模型"
+                        noneLabel = getString(R.string.ra_cfg_audio_model_backup_follow)
                     ) {
                         AppConfig.aiReadAloudAudioBackupModelId = it
                         updateAiRolePreferences()
@@ -923,9 +958,21 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
 
         private fun aiReadAloudModelRoutingSummary(): String {
             val role = modelLabel(AppConfig.aiReadAloudRoleModelConfig)
-            val backup = optionalModelLabel(AppConfig.aiReadAloudRoleBackupModelId, "无备用")
-            val audio = optionalModelLabel(AppConfig.aiReadAloudAudioModelId, "音频跟随")
-            return "$role · 备用 $backup · 首响 ${AppConfig.aiReadAloudRoleFirstResponseTimeoutSeconds}s · $audio"
+            val backup = optionalModelLabel(
+                AppConfig.aiReadAloudRoleBackupModelId,
+                getString(R.string.ra_cfg_no_backup)
+            )
+            val audio = optionalModelLabel(
+                AppConfig.aiReadAloudAudioModelId,
+                getString(R.string.ra_cfg_audio_follow)
+            )
+            return getString(
+                R.string.ra_cfg_routing_summary,
+                role,
+                backup,
+                AppConfig.aiReadAloudRoleFirstResponseTimeoutSeconds,
+                audio
+            )
         }
 
         private fun optionalModelLabel(modelId: String?, fallback: String): String {
@@ -935,7 +982,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
 
 
         private fun modelLabel(model: io.legado.app.ui.main.ai.AiModelConfig?): String {
-            model ?: return "未配置"
+            model ?: return getString(R.string.common_not_configured)
             val providerName = AppConfig.aiProviderList.firstOrNull { it.id == model.providerId }
                 ?.name
                 ?.takeIf { it.isNotBlank() }
@@ -954,8 +1001,8 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
             onValue: (Int) -> Unit
         ) {
             val displayTitle = when (max) {
-                10 -> "多角色线程数"
-                40 -> "每批段落数"
+                10 -> getString(R.string.ra_cfg_thread_count)
+                40 -> getString(R.string.ra_cfg_batch_paragraphs)
                 else -> title
             }
             showComposeNumberPickerDialog(
@@ -1003,17 +1050,17 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
 
         private fun showMultiRolePromptDialog() {
             showLongTextInputDialog(
-                title = "预注入分角色提示词",
-                hint = "内置默认会自动生效。这里可补充角色判断规则、旁白/台词标注偏好等。",
+                title = getString(R.string.ra_cfg_role_prompt),
+                hint = getString(R.string.ra_cfg_role_prompt_hint),
                 initialValue = AppConfig.aiReadAloudRolePrompt,
                 maxLength = 4000,
-                maxLengthMessage = "提示词最多 4000 字",
+                maxLengthMessage = getString(R.string.ra_cfg_prompt_max_4000),
                 minLines = 6,
                 onValue = {
                     AppConfig.aiReadAloudRolePrompt = it
                     updateAiRolePreferences()
                 },
-                neutralText = "恢复默认",
+                neutralText = getString(R.string.ra_cfg_restore_default),
                 onNeutral = {
                     AppConfig.aiReadAloudRolePrompt = ""
                     updateAiRolePreferences()
@@ -1023,17 +1070,17 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
 
         private fun showAutoCreateCharacterPromptDialog() {
             showLongTextInputDialog(
-                title = "自动建卡提示词",
-                hint = "内置默认会自动生效。这里用于约束什么时候新增角色，以及如何判断性别、年龄、角色等级。",
+                title = getString(R.string.ra_cfg_auto_card_prompt),
+                hint = getString(R.string.ra_cfg_card_prompt_hint),
                 initialValue = AppConfig.aiReadAloudAutoCreateCharacterPrompt,
                 maxLength = 4000,
-                maxLengthMessage = "提示词最多 4000 字",
+                maxLengthMessage = getString(R.string.ra_cfg_prompt_max_4000),
                 minLines = 6,
                 onValue = {
                     AppConfig.aiReadAloudAutoCreateCharacterPrompt = it
                     updateAiRolePreferences()
                 },
-                neutralText = "恢复默认",
+                neutralText = getString(R.string.ra_cfg_restore_default),
                 onNeutral = {
                     AppConfig.aiReadAloudAutoCreateCharacterPrompt = ""
                     updateAiRolePreferences()
@@ -1043,17 +1090,17 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
 
         private fun showBgmPromptDialog() {
             showLongTextInputDialog(
-                title = "配乐提示词",
-                hint = "只填写配乐策略，不要写工具 JSON。留空会恢复内置默认。",
+                title = getString(R.string.ra_cfg_bgm_prompt),
+                hint = getString(R.string.ra_cfg_bgm_prompt_hint),
                 initialValue = AppConfig.aiReadAloudBgmPrompt,
                 maxLength = 4000,
-                maxLengthMessage = "提示词最大 4000 字",
+                maxLengthMessage = getString(R.string.ra_cfg_prompt_max_4000),
                 minLines = 6,
                 onValue = {
                     AppConfig.aiReadAloudBgmPrompt = it
                     updateAiRolePreferences()
                 },
-                neutralText = "恢复默认",
+                neutralText = getString(R.string.ra_cfg_restore_default),
                 onNeutral = {
                     AppConfig.aiReadAloudBgmPrompt = ""
                     updateAiRolePreferences()
@@ -1063,17 +1110,17 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
 
         private fun showSoundEffectPromptDialog() {
             showLongTextInputDialog(
-                title = "音效提示词",
-                hint = "只填写音效选择策略。音效只能从候选事件中选择，留空会恢复内置默认。",
+                title = getString(R.string.ra_cfg_sfx_prompt),
+                hint = getString(R.string.ra_cfg_sfx_prompt_hint),
                 initialValue = AppConfig.aiReadAloudSoundEffectPrompt,
                 maxLength = 4000,
-                maxLengthMessage = "提示词最大 4000 字",
+                maxLengthMessage = getString(R.string.ra_cfg_prompt_max_4000),
                 minLines = 6,
                 onValue = {
                     AppConfig.aiReadAloudSoundEffectPrompt = it
                     updateAiRolePreferences()
                 },
-                neutralText = "恢复默认",
+                neutralText = getString(R.string.ra_cfg_restore_default),
                 onNeutral = {
                     AppConfig.aiReadAloudSoundEffectPrompt = ""
                     updateAiRolePreferences()
@@ -1084,20 +1131,24 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
         private fun showMultiRolePreprocessRulesDialog() {
             val config = ReadAloudPreprocessRuleConfig.current()
             val items = listOf(
-                "引号与句末规则 · ${config.quotePairs.size} 组引号",
-                "心理活动提示词 · ${config.thoughtCuePatterns.size} 条",
-                "判断阈值 · 台词 ${config.dialogueMinLength} / 强调 ${config.emphasisMaxLength}",
-                "音效预筛触发词 · ${config.soundEffectCuePatterns.size} 个",
-                "试运行预处理",
-                "恢复默认"
+                getString(R.string.ra_cfg_item_quote_rules, config.quotePairs.size),
+                getString(R.string.ra_cfg_item_thought_cues, config.thoughtCuePatterns.size),
+                getString(
+                    R.string.ra_cfg_item_thresholds,
+                    config.dialogueMinLength,
+                    config.emphasisMaxLength
+                ),
+                getString(R.string.ra_cfg_item_sfx_cues_count, config.soundEffectCuePatterns.size),
+                getString(R.string.ra_cfg_try_run),
+                getString(R.string.ra_cfg_restore_default)
             )
-            showComposeChoiceListDialog("预处理规则", items) { index ->
+            showComposeChoiceListDialog(getString(R.string.ra_cfg_preprocess_rules), items) { index ->
                 when (index) {
                     0 -> showPreprocessQuoteDialog(config)
                     1 -> showRuleListEditor(
-                        title = "心理活动提示词",
+                        title = getString(R.string.ra_cfg_thought_cues),
                         values = config.thoughtCuePatterns,
-                        hint = "每行一个提示词，例如：心道",
+                        hint = getString(R.string.ra_cfg_thought_cues_hint),
                         onSave = { savePreprocessConfig(config.copy(thoughtCuePatterns = it)) }
                     )
                     2 -> showPreprocessThresholdDialog(config)
@@ -1114,14 +1165,14 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
 
         private fun showPreprocessQuoteDialog(config: ReadAloudPreprocessRuleConfig) {
             showLongTextInputDialog(
-                title = "引号与句末规则",
-                hint = "每行一组引号，格式：开引号 空格 闭引号，例如：\n“ ”\n「 」",
+                title = getString(R.string.ra_cfg_quote_rules),
+                hint = getString(R.string.ra_cfg_quote_rules_hint),
                 initialValue = config.quotePairs.joinToString("\n") { "${it.open} ${it.close}" },
                 minLines = 6,
                 onValue = { value ->
                     savePreprocessConfig(config.copy(quotePairs = parseQuotePairs(value)))
                 },
-                neutralText = "句末符号",
+                neutralText = getString(R.string.ra_cfg_sentence_end_marks),
                 onNeutral = { showSentencePunctuationDialog(config) },
                 validateContent = { value ->
                     if (parseQuotePairs(value).isEmpty()) {
@@ -1136,8 +1187,8 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
 
         private fun showSentencePunctuationDialog(config: ReadAloudPreprocessRuleConfig) {
             showComposeTextInputDialog(
-                title = "句末符号",
-                hint = "直接填写句末符号，例如：。！？…!?",
+                title = getString(R.string.ra_cfg_sentence_end_marks),
+                hint = getString(R.string.ra_cfg_sentence_end_hint),
                 initialValue = config.sentencePunctuation,
                 minLines = 1,
                 maxLines = 1,
@@ -1157,25 +1208,28 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
 
         private fun showPreprocessThresholdDialog(config: ReadAloudPreprocessRuleConfig) {
             val items = listOf(
-                "台词最短长度 · ${config.dialogueMinLength}",
-                "强调文本最大长度 · ${config.emphasisMaxLength}",
-                "冒号前提示最大长度 · ${config.colonCueMaxLength}",
-                "跨段引号合并 · ${if (config.mergeCrossParagraphQuote) "开启" else "关闭"}",
-                "音效上下文字符数 · ${config.soundEffectContextChars}"
+                getString(R.string.ra_cfg_item_dialogue_min, config.dialogueMinLength),
+                getString(R.string.ra_cfg_item_emphasis_max, config.emphasisMaxLength),
+                getString(R.string.ra_cfg_item_colon_cue_max, config.colonCueMaxLength),
+                getString(
+                    R.string.ra_cfg_item_cross_paragraph,
+                    getString(if (config.mergeCrossParagraphQuote) R.string.ra_cfg_on else R.string.ra_cfg_off)
+                ),
+                getString(R.string.ra_cfg_item_sfx_context_chars, config.soundEffectContextChars)
             )
-            showComposeChoiceListDialog("判断阈值", items) { index ->
+            showComposeChoiceListDialog(getString(R.string.ra_cfg_thresholds), items) { index ->
                 when (index) {
-                    0 -> showPreprocessNumberDialog("台词最短长度", config.dialogueMinLength, 1, 80) {
+                    0 -> showPreprocessNumberDialog(getString(R.string.ra_cfg_dialogue_min), config.dialogueMinLength, 1, 80) {
                         savePreprocessConfig(config.copy(dialogueMinLength = it))
                     }
-                    1 -> showPreprocessNumberDialog("强调文本最大长度", config.emphasisMaxLength, 1, 80) {
+                    1 -> showPreprocessNumberDialog(getString(R.string.ra_cfg_emphasis_max), config.emphasisMaxLength, 1, 80) {
                         savePreprocessConfig(config.copy(emphasisMaxLength = it))
                     }
-                    2 -> showPreprocessNumberDialog("冒号前提示最大长度", config.colonCueMaxLength, 1, 80) {
+                    2 -> showPreprocessNumberDialog(getString(R.string.ra_cfg_colon_cue_max), config.colonCueMaxLength, 1, 80) {
                         savePreprocessConfig(config.copy(colonCueMaxLength = it))
                     }
                     3 -> savePreprocessConfig(config.copy(mergeCrossParagraphQuote = !config.mergeCrossParagraphQuote))
-                    4 -> showPreprocessNumberDialog("音效上下文字符数", config.soundEffectContextChars, 8, 120) {
+                    4 -> showPreprocessNumberDialog(getString(R.string.ra_cfg_sfx_context_chars), config.soundEffectContextChars, 8, 120) {
                         savePreprocessConfig(config.copy(soundEffectContextChars = it))
                     }
                 }
@@ -1184,25 +1238,25 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
 
         private fun showSoundEffectRuleDialog(config: ReadAloudPreprocessRuleConfig) {
             val items = listOf(
-                "音效预筛触发词 · ${config.soundEffectCuePatterns.size} 条",
-                "音效排除词 · ${config.soundEffectExcludePatterns.size} 条",
-                "上下文字符数 · ${config.soundEffectContextChars}"
+                getString(R.string.ra_cfg_item_sfx_rule_cues, config.soundEffectCuePatterns.size),
+                getString(R.string.ra_cfg_item_sfx_rule_excludes, config.soundEffectExcludePatterns.size),
+                getString(R.string.ra_cfg_item_sfx_rule_context, config.soundEffectContextChars)
             )
-            showComposeChoiceListDialog("音效预筛规则", items) { index ->
+            showComposeChoiceListDialog(getString(R.string.ra_cfg_sfx_rules), items) { index ->
                 when (index) {
                     0 -> showRuleListEditor(
-                        title = "音效预筛触发词",
+                        title = getString(R.string.ra_cfg_sfx_cues),
                         values = config.soundEffectCuePatterns,
-                        hint = "每行一个触发词，只用于找可能需要音效的句子，例如：吱呀、敲门声、枪声",
+                        hint = getString(R.string.ra_cfg_sfx_cues_hint),
                         onSave = { savePreprocessConfig(config.copy(soundEffectCuePatterns = it)) }
                     )
                     1 -> showRuleListEditor(
-                        title = "音效排除词",
+                        title = getString(R.string.ra_cfg_sfx_excludes),
                         values = config.soundEffectExcludePatterns,
-                        hint = "每行一个排除词，例如：心声、名声",
+                        hint = getString(R.string.ra_cfg_sfx_excludes_hint),
                         onSave = { savePreprocessConfig(config.copy(soundEffectExcludePatterns = it)) }
                     )
-                    2 -> showPreprocessNumberDialog("音效上下文字符数", config.soundEffectContextChars, 8, 120) {
+                    2 -> showPreprocessNumberDialog(getString(R.string.ra_cfg_sfx_context_chars), config.soundEffectContextChars, 8, 120) {
                         savePreprocessConfig(config.copy(soundEffectContextChars = it))
                     }
                 }
@@ -1256,8 +1310,8 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 他心道：“事情不太对。”
             """.trimIndent()
             showComposeTextInputDialog(
-                title = "预处理试运行",
-                hint = "粘贴几段正文，试运行当前预处理规则。",
+                title = getString(R.string.ra_cfg_try_run_title),
+                hint = getString(R.string.ra_cfg_try_run_hint),
                 initialValue = sample,
                 minLines = 10,
                 maxLines = 14,
@@ -1278,13 +1332,13 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
             val roleResult = ReadAloudRolePreprocessor.process(paragraphs)
             val sfxResult = ReadAloudSoundEffectPreprocessor.process(paragraphs)
             val message = buildString {
-                appendLine("角色 unit：${roleResult.units.size}")
+                appendLine(getString(R.string.ra_cfg_unit_count, roleResult.units.size))
                 roleResult.units.take(40).forEachIndexed { index, unit ->
                     append(index + 1)
                     append(". ")
                     append(unit.kind)
                     append(" · ")
-                    append(if (unit.needsAi) "需要 AI" else unit.characterName.ifBlank { unit.roleType })
+                    append(if (unit.needsAi) getString(R.string.ra_cfg_need_ai) else unit.characterName.ifBlank { unit.roleType })
                     append(" · P")
                     append(unit.firstParagraphIndex + 1)
                     append(" · ")
@@ -1292,7 +1346,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 }
                 if (roleResult.units.size > 40) appendLine("……")
                 appendLine()
-                appendLine("音效候选：${sfxResult.candidates.size}")
+                appendLine(getString(R.string.ra_cfg_sfx_candidates, sfxResult.candidates.size))
                 sfxResult.candidates.take(30).forEachIndexed { index, item ->
                     append(index + 1)
                     append(". ")
@@ -1304,7 +1358,7 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 }
             }.take(6000)
             showComposeConfirmDialog(
-                title = "试运行结果",
+                title = getString(R.string.ra_cfg_try_run_result),
                 message = message,
                 showNegative = false,
                 messageInContent = true,
