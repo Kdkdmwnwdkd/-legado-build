@@ -1,6 +1,7 @@
 package io.legado.app.data
 
 import android.content.ContentValues
+import android.content.res.Configuration
 import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import android.util.Log
@@ -92,6 +93,7 @@ import io.legado.app.data.entities.SearchBook
 import io.legado.app.data.entities.SearchKeyword
 import io.legado.app.data.entities.Server
 import io.legado.app.data.entities.TxtTocRule
+import io.legado.app.R
 import io.legado.app.help.DefaultData
 import io.legado.app.model.AutoTaskRule
 import org.intellij.lang.annotations.Language
@@ -228,6 +230,90 @@ abstract class AppDatabase : RoomDatabase() {
         private const val MaxBookTextFieldLength = 262_144
         private const val MaxBookUrlFieldLength = 32_768
 
+        private class BuiltinGroup(
+            val id: Long,
+            val nameRes: Int,
+            val order: Int,
+            val show: Boolean = true,
+            val enableRefresh: Boolean = true
+        )
+
+        /** 内置分组：名字取自字符串资源，随界面语言变化 */
+        private val builtinGroups = listOf(
+            BuiltinGroup(BookGroup.IdAll, R.string.all, -10),
+            BuiltinGroup(BookGroup.IdLocal, R.string.local, -9, enableRefresh = false),
+            BuiltinGroup(BookGroup.IdAudio, R.string.audio, -8),
+            BuiltinGroup(BookGroup.IdNetNone, R.string.net_no_group, -7),
+            BuiltinGroup(BookGroup.IdLocalNone, R.string.local_no_group, -6, show = false),
+            BuiltinGroup(BookGroup.IdVideo, R.string.video, -5),
+            BuiltinGroup(BookGroup.IdError, R.string.update_book_fail, -1)
+        )
+
+        /** 界面里出现过的语言，用于识别"出厂默认名" */
+        private val builtinNameLocales = arrayOf(
+            "en", "zh-CN", "zh-TW", "zh-HK", "ja", "pt-BR", "vi", "es-ES"
+        )
+
+        private val factoryNameCache = java.util.concurrent.ConcurrentHashMap<Int, Set<String>>()
+
+        /** 某个内置分组在所有语言下的默认名，与当前语言无关，可缓存 */
+        private fun factoryNames(resId: Int): Set<String> =
+            factoryNameCache.getOrPut(resId) {
+                val names = linkedSetOf<String>()
+                val base = appCtx.resources.configuration
+                for (tag in builtinNameLocales) {
+                    val config = Configuration(base)
+                    config.setLocale(Locale.forLanguageTag(tag))
+                    names.add(appCtx.createConfigurationContext(config).getString(resId))
+                }
+                names
+            }
+
+        /** 内置分组不存在时插入，名字跟随当前语言 */
+        private fun ensureBuiltinGroups(db: SupportSQLiteDatabase) {
+            builtinGroups.forEach { group ->
+                db.execSQL(
+                    """insert into book_groups(groupId, groupName, 'order', enableRefresh, show)
+                       select ?, ?, ?, ?, ?
+                       where not exists (select * from book_groups where groupId = ?)""".trimIndent(),
+                    arrayOf<Any?>(
+                        group.id,
+                        appCtx.getString(group.nameRes),
+                        group.order,
+                        if (group.enableRefresh) 1 else 0,
+                        if (group.show) 1 else 0,
+                        group.id
+                    )
+                )
+            }
+        }
+
+        /**
+         * 内置分组名是写进数据库的，切换语言不会自己变。
+         * 这里把仍是"出厂名"的内置分组改成当前语言；
+         * 用户改过名的（不在出厂名集合里）保持原样，不覆盖。
+         */
+        private fun syncBuiltinGroupNames(db: SupportSQLiteDatabase) {
+            builtinGroups.forEach { group ->
+                val current = appCtx.getString(group.nameRes)
+                val factory = factoryNames(group.nameRes)
+                if (factory.isEmpty() || (factory.size == 1 && factory.first() == current)) {
+                    return@forEach
+                }
+                val placeholders = factory.joinToString(", ") { "?" }
+                val args = ArrayList<Any?>(factory.size + 3)
+                args.add(current)
+                args.add(group.id)
+                args.add(current)
+                args.addAll(factory)
+                db.execSQL(
+                    "update book_groups set groupName = ? " +
+                            "where groupId = ? and groupName <> ? and groupName in ($placeholders)",
+                    args.toTypedArray()
+                )
+            }
+        }
+
         val dbCallback = object : Callback() {
 
             override fun onCreate(db: SupportSQLiteDatabase) {
@@ -247,55 +333,8 @@ abstract class AppDatabase : RoomDatabase() {
             }
 
             override fun onOpen(db: SupportSQLiteDatabase) {
-                @Language("sql")
-                val insertBookGroupAllSql = """
-                    insert into book_groups(groupId, groupName, 'order', show) 
-                    select ${BookGroup.IdAll}, '全部', -10, 1
-                    where not exists (select * from book_groups where groupId = ${BookGroup.IdAll})
-                """.trimIndent()
-                db.execSQL(insertBookGroupAllSql)
-                @Language("sql")
-                val insertBookGroupLocalSql = """
-                    insert into book_groups(groupId, groupName, 'order', enableRefresh, show) 
-                    select ${BookGroup.IdLocal}, '本地', -9, 0, 1
-                    where not exists (select * from book_groups where groupId = ${BookGroup.IdLocal})
-                """.trimIndent()
-                db.execSQL(insertBookGroupLocalSql)
-                @Language("sql")
-                val insertBookGroupMusicSql = """
-                    insert into book_groups(groupId, groupName, 'order', show) 
-                    select ${BookGroup.IdAudio}, '音频', -8, 1
-                    where not exists (select * from book_groups where groupId = ${BookGroup.IdAudio})
-                """.trimIndent()
-                db.execSQL(insertBookGroupMusicSql)
-                @Language("sql")
-                val insertBookGroupNetNoneGroupSql = """
-                    insert into book_groups(groupId, groupName, 'order', show) 
-                    select ${BookGroup.IdNetNone}, '网络未分组', -7, 1
-                    where not exists (select * from book_groups where groupId = ${BookGroup.IdNetNone})
-                """.trimIndent()
-                db.execSQL(insertBookGroupNetNoneGroupSql)
-                @Language("sql")
-                val insertBookGroupLocalNoneGroupSql = """
-                    insert into book_groups(groupId, groupName, 'order', show) 
-                    select ${BookGroup.IdLocalNone}, '本地未分组', -6, 0
-                    where not exists (select * from book_groups where groupId = ${BookGroup.IdLocalNone})
-                """.trimIndent()
-                db.execSQL(insertBookGroupLocalNoneGroupSql)
-                @Language("sql")
-                val insertBookGroupVideoSql = """
-                    insert into book_groups(groupId, groupName, 'order', show) 
-                    select ${BookGroup.IdVideo}, '视频', -5, 1
-                    where not exists (select * from book_groups where groupId = ${BookGroup.IdVideo})
-                    """.trimIndent()
-                db.execSQL(insertBookGroupVideoSql)
-                @Language("sql")
-                val insertBookGroupErrorSql = """
-                    insert into book_groups(groupId, groupName, 'order', show) 
-                    select ${BookGroup.IdError}, '更新失败', -1, 1
-                    where not exists (select * from book_groups where groupId = ${BookGroup.IdError})
-                """.trimIndent()
-                db.execSQL(insertBookGroupErrorSql)
+                ensureBuiltinGroups(db)
+                syncBuiltinGroupNames(db)
                 @Language("sql")
                 val upBookSourceLoginUiSql =
                     "update book_sources set loginUi = null where loginUi = 'null'"

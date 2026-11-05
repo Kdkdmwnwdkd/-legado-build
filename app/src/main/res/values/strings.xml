@@ -2596,4 +2596,12 @@ Selected text or question:
     <string name="welcome_title">Read</string>
     <string name="welcome_subtitle">Enjoy the moment</string>
     <string name="welcome_slogan">A thousand stories await</string>
+
+    <!--Source debug hints-->
+    <string name="debug_hint_search">Debug search &gt;&gt; enter a keyword, e.g. </string>
+    <string name="debug_hint_explore">Debug explore &gt;&gt; enter an explore URL, e.g. </string>
+    <string name="debug_hint_info">Debug book info &gt;&gt; enter a book info URL, e.g. </string>
+    <string name="debug_hint_toc">Debug table of contents &gt;&gt; enter a TOC URL, e.g. </string>
+    <string name="debug_hint_content">Debug content &gt;&gt; enter a content URL, e.g. </string>
+    <string name="debug_hint_category">Debug category &gt;&gt; enter a category URL, e.g. </string>
 </resources>
