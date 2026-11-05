@@ -5,6 +5,7 @@ import android.content.Intent
 import android.util.Base64
 import android.webkit.URLUtil
 import android.webkit.WebView
+import io.legado.app.R
 import io.legado.app.base.BaseViewModel
 import io.legado.app.constant.AppConst
 import io.legado.app.constant.AppConst.imagePathKey
@@ -98,7 +99,7 @@ class WebViewModel(application: Application) : BaseViewModel(application) {
             ACache.get().remove(imagePathKey)
             context.toastOnUi("保存图片失败:${it.localizedMessage}")
         }.onSuccess {
-            context.toastOnUi("保存成功")
+            context.toastOnUi(R.string.toast_save_success)
         }
     }
 

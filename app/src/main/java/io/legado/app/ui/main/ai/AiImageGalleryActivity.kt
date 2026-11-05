@@ -239,7 +239,7 @@ class AiImageGalleryActivity : BaseActivity<ActivityAiImageGalleryBinding>() {
             withContext(Dispatchers.IO) {
                 AiImageGalleryManager.moveImagesToGroup(ids, groupId)
             }
-            toastOnUi("已移动分组")
+            toastOnUi(R.string.toast_moved_group)
             clearSelection()
             reload()
         }

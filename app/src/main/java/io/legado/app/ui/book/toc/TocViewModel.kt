@@ -79,7 +79,7 @@ class TocViewModel(application: Application) : BaseViewModel(application) {
         }.onError {
             AppLog.put("导出失败\n${it.localizedMessage}", it, true)
         }.onSuccess {
-            context.toastOnUi("导出成功")
+            context.toastOnUi(R.string.toast_export_success)
         }
     }
 
@@ -103,7 +103,7 @@ class TocViewModel(application: Application) : BaseViewModel(application) {
         }.onError {
             AppLog.put("导出失败\n${it.localizedMessage}", it, true)
         }.onSuccess {
-            context.toastOnUi("导出成功")
+            context.toastOnUi(R.string.toast_export_success)
         }
     }
 

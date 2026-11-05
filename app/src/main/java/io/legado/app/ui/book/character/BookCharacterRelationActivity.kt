@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
+import io.legado.app.R
 import io.legado.app.base.BaseActivity
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.BookCharacter
@@ -111,7 +112,7 @@ class BookCharacterRelationActivity : BaseActivity<ViewBinding>(
 
     private fun addRelation() {
         if (characters.size < 2) {
-            toastOnUi("至少需要两个角色")
+            toastOnUi(R.string.toast_need_two_characters)
             return
         }
         editingRelation = RelationEditDraft(
@@ -128,7 +129,7 @@ class BookCharacterRelationActivity : BaseActivity<ViewBinding>(
         val from = draft.fromCharacterId
         val to = draft.toCharacterId
         if (from <= 0L || to <= 0L || from == to) {
-            toastOnUi("请选择两个不同角色")
+            toastOnUi(R.string.toast_select_two_different)
             return
         }
         lifecycleScope.launch {

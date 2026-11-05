@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.lifecycleScope
+import io.legado.app.R
 import io.legado.app.base.BaseActivity
 import io.legado.app.databinding.ActivityAiWorldBookManageBinding
 import io.legado.app.help.http.newCallResponseBody
@@ -93,7 +94,7 @@ class AiWorldBookManageActivity : BaseActivity<ActivityAiWorldBookManageBinding>
 
     private fun emitImportPayload(raw: String) {
         if (raw.isBlank()) {
-            toastOnUi("世界书内容为空")
+            toastOnUi(R.string.toast_worldbook_empty)
             return
         }
         importPayload = AiWorldBookImportPayload(++importRequestId, raw)

@@ -43,7 +43,7 @@ object IntentHelp {
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
         }.onFailure {
-            context.toastOnUi("无法打开设置")
+            context.toastOnUi(R.string.toast_cannot_open_settings)
         }
     }
 

@@ -980,7 +980,7 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
             groups.forEach { group ->
                 if (group.contains("失效") && searchQueryState.value.isEmpty()) {
                     updateSearchQuery("失效")
-                    toastOnUi("发现有失效书源，已为您自动筛选！")
+                    toastOnUi(R.string.toast_invalid_sources_filtered)
                 }
             }
         }

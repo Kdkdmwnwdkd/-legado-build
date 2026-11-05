@@ -118,7 +118,7 @@ class ComposeDirectLinkUploadDialog : ComposeDialogFragment() {
         lifecycleScope.launch {
             val clipText = requireContext().getClipText()
             if (clipText.isNullOrBlank()) {
-                toastOnUi("剪贴板为空或格式不对")
+                toastOnUi(R.string.toast_clipboard_empty_or_invalid)
                 return@launch
             }
             val result = withContext(IO) { DirectLinkUpload.importRule(clipText) }

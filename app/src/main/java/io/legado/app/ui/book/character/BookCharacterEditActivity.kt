@@ -139,11 +139,11 @@ class BookCharacterEditActivity : BaseActivity<ViewBinding>(
     private fun save() {
         val name = draft.name.trim()
         if (characterBookKey.isBlank()) {
-            toastOnUi("当前书籍不存在")
+            toastOnUi(R.string.toast_book_not_exist)
             return
         }
         if (name.isBlank()) {
-            toastOnUi("角色名称不能为空")
+            toastOnUi(R.string.toast_character_name_empty)
             return
         }
         lifecycleScope.launch {
@@ -186,7 +186,7 @@ class BookCharacterEditActivity : BaseActivity<ViewBinding>(
                 true
             }
             if (!result) {
-                toastOnUi("已存在同名角色")
+                toastOnUi(R.string.toast_character_exists)
                 return@launch
             }
             ReadAloudConfigChangeNotifier.notifySpeech()
@@ -225,7 +225,7 @@ class BookCharacterEditActivity : BaseActivity<ViewBinding>(
 
     private fun showGalleryAvatarPicker(groups: List<AiImageGroup>, images: List<AiGeneratedImage>) {
         if (images.isEmpty()) {
-            toastOnUi("AI 图库暂无图片")
+            toastOnUi(R.string.toast_ai_gallery_empty)
             return
         }
         var currentGroupId: String? = null
@@ -331,13 +331,13 @@ class BookCharacterEditActivity : BaseActivity<ViewBinding>(
                 AiImageGalleryManager.setFavorite(image.id, true, null)
             }
             draft = draft.copy(avatar = AiImageGalleryManager.imageUri(image.id))
-            toastOnUi("已设置角色头像")
+            toastOnUi(R.string.toast_character_avatar_set)
         }
     }
 
     private fun showRegenerateAvatarDialog() {
         if (AppConfig.aiEnabledImageProviders.isEmpty()) {
-            toastOnUi("未配置生图供应商")
+            toastOnUi(R.string.toast_image_provider_not_set)
             return
         }
         val dialogBinding = DialogEditTextBinding.inflate(layoutInflater).apply {
@@ -393,7 +393,7 @@ class BookCharacterEditActivity : BaseActivity<ViewBinding>(
             waitDialog.dismiss()
             result.onSuccess { image ->
                 draft = draft.copy(avatar = AiImageGalleryManager.imageUri(image.id))
-                toastOnUi("已生成并收藏角色头像")
+                toastOnUi(R.string.toast_character_avatar_saved)
             }.onFailure {
                 toastOnUi("生成角色头像失败：${it.localizedMessage ?: it.javaClass.simpleName}")
             }

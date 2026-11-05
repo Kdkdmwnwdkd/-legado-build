@@ -168,7 +168,7 @@ fun AiWorldBookManageRoute(
             persist(books + saving)
             expandedBookId = saving.id
             jsonEditor = null
-            context.toastOnUi("世界书已导入")
+            context.toastOnUi(R.string.toast_worldbook_imported)
         }.onFailure {
             context.toastOnUi(it.localizedMessage ?: "世界书 JSON 解析失败")
         }

@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
+import io.legado.app.R
 import io.legado.app.base.BaseActivity
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.Book
@@ -83,7 +84,7 @@ class BookCharacterManageActivity : BaseActivity<ViewBinding>(
 
     private fun openCard(id: Long) {
         if (bookUrl.isBlank() || id <= 0L) {
-            toastOnUi("当前角色不存在")
+            toastOnUi(R.string.toast_character_not_exist)
             return
         }
         startActivity<BookCharacterCardActivity> {
@@ -95,7 +96,7 @@ class BookCharacterManageActivity : BaseActivity<ViewBinding>(
 
     private fun openEdit(id: Long = 0L) {
         if (bookUrl.isBlank()) {
-            toastOnUi("当前书籍不存在")
+            toastOnUi(R.string.toast_book_not_exist)
             return
         }
         startActivity<BookCharacterEditActivity> {
@@ -107,7 +108,7 @@ class BookCharacterManageActivity : BaseActivity<ViewBinding>(
 
     private fun openRelations() {
         if (characters.size < 2) {
-            toastOnUi("至少需要两个角色才能编辑关系网")
+            toastOnUi(R.string.toast_need_two_characters_relation)
             return
         }
         startActivity<BookCharacterRelationActivity> {

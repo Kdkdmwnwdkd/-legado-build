@@ -133,7 +133,7 @@ class GroupEditDialog() : ComposeDialogFragment() {
                         onClearCover = { coverPath = null },
                         onSave = { name, sort, refresh, onlyRead ->
                             if (name.isBlank()) {
-                                requireContext().toastOnUi("分组名称不能为空")
+                                requireContext().toastOnUi(R.string.toast_group_name_empty)
                                 return@GroupEditContent
                             }
                             initialGroup?.let {

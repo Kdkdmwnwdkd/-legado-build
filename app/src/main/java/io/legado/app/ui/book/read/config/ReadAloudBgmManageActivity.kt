@@ -80,7 +80,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
                     selectedIds.clear()
                     notifyAudioChanged()
                     finishImportingAndLoad()
-                    toastOnUi("导入完成")
+                    toastOnUi(R.string.toast_import_done)
                 }.onFailure {
                     finishImportingAndLoad()
                     toastOnUi(it.localizedMessage ?: "导入失败")
@@ -418,7 +418,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
             okButton {
                 val name = binding.editView.text?.toString()?.trim().orEmpty()
                 if (name.isBlank()) {
-                    toastOnUi("分组名称不能为空")
+                    toastOnUi(R.string.toast_group_name_empty)
                     return@okButton
                 }
                 lifecycleScope.launch(Dispatchers.IO) {
@@ -447,7 +447,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
     private fun showGroupManage() {
         val managedGroups = groups.filterNot { it.isDefaultGroup() }
         if (managedGroups.isEmpty()) {
-            toastOnUi("暂无分组")
+            toastOnUi(R.string.toast_no_group)
             return
         }
         selector("管理分组", managedGroups.map { it.displayName() }) { _, index ->
@@ -463,7 +463,7 @@ class ReadAloudBgmManageActivity : BaseActivity<ActivityThemeManageBinding>() {
 
     private fun confirmDeleteGroup(group: ReadAloudBgmGroup) {
         if (group.isDefaultGroup()) {
-            toastOnUi("默认分组不能删除")
+            toastOnUi(R.string.toast_default_group_undeletable)
             return
         }
         alert("删除分组") {

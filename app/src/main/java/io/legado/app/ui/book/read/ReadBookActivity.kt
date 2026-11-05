@@ -1256,7 +1256,7 @@ class ReadBookActivity : BaseReadBookActivity(),
                         && !BookHelp.getChapterCacheFileNames(it, textChapter.chapter, "nr")
                             .any(contentProcessor.removeSameTitleCache::contains)
                     ) {
-                        toastOnUi("未找到可移除的重复标题")
+                        toastOnUi(R.string.toast_no_duplicate_title)
                     }
                 }
                 viewModel.reverseRemoveSameTitle()
@@ -1933,7 +1933,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     ) {
         val payload = buildShareNotePayload(text)
         lifecycleScope.launch {
-            toastOnUi("正在生成分享图片")
+            toastOnUi(R.string.toast_generating_share_image)
             kotlin.runCatching {
                 ShareNoteImageRenderer.renderShareImage(this@ReadBookActivity, entry, payload)
             }.onSuccess { file ->
@@ -2523,7 +2523,7 @@ class ReadBookActivity : BaseReadBookActivity(),
             resolvedChapterIndex
         } ?: run {
             binding.epubReadView.cancelPendingBoundaryTurn()
-            if (!book.isEpub && targetChapterIndex != null) toastOnUi("章节目录已更新，请重新选择章节")
+            if (!book.isEpub && targetChapterIndex != null) toastOnUi(R.string.toast_toc_updated)
             onFinish?.invoke()
             return
         }
@@ -2813,7 +2813,7 @@ class ReadBookActivity : BaseReadBookActivity(),
         epubCoreLoadingChapterIndex = null
         epubCoreForegroundTarget = null
         requestedReaderTemplate = null
-        toastOnUi("模板渲染失败，本次阅读已恢复默认排版；模板源码已保留")
+        toastOnUi(R.string.toast_template_render_failed)
         AppLog.putDebug("阅读模板已回退：${selected.name}", error)
         loadDirectEpubContent(0, target, resetPageOffset = false, boundaryTransition = false,
             onFinish = onFinish, targetFragmentId = fragment)
@@ -2822,7 +2822,7 @@ class ReadBookActivity : BaseReadBookActivity(),
 
     override fun previewReaderTemplate(template: EpubReaderTemplate) {
         val session = epubDirectSession?.takeUnless { it.isClosed } ?: run {
-            toastOnUi("请先加载正文，再预览页面模板")
+            toastOnUi(R.string.toast_load_content_first)
             return
         }
         val book = ReadBook.book?.takeIf { !it.isEpub } ?: return
@@ -4301,7 +4301,7 @@ class ReadBookActivity : BaseReadBookActivity(),
 
     override fun openBookCharacters() {
         val book = ReadBook.book ?: run {
-            toastOnUi("当前书籍不存在")
+            toastOnUi(R.string.toast_book_not_exist)
             return
         }
         startActivity<BookCharacterManageActivity> {
@@ -4349,14 +4349,14 @@ class ReadBookActivity : BaseReadBookActivity(),
             val currentChapter = withContext(IO) {
                 appDb.bookChapterDao.getChapter(book.bookUrl, chapterIndex)
             } ?: run {
-                toastOnUi("未找到当前章节")
+                toastOnUi(R.string.toast_chapter_not_found)
                 return@launch
             }
             val versions = withContext(IO) {
                 session.listChapterVersions(currentChapter)
             }
             if (versions.isEmpty()) {
-                toastOnUi("云端没有匹配当前章节的缓存")
+                toastOnUi(R.string.toast_cloud_no_chapter_cache)
                 return@launch
             }
             showLibraryCloudChapterDialog(book, session, currentChapter, versions)
@@ -4512,7 +4512,7 @@ class ReadBookActivity : BaseReadBookActivity(),
                 .setNegativeButton("复制") { _, _ ->
                     val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     clipboard.setPrimaryClip(ClipData.newPlainText("书库调试", message))
-                    toastOnUi("已复制")
+                    toastOnUi(R.string.toast_copied)
                 }
                 .setPositiveButton(android.R.string.ok, null)
                 .show()
@@ -4722,22 +4722,29 @@ class ReadBookActivity : BaseReadBookActivity(),
         item: LibraryCloudChapterVersion,
         dismissParent: () -> Unit
     ) {
+        val deleteWord = getString(R.string.delete)
         val input = EditText(this).apply {
-            hint = "请输入 删除"
+            hint = getString(R.string.hint_type_delete, deleteWord)
             setSingleLine(true)
             typeface = uiTypeface()
             setPadding(20.dpToPx(), 8.dpToPx(), 20.dpToPx(), 8.dpToPx())
         }
         val confirmDialog = AndroidAlertBuilder(this).apply {
-            setTitle("删除云端章节")
-            setMessage("将删除云端章节：${item.payload.title.ifBlank { currentChapter.title }}\n请输入“删除”确认。")
+            setTitle(getString(R.string.delete_cloud_chapter))
+            setMessage(
+                getString(
+                    R.string.delete_cloud_chapter_message,
+                    item.payload.title.ifBlank { currentChapter.title },
+                    deleteWord
+                )
+            )
             setCustomView(input)
             negativeButton(android.R.string.cancel)
-            positiveButton("删除")
+            positiveButton(deleteWord)
         }.show()
         confirmDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            if (input.text?.toString()?.trim() != "删除") {
-                toastOnUi("请输入 删除 后再确认")
+            if (input.text?.toString()?.trim() != deleteWord) {
+                toastOnUi(getString(R.string.toast_type_delete_to_confirm, deleteWord))
                 return@setOnClickListener
             }
             confirmDialog.dismiss()
@@ -4769,7 +4776,7 @@ class ReadBookActivity : BaseReadBookActivity(),
                 libraryCloudSession = refreshedSession
                 libraryCloudState = refreshedSession.state
                 binding.readMenu.updateCloudLibraryState(refreshedSession.state)
-                toastOnUi("已删除云端章节")
+                toastOnUi(R.string.toast_cloud_chapter_deleted)
                 showLibraryCloudChapters(refresh = false)
             } else {
                 toastOnUi("删除云端章节失败\n${result.exceptionOrNull()?.localizedMessage.orEmpty()}")
@@ -5907,7 +5914,7 @@ class ReadBookActivity : BaseReadBookActivity(),
                 && !BookHelp.getChapterCacheFileNames(it, textChapter.chapter, "nr")
                     .any(contentProcessor.removeSameTitleCache::contains)
             ) {
-                toastOnUi("未找到可移除的重复标题")
+                toastOnUi(R.string.toast_no_duplicate_title)
             }
         }
         viewModel.reverseRemoveSameTitle()

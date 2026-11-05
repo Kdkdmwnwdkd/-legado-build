@@ -241,7 +241,7 @@ object Restore {
                             (error.localizedMessage ?: "未知错误"),
                         error
                     )
-                    appCtx.toastOnUi("备份中的直链上传规则无效，已保留当前配置")
+                    appCtx.toastOnUi(R.string.toast_direct_link_rule_invalid)
                 }
         }
         //恢复主题配置
@@ -413,7 +413,7 @@ object Restore {
             }
         }.onFailure {
             AppLog.put("恢复定时任务出错\n${it.localizedMessage}", it)
-            appCtx.toastOnUi("恢复定时任务失败，已保留当前任务")
+            appCtx.toastOnUi(R.string.toast_schedule_restore_failed)
         }
     }
 

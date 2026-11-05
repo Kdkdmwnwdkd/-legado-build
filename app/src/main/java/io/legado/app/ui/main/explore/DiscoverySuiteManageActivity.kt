@@ -496,7 +496,7 @@ class DiscoverySuiteManageActivity : BaseActivity<ActivityThemeManageBinding>() 
                 DiscoverySuiteWidgetType.RankedList.value
             ) && cleanTargets.size !in 3..9
         ) {
-            toastOnUi("排行榜控件需要选择 3-9 个 Tag")
+            toastOnUi(R.string.toast_rank_tags_range)
             return
         }
         val submittedTitle = title.trim()

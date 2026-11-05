@@ -112,7 +112,7 @@ class BookshelfViewModel(application: Application) : BaseViewModel(application) 
             if (successCount > 0) {
                 context.toastOnUi(R.string.success)
             } else {
-                context.toastOnUi("添加网址失败")
+                context.toastOnUi(R.string.toast_add_url_failed)
             }
         }.onError {
             AppLog.put("添加网址出错\n${it.localizedMessage}", it, true)

@@ -248,7 +248,7 @@ class AboutFragment : ComposeSettingFragment() {
             startActivity(intent)
             return true
         }.onFailure {
-            toastOnUi("添加失败,请手动添加")
+            toastOnUi(R.string.toast_add_failed_manual)
         }
         return false
     }
@@ -256,17 +256,17 @@ class AboutFragment : ComposeSettingFragment() {
     private fun saveLog() {
         Coroutine.async {
             val backupPath = AppConfig.backupPath ?: let {
-                appCtx.toastOnUi("未设置备份目录")
+                appCtx.toastOnUi(R.string.toast_backup_dir_not_set)
                 return@async
             }
             if (!AppConfig.recordLog) {
-                appCtx.toastOnUi("未开启日志记录，请去其他设置里打开记录日志")
+                appCtx.toastOnUi(R.string.toast_log_disabled)
                 delay(3000)
             }
             val doc = FileDoc.fromUri(Uri.parse(backupPath), true)
             copyLogs(doc)
             copyHeapDump(doc)
-            appCtx.toastOnUi("已保存至备份目录")
+            appCtx.toastOnUi(R.string.toast_saved_to_backup_dir)
         }.onError {
             AppLog.put("保存日志出错\n${it.localizedMessage}", it, true)
         }
@@ -275,21 +275,21 @@ class AboutFragment : ComposeSettingFragment() {
     private fun createHeapDump() {
         Coroutine.async {
             val backupPath = AppConfig.backupPath ?: let {
-                appCtx.toastOnUi("未设置备份目录")
+                appCtx.toastOnUi(R.string.toast_backup_dir_not_set)
                 return@async
             }
             if (!AppConfig.recordHeapDump) {
-                appCtx.toastOnUi("未开启堆转储记录，请去其他设置里打开记录堆转储")
+                appCtx.toastOnUi(R.string.toast_heap_dump_disabled)
                 delay(3000)
             }
-            appCtx.toastOnUi("开始创建堆转储")
+            appCtx.toastOnUi(R.string.toast_heap_dump_started)
             System.gc()
             CrashHandler.doHeapDump(true)
             val doc = FileDoc.fromUri(Uri.parse(backupPath), true)
             if (!copyHeapDump(doc)) {
-                appCtx.toastOnUi("未找到堆转储文件")
+                appCtx.toastOnUi(R.string.toast_heap_dump_not_found)
             } else {
-                appCtx.toastOnUi("已保存至备份目录")
+                appCtx.toastOnUi(R.string.toast_saved_to_backup_dir)
             }
         }.onError {
             AppLog.put("保存堆转储失败\n${it.localizedMessage}", it)

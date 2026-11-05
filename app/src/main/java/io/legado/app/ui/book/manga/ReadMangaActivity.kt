@@ -508,7 +508,7 @@ class ReadMangaActivity : VMBaseActivity<ActivityMangaBinding, ReadMangaViewMode
             binding.flLoading.isVisible = true
             viewModel.changeTo(book, toc)
         } else {
-            toastOnUi("所选择的源不是漫画源")
+            toastOnUi(R.string.toast_not_manga_source)
         }
     }
 

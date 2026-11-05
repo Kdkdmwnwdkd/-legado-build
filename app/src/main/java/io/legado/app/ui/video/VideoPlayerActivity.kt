@@ -833,7 +833,7 @@ class VideoPlayerActivity : VMBaseActivity<ActivityVideoPlayerBinding, VideoPlay
             R.id.menu_copy_video_url -> {
                 val url = VideoPlay.videoUrl
                 if (url.isNullOrBlank()){
-                    this.toastOnUi("暂无播放地址")
+                    this.toastOnUi(R.string.toast_no_play_url)
                     return true
                 }
                 VideoPlay.book?.let {
@@ -853,7 +853,7 @@ class VideoPlayerActivity : VMBaseActivity<ActivityVideoPlayerBinding, VideoPlay
             R.id.menu_open_other_video_player -> {
                 val url = VideoPlay.videoUrl
                 if (url.isNullOrBlank()){
-                    this.toastOnUi("暂无播放地址")
+                    this.toastOnUi(R.string.toast_no_play_url)
                     return true
                 }
                 val intent = Intent(Intent.ACTION_VIEW).apply {

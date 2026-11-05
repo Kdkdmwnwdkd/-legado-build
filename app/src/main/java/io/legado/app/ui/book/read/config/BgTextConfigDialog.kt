@@ -800,7 +800,7 @@ class BgTextConfigDialog : BaseDialogFragment(0) {
             postReadConfigChanged(1, 2, 5)
             dismissAllowingStateLoss()
         } else {
-            toastOnUi("数量已是最少, 不能删除.")
+            toastOnUi(R.string.toast_min_count_reached)
         }
     }
 
@@ -915,7 +915,7 @@ class BgTextConfigDialog : BaseDialogFragment(0) {
             ReadBookConfig.durConfig = it
             refreshTick++
             postReadConfigChanged(1, 2, 5)
-            toastOnUi("导入成功")
+            toastOnUi(R.string.toast_import_success)
         }.onError {
             it.printOnDebug()
             longToast("导入失败:${it.localizedMessage}")
@@ -926,7 +926,7 @@ class BgTextConfigDialog : BaseDialogFragment(0) {
         if (uri.scheme?.lowercase() in listOf("http", "https")) {
             lifecycleScope.launch {
                 kotlin.runCatching {
-                    appCtx.toastOnUi("下载图片中...")
+                    appCtx.toastOnUi(R.string.toast_downloading_image)
                     val analyzeUrl = AnalyzeUrl(uri.toString(), dnsScope = DnsScope.IMAGE)
                     val url = analyzeUrl.urlNoQuery
                     var file = requireContext().externalFiles
@@ -957,7 +957,7 @@ class BgTextConfigDialog : BaseDialogFragment(0) {
                     postReadConfigChanged(1)
                     refreshTick++
                 }.onSuccess {
-                    appCtx.toastOnUi("设定成功")
+                    appCtx.toastOnUi(R.string.toast_setting_saved)
                 }.onFailure {
                     appCtx.toastOnUi(it.localizedMessage)
                 }

@@ -154,7 +154,7 @@ class AiReadAloudUsageRecordActivity : BaseActivity<ActivityThemeManageBinding>(
     private fun deleteSelected() {
         val ids = selectedIds.toList()
         if (ids.isEmpty()) {
-            toastOnUi("请先长按选择记录")
+            toastOnUi(R.string.toast_long_press_record_first)
             return
         }
         showDialogFragment(

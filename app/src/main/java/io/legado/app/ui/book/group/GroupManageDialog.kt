@@ -87,7 +87,7 @@ class GroupManageDialog : ComposeDialogFragment() {
                             if (appDb.bookGroupDao.canAddGroup) {
                                 showDialogFragment(GroupEditDialog())
                             } else {
-                                requireContext().toastOnUi("分组已达上限(64个)")
+                                requireContext().toastOnUi(R.string.toast_group_limit)
                             }
                         },
                         onEditGroup = { group ->

@@ -1911,7 +1911,7 @@ class BookInfoActivity :
                             message = "正在上传云端备份...",
                             block = { cacheManageViewModel.uploadCacheItem(item, strategy) }
                         ) {
-                            toastOnUi("云端备份已上传")
+                            toastOnUi(R.string.toast_cloud_backup_uploaded)
                             reload()
                         }
                     }

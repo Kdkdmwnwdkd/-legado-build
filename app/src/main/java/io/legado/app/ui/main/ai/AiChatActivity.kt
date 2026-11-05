@@ -222,7 +222,7 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
             failureMessage = { getString(R.string.ai_request_failed, it) }
         )
         if (!started) {
-            toastOnUi("无法重试此条消息")
+            toastOnUi(R.string.toast_cannot_retry_message)
         }
         refreshToken.intValue += 1
     }
@@ -380,7 +380,7 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
                     .sortedBy { it.label }
             }
             if (groups.isEmpty()) {
-                toastOnUi("没有可添加的角色卡")
+                toastOnUi(R.string.toast_no_character_card)
                 return@launch
             }
             characterPickerGroups = groups
@@ -453,7 +453,7 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
     private fun openCharacterEditor(companion: AiChatCompanionConfig) {
         val characterId = companion.characterId.toLongOrNull()
         if (characterId == null || characterId <= 0L) {
-            toastOnUi("角色卡不存在")
+            toastOnUi(R.string.toast_character_card_missing)
             return
         }
         lifecycleScope.launch {
@@ -486,7 +486,7 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
             okButton {
                 val prompt = binding.editView.text?.toString().orEmpty().trim()
                 if (prompt.isBlank()) {
-                    toastOnUi("提示词不能为空")
+                    toastOnUi(R.string.toast_prompt_empty)
                 } else {
                     AppConfig.upsertAiChatCompanion(companion.copy(prompt = prompt))
                     refreshToken.intValue += 1
@@ -498,7 +498,7 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
 
     private fun confirmDeleteCompanion(companion: AiChatCompanionConfig) {
         if (companion.id == AiChatCompanionConfig.DEFAULT_COMPANION_ID) {
-            toastOnUi("默认助手不能删除")
+            toastOnUi(R.string.toast_default_assistant_undeletable)
             return
         }
         alert(
@@ -604,7 +604,7 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
     private fun showWindowSkillDialog() {
         val skills = AppConfig.aiSkillList.filter { it.enabled }
         if (skills.isEmpty()) {
-            toastOnUi("没有可用 Skill")
+            toastOnUi(R.string.toast_no_skill)
             return
         }
         val selected = viewModel.activeWindowSkillIds().toMutableSet()
@@ -630,7 +630,7 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
     private fun showWindowMcpDialog() {
         val servers = AppConfig.aiMcpServerList.filter { it.enabled }
         if (servers.isEmpty()) {
-            toastOnUi("没有已启用 MCP")
+            toastOnUi(R.string.toast_no_mcp)
             return
         }
         val selected = viewModel.activeWindowMcpServerIds().toMutableSet()

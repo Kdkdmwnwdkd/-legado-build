@@ -134,7 +134,7 @@ class TxtTocRuleEditComposeDialog : ComposeDialogFragment() {
 
     private fun checkValid(tocRule: TxtTocRule): Boolean {
         if (tocRule.name.isEmpty()) {
-            context?.toastOnUi("名称不能为空")
+            context?.toastOnUi(R.string.toast_name_empty)
             return false
         }
         try {

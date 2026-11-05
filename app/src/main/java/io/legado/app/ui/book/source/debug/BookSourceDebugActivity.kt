@@ -178,7 +178,7 @@ class BookSourceDebugActivity : VMBaseActivity<ActivitySourceDebugBinding, BookS
         viewModel.startDebug(key, {
             binding.rotateLoading.visible()
         }, {
-            toastOnUi("未获取到书源")
+            toastOnUi(R.string.toast_no_book_source)
         })
     }
 
