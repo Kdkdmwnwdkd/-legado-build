@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bubble_create_manual">Create manually</string>
+    <string name="bubble_import_zip">Import zip</string>
+    <string name="bubble_upload_success">Uploaded</string>
+    <string name="bubble_uploading">Uploading bubble package</string>
+    <string name="bubble_default_name">Custom paragraph comment bubble</string>
+    <string name="bubble_size_scale">Size scale</string>
+    <string name="bubble_svg_template">SVG template</string>
+    <string name="bubble_export_zip">Export zip</string>
+    <string name="bubble_share_zip">Share file</string>
+    <string name="bubble_share_link">Share direct link</string>
+
+    <string name="bubble_help_message">Paragraph comment bubbles turn dp images in rules into native SVG bubbles.\n\nFormat:\n&lt;img src=&quot;dp:12,{&quot;pclick&quot;:&quot;...&quot;,&quot;status&quot;:&quot;normal&quot;}&quot;&gt;\n\nThe number after dp: replaces ${num} in the SVG template.\nstatus is optional: normal uses the regular color, emphasis uses the accent color. It defaults to normal.\nThe SVG template supports the ${color} and ${num} placeholders.\nBuilt-in bubbles are read-only. Add or import one to create a custom bubble.</string>
+</resources>
