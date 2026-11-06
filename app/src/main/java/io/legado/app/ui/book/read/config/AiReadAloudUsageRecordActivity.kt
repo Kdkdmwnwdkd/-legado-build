@@ -37,6 +37,7 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import splitties.init.appCtx
 
 class AiReadAloudUsageRecordActivity : BaseActivity<ActivityThemeManageBinding>() {
 
@@ -119,8 +120,8 @@ class AiReadAloudUsageRecordActivity : BaseActivity<ActivityThemeManageBinding>(
         val types = listOf(
             "" to "全部",
             AiReadAloudUsageRecord.TYPE_ROLE to "多角色",
-            AiReadAloudUsageRecord.TYPE_BGM to "配乐",
-            AiReadAloudUsageRecord.TYPE_SFX to "音效",
+            AiReadAloudUsageRecord.TYPE_BGM to getString(R.string.bgm_label_music),
+            AiReadAloudUsageRecord.TYPE_SFX to getString(R.string.bgm_label_sfx),
             AiReadAloudUsageRecord.TYPE_AUDIO to "音频分析"
         )
         showDialogFragment(
@@ -318,8 +319,8 @@ class AiReadAloudUsageRecordActivity : BaseActivity<ActivityThemeManageBinding>(
 
         private fun typeLabel(type: String): String = when (type) {
             AiReadAloudUsageRecord.TYPE_ROLE -> "多角色"
-            AiReadAloudUsageRecord.TYPE_BGM -> "配乐"
-            AiReadAloudUsageRecord.TYPE_SFX -> "音效"
+            AiReadAloudUsageRecord.TYPE_BGM -> appCtx.getString(R.string.bgm_label_music)
+            AiReadAloudUsageRecord.TYPE_SFX -> appCtx.getString(R.string.bgm_label_sfx)
             AiReadAloudUsageRecord.TYPE_AUDIO -> "音频分析"
             else -> "全部"
         }
