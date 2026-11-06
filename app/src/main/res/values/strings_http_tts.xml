@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="http_tts_title">HTTP read-aloud rule</string>
+    <string name="http_tts_field_name">Name</string>
+    <string name="http_tts_field_speakers">Speakers JSON</string>
+    <string name="http_tts_field_emotions">Emotions JSON</string>
+    <string name="http_tts_field_url">url</string>
+    <string name="http_tts_field_content_type">Content-Type</string>
+    <string name="http_tts_field_concurrent_rate">Concurrency</string>
+    <string name="http_tts_field_thread_count">Generation threads</string>
+    <string name="http_tts_field_login_url">Login URL</string>
+    <string name="http_tts_field_login_ui">Login UI</string>
+    <string name="http_tts_field_login_js">Login check JS</string>
+    <string name="http_tts_field_header">Header</string>
+    <string name="http_tts_field_js_lib">jsLib</string>
+    <string name="http_tts_action_copy">Copy</string>
+    <string name="http_tts_action_paste">Paste</string>
+    <string name="http_tts_action_clear_login_header">Clear login header</string>
+    <string name="http_tts_speakers_hint">Speakers accept [{&quot;speakerName&quot;:&quot;Xiaoxiao&quot;,&quot;toneID&quot;:&quot;xxx&quot;}], or can be grouped as [{&quot;groupName&quot;:&quot;Female&quot;,&quot;items&quot;:[...]}]; emotion fields use emotionName / emotionTag.</string>
+</resources>

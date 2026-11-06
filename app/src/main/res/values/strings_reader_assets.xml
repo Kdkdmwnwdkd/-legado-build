@@ -45,4 +45,12 @@
     <string name="reader_assets_font_sample">春风有信，花开有期。\n\n阅读让每一页都有自己的模样。\n\nAa Bb Cc · 0123456789\n标点、字形与行间的留白。</string>
     <string name="reader_assets_template_done">Added to the draft. Preview it before saving.</string>
     <string name="reader_assets_missing">Asset is missing, please import it again</string>
+
+    <string name="reader_assets_file_count">%1$d files</string>
+    <string name="reader_assets_imported_count">Imported or merged %1$d assets</string>
+    <string name="reader_assets_open_folder">Open folder</string>
+    <string name="reader_assets_browse_summary">%1$s · %2$d items</string>
+    <string name="reader_assets_local_source_hint">Local source · tap to browse</string>
+    <string name="reader_assets_subfolder">Subfolder</string>
+    <string name="reader_assets_pending_import">Pending import</string>
 </resources>

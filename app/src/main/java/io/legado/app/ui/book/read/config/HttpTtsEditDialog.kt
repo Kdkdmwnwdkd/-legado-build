@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.annotation.StringRes
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -180,7 +181,7 @@ class HttpTtsEditDialog() : BaseDialogFragment(0) {
         val currentText = draft.field(focusedField)
         val intent = Intent(requireActivity(), CodeEditActivity::class.java).apply {
             putExtra("text", currentText)
-            putExtra("title", focusedField.label)
+            putExtra("title", getString(focusedField.labelRes))
             putExtra("cursorPosition", currentText.length)
         }
         textEditLauncher.launch(intent)
@@ -221,19 +222,19 @@ class HttpTtsEditDialog() : BaseDialogFragment(0) {
     }
 }
 
-private enum class HttpTtsField(val label: String) {
-    Name("名称"),
-    Speakers("发言人列表 JSON"),
-    Emotions("情绪列表 JSON"),
-    Url("url"),
-    ContentType("Content-Type"),
-    ConcurrentRate("并发率"),
-    SynthesisThreadCount("生成线程数"),
-    LoginUrl("登录 URL"),
-    LoginUi("登录 UI"),
-    LoginCheckJs("登录检测 JS"),
-    Header("Header"),
-    JsLib("jsLib")
+private enum class HttpTtsField(@StringRes val labelRes: Int) {
+    Name(R.string.http_tts_field_name),
+    Speakers(R.string.http_tts_field_speakers),
+    Emotions(R.string.http_tts_field_emotions),
+    Url(R.string.http_tts_field_url),
+    ContentType(R.string.http_tts_field_content_type),
+    ConcurrentRate(R.string.http_tts_field_concurrent_rate),
+    SynthesisThreadCount(R.string.http_tts_field_thread_count),
+    LoginUrl(R.string.http_tts_field_login_url),
+    LoginUi(R.string.http_tts_field_login_ui),
+    LoginCheckJs(R.string.http_tts_field_login_js),
+    Header(R.string.http_tts_field_header),
+    JsLib(R.string.http_tts_field_js_lib)
 }
 
 private data class HttpTtsEditDraft(
@@ -345,7 +346,7 @@ private fun HttpTtsEditScreen(
             Column(modifier = Modifier.fillMaxSize().padding(16.dp).imePadding()) {
             Row {
                 Text(
-                    text = "HTTP 朗读规则",
+                    text = stringResource(R.string.http_tts_title),
                     color = colors.text,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -359,13 +360,17 @@ private fun HttpTtsEditScreen(
                 modifier = Modifier.horizontalScroll(rememberScrollState()).padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                HeaderAction("登录", colors, onLogin)
-                HeaderAction("复制", colors, onCopy)
-                HeaderAction("粘贴", colors, onPaste)
-                HeaderAction("登录头", colors, onShowLoginHeader)
-                HeaderAction("清登录头", colors, onClearLoginHeader)
-                HeaderAction("日志", colors, onLog)
-                HeaderAction("帮助", colors, onHelp)
+                HeaderAction(stringResource(R.string.login), colors, onLogin)
+                HeaderAction(stringResource(R.string.http_tts_action_copy), colors, onCopy)
+                HeaderAction(stringResource(R.string.http_tts_action_paste), colors, onPaste)
+                HeaderAction(stringResource(R.string.login_header), colors, onShowLoginHeader)
+                HeaderAction(
+                    stringResource(R.string.http_tts_action_clear_login_header),
+                    colors,
+                    onClearLoginHeader
+                )
+                HeaderAction(stringResource(R.string.log), colors, onLog)
+                HeaderAction(stringResource(R.string.help), colors, onHelp)
             }
             Column(
                 modifier = Modifier
@@ -379,7 +384,7 @@ private fun HttpTtsEditScreen(
                 EditField(HttpTtsField.Emotions, draft.emotionsJson, { onDraftChange(draft.copy(emotionsJson = it)) }, onFocus, minLines = 3)
                 SelectionContainer {
                     Text(
-                        text = "发言人可填 [{\"speakerName\":\"晓晓\",\"toneID\":\"xxx\"}]，也可用 [{\"groupName\":\"女声\",\"items\":[...]}] 分组；情绪字段使用 emotionName / emotionTag。",
+                        text = stringResource(R.string.http_tts_speakers_hint),
                         color = colors.subText,
                         fontSize = 12.sp,
                         lineHeight = 18.sp
@@ -426,7 +431,7 @@ private fun EditField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(field.label) },
+        label = { Text(stringResource(field.labelRes)) },
         singleLine = singleLine,
         minLines = if (singleLine) 1 else minLines,
         modifier = Modifier

@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import io.legado.app.R
+import splitties.init.appCtx
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.readaloud.speech.SpeechEmotion
 import io.legado.app.help.readaloud.speech.SpeechRoute
@@ -123,22 +124,23 @@ fun SpeechVoiceRoutePickerDialog(
 fun speechRouteSummary(
     route: SpeechRoute,
     groups: List<SpeechVoiceEngineGroup>,
-    defaultText: String = "使用默认朗读引擎"
+    defaultText: String = ""
 ): String {
-    if (!route.isConfigured) return defaultText
+    val fallback = defaultText.ifBlank { appCtx.getString(R.string.speech_voice_use_default_engine) }
+    if (!route.isConfigured) return fallback
     val group = groups.firstOrNull {
         it.engineType == route.engineType && it.engineValue == route.engineValue
     }
-    if (route.engineType == SpeechRoute.ENGINE_HTTP && group == null) return defaultText
+    if (route.engineType == SpeechRoute.ENGINE_HTTP && group == null) return fallback
     if (route.toneID.isNotBlank() && group?.options?.none { it.toneID == route.toneID } == true) {
-        return defaultText
+        return fallback
     }
     val engineName = group?.title
     val parts = buildList {
         add(engineName ?: when (route.engineType) {
             SpeechRoute.ENGINE_HTTP -> "HTTP TTS"
-            SpeechRoute.ENGINE_SYSTEM -> "系统 TTS"
-            else -> "默认朗读"
+            SpeechRoute.ENGINE_SYSTEM -> appCtx.getString(R.string.system_tts)
+            else -> appCtx.getString(R.string.speech_voice_default)
         })
         route.speakerName.takeIf { it.isNotBlank() }?.let(::add)
         route.emotionName.takeIf { it.isNotBlank() }?.let(::add)
@@ -189,7 +191,7 @@ private fun EnginePickerList(
                 subtitle = group.subtitle,
                 selected = selected,
                 colors = colors,
-                trailing = "发言人",
+                trailing = stringResource(R.string.speech_voice_speaker),
                 onClick = { onGroupClick(group) }
             )
         }
@@ -252,7 +254,7 @@ private fun SpeakerPickerList(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 EmotionChip(
-                    text = "无情绪",
+                    text = stringResource(R.string.speech_voice_no_emotion),
                     selected = selectedEmotion == null,
                     colors = colors,
                     onClick = { onEmotionChange(null) }
@@ -282,7 +284,10 @@ private fun SpeakerPickerList(
                         .ifBlank { group.title },
                     selected = routeMatchesOption(currentRoute, option),
                     colors = colors,
-                    trailing = if (option.explicitSpeaker) "选择" else "默认",
+                    trailing = stringResource(
+                        if (option.explicitSpeaker) R.string.reader_assets_select
+                        else R.string.text_default
+                    ),
                     onClick = { onRouteSelected(option.toRoute(selectedEmotion)) }
                 )
             }
@@ -298,7 +303,7 @@ private fun SpeakerPickerList(
                 border = BorderStroke(1.dp, colors.accent.copy(alpha = 0.28f))
             ) {
                 Text(
-                    text = "登录 / 刷新授权",
+                    text = stringResource(R.string.speech_voice_login_refresh),
                     color = colors.accent,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -357,7 +362,7 @@ private fun PickerRow(
                 }
             }
             Text(
-                text = if (selected) "当前" else trailing,
+                text = if (selected) stringResource(R.string.current) else trailing,
                 color = if (selected) colors.accent else colors.subText,
                 fontSize = 12.sp,
                 fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
