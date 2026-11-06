@@ -226,7 +226,10 @@ class ImportBookSourceDialog() : ComposeDialogFragment(),
                     )
                 } else if (!conflictRefreshError.isNullOrBlank()) {
                     Text(
-                        text = "重新检查书源冲突失败：$conflictRefreshError",
+                        text = stringResource(
+                            R.string.import_conflict_check_failed,
+                            conflictRefreshError
+                        ),
                         color = style.danger,
                         fontSize = 13.sp,
                         modifier = Modifier.padding(bottom = 8.dp)
@@ -306,9 +309,9 @@ class ImportBookSourceDialog() : ComposeDialogFragment(),
                                 val isChecked = selectStatus.getOrNull(index) ?: false
                                 val localSource = checkSources.getOrNull(index)
                                 val stateText = when {
-                                    localSource == null -> "新增"
-                                    item.lastUpdateTime > localSource.lastUpdateTime -> "更新"
-                                    else -> "已有"
+                                    localSource == null -> stringResource(R.string.import_state_new)
+                                    item.lastUpdateTime > localSource.lastUpdateTime -> stringResource(R.string.import_state_updated)
+                                    else -> stringResource(R.string.import_state_existing)
                                 }
                                 val comment = if (AppConfig.importShowComment) {
                                     item.bookSourceComment?.takeIf { it.isNotBlank() }
@@ -369,7 +372,7 @@ class ImportBookSourceDialog() : ComposeDialogFragment(),
                                         waitDialog.dismiss()
                                         val detail = error.localizedMessage
                                             ?: getString(R.string.unknown_error)
-                                        importErrorMsg = "导入失败：$detail"
+                                        importErrorMsg = getString(R.string.import_failed_detail, detail)
                                     }
                                 )
                             }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="import_state_new">New</string>
+    <string name="import_state_updated">Updated</string>
+    <string name="import_state_existing">Existing</string>
+
+    <string name="import_failed_detail">Import failed: %1$s</string>
+    <string name="import_conflict_check_failed">Failed to re-check source conflicts: %1$s</string>
+    <string name="import_bubble_failed">Failed to import bubble</string>
+    <string name="import_book_failed">Failed to import book</string>
+    <string name="import_need_book_folder">Please set the book folder again\nPermission Denial</string>
+    <string name="import_not_book_source">Not a book source</string>
+    <string name="import_not_rss_source">Not an RSS source</string>
+
+    <string name="add_to_shelf_bad_url">Invalid book URL</string>
+    <string name="add_to_shelf_no_source">No matching book source found</string>
+</resources>
