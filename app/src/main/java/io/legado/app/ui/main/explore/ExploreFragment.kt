@@ -1489,8 +1489,8 @@ class ExploreFragment() : VMBaseFragment<ExploreViewModel>(R.layout.fragment_exp
             ),
             Triple(
                 DiscoverySuiteWidgetType.RankButtons.value,
-                "排行榜按钮",
-                "排行榜按钮"
+                getString(R.string.discovery_suite_widget_type_rank_buttons),
+                getString(R.string.discovery_suite_widget_type_rank_buttons)
             ),
             Triple(
                 DiscoverySuiteWidgetType.RankedList.value,
@@ -2724,10 +2724,10 @@ class ExploreFragment() : VMBaseFragment<ExploreViewModel>(R.layout.fragment_exp
     private fun discoverDialogLabel(item: DiscoverTagItem): CharSequence {
         val prefix = when (item.role) {
             DiscoverTagItem.Role.UrlTag -> ""
-            DiscoverTagItem.Role.GlobalSelect -> "选择 "
-            DiscoverTagItem.Role.Toggle -> "开关 "
+            DiscoverTagItem.Role.GlobalSelect -> getString(R.string.discovery_dialog_label_select)
+            DiscoverTagItem.Role.Toggle -> getString(R.string.discovery_dialog_label_toggle)
             DiscoverTagItem.Role.ActionButton,
-            DiscoverTagItem.Role.ScriptUrl -> "操作 "
+            DiscoverTagItem.Role.ScriptUrl -> getString(R.string.discovery_dialog_label_action)
         }
         val group = item.group?.takeIf { it.isNotBlank() }?.let { " · $it" }.orEmpty()
         val value = if (item.role == DiscoverTagItem.Role.GlobalSelect) {

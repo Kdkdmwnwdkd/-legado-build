@@ -46,4 +46,7 @@
     <string name="discovery_suite_empty_suites">还没有套件</string>
     <string name="discovery_suite_category">分类</string>
     <string name="discovery_suite_save">保存</string>
+    <string name="discovery_dialog_label_select">选择 </string>
+    <string name="discovery_dialog_label_toggle">开关 </string>
+    <string name="discovery_dialog_label_action">操作 </string>
 </resources>
