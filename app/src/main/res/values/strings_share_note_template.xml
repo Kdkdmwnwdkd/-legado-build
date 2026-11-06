@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="share_note_add_template">Add template</string>
+    <string name="share_note_copy_builtin">Copy built-in template</string>
+    <string name="share_note_import_html">Import HTML</string>
+    <string name="share_note_import_zip">Import ZIP</string>
+    <string name="share_note_preview_header">Preview header</string>
+    <string name="share_note_copy_new">Duplicate</string>
+    <string name="share_note_export_html">Export HTML</string>
+    <string name="share_note_export_zip">Export ZIP</string>
+    <string name="share_note_summary">Manage the HTML templates used for excerpt share images. The preview shows only the template header; the full image is rendered on share.</string>
+    <string name="share_note_share_style">Share style</string>
+    <string name="share_note_style_summary">Quickly switch the colors and fonts of excerpt share images. The preview and the shared image update together.</string>
+    <string name="share_note_colors">Colors</string>
+    <string name="share_note_fonts">Fonts</string>
+    <string name="share_note_source_builtin">Built-in</string>
+    <string name="share_note_source_local">Local</string>
+</resources>

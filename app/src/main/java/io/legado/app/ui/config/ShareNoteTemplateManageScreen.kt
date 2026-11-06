@@ -30,6 +30,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.signature.ObjectKey
 import io.legado.app.R
+import splitties.init.appCtx
 import io.legado.app.help.config.ShareNoteTemplateManager
 import io.legado.app.ui.widget.compose.AppManagementCard
 import io.legado.app.ui.widget.compose.AppManagementMenuAction
@@ -62,7 +63,7 @@ internal fun ShareNoteTemplateManageScreen(
     val editText = stringResource(R.string.edit)
     AppPackageManageScreen(
         isNightMode = false,
-        summaryText = "管理正文长按摘录分享图片使用的 HTML 模板。预览只显示模板头部，分享时会生成完整图片。",
+        summaryText = stringResource(R.string.share_note_summary),
         addText = stringResource(R.string.theme_add),
         onSwitchDayNight = {},
         onAdd = onAddClick,
@@ -113,7 +114,7 @@ private fun ShareNoteStyleQuickCard(
         insidePadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp)
     ) {
         Text(
-            text = "分享样式",
+            text = stringResource(R.string.share_note_share_style),
             color = palette.settings.primaryText,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
@@ -121,7 +122,7 @@ private fun ShareNoteStyleQuickCard(
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            text = "快速切换摘录分享图片的配色和字体，预览与分享图片会同步更新。",
+            text = stringResource(R.string.share_note_style_summary),
             color = palette.settings.secondaryText,
             fontSize = 12.sp,
             lineHeight = 17.sp,
@@ -129,7 +130,7 @@ private fun ShareNoteStyleQuickCard(
         )
         Spacer(modifier = Modifier.size(10.dp))
         Text(
-            text = "配色",
+            text = stringResource(R.string.share_note_colors),
             color = palette.settings.secondaryText,
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium,
@@ -153,7 +154,7 @@ private fun ShareNoteStyleQuickCard(
         }
         Spacer(modifier = Modifier.size(8.dp))
         Text(
-            text = "字体",
+            text = stringResource(R.string.share_note_fonts),
             color = palette.settings.secondaryText,
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium,
@@ -211,7 +212,7 @@ internal fun ShareNoteTemplatePreview(
             )
         } else {
             Text(
-                text = "预览",
+                text = stringResource(R.string.preview),
                 color = palette.settings.secondaryText,
                 fontSize = 12.sp,
                 textAlign = TextAlign.Center
@@ -222,8 +223,8 @@ internal fun ShareNoteTemplatePreview(
 
 private fun buildInfoText(entry: ShareNoteTemplateManager.Entry): String {
     val source = when (entry.source) {
-        ShareNoteTemplateManager.Source.BUILTIN -> "内置"
-        ShareNoteTemplateManager.Source.LOCAL -> "本地"
+        ShareNoteTemplateManager.Source.BUILTIN -> appCtx.getString(R.string.share_note_source_builtin)
+        ShareNoteTemplateManager.Source.LOCAL -> appCtx.getString(R.string.share_note_source_local)
     }
     val time = entry.meta.updatedAt.takeIf { it > 0L }?.let {
         noteTemplateDateFormat.format(Date(it))
