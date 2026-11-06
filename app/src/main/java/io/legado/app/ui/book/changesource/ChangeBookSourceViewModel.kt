@@ -341,10 +341,15 @@ open class ChangeBookSourceViewModel(application: Application) : BaseViewModel(a
             val replaceBook = oldBook ?: book
             content = contentProcessor(replaceBook).getContent(replaceBook, bookChapter, content, false).toString()
             val len = content.length
-            len to "[${chapterIndex + 1}] ${title}\n字数：${len}"
+            len to appCtx.getString(R.string.change_source_chapter_word_count, chapterIndex + 1, title, len)
         } catch (t: Throwable) {
             if (t is CancellationException) throw t
-            -1 to "[${chapterIndex + 1}] ${title}\n获取字数失败：${t.localizedMessage}"
+            -1 to appCtx.getString(
+                        R.string.change_source_chapter_word_count_failed,
+                        chapterIndex + 1,
+                        title,
+                        t.localizedMessage
+                    )
         }
         val endTime = System.currentTimeMillis()
         val searchBook = book.toSearchBook().apply {
@@ -466,7 +471,7 @@ open class ChangeBookSourceViewModel(application: Application) : BaseViewModel(a
             val toc = tocMap[book.primaryStr()]
             if (toc != null) {
                 val source = appDb.bookSourceDao.getBookSource(book.origin)
-                    ?: throw NoStackTraceException("书源不存在")
+                    ?: throw NoStackTraceException(appCtx.getString(R.string.book_source_not_found))
                 return@execute Pair(toc, source)
             }
             val result = getToc(book).getOrThrow()
@@ -482,7 +487,7 @@ open class ChangeBookSourceViewModel(application: Application) : BaseViewModel(a
     suspend fun getToc(book: Book): Result<Pair<List<BookChapter>, BookSource>> {
         return kotlin.runCatching {
             val source = appDb.bookSourceDao.getBookSource(book.origin)
-                ?: throw NoStackTraceException("书源不存在")
+                ?: throw NoStackTraceException(appCtx.getString(R.string.book_source_not_found))
             if (book.tocUrl.isEmpty()) {
                 WebBook.getBookInfoAwait(source, book)
             }
@@ -555,7 +560,7 @@ open class ChangeBookSourceViewModel(application: Application) : BaseViewModel(a
                     }
                 }
             }
-            throw NoStackTraceException("没有有效源")
+            throw NoStackTraceException(appCtx.getString(R.string.change_source_no_valid_source))
         }.onSuccess {
             onSuccess.invoke(it.first, it.second, it.third)
         }.onError {

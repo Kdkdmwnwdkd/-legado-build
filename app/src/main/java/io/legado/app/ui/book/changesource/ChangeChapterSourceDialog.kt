@@ -94,8 +94,8 @@ class ChangeChapterSourceDialog() : BaseDialogFragment(R.layout.dialog_chapter_c
         if (searchGroup.isNotEmpty()) {
             val owner = viewLifecycleOwnerLiveData.value ?: return@callback
             owner.lifecycleScope.launch {
-                context?.alert("搜索结果为空") {
-                    setMessage("${searchGroup}分组搜索结果为空,是否切换到全部分组")
+                context?.alert(getString(R.string.change_source_search_empty_title)) {
+                    setMessage(getString(R.string.change_source_search_empty_in_group, searchGroup))
                     noButton()
                     yesButton {
                         AppConfig.searchGroup = ""
