@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="highlight_style_text_color">Text color</string>
+    <string name="highlight_style_background">Background color</string>
+    <string name="highlight_style_underline">Underline</string>
+    <string name="highlight_style_double_line">Double underline</string>
+    <string name="highlight_style_wavy_line">Wavy underline</string>
+    <string name="highlight_style_strikethrough">Strikethrough</string>
+
+    <string name="highlight_color_accent">Reading accent</string>
+    <string name="highlight_color_red">Red</string>
+    <string name="highlight_color_orange">Orange</string>
+    <string name="highlight_color_yellow">Yellow</string>
+    <string name="highlight_color_green">Green</string>
+    <string name="highlight_color_teal">Teal</string>
+    <string name="highlight_color_blue">Blue</string>
+    <string name="highlight_color_purple">Purple</string>
+    <string name="highlight_color_pink">Pink</string>
+    <string name="highlight_color_brown">Brown</string>
+    <string name="highlight_color_gray">Gray</string>
+
+    <string name="highlight_rule_deleted_error">This highlight rule has been deleted. Go back to the list and refresh.</string>
+    <string name="highlight_rule_custom_css_font">Custom CSS font</string>
+    <string name="highlight_rule_original_background">Rule background</string>
+</resources>
