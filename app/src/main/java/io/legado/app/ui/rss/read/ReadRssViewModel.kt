@@ -128,7 +128,9 @@ class ReadRssViewModel(application: Application) : BaseViewModel(application) {
                 this@ReadRssViewModel.rssArticle = rssArticle
                 contentLiveData.postValue(body)
             }.onError {
-                contentLiveData.postValue("加载正文失败\n${it.stackTraceToString()}")
+                contentLiveData.postValue(
+                    appCtx.getString(R.string.rss_load_content_failed, it.stackTraceToString())
+                )
             }
     }
 

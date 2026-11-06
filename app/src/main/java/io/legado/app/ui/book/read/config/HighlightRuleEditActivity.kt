@@ -270,8 +270,11 @@ class HighlightRuleEditActivity : BaseActivity<ActivityHighlightRuleEditBinding>
         if (value.enabled && invalid != null) { toastOnUi(invalid); return }
         if (!value.global && value.bookUrl == null) { toastOnUi(R.string.highlight_rule_bind_hint); return }
         val warnings = value.importWarning.split("；").filter { it.startsWith("背景图片未导入") } +
-            listOfNotNull(invalid?.let { "表达式不可用：" + it },
-                if (value.styleCssText.contains("reeden-font:", true)) "未附带 Reeden 字体，使用当前阅读字体" else null)
+            listOfNotNull(
+                invalid?.let { getString(R.string.highlight_expression_unavailable, it) },
+                if (value.styleCssText.contains("reeden-font:", true))
+                    getString(R.string.highlight_font_missing) else null
+            )
         saving = true
         updateEnabled()
         lifecycleScope.launch {

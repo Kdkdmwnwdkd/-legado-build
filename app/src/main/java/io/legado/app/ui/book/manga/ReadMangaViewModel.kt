@@ -154,7 +154,9 @@ class ReadMangaViewModel(application: Application) : BaseViewModel(application) 
             return true
         } catch (e: Throwable) {
             currentCoroutineContext().ensureActive()
-            ReadManga.mCallback?.loadFail("详情页出错: ${e.localizedMessage}")
+            ReadManga.mCallback?.loadFail(
+                appCtx.getString(R.string.read_book_info_failed, e.localizedMessage)
+            )
             return false
         }
     }
@@ -197,7 +199,7 @@ class ReadMangaViewModel(application: Application) : BaseViewModel(application) 
             }.take(1).onEach { (book, toc) ->
                 changeTo(book, toc)
             }.onEmpty {
-                throw NoStackTraceException("没有合适书源")
+                throw NoStackTraceException(appCtx.getString(R.string.read_no_suitable_source))
             }.onCompletion {
                 // 换源完成
             }.catch {

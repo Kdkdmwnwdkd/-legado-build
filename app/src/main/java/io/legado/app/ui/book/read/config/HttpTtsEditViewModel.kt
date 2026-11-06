@@ -16,6 +16,7 @@ import io.legado.app.utils.isJsonArray
 import io.legado.app.utils.isJsonObject
 import io.legado.app.utils.postEvent
 import io.legado.app.utils.toastOnUi
+import splitties.init.appCtx
 
 class HttpTtsEditViewModel(app: Application) : BaseViewModel(app) {
 
@@ -83,7 +84,7 @@ class HttpTtsEditViewModel(app: Application) : BaseViewModel(app) {
                     HttpTTS.fromJsonArray(text1).getOrThrow().first()
                 }
                 else -> {
-                    throw NoStackTraceException("格式不对")
+                    throw NoStackTraceException(appCtx.getString(R.string.wrong_format))
                 }
             }
         }.onSuccess {

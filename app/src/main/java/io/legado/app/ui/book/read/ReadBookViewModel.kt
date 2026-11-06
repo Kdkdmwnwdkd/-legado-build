@@ -130,7 +130,7 @@ class ReadBookViewModel(application: Application) : BaseViewModel(application) {
         }.onSuccess {
             success?.invoke()
         }.onError {
-            val msg = "初始化数据失败\n${it.localizedMessage}"
+            val msg = appCtx.getString(R.string.read_init_data_failed, it.localizedMessage)
             ReadBook.upMsg(msg)
             AppLog.put(msg, it)
         }.onFinally {
@@ -236,7 +236,7 @@ class ReadBookViewModel(application: Application) : BaseViewModel(application) {
             LocalBook.getBookInputStream(book)
             return true
         } catch (e: Throwable) {
-            ReadBook.upMsg("打开本地书籍出错: ${e.localizedMessage}")
+            ReadBook.upMsg(appCtx.getString(R.string.read_open_local_book_failed, e.localizedMessage))
             if (e is SecurityException || e is FileNotFoundException) {
                 permissionDenialLiveData.postValue(0)
             }
@@ -254,7 +254,7 @@ class ReadBookViewModel(application: Application) : BaseViewModel(application) {
             return true
         } catch (e: Throwable) {
             currentCoroutineContext().ensureActive()
-            ReadBook.upMsg("详情页出错: ${e.localizedMessage}")
+            ReadBook.upMsg(appCtx.getString(R.string.read_book_info_failed, e.localizedMessage))
             return false
         }
     }
@@ -440,7 +440,7 @@ class ReadBookViewModel(application: Application) : BaseViewModel(application) {
             }.take(1).onEach { (book, toc) ->
                 changeTo(book, toc)
             }.onEmpty {
-                throw NoStackTraceException("没有合适书源")
+                throw NoStackTraceException(appCtx.getString(R.string.read_no_suitable_source))
             }.onCompletion {
                 ReadBook.upMsg(null)
             }.catch {

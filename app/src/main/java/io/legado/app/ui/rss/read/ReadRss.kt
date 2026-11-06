@@ -17,6 +17,8 @@ import io.legado.app.utils.NetworkUtils
 import io.legado.app.utils.showDialogFragment
 import io.legado.app.utils.startActivity
 import kotlinx.coroutines.Dispatchers.IO
+import io.legado.app.R
+import splitties.init.appCtx
 
 object ReadRss {
     /**
@@ -84,7 +86,7 @@ object ReadRss {
                 Rss.getContent(fragment.viewLifecycleOwner.lifecycleScope, rssArticle, ruleContent, s)
                     .onSuccess(IO) { body ->
                         if (body.isBlank()) {
-                            throw ContentEmptyException("正文为空")
+                            throw ContentEmptyException(appCtx.getString(R.string.rss_content_empty))
                         }
                         val url = NetworkUtils.getAbsoluteURL(rssArticle.link, body)
                         when (type) {

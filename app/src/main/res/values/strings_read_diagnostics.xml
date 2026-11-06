@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="read_diag_epub_legacy_cache">Old EPUB cache still uses usehtml. Reopen the book or refresh the chapter cache.</string>
+    <string name="read_diag_epub_native_missing">epub-native[data-href] not found</string>
+    <string name="read_diag_epub_href_empty">data-href is empty</string>
+    <string name="read_diag_epub_layout_empty">getNativeLayout returned nothing</string>
+    <string name="read_diag_epub_layout_failed">Native EPUB layout failed</string>
+
+    <string name="read_diag_template_submit_timeout">Page submission timed out. Check the template layout or script.</string>
+    <string name="read_diag_template_motion_pause">Failed to pause the page animation</string>
+    <string name="read_diag_template_script_hang">Template script stopped responding. This render was aborted.</string>
+    <string name="read_diag_template_layout_timeout">Template layout did not finish in time</string>
+    <string name="read_diag_template_process_exit">Template render process exited</string>
+    <string name="read_diag_template_prefix">Reader template: %1$s</string>
+
+    <string name="read_init_data_failed">Failed to initialize data\n%1$s</string>
+    <string name="read_open_local_book_failed">Failed to open local book: %1$s</string>
+    <string name="read_book_info_failed">Failed to load book details: %1$s</string>
+    <string name="read_no_suitable_source">No suitable book source</string>
+    <string name="read_file_not_found">File not found</string>
+    <string name="read_permission_denied">No permission to access the file</string>
+    <string name="read_select_book_folder">Select the folder containing the book</string>
+
+    <string name="highlight_expression_unavailable">Expression unavailable: %1$s</string>
+    <string name="highlight_font_missing">Reeden font is not bundled; using the current reading font</string>
+
+    <string name="read_search_info">%1$s: %2$d / Current chapter: %3$s</string>
+
+    <string name="rss_content_empty">Content is empty</string>
+    <string name="rss_load_content_failed">Failed to load content\n%1$s</string>
+</resources>

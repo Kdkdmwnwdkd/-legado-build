@@ -96,6 +96,8 @@ import org.jsoup.nodes.TextNode
 import io.legado.app.help.book.usesDirectReader
 import io.legado.app.help.book.highlight.HighlightRules
 import io.legado.app.help.book.highlight.NativeHighlights
+import io.legado.app.R
+import splitties.init.appCtx
 
 class TextChapterLayout(
     scope: CoroutineScope,
@@ -383,7 +385,10 @@ class TextChapterLayout(
                     val contentEnd = text.lastIndexOf("<")
                     if (contentStart >= 0 && contentEnd > contentStart) {
                         if (book.isEpub && AppConfig.useEpubCore) {
-                            setTypeEpubDiagnosticPage("旧 EPUB 缓存仍是 usehtml，请重新打开或刷新章节缓存", text.take(180))
+                            setTypeEpubDiagnosticPage(
+                                appCtx.getString(R.string.read_diag_epub_legacy_cache),
+                                text.take(180)
+                            )
                             return@forEachIndexed
                         }
                         setTypeHtml(imageStyle, book, text.substring(contentStart + 1, contentEnd))
@@ -651,7 +656,7 @@ class TextChapterLayout(
         }
         val wrapper = Jsoup.parse(rawNativeEntry).selectFirst("epub-native[data-href]")
             ?: run {
-                val reason = "未找到 epub-native[data-href]"
+                val reason = appCtx.getString(R.string.read_diag_epub_native_missing)
                 AppLog.put(
                     "EPUB Native Layout error: $reason, " +
                         "chapter=${bookChapter.index}:${bookChapter.title}, rawHead=${rawNativeEntry.take(160)}"
@@ -667,7 +672,7 @@ class TextChapterLayout(
             ?.distinct()
             ?: listOf(wrapper.attr("data-href").trim()).filter { it.isNotBlank() }
         if (hrefs.isEmpty()) {
-            val reason = "data-href 为空"
+            val reason = appCtx.getString(R.string.read_diag_epub_href_empty)
             AppLog.put(
                 "EPUB Native Layout error: $reason, " +
                     "chapter=${bookChapter.index}:${bookChapter.title}"
@@ -704,7 +709,7 @@ class TextChapterLayout(
             rendered = true
         }
         if (!rendered) {
-            val reason = "getNativeLayout 全部返回空"
+            val reason = appCtx.getString(R.string.read_diag_epub_layout_empty)
             setTypeEpubDiagnosticPage(reason, "hrefs=${hrefs.joinToString()}")
         }
         return true
@@ -720,7 +725,7 @@ class TextChapterLayout(
             prepareNextPageIfNeed()
         }
         val message = buildString {
-            append("EPUB 原生排版失败")
+            append(appCtx.getString(R.string.read_diag_epub_layout_failed))
             append("\n")
             append(reason)
             if (detail.isNotBlank()) {
