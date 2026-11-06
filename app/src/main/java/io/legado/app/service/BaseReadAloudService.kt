@@ -388,7 +388,7 @@ abstract class BaseReadAloudService : BaseService(),
         playStop()
         postReadAloudPlaybackPhase(
             ReadAloudPlaybackState.PHASE_PREPARING,
-            message = "刷新朗读引擎",
+            message = getString(R.string.ra_refreshing_engine),
             playing = false,
             buffering = true
         )
@@ -528,13 +528,21 @@ abstract class BaseReadAloudService : BaseService(),
             textChapter = targetChapter
             val textChapter = targetChapter ?: run {
                 launch(Main) {
-                    markReadAloudStartUnavailable(pageIndex, startPos, "章节加载中")
+                    markReadAloudStartUnavailable(
+                        pageIndex,
+                        startPos,
+                        getString(R.string.ra_chapter_loading)
+                    )
                 }
                 return@execute
             }
             if (!textChapter.isCompleted) {
                 launch(Main) {
-                    markReadAloudStartUnavailable(pageIndex, startPos, "章节加载中")
+                    markReadAloudStartUnavailable(
+                        pageIndex,
+                        startPos,
+                        getString(R.string.ra_chapter_loading)
+                    )
                 }
                 return@execute
             }
@@ -542,7 +550,7 @@ abstract class BaseReadAloudService : BaseService(),
             val baseCues = textChapter.buildReadAloudCues(readAloudByPage)
             postReadAloudPlaybackPhase(
                 if (play) ReadAloudPlaybackState.PHASE_PREPARING else ReadAloudPlaybackState.PHASE_PAUSED,
-                message = if (play) "准备朗读" else ""
+                message = if (play) getString(R.string.ra_preparing) else ""
             )
             val roleContentList = baseCues.map { it.text }
             var roleCacheKey: String? = null
@@ -666,7 +674,7 @@ abstract class BaseReadAloudService : BaseService(),
         upMediaSessionPlaybackState(PlaybackStateCompat.STATE_PAUSED)
         postReadAloudPlaybackPhase(
             ReadAloudPlaybackState.PHASE_PAUSED,
-            message = message.ifBlank { "等待角色分配" }
+            message = message.ifBlank { getString(R.string.ra_waiting_role) }
         )
         postEvent(EventBus.ALOUD_STATE, Status.PAUSE)
     }
@@ -1019,8 +1027,9 @@ abstract class BaseReadAloudService : BaseService(),
             appDb.bookChapterDao.getChapterList(bookUrl, start, end).map { chapter ->
                 ReadAloudPlayerPanel.ChapterPreviewUi(
                     index = chapter.index,
-                    title = chapter.title.ifBlank { "未命名章节" },
-                    indexText = if (chapter.isVolume) "卷" else "${chapter.index + 1}/$chapterCount",
+                    title = chapter.title.ifBlank { getString(R.string.ra_untitled_chapter) },
+                    indexText = if (chapter.isVolume) getString(R.string.ra_volume)
+                        else "${chapter.index + 1}/$chapterCount",
                     current = chapter.index == currentIndex,
                     volume = chapter.isVolume,
                     key = "$bookUrl:${chapter.index}:${chapter.title}"
@@ -1129,18 +1138,18 @@ abstract class BaseReadAloudService : BaseService(),
                 chapter.chapter.url != chapterUrl ||
                 !chapter.isCompleted
             ) {
-                failPendingRequest("无法加载选中的章节")
+                failPendingRequest(getString(R.string.ra_chapter_unavailable))
                 return
             }
             val lastPage = chapter.lastPage
             if (lastPage == null || chapter.pageSize <= 0) {
-                failPendingRequest("选中的章节没有可朗读内容")
+                failPendingRequest(getString(R.string.ra_chapter_no_content))
                 return
             }
             val chapterEndExclusive =
                 (lastPage.chapterPosition + lastPage.text.length).coerceAtLeast(0)
             if (chapterEndExclusive <= 0) {
-                failPendingRequest("选中的章节没有可朗读内容")
+                failPendingRequest(getString(R.string.ra_chapter_no_content))
                 return
             }
             val safePosition = chapterPosition.coerceIn(0, chapterEndExclusive - 1)
@@ -1159,7 +1168,7 @@ abstract class BaseReadAloudService : BaseService(),
         lifecycleScope.launch {
             delay(READ_FROM_POSITION_TIMEOUT_MILLIS)
             if (activeSessionId == pendingSessionId) {
-                failPendingRequest("从选中位置开始朗读超时")
+                failPendingRequest(getString(R.string.ra_start_timeout))
             }
         }
 

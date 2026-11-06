@@ -114,7 +114,11 @@ class CacheBookService : BaseService() {
                             WebBook.getBookInfoAwait(cacheBook.bookSource, book)
                         }.onFailure {
                             removeDownload(bookUrl)
-                            val msg = "《$name》目录为空且加载详情页失败\n${it.localizedMessage}"
+                            val msg = getString(
+                                R.string.svc_cache_book_detail_failed,
+                                name,
+                                it.localizedMessage
+                            )
                             AppLog.put(msg, it, true)
                             return@execute
                         }
@@ -125,7 +129,11 @@ class CacheBookService : BaseService() {
                             book.update()
                         }
                         removeDownload(bookUrl)
-                        val msg = "《$name》目录为空且加载目录失败\n${it.localizedMessage}"
+                        val msg = getString(
+                                R.string.svc_cache_book_toc_failed,
+                                name,
+                                it.localizedMessage
+                            )
                         AppLog.put(msg, it, true)
                         return@execute
                     }.getOrNull()?.let { toc ->

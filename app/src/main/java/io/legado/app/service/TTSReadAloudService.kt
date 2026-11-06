@@ -150,7 +150,7 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
             pauseReadAloud(abandonFocus = false)
             postReadAloudPlaybackPhase(
                 ReadAloudPlaybackState.PHASE_PAUSED,
-                message = "朗读内容为空",
+                message = getString(R.string.ra_empty_content),
                 playing = false
             )
             return
@@ -454,7 +454,7 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
             postReadAloudPlaybackPhase(
                 ReadAloudPlaybackState.PHASE_ERROR,
                 cueIndex = cueIndex,
-                message = "TTS错误 $errorCode"
+                message = getString(R.string.ra_tts_error_code, errorCode)
             )
             LogUtils.d(
                 TAG,
@@ -477,7 +477,7 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
             postReadAloudPlaybackPhase(
                 ReadAloudPlaybackState.PHASE_ERROR,
                 cueIndex = cueIndex,
-                message = "TTS错误"
+                message = getString(R.string.ra_tts_error)
             )
             LogUtils.d(TAG, "onError nowSpeak:$nowSpeak pageIndex:$pageIndex s:$s")
             finishUtteranceAndRefill(ref)
