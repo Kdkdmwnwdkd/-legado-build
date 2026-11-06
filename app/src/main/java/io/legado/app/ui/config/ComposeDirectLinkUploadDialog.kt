@@ -265,21 +265,21 @@ private fun DirectLinkUploadContent(
                 DirectLinkTextField(
                     value = uploadUrl,
                     onValueChange = { uploadUrl = it },
-                    label = "上传Url",
+                    label = stringResource(R.string.library_container_upload_url),
                     style = style
                 )
                 // Download URL rule
                 DirectLinkTextField(
                     value = downloadUrlRule,
                     onValueChange = { downloadUrlRule = it },
-                    label = "下载Url规则",
+                    label = stringResource(R.string.library_container_download_rule),
                     style = style
                 )
                 // Summary
                 DirectLinkTextField(
                     value = summary,
                     onValueChange = { summary = it },
-                    label = "注释",
+                    label = stringResource(R.string.library_container_comment),
                     style = style
                 )
                 // Compress checkbox
@@ -297,7 +297,7 @@ private fun DirectLinkUploadContent(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "压缩",
+                        text = stringResource(R.string.library_container_compress),
                         color = style.primaryText,
                         fontSize = 14.sp,
                         fontFamily = style.bodyFontFamily
@@ -307,7 +307,7 @@ private fun DirectLinkUploadContent(
         },
         actions = {
             LegadoMiuixActionButton(
-                text = "测试",
+                text = stringResource(R.string.library_container_test),
                 palette = palette,
                 onClick = onTest,
                 cornerRadius = style.actionRadius

@@ -24,4 +24,26 @@
     <string name="library_container_action_set_default">Set as default</string>
     <string name="library_container_action_enable">Enable</string>
     <string name="library_container_action_disable">Disable</string>
+
+    <string name="library_container_title">Library containers</string>
+    <string name="library_container_summary_tip">Library containers only sync reading chapter caches. They take no part in backup, theme, bubble or cache package sync. When reading, the chapter index is read first and the body is requested only for cached chapters.</string>
+    <string name="library_container_capacity_line">Capacity: %1$s / Used: %2$s / Free: %3$s / Full: %4$s</string>
+    <string name="library_container_used_only">Used: %1$s (no capacity limit)</string>
+    <string name="library_container_full_yes">Yes</string>
+    <string name="library_container_full_no">No</string>
+    <string name="library_container_min_chars">At least %1$d chars</string>
+    <string name="library_container_no_short_filter">No short-chapter filter</string>
+    <string name="library_container_daily_chapters">%1$d chapters per day</string>
+    <string name="library_container_daily_unlimited">Unlimited per day</string>
+    <string name="library_container_encrypted_badge">Encrypted import</string>
+    <string name="library_container_status_line">Status: %1$s</string>
+    <string name="library_container_source_priority">Source priority</string>
+    <string name="library_container_source_count">%1$d sources</string>
+
+    <string name="library_container_summary">Manage standalone S3 containers used to sync reading chapter caches</string>
+    <string name="library_container_upload_url">Upload URL</string>
+    <string name="library_container_download_rule">Download URL rule</string>
+    <string name="library_container_comment">Note</string>
+    <string name="library_container_compress">Compress</string>
+    <string name="library_container_test">Test</string>
 </resources>
