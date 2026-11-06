@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Share note-->
+    <string name="share_note_default_reader">Reader</string>
+    <string name="share_note_read_status">Read %1$s</string>
+
+    <!--Cloud library chapter-->
+    <string name="cloud_debug_title">Library debug</string>
+    <string name="read_cloud_chapter">Reading cloud chapter</string>
+    <string name="cloud_chapter_missing">Cloud chapter content not found</string>
+    <string name="cloud_chapter_current">Current chapter: %1$s</string>
+    <string name="cloud_choose_chapter">Choose library chapter</string>
+    <string name="cloud_action_read">Read</string>
+    <string name="cloud_source_unknown">Legacy cache / unknown source</string>
+    <string name="cloud_state_no_container">No library container configured</string>
+    <string name="cloud_state_ready">Cloud library available</string>
+    <string name="cloud_state_error">Failed to read cloud library\n%1$s</string>
+    <string name="cloud_chapter_delete_failed">Cloud chapter not found or deletion failed</string>
+</resources>

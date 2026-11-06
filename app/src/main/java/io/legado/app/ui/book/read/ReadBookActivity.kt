@@ -1773,7 +1773,7 @@ class ReadBookActivity : BaseReadBookActivity(),
         return ShareNoteImageRenderer.Payload(
             generatedAt = DateFormat.getDateTimeInstance().format(now),
             profile = ShareNoteImageRenderer.Profile(
-                name = goalConfig.userName.orEmpty().ifBlank { "读者" },
+                name = goalConfig.userName.orEmpty().ifBlank { getString(R.string.share_note_default_reader) },
                 avatar = goalConfig.avatar
             ),
             book = ShareNoteImageRenderer.Book(
@@ -1786,7 +1786,9 @@ class ReadBookActivity : BaseReadBookActivity(),
                 tags = tags,
                 wordCountText = book?.wordCount.orEmpty(),
                 readTimeText = readTimeText,
-                readStatusText = readTimeText.takeIf { it.isNotBlank() }?.let { "阅读 $it" }.orEmpty(),
+                readStatusText = readTimeText.takeIf { it.isNotBlank() }
+                    ?.let { getString(R.string.share_note_read_status, it) }
+                    .orEmpty(),
                 readProgressText = progressText,
                 readProgressPercent = parseShareNoteProgressPercent(progressText),
                 lastReadTime = book?.durChapterTime?.takeIf { it > 0L }?.let {
@@ -1919,7 +1921,7 @@ class ReadBookActivity : BaseReadBookActivity(),
         return customTag?.trim()?.takeIf { it.isNotBlank() }
             ?: kind?.trim()?.takeIf { it.isNotBlank() }
             ?: when {
-                isAudio -> "音频"
+                isAudio -> getString(R.string.audio)
                 isEpub -> "EPUB"
                 isMobi -> "MOBI"
                 isLocalTxt -> "TXT"
@@ -4507,12 +4509,13 @@ class ReadBookActivity : BaseReadBookActivity(),
                     )
                 )
             }
+            val debugTitle = getString(R.string.cloud_debug_title)
             AlertDialog.Builder(this@ReadBookActivity)
-                .setTitle("书库调试")
+                .setTitle(debugTitle)
                 .setView(debugScrollView)
-                .setNegativeButton("复制") { _, _ ->
+                .setNegativeButton(R.string.copy_text) { _, _ ->
                     val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    clipboard.setPrimaryClip(ClipData.newPlainText("书库调试", message))
+                    clipboard.setPrimaryClip(ClipData.newPlainText(debugTitle, message))
                     toastOnUi(R.string.toast_copied)
                 }
                 .setPositiveButton(android.R.string.ok, null)
@@ -4558,11 +4561,11 @@ class ReadBookActivity : BaseReadBookActivity(),
         item: LibraryCloudChapterVersion
     ) {
         lifecycleScope.launch {
-            ReadBook.upMsg("读取云端章节")
+            ReadBook.upMsg(getString(R.string.read_cloud_chapter))
             val result = withContext(IO) {
                 runCatching {
                     val content = session.downloadChapter(item)
-                        ?: throw NoStackTraceException("云端章节内容不存在")
+                        ?: throw NoStackTraceException(getString(R.string.cloud_chapter_missing))
                     BookHelp.saveText(book, localChapter, content)
                     localChapter
                 }
@@ -4595,7 +4598,7 @@ class ReadBookActivity : BaseReadBookActivity(),
             setPadding(4.dpToPx(), 0, 4.dpToPx(), 0)
         }
         val summaryView = TextView(this).apply {
-            text = "当前章节：${currentChapter.title}"
+            text = getString(R.string.cloud_chapter_current, currentChapter.title)
             textSize = 13f
             setTextColor(secondaryTextColor)
             setPadding(0, 0, 0, 8.dpToPx())
@@ -4637,7 +4640,7 @@ class ReadBookActivity : BaseReadBookActivity(),
         content.addView(summaryView)
         content.addView(scrollView)
         dialog = AndroidAlertBuilder(this).apply {
-            setTitle("选择书库章节")
+            setTitle(R.string.cloud_choose_chapter)
             setCustomView(content)
             negativeButton(android.R.string.cancel)
         }.show()
@@ -4682,11 +4685,11 @@ class ReadBookActivity : BaseReadBookActivity(),
             addView(LinearLayout(this@ReadBookActivity).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                addView(libraryCloudActionText("读取", accentColor) {
+                addView(libraryCloudActionText(getString(R.string.cloud_action_read), accentColor) {
                     dismissParent()
                     downloadLibraryCloudChapter(book, session, currentChapter, item)
                 })
-                addView(libraryCloudActionText("删除", 0xFFD32F2F.toInt()) {
+                addView(libraryCloudActionText(getString(R.string.delete), 0xFFD32F2F.toInt()) {
                     confirmDeleteLibraryCloudChapter(book, session, currentChapter, item, dismissParent)
                 })
             })
@@ -4761,11 +4764,11 @@ class ReadBookActivity : BaseReadBookActivity(),
         item: LibraryCloudChapterVersion
     ) {
         lifecycleScope.launch {
-            ReadBook.upMsg("删除云端章节")
+            ReadBook.upMsg(getString(R.string.delete_cloud_chapter))
             val result = withContext(IO) {
                 runCatching {
                     if (!session.deleteChapter(item)) {
-                        throw NoStackTraceException("云端章节不存在或删除失败")
+                        throw NoStackTraceException(getString(R.string.cloud_chapter_delete_failed))
                     }
                     LibraryCloudSync.refreshSession(book)
                 }
@@ -4793,7 +4796,7 @@ class ReadBookActivity : BaseReadBookActivity(),
     private fun libraryCloudSourceLabel(item: LibraryCloudChapterVersion): String {
         return item.payload.sourceName
             .ifBlank { item.payload.sourceUrl }
-            .ifBlank { "旧缓存/未知来源" }
+            .ifBlank { getString(R.string.cloud_source_unknown) }
     }
 
     private fun libraryCloudChapterTitle(item: LibraryCloudChapterVersion): String {
@@ -4811,9 +4814,11 @@ class ReadBookActivity : BaseReadBookActivity(),
 
     private fun libraryCloudStateMessage(session: LibraryCloudSession): String {
         return when (session.state) {
-            LibraryCloudState.DISABLED -> "未配置书库容器"
-            LibraryCloudState.READY -> "云端书库可用"
-            LibraryCloudState.ERROR -> session.errorMessage?.let { "云端书库读取失败\n$it" }
+            LibraryCloudState.DISABLED -> getString(R.string.cloud_state_no_container)
+            LibraryCloudState.READY -> getString(R.string.cloud_state_ready)
+            LibraryCloudState.ERROR -> session.errorMessage?.let {
+                getString(R.string.cloud_state_error, it)
+            }
                 ?: appCtx.getString(R.string.cloud_shelf_read_failed)
         }
     }
