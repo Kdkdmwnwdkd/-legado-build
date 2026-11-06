@@ -718,13 +718,37 @@ private fun AiChatTopBar(
                         add(AiTopMenuAction(stringResource(R.string.ai_new_chat)) { actions.onNewChat() })
                         add(AiTopMenuAction(stringResource(R.string.ai_chat_history)) { actions.onOpenHistory() })
                         actions.onOpenWindowAbilities?.let { openAbilities ->
-                            add(AiTopMenuAction("窗口能力", openAbilities))
+                            add(
+                                AiTopMenuAction(
+                                    stringResource(R.string.ai_chat_window_abilities),
+                                    openAbilities
+                                )
+                            )
                         }
                         actions.onOpenWorldBooks?.let { openWorldBooks ->
-                            add(AiTopMenuAction("浏览世界书", openWorldBooks))
+                            add(
+                                AiTopMenuAction(
+                                    stringResource(R.string.ai_chat_browse_world_book),
+                                    openWorldBooks
+                                )
+                            )
                         }
                         actions.onToggleAutoSpeak?.let { toggleAutoSpeak ->
-                            add(AiTopMenuAction("自动播放语音：${if (autoSpeakEnabled) "开" else "关"}", toggleAutoSpeak))
+                            add(
+                                AiTopMenuAction(
+                                    stringResource(
+                                        R.string.ai_chat_auto_speak_option,
+                                        stringResource(
+                                            if (autoSpeakEnabled) {
+                                                R.string.ai_chat_switch_on
+                                            } else {
+                                                R.string.ai_chat_switch_off
+                                            }
+                                        )
+                                    ),
+                                    toggleAutoSpeak
+                                )
+                            )
                         }
                         add(AiTopMenuAction(stringResource(R.string.ai_setting)) { actions.onOpenSettings() })
                         actions.onOpenImageGallery?.let { openGallery ->
@@ -876,13 +900,13 @@ private fun AiCompanionDrawer(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "AI 酒馆",
+                            text = stringResource(R.string.ai_tavern),
                             color = style.colors.primaryText,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "角色与会话",
+                            text = stringResource(R.string.ai_chat_character_and_sessions),
                             color = style.colors.secondaryText,
                             fontSize = 12.sp
                         )
@@ -912,7 +936,7 @@ private fun AiCompanionDrawer(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     item {
-                        DrawerSectionTitle("助手", style)
+                        DrawerSectionTitle(stringResource(R.string.ai_chat_assistant), style)
                     }
                     items(
                         items = companions,
@@ -1011,7 +1035,7 @@ private fun AiCompanionSessionPanel(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "会话",
+                    text = stringResource(R.string.ai_chat_sessions),
                     color = style.colors.secondaryText,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -1023,7 +1047,7 @@ private fun AiCompanionSessionPanel(
                     color = style.colors.accent.copy(alpha = 0.10f)
                 ) {
                     Text(
-                        text = "新建",
+                        text = stringResource(R.string.create),
                         color = style.colors.accent,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -1033,7 +1057,7 @@ private fun AiCompanionSessionPanel(
             }
             if (sessions.isEmpty()) {
                 Text(
-                    text = "还没有历史会话",
+                    text = stringResource(R.string.ai_chat_no_history_sessions),
                     color = style.colors.secondaryText,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(vertical = 5.dp)
@@ -1050,7 +1074,7 @@ private fun AiCompanionSessionPanel(
                 }
                 if (sessions.size > 8) {
                     Text(
-                        text = "还有 ${sessions.size - 8} 个会话",
+                        text = stringResource(R.string.ai_chat_more_sessions, sessions.size - 8),
                         color = style.colors.secondaryText,
                         fontSize = 11.sp,
                         modifier = Modifier.padding(horizontal = 4.dp)
@@ -1123,9 +1147,12 @@ private fun AiCompanionDrawerItem(
             )
             Text(
                 text = when {
-                    isDefault -> "默认系统提示词"
-                    companion.bookKey.isNotBlank() -> "角色 · ${displayBookKeyLabel(companion.bookKey)}"
-                    else -> "角色"
+                    isDefault -> stringResource(R.string.ai_chat_default_system_prompt)
+                    companion.bookKey.isNotBlank() -> stringResource(
+                        R.string.ai_chat_role_with_book,
+                        displayBookKeyLabel(companion.bookKey)
+                    )
+                    else -> stringResource(R.string.ai_chat_role_label)
                 },
                 color = style.colors.secondaryText,
                 fontSize = 11.sp,
@@ -1174,7 +1201,7 @@ private fun AiSessionDrawerItem(
                 .padding(start = 10.dp)
         ) {
             Text(
-                text = session.title.ifBlank { "未命名会话" },
+                text = session.title.ifBlank { stringResource(R.string.ai_chat_untitled_session) },
                 color = style.colors.primaryText,
                 fontSize = 14.sp,
                 fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
@@ -1182,7 +1209,11 @@ private fun AiSessionDrawerItem(
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = "${timeFormat.format(java.util.Date(session.updatedAt))} · ${session.messages.size} 条消息",
+                text = stringResource(
+                R.string.ai_chat_session_meta,
+                timeFormat.format(java.util.Date(session.updatedAt)),
+                session.messages.size
+            ),
                 color = style.colors.secondaryText,
                 fontSize = 11.sp,
                 maxLines = 1,
@@ -1697,15 +1728,18 @@ private fun AiSearchBookInlinePart(
     style: AiComposeStyle,
     onToolPreview: (AiToolDisplayPayload) -> Unit
 ) {
+    val pillText = stringResource(R.string.ai_chat_books_pill, part.books.size)
+    val payloadTitle = stringResource(R.string.ai_chat_books_title)
+    val payloadSummary = stringResource(R.string.ai_chat_books_count, part.books.size)
     AiInfoPill(
-        text = "书籍结果 ${part.books.size} 条",
+        text = pillText,
         style = style,
         onClick = {
             onToolPreview(
                 AiToolDisplayPayload(
                     type = AiToolPreviewType.BookResults,
-                    title = "书籍结果",
-                    summary = "共 ${part.books.size} 条",
+                    title = payloadTitle,
+                    summary = payloadSummary,
                     raw = "",
                     books = part.books
                 )
@@ -1720,15 +1754,18 @@ private fun AiImageInlinePart(
     style: AiComposeStyle,
     onToolPreview: (AiToolDisplayPayload) -> Unit
 ) {
+    val pillText = stringResource(R.string.ai_chat_images_pill, part.images.size)
+    val payloadTitle = stringResource(R.string.ai_chat_images_title)
+    val payloadSummary = stringResource(R.string.ai_chat_images_count, part.images.size)
     AiInfoPill(
-        text = "图片结果 ${part.images.size} 张",
+        text = pillText,
         style = style,
         onClick = {
             onToolPreview(
                 AiToolDisplayPayload(
                     type = AiToolPreviewType.ImageResult,
-                    title = "图片结果",
-                    summary = "共 ${part.images.size} 张",
+                    title = payloadTitle,
+                    summary = payloadSummary,
                     raw = "",
                     images = part.images
                 )
