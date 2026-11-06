@@ -114,7 +114,7 @@ class KeyboardAssistsConfig(private val callBack: CallBack) : BaseDialogFragment
 
     private fun editKey(keyboardAssist: KeyboardAssist?) {
         alert {
-            setTitle("辅助按键")
+            setTitle(getString(R.string.keyboard_assists_title))
             val alertBinding = DialogMultipleEditTextBinding.inflate(layoutInflater).apply {
                 layout1.hint = "key"
                 edit1.setText(keyboardAssist?.key)

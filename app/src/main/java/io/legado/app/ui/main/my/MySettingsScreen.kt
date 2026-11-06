@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -388,7 +389,7 @@ private fun EmptySettingsFrame(
                 radiusPx = panelRadiusPx
             )
     ) {
-        AppSettingSectionTitle(title = "搜索结果", palette = colors)
+        AppSettingSectionTitle(title = stringResource(R.string.settings_search_title), palette = colors)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -397,7 +398,7 @@ private fun EmptySettingsFrame(
                 .padding(horizontal = 16.dp, vertical = 10.dp)
         ) {
             Text(
-                text = "没有匹配的设置",
+                text = stringResource(R.string.settings_search_empty),
                 color = colors.secondaryText,
                 fontSize = 14.sp
             )

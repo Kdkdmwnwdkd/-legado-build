@@ -2235,7 +2235,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             return
         }
         LocalConfig.appCrash = false
-        alert(getString(R.string.draw), "检测到阅读发生了崩溃，是否打开崩溃日志以便报告问题？") {
+        alert(getString(R.string.draw), getString(R.string.crash_detected)) {
             yesButton {
                 showDialogFragment<CrashLogsDialog>()
             }

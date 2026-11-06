@@ -49,7 +49,7 @@ class WebViewModel(application: Application) : BaseViewModel(application) {
         execute {
             this@WebViewModel.intent = intent
             val url = intent.getStringExtra("url")
-                ?: throw NoStackTraceException("url不能为空")
+                ?: throw NoStackTraceException(appCtx.getString(R.string.url_required))
             sourceName = intent.getStringExtra("sourceName") ?: ""
             sourceOrigin = intent.getStringExtra("sourceOrigin") ?: ""
             sourceType = intent.getIntExtra("sourceType", SourceType.book)

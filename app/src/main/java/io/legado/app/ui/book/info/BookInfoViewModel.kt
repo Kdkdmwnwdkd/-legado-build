@@ -111,7 +111,7 @@ class BookInfoViewModel(application: Application) : BaseViewModel(application) {
                 )
                 return@execute
             }
-            throw NoStackTraceException("未找到书籍")
+            throw NoStackTraceException(appCtx.getString(R.string.book_not_found))
         }.onError {
             AppLog.put(it.localizedMessage, it)
             context.toastOnUi(it.localizedMessage)
@@ -202,7 +202,7 @@ class BookInfoViewModel(application: Application) : BaseViewModel(application) {
                 book.tocUrl = ""
                 book.getRemoteUrl()?.let {
                     val bookWebDav = AppWebDav.defaultBookWebDav
-                        ?: throw NoStackTraceException("webDav没有配置")
+                        ?: throw NoStackTraceException(appCtx.getString(R.string.webdav_not_configured))
                     val remoteBook = bookWebDav.getRemoteBook(it)
                     if (remoteBook == null) {
                         book.origin = BookType.localTag

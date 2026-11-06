@@ -300,9 +300,9 @@ class AudioPlayActivity :
     private fun getPlayModeTitle(mode: AudioPlay.PlayMode): String {
         return when (mode) {
             AudioPlay.PlayMode.LIST_END_STOP -> getString(R.string.play_mode)
-            AudioPlay.PlayMode.SINGLE_LOOP -> getString(R.string.play_mode) + "：单章循环"
-            AudioPlay.PlayMode.RANDOM -> getString(R.string.play_mode) + "：随机播放"
-            AudioPlay.PlayMode.LIST_LOOP -> getString(R.string.play_mode) + "：列表循环"
+            AudioPlay.PlayMode.SINGLE_LOOP -> getString(R.string.audio_play_mode_single_loop)
+            AudioPlay.PlayMode.RANDOM -> getString(R.string.audio_play_mode_random)
+            AudioPlay.PlayMode.LIST_LOOP -> getString(R.string.audio_play_mode_list_loop)
         }
     }
 

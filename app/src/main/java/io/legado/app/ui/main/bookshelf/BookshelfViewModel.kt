@@ -143,7 +143,7 @@ class BookshelfViewModel(application: Application) : BaseViewModel(application) 
                     writer.close()
                 }
                 file
-            } ?: throw NoStackTraceException("书籍不能为空")
+            } ?: throw NoStackTraceException(appCtx.getString(R.string.bookshelf_book_required))
         }.onSuccess {
             success(it)
         }.onError {
@@ -168,7 +168,7 @@ class BookshelfViewModel(application: Application) : BaseViewModel(application) 
                 }
 
                 else -> {
-                    throw NoStackTraceException("格式不对")
+                    throw NoStackTraceException(appCtx.getString(R.string.wrong_format))
                 }
             }
         }.onError {

@@ -375,28 +375,28 @@ private fun BookshelfConfigContent(
         BookshelfSwitchItem(
             key = "unread",
             label = stringResource(R.string.show_unread),
-            summaryLabel = "未读",
+            summaryLabel = stringResource(R.string.bookshelf_config_summary_unread),
             checked = values.showUnread,
             onCheckedChange = { onValuesChange(values.copy(showUnread = it)) }
         ),
         BookshelfSwitchItem(
             key = "updateTime",
             label = stringResource(R.string.show_last_update_time),
-            summaryLabel = "更新",
+            summaryLabel = stringResource(R.string.bookshelf_config_summary_update),
             checked = values.showLastUpdateTime,
             onCheckedChange = { onValuesChange(values.copy(showLastUpdateTime = it)) }
         ),
         BookshelfSwitchItem(
             key = "waitUp",
             label = stringResource(R.string.show_wait_up_count),
-            summaryLabel = "追更",
+            summaryLabel = stringResource(R.string.bookshelf_config_summary_tracking),
             checked = values.showWaitUpCount,
             onCheckedChange = { onValuesChange(values.copy(showWaitUpCount = it)) }
         ),
         BookshelfSwitchItem(
             key = "fastScroller",
             label = stringResource(R.string.show_bookshelf_fast_scroller),
-            summaryLabel = "快滑",
+            summaryLabel = stringResource(R.string.bookshelf_config_summary_quick_scroll),
             checked = values.showFastScroller,
             onCheckedChange = { onValuesChange(values.copy(showFastScroller = it)) }
         ),
@@ -834,7 +834,7 @@ private fun BookshelfDisplaySummaryCard(
                 ) {
                     if (activeItems.isEmpty()) {
                         BookshelfSummaryChip(
-                            text = "未启用",
+                            text = stringResource(R.string.bookshelf_config_disabled),
                             active = false,
                             style = style
                         )

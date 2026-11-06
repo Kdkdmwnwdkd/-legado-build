@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -149,7 +150,7 @@ private fun SearchBookListText(
             ) {
                 if (inBookshelf) {
                     SearchBookKindChip(
-                        text = "已在书架",
+                        text = stringResource(R.string.in_bookshelf),
                         rounded = rounded,
                         palette = palette
                     )

@@ -586,18 +586,18 @@ class SearchActivity : VMBaseActivity<ActivityBookSearchBinding, SearchViewModel
         }
         viewModel.searchFinishLiveData.observe(this) { isEmpty ->
             if (!isEmpty || viewModel.searchScope.isAll()) return@observe
-            alert("搜索结果为空") {
+            alert(getString(R.string.search_empty_title)) {
                 val precisionSearch = appCtx.getPrefBoolean(PreferKey.precisionSearch)
                 val displayScope = viewModel.searchScope.display
                 if (precisionSearch) {
-                    setMessage("${displayScope}分组搜索结果为空，是否关闭精准搜索？")
+                    setMessage(getString(R.string.search_empty_close_precise, displayScope))
                     yesButton {
                         appCtx.putPrefBoolean(PreferKey.precisionSearch, false)
                         viewModel.searchKey = ""
                         viewModel.search(searchView.query.toString())
                     }
                 } else {
-                    setMessage("${displayScope}分组搜索结果为空，是否切换到全部分组？")
+                    setMessage(getString(R.string.search_empty_switch_all, displayScope))
                     yesButton {
                         viewModel.searchScope.update("")
                     }

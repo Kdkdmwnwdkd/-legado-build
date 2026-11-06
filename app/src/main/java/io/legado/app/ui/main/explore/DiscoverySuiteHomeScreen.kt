@@ -51,6 +51,7 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -316,7 +317,10 @@ private fun DiscoverySuiteSearchBar(
                             add(
                                 AppManagementMenuAction(
                                     text = if (suite.id == selectedSuiteId) {
-                                        "当前 ${suite.displayName}"
+                                        context.getString(
+                                            R.string.discovery_current_suite,
+                                            suite.displayName
+                                        )
                                     } else {
                                         suite.displayName
                                     },
