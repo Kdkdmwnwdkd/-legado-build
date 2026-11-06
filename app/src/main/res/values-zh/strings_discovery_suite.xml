@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="discovery_suite_tag_loading">Tag 加载中...</string>
+    <string name="discovery_suite_source_tag_summary">%1$d 个书源 / %2$d 个 Tag</string>
+    <string name="discovery_suite_current_suite">当前套件 · %1$d 个控件</string>
+    <string name="discovery_suite_widget_count">%1$d 个控件</string>
+    <string name="discovery_suite_suite_missing">套件不存在</string>
+
+    <string name="discovery_suite_action_set_current">设为当前</string>
+    <string name="discovery_suite_action_rename">重命名</string>
+    <string name="discovery_suite_action_alias">别名</string>
+
+    <string name="discovery_suite_widget_type_rank_buttons">排行榜按钮</string>
+    <string name="discovery_suite_widget_type_tag_nav">Tag 导航</string>
+
+    <string name="discovery_suite_opacity_multiplier">透明度倍率</string>
+    <string name="discovery_suite_opacity_hint">当前 %1$sx，仅增强套件页面板不透明度</string>
+
+    <string name="discovery_suite_edit_widget">编辑控件</string>
+    <string name="discovery_suite_search_source">搜索书源</string>
+    <string name="discovery_suite_selected_count">已选 %1$d 个</string>
+    <string name="discovery_suite_clear_current_source">清空当前源</string>
+    <string name="discovery_suite_clear_all">清空全部</string>
+
+    <string name="discovery_suite_source_loading_tags">%1$s Tag 加载中...</string>
+    <string name="discovery_suite_source_tags_not_loaded">%1$s 尚未加载 Tag</string>
+    <string name="discovery_suite_source_no_tags">%1$s 没有可用 Tag</string>
+    <string name="discovery_suite_load">加载</string>
+    <string name="discovery_suite_source_loading">加载中</string>
+    <string name="discovery_suite_source_not_loaded">未加载</string>
+    <string name="discovery_suite_source_tag_count">%1$d 个 Tag</string>
+
+    <string name="discovery_suite_preview_title">%1$s · 经典发现预览 · %2$d 个可选 Tag</string>
+    <string name="discovery_suite_widget_target_count">%1$s · %2$d 个 Tag</string>
+
+    <string name="discovery_suite_hint_loading_sources">书源加载中...</string>
+    <string name="discovery_suite_hint_no_sources">没有可用书源</string>
+    <string name="discovery_suite_hint_loading_tags">正在加载当前书源 Tag；已选 %1$d 个</string>
+    <string name="discovery_suite_hint_no_tags">当前书源没有可用 Tag；已选 %1$d 个</string>
+    <string name="discovery_suite_hint_single_tag">横排滑动控件只能选择 1 个 Tag；已选 %1$d 个</string>
+    <string name="discovery_suite_hint_rank_buttons">排行榜按钮需要选择 3-9 个 Tag；已选 %1$d 个</string>
+    <string name="discovery_suite_hint_ranked_list">排行榜列表需要选择 3-9 个 Tag；已选 %1$d 个</string>
+    <string name="discovery_suite_hint_waterfall">瀑布流控件会固定在所有控件底部；已选 %1$d 个 Tag</string>
+    <string name="discovery_suite_hint_pick_source">先选书源，再选择该书源下的 Tag；已选 %1$d 个</string>
+
+    <string name="discovery_suite_empty_suites">还没有套件</string>
+    <string name="discovery_suite_category">分类</string>
+    <string name="discovery_suite_save">保存</string>
+</resources>
