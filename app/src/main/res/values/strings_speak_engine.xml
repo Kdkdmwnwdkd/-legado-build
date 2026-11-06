@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="speak_default_engine">System default</string>
+    <string name="speak_add">Add</string>
+    <string name="speak_export_all">Export all</string>
+    <string name="speak_clear_cache">Clear cache</string>
+
+    <!--Speaker picker-->
+    <string name="speak_speaker">%1$d speakers</string>
+    <string name="speak_emotion">%1$d emotions</string>
+    <string name="speak_speaker_list">Speakers</string>
+    <string name="speak_emotion_section">Emotions</string>
+    <string name="speak_engine_hint">Plain reading uses this engine once selected. Character voices can be assigned per speaker on the character edit page.</string>
+
+    <!--Import speech rules-->
+    <string name="speak_import_rules">Import speech rules</string>
+    <string name="speak_import_builtin">Built-in rules</string>
+    <string name="speak_import_builtin_desc">Import built-in HTTP TTS rules</string>
+    <string name="speak_import_local_desc">Import from a local txt/json file</string>
+    <string name="speak_import_online">Import online</string>
+    <string name="speak_import_online_desc">Import speech rules from a URL</string>
+
+    <!--Cleanup report after deleting an engine-->
+    <string name="speak_cleanup_characters">%1$d characters</string>
+    <string name="speak_cleanup_books">%1$d books</string>
+    <string name="speak_cleanup_speaker_items">%1$d speaker group entries</string>
+    <string name="speak_cleanup_global">default speech engine</string>
+    <string name="speak_list_separator">, </string>
+</resources>
