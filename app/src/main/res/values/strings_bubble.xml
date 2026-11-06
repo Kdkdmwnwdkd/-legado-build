@@ -11,5 +11,19 @@
     <string name="bubble_share_zip">Share file</string>
     <string name="bubble_share_link">Share direct link</string>
 
+    <string name="bubble_force_software_title">Always use software bubbles</string>
+    <string name="bubble_force_software_summary">Detect paragraph comment entries rendered as inline images and draw them with the current bubble style</string>
+    <string name="bubble_apply">Apply</string>
+    <string name="bubble_applied">Applied</string>
+    <string name="bubble_source_builtin">Built-in</string>
+    <string name="bubble_source_local">Local</string>
+    <string name="bubble_source_remote">Cloud</string>
+    <string name="bubble_source_both">Local + Cloud</string>
+    <string name="bubble_day_normal_color">Day regular color</string>
+    <string name="bubble_day_accent_color">Day accent color</string>
+    <string name="bubble_night_normal_color">Night regular color</string>
+    <string name="bubble_night_accent_color">Night accent color</string>
+    <string name="bubble_svg_template_hint">Tap to edit. Supports ${color} and ${num}</string>
+
     <string name="bubble_help_message">Paragraph comment bubbles turn dp images in rules into native SVG bubbles.\n\nFormat:\n&lt;img src=&quot;dp:12,{&quot;pclick&quot;:&quot;...&quot;,&quot;status&quot;:&quot;normal&quot;}&quot;&gt;\n\nThe number after dp: replaces ${num} in the SVG template.\nstatus is optional: normal uses the regular color, emphasis uses the accent color. It defaults to normal.\nThe SVG template supports the ${color} and ${num} placeholders.\nBuilt-in bubbles are read-only. Add or import one to create a custom bubble.</string>
 </resources>
