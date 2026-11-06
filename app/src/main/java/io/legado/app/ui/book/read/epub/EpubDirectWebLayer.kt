@@ -685,7 +685,7 @@ class EpubDirectWebLayer @JvmOverloads constructor(
                             finish(if (returnMetrics) settled else initialResult)
                         } else if (templateActiveClock.now() >= deadline) {
                             finish(null)
-                            onTemplateFailure(view, expectedToken, "页面提交超时，请检查模板的布局或脚本")
+                            onTemplateFailure(view, expectedToken, appCtx.getString(R.string.read_diag_template_submit_timeout))
                         } else view.postDelayed(poll, 24L)
                     }
                 }
@@ -5011,7 +5011,7 @@ class EpubDirectWebLayer @JvmOverloads constructor(
             view.templateMotionSettlePending = false
             if (destroyed || view.surfaceDestroyed || view !== currentWebView) return@evaluateReaderCommand
             if (result != "true") {
-                onTemplateFailure(view, token, "页面动效未能暂停")
+                onTemplateFailure(view, token, appCtx.getString(R.string.read_diag_template_motion_pause))
                 return@evaluateReaderCommand
             }
             requestRuntimeMetricsSync()
@@ -6811,7 +6811,7 @@ class EpubDirectWebLayer @JvmOverloads constructor(
                     // Destroy only this surface. WebView render processes may be
                     // shared with comments, login pages and source requests;
                     // terminating one here can also crash those unrelated views.
-                    onTemplateFailure(this@ReaderWebView, token, "模板脚本长时间无响应，已停止本次渲染")
+                    onTemplateFailure(this@ReaderWebView, token, appCtx.getString(R.string.read_diag_template_script_hang))
                     return@Runnable
                 }
                 if (waitingSince == 0L) {
@@ -6880,7 +6880,7 @@ class EpubDirectWebLayer @JvmOverloads constructor(
                 if (preloading) {
                     discardFailedPreload(this@ReaderWebView)
                 } else if (preparedChapter?.readerTemplate != null) {
-                    onTemplateFailure(this@ReaderWebView, expectedToken, "模板排版未能在限定时间内完成")
+                    onTemplateFailure(this@ReaderWebView, expectedToken, appCtx.getString(R.string.read_diag_template_layout_timeout))
                 } else {
                     failPendingLoad(
                         this@ReaderWebView,
@@ -7109,7 +7109,7 @@ class EpubDirectWebLayer @JvmOverloads constructor(
                         if (!destroyed && this@ReaderWebView === currentWebView && token != generation) {
                             discardRetiredTemplateCurrent(this@ReaderWebView)
                         } else {
-                            onTemplateFailure(this@ReaderWebView, token, "模板渲染进程已退出")
+                            onTemplateFailure(this@ReaderWebView, token, appCtx.getString(R.string.read_diag_template_process_exit))
                             if (standbyWebView === this@ReaderWebView) standbyWebView = null
                             destroyWebView(this@ReaderWebView)
                         }
@@ -7784,7 +7784,12 @@ class EpubDirectWebLayer @JvmOverloads constructor(
         if (view.preloading) {
             discardFailedPreload(view)
         } else if (token == generation) {
-            failPendingLoad(view, token, "阅读模板：$message", EpubTemplateException(template.contentHash(), message))
+            failPendingLoad(
+                view,
+                token,
+                appCtx.getString(R.string.read_diag_template_prefix, message),
+                EpubTemplateException(template.contentHash(), message)
+            )
         }
     }
 
