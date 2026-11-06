@@ -216,8 +216,8 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
                         ),
                         SettingActionSpec(
                             key = KEY_LIBRARY_CONTAINER_MANAGE,
-                            title = "书库容器",
-                            summary = "管理用于同步阅读章节缓存的独立 S3 容器",
+                            title = getString(R.string.library_container_title),
+                            summary = getString(R.string.library_container_summary),
                             onClick = {
                                 requireContext().startActivity<LibraryContainerManageActivity>()
                             }

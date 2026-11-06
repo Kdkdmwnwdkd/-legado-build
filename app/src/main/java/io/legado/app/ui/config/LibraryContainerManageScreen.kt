@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -70,7 +71,7 @@ internal fun LibraryContainerManageScreen(
                     pageMenuActions = pageMenuActions
                 )
                 Text(
-                    text = "书库容器只用于同步阅读章节缓存，不参与备份、主题、气泡或缓存包同步。阅读时会先读取目录索引，只有命中缓存章节才请求正文。",
+                    text = stringResource(R.string.library_container_summary_tip),
                     color = palette.settings.secondaryText,
                     fontSize = 13.sp,
                     lineHeight = 18.sp,
@@ -95,7 +96,7 @@ internal fun LibraryContainerManageScreen(
                     }
                 }
                 LegadoMiuixActionButton(
-                    text = "添加书库容器",
+                    text = stringResource(R.string.library_container_add),
                     palette = palette.miuix,
                     onClick = onAdd,
                     modifier = Modifier
@@ -146,7 +147,7 @@ private fun LibraryContainerTopBar(
             }
         }
         Text(
-            text = "书库容器",
+            text = stringResource(R.string.library_container_title),
             color = palette.settings.primaryText,
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
@@ -158,7 +159,7 @@ private fun LibraryContainerTopBar(
         AppManagementMoreActionButton(
             actionsProvider = pageMenuActions,
             palette = palette,
-            contentDescription = "更多"
+            contentDescription = stringResource(R.string.more)
         )
     }
 }
@@ -177,14 +178,54 @@ private fun LibraryContainerCard(
     val usedBytes = container.usedBytes.coerceAtLeast(0)
     val capacityText = if (capacityMb > 0) {
         val capacityBytes = LibraryContainerManageActivity.mbToBytes(capacityMb)
-        "容量：${LibraryContainerManageActivity.formatBytes(capacityBytes)} / 已用：${LibraryContainerManageActivity.formatBytes(usedBytes)} / 剩余：${LibraryContainerManageActivity.formatBytes((capacityBytes - usedBytes).coerceAtLeast(0))} / 已满：${if (container.isFull) "是" else "否"}"
+        stringResource(
+            R.string.library_container_capacity_line,
+            LibraryContainerManageActivity.formatBytes(capacityBytes),
+            LibraryContainerManageActivity.formatBytes(usedBytes),
+            LibraryContainerManageActivity.formatBytes((capacityBytes - usedBytes).coerceAtLeast(0)),
+            stringResource(
+                if (container.isFull) {
+                    R.string.library_container_full_yes
+                } else {
+                    R.string.library_container_full_no
+                }
+            )
+        )
     } else {
-        "已用：${LibraryContainerManageActivity.formatBytes(usedBytes)}（不限容量）"
+        stringResource(
+            R.string.library_container_used_only,
+            LibraryContainerManageActivity.formatBytes(usedBytes)
+        )
     }
-    val minUpload = if (item.minUploadChars > 0) "最少${item.minUploadChars}字" else "不过滤短章"
-    val dailyLimit = if (item.dailyUploadLimit > 0) "每日${item.dailyUploadLimit}章" else "每日不限"
-    val lockState = if (item.lockedImported) " · 加密导入" else ""
-    val stateText = "状态：${if (container.enabled) "启用" else "禁用"}$lockState · 书源优先 · ${item.sourceUrls.size} 个书源 · $minUpload · $dailyLimit"
+    val minUpload = if (item.minUploadChars > 0) {
+        stringResource(R.string.library_container_min_chars, item.minUploadChars)
+    } else {
+        stringResource(R.string.library_container_no_short_filter)
+    }
+    val dailyLimit = if (item.dailyUploadLimit > 0) {
+        stringResource(R.string.library_container_daily_chapters, item.dailyUploadLimit)
+    } else {
+        stringResource(R.string.library_container_daily_unlimited)
+    }
+    val stateText = buildList {
+        add(
+            stringResource(
+                R.string.library_container_status_line,
+                stringResource(
+                    if (container.enabled) {
+                        R.string.library_container_action_enable
+                    } else {
+                        R.string.library_container_action_disable
+                    }
+                )
+            )
+        )
+        if (item.lockedImported) add(stringResource(R.string.library_container_encrypted_badge))
+        add(stringResource(R.string.library_container_source_priority))
+        add(stringResource(R.string.library_container_source_count, item.sourceUrls.size))
+        add(minUpload)
+        add(dailyLimit)
+    }.joinToString(" · ")
 
     AppManagementCard(
         palette = palette,
@@ -242,7 +283,7 @@ private fun LibraryContainerCard(
             AppManagementMoreActionButton(
                 actionsProvider = { moreActions },
                 palette = palette,
-                contentDescription = "更多"
+                contentDescription = stringResource(R.string.more)
             )
         }
     }
