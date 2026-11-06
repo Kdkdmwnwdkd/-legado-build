@@ -588,10 +588,10 @@ class ReadMenuButtonManageActivity : BaseActivity<ActivityThemeManageBinding>(),
             ReadMenuButtonConfig.Builtin.READ_STYLE -> getString(R.string.interface_setting)
             ReadMenuButtonConfig.Builtin.SETTING -> getString(R.string.setting)
             ReadMenuButtonConfig.Builtin.READ_ASSISTANT -> getString(R.string.ai_assistant)
-            ReadMenuButtonConfig.Builtin.AI_SUMMARY -> "AI总结"
+            ReadMenuButtonConfig.Builtin.AI_SUMMARY -> getString(R.string.read_menu_btn_ai_summary)
             ReadMenuButtonConfig.Builtin.PARAGRAPH_RULES -> getString(R.string.paragraph_rule)
-            ReadMenuButtonConfig.Builtin.BUBBLE -> "气泡"
-            ReadMenuButtonConfig.Builtin.CHARACTERS -> "角色"
+            ReadMenuButtonConfig.Builtin.BUBBLE -> getString(R.string.read_menu_btn_bubble)
+            ReadMenuButtonConfig.Builtin.CHARACTERS -> getString(R.string.read_menu_btn_characters)
             else -> ref.id
         }
     }

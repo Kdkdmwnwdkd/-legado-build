@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Icon content descriptions-->
+    <string name="read_menu_cache">Cache</string>
+    <string name="read_menu_more_options">More options</string>
+    <string name="read_menu_auto_brightness">Auto brightness</string>
+
+    <!--Bottom button labels (kept short to fit one line under the icon)-->
+    <string name="read_menu_btn_search">Search</string>
+    <string name="read_menu_btn_auto_page">Auto</string>
+    <string name="read_menu_btn_replace">Replace</string>
+    <string name="read_menu_btn_night">Night</string>
+    <string name="read_menu_btn_catalog">Catalog</string>
+    <string name="read_menu_btn_read_aloud">Speech</string>
+    <string name="read_menu_btn_read_style">Style</string>
+    <string name="read_menu_btn_setting">Settings</string>
+    <string name="read_menu_btn_assistant">Assistant</string>
+    <string name="read_menu_btn_ai_summary">AI summary</string>
+    <string name="read_menu_btn_paragraph">Paragraph</string>
+    <string name="read_menu_btn_bubble">Bubble</string>
+    <string name="read_menu_btn_characters">Roles</string>
+</resources>
