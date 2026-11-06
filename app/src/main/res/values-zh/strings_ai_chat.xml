@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ai_chat_mode_title">Agent 模式</string>
+    <string name="ai_chat_mode_normal_desc">普通模式：正常对话和工具调用</string>
+    <string name="ai_chat_mode_goal_desc">Goal 模式：持续执行直到目标达成</string>
+    <string name="ai_chat_mode_plan_desc">Plan 模式：只读分析，只写计划不执行</string>
+    <string name="ai_chat_mode_normal">普通模式</string>
+    <string name="ai_chat_mode_goal">Goal 模式</string>
+    <string name="ai_chat_mode_plan">Plan 模式</string>
+    <string name="ai_chat_mode_switched">已切换%1$s</string>
+    <string name="ai_chat_delete_from_here">删除此条及其之后的所有内容？</string>
+
+    <string name="ai_chat_unknown_author">未知作者</string>
+    <string name="ai_chat_new_chat">新建对话</string>
+    <string name="ai_chat_edit_default_persona">编辑默认助手人格</string>
+    <string name="ai_chat_world_book">世界书</string>
+    <string name="ai_chat_edit_character_card">编辑角色卡</string>
+    <string name="ai_chat_remove_character_assistant">移除角色助手</string>
+    <string name="ai_chat_assistant">助手</string>
+    <string name="ai_chat_persona_title">%1$s · 人格</string>
+    <string name="ai_chat_world_book_title">%1$s · 世界书</string>
+    <string name="ai_chat_open_world_book_manage">打开世界书管理</string>
+    <string name="ai_chat_no_bindable_world_book">没有可单独绑定到角色的世界书</string>
+    <string name="ai_chat_world_book_global">"（全局）"</string>
+    <string name="ai_chat_world_book_disabled">"（资料库停用）"</string>
+    <string name="ai_chat_manage">管理</string>
+
+    <string name="ai_chat_window_abilities">当前窗口能力</string>
+    <string name="ai_chat_skill_count">Skill：%1$d 个</string>
+    <string name="ai_chat_mcp_count">MCP：%1$d 个</string>
+    <string name="ai_chat_world_book_count">世界书：%1$d 个</string>
+    <string name="ai_chat_clear_skill_mcp">清空 Skill/MCP</string>
+    <string name="ai_chat_window_skill">当前窗口 Skill</string>
+    <string name="ai_chat_window_mcp">当前窗口 MCP</string>
+    <string name="ai_chat_clear">清空</string>
+
+    <string name="ai_chat_add_character_assistant">添加角色助手</string>
+    <string name="ai_chat_pick_character_from">从《%1$s》选择角色</string>
+    <string name="ai_chat_pick_book">选择书籍</string>
+    <string name="ai_chat_no_matching_book">没有匹配的角色书籍</string>
+    <string name="ai_chat_pick_character">选择角色</string>
+    <string name="ai_chat_group_empty">这一组还没有角色</string>
+    <string name="ai_chat_search_hint">搜索书名、作者或角色</string>
+    <string name="ai_chat_character_count">%1$d 个角色</string>
+    <string name="ai_chat_author_and_count">%1$s · %2$d 个角色</string>
+    <string name="ai_chat_change_book">换书</string>
+    <string name="ai_chat_character_card">角色卡</string>
+    <string name="ai_chat_action_open">打开</string>
+    <string name="ai_chat_remove_companion_message">确定删除「%1$s」？它的聊天历史也会删除。</string>
+    <string name="ai_chat_role_main">主角</string>
+    <string name="ai_chat_role_important">重要</string>
+    <string name="ai_chat_role_normal">普通</string>
+</resources>
