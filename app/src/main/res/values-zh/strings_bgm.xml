@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bgm_title">智能音频</string>
+    <string name="bgm_label_music">配乐</string>
+    <string name="bgm_label_sfx">音效</string>
+
+    <string name="bgm_menu_import">导入</string>
+    <string name="bgm_menu_export">导出 ZIP</string>
+
+    <string name="bgm_batch_group">批量分组</string>
+    <string name="bgm_batch_cancel">取消选择</string>
+
+    <string name="bgm_import_dialog_title">导入智能音频</string>
+    <string name="bgm_import_batch_item">批量导入%1$s</string>
+    <string name="bgm_import_single_item">导入单个%1$s</string>
+    <string name="bgm_import_music_zip">导入配乐 ZIP</string>
+    <string name="bgm_import_sfx_zip">导入音效 ZIP</string>
+    <string name="bgm_import_file_title">导入%1$s</string>
+    <string name="bgm_import_zip_title">导入%1$s ZIP</string>
+    <string name="bgm_import_replace">清空旧%1$s并导入</string>
+    <string name="bgm_import_append">追加导入</string>
+
+    <string name="bgm_importing_generic">正在导入…</string>
+    <string name="bgm_importing_progress">正在导入%1$s…</string>
+    <string name="bgm_importing_batch">正在批量导入%1$s…</string>
+    <string name="bgm_importing_zip">正在导入%1$s ZIP…</string>
+    <string name="bgm_importing_busy">正在导入，请稍候</string>
+    <string name="bgm_processing_busy">正在处理，请稍候</string>
+    <string name="bgm_exporting_zip">正在整理%1$s ZIP…</string>
+    <string name="bgm_export_zip_title">导出%1$s ZIP</string>
+    <string name="bgm_export_file_name">%1$s包_%2$s.zip</string>
+
+    <string name="bgm_empty_music">暂无配乐。导入音乐后，AI 可以按段落范围选择配乐。</string>
+    <string name="bgm_empty_sfx">暂无音效。导入短音频并添加标签后，AI 可以为开门、脚步、撞击等候选事件选择音效。</string>
+    <string name="bgm_summary">%1$d 个%2$s · %3$d 个分组 · 已选 %4$d</string>
+
+    <string name="bgm_group_name_hint">分组名称</string>
+    <string name="bgm_group_add">新增分组</string>
+    <string name="bgm_group_edit">编辑分组</string>
+    <string name="bgm_group_manage">管理分组</string>
+    <string name="bgm_group_delete">删除分组</string>
+    <string name="bgm_group_delete_message">确定删除“%1$s”？组内%2$s会移回默认分组，本地文件不会删除。</string>
+    <string name="bgm_group_count">%1$d 个%2$s</string>
+    <string name="bgm_selected_count">已选 %1$d</string>
+    <string name="bgm_select_group">选择分组</string>
+
+    <string name="bgm_track_edit_tags">编辑标签</string>
+    <string name="bgm_track_volume">默认音量</string>
+    <string name="bgm_track_move">移动分组</string>
+    <string name="bgm_tags_hint">标签用逗号分隔，例如 紧张,日常,战斗</string>
+    <string name="bgm_volume_title">%1$s默认音量</string>
+    <string name="bgm_volume_percent">音量 %1$d%%</string>
+    <string name="bgm_delete_title">删除%1$s</string>
+    <string name="bgm_delete_message">确定删除选中的 %1$d 个%2$s？文件也会从本地移除。</string>
+
+    <string name="bgm_untitled_sfx">未命名音效</string>
+    <string name="bgm_untitled_music">未命名音乐</string>
+
+    <string name="bgm_err_read_audio">无法读取音频文件</string>
+    <string name="bgm_err_read_package">无法读取音频包</string>
+    <string name="bgm_err_empty_package">音频包内没有可导入的音频</string>
+    <string name="bgm_err_nothing_export">暂无可导出的%1$s</string>
+    <string name="bgm_err_no_files">没有可导出的本地音频文件</string>
+    <string name="bgm_err_config_too_large">音频包配置文件过大</string>
+</resources>
