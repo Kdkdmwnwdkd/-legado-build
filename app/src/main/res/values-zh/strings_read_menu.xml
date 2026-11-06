@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Icon content descriptions-->
+    <string name="read_menu_cache">缓存</string>
+    <string name="read_menu_more_options">更多选项</string>
+    <string name="read_menu_auto_brightness">自动亮度</string>
+
+    <!--Bottom button labels (kept short to fit one line under the icon)-->
+    <string name="read_menu_btn_search">搜索</string>
+    <string name="read_menu_btn_auto_page">自动</string>
+    <string name="read_menu_btn_replace">替换</string>
+    <string name="read_menu_btn_night">夜间</string>
+    <string name="read_menu_btn_catalog">目录</string>
+    <string name="read_menu_btn_read_aloud">朗读</string>
+    <string name="read_menu_btn_read_style">界面</string>
+    <string name="read_menu_btn_setting">设置</string>
+    <string name="read_menu_btn_assistant">助手</string>
+    <string name="read_menu_btn_ai_summary">AI总结</string>
+    <string name="read_menu_btn_paragraph">段落</string>
+    <string name="read_menu_btn_bubble">气泡</string>
+    <string name="read_menu_btn_characters">角色</string>
+</resources>
