@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_missing_task_params">Missing scheduled task parameters</string>
+    <string name="login_task_not_found">Scheduled task not found</string>
+    <string name="login_missing_params">No parameters</string>
+    <string name="login_source_not_found">Book source not found</string>
+
+    <string name="change_source_no_valid_source">No usable source</string>
+    <string name="change_source_search_empty_title">No search results</string>
+    <string name="change_source_search_empty_in_group">No results in group %1$s. Switch to all groups?</string>
+    <string name="change_source_chapter_word_count">[%1$d] %2$s\nWord count: %3$d</string>
+    <string name="change_source_chapter_word_count_failed">[%1$d] %2$s\nFailed to get word count: %3$s</string>
+
+    <string name="dict_rule_update_failed">Failed to update dictionary rule\n%1$s</string>
+    <string name="dict_rule_delete_failed">Failed to delete dictionary rule\n%1$s</string>
+    <string name="rule_editor_regex_tutorial">Regex tutorial</string>
+</resources>

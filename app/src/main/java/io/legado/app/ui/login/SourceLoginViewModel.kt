@@ -21,6 +21,8 @@ import io.legado.app.utils.GSON
 import io.legado.app.utils.fromJsonObject
 import io.legado.app.utils.toastOnUi
 import java.util.Locale
+import io.legado.app.R
+import splitties.init.appCtx
 
 class SourceLoginViewModel(application: Application) : BaseViewModel(application) {
 
@@ -71,9 +73,9 @@ class SourceLoginViewModel(application: Application) : BaseViewModel(application
                     val taskId = resolvedTaskId
                         ?: sourceKeyExtra
                             ?.takeIf { it.isNotBlank() }
-                        ?: throw NoStackTraceException("缺少定时任务参数")
+                        ?: throw NoStackTraceException(appCtx.getString(R.string.login_missing_task_params))
                     source = AutoTask.getBySourceKey(taskId)?.let(AutoTask::buildSource)
-                        ?: throw NoStackTraceException("未找到定时任务")
+                        ?: throw NoStackTraceException(appCtx.getString(R.string.login_task_not_found))
                     book = null
                     chapter = null
                 }
@@ -99,7 +101,7 @@ class SourceLoginViewModel(application: Application) : BaseViewModel(application
 
                 else -> {
                     val sourceKey = sourceKeyExtra
-                        ?: throw NoStackTraceException("没有参数")
+                        ?: throw NoStackTraceException(appCtx.getString(R.string.login_missing_params))
                     source = when (sourceTypeKey) {
                         "booksource" -> appDb.bookSourceDao.getBookSource(sourceKey)
                         "rsssource" -> appDb.rssSourceDao.getByKey(sourceKey)
@@ -150,7 +152,10 @@ class SourceLoginViewModel(application: Application) : BaseViewModel(application
             if (it != null) {
                 success.invoke(it)
             } else {
-                context.toastOnUi(if (requestedAutoTask) "未找到定时任务" else "未找到书源")
+                context.toastOnUi(
+                    if (requestedAutoTask) appCtx.getString(R.string.login_task_not_found)
+                    else appCtx.getString(R.string.login_source_not_found)
+                )
             }
         }.onError {
             error.invoke()

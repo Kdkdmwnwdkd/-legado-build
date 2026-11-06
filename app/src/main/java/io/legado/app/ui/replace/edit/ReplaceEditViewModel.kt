@@ -8,6 +8,8 @@ import io.legado.app.data.entities.ReplaceRule
 import io.legado.app.exception.NoStackTraceException
 import io.legado.app.utils.*
 import kotlinx.coroutines.Dispatchers
+import io.legado.app.R
+import splitties.init.appCtx
 
 class ReplaceEditViewModel(application: Application) : BaseViewModel(application) {
 
@@ -40,10 +42,10 @@ class ReplaceEditViewModel(application: Application) : BaseViewModel(application
         execute(context = Dispatchers.Main) {
             val text = context.getClipText()
             if (text.isNullOrBlank()) {
-                throw NoStackTraceException("剪贴板为空")
+                throw NoStackTraceException(appCtx.getString(R.string.toast_clipboard_empty))
             }
             GSON.fromJsonObject<ReplaceRule>(text).getOrNull()
-                ?: throw NoStackTraceException("格式不对")
+                ?: throw NoStackTraceException(appCtx.getString(R.string.wrong_format))
         }.onSuccess {
             success.invoke(it)
         }.onError {

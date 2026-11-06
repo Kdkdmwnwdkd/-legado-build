@@ -26,6 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 import kotlin.toString
+import splitties.init.appCtx
 
 class TxtTocRuleEditDialog() : BaseDialogFragment(R.layout.dialog_toc_regex_edit, true),
     Toolbar.OnMenuItemClickListener {
@@ -160,10 +161,10 @@ class TxtTocRuleEditDialog() : BaseDialogFragment(R.layout.dialog_toc_regex_edit
             execute(context = Dispatchers.Main) {
                 val text = context.getClipText()
                 if (text.isNullOrBlank()) {
-                    throw NoStackTraceException("剪贴板为空")
+                    throw NoStackTraceException(appCtx.getString(R.string.toast_clipboard_empty))
                 }
                 GSON.fromJsonObject<TxtTocRule>(text).getOrNull()
-                    ?: throw NoStackTraceException("格式不对")
+                    ?: throw NoStackTraceException(appCtx.getString(R.string.wrong_format))
             }.onSuccess {
                 success.invoke(it)
             }.onError {
