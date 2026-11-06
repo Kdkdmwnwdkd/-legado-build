@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dbg_start_parse">︾Start parsing</string>
+    <string name="dbg_list_empty">⇒List page parsed successfully, but it is empty</string>
+    <string name="dbg_parse_done">︽Parsing finished</string>
+    <string name="dbg_list_parse_done">︽List page parsed</string>
+    <string name="dbg_content_rule_empty">⇒Content rule is empty, fetching the whole page by default</string>
+    <string name="dbg_desc_rule_skip">⇒Description rule found, content page is not parsed</string>
+    <string name="dbg_explore_category">⇒Open category page: %1$s</string>
+    <string name="dbg_start_parse_category">︾Start parsing category page</string>
+    <string name="dbg_visit_content">⇒Open content page: %1$s</string>
+    <string name="dbg_search_url_empty">⇒Search URL is empty</string>
+    <string name="dbg_start_search_keyword">⇒Start searching keyword: %1$s</string>
+    <string name="dbg_start_parse_search">︾Start parsing search page</string>
+    <string name="dbg_start_parse_content">︾Start parsing content page</string>
+    <string name="dbg_content_parse_done">︽Content page parsed</string>
+    <string name="dbg_visit_detail">⇒Open detail page: %1$s</string>
+    <string name="dbg_visit_explore">⇒Open discovery page: %1$s</string>
+    <string name="dbg_visit_toc">⇒Open table of contents: %1$s</string>
+    <string name="dbg_visit_text">⇒Open text page: %1$s</string>
+    <string name="dbg_chapter_title">Debug</string>
+    <string name="dbg_start_parse_explore">︾Start parsing discovery page</string>
+    <string name="dbg_explore_parse_done">︽Discovery page parsed</string>
+    <string name="dbg_no_books">︽No books found</string>
+    <string name="dbg_search_parse_done">︽Search page parsed</string>
+    <string name="dbg_toc_link_got">≡Table of contents link found, skipping detail page</string>
+    <string name="dbg_start_parse_detail">︾Start parsing detail page</string>
+    <string name="dbg_detail_parse_done">︽Detail page parsed</string>
+    <string name="dbg_web_file_skip_toc">≡File-type source, skipping table of contents</string>
+    <string name="dbg_start_parse_toc">︾Start parsing table of contents</string>
+    <string name="dbg_toc_parse_done">︽Table of contents parsed</string>
+    <string name="dbg_no_chapters">≡No text chapters</string>
+    <string name="dbg_start_parse_text">︾Start parsing text page</string>
+    <string name="dbg_text_parse_done">︽Text page parsed</string>
+    <string name="dbg_start_checking">Start checking</string>
+    <string name="dbg_check_success">Check passed</string>
+    <string name="dbg_check_failed">Check failed: %1$s</string>
+    <string name="dbg_check_failed_short">Check failed</string>
+</resources>

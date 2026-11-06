@@ -144,7 +144,11 @@ class CheckSourceService : BaseService() {
                 doCheckSource(source)
             }
         }.onSuccess {
-            Debug.updateFinalMessage(source.bookSourceUrl, "校验成功")
+            Debug.updateFinalMessage(
+                source.bookSourceUrl,
+                getString(R.string.dbg_check_success),
+                success = true
+            )
         }.onFailure {
             currentCoroutineContext().ensureActive()
             when (it) {
@@ -157,7 +161,11 @@ class CheckSourceService : BaseService() {
             }
             // 检测失败的书源自动禁用
             source.enabled = false
-            Debug.updateFinalMessage(source.bookSourceUrl, "校验失败:${it.localizedMessage}")
+            Debug.updateFinalMessage(
+                source.bookSourceUrl,
+                getString(R.string.dbg_check_failed, it.localizedMessage),
+                success = false
+            )
         }
         source.respondTime = Debug.getRespondTime(source.bookSourceUrl)
     }

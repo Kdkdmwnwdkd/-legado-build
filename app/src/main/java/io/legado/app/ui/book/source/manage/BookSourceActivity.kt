@@ -131,7 +131,6 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
     private var snackBar: Snackbar? = null
     private var groupSourcesByDomain = false
     private val hostMap = hashMapOf<String, String>()
-    private val finalMessageRegex = Regex("成功|失败")
     private val sourcesState = mutableStateListOf<BookSourcePart>()
     private val selectedUrls = mutableStateOf<Set<String>>(emptySet())
     private val isSelectMode = mutableStateOf(false)
@@ -1134,8 +1133,12 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
             if (initial.isBlank()) {
                 null
             } else {
-                if (!Debug.isChecking && !initial.contains(finalMessageRegex)) {
-                    Debug.updateFinalMessage(source.bookSourceUrl, "校验失败")
+                if (!Debug.isChecking && !Debug.hasFinalMessage(source.bookSourceUrl)) {
+                    Debug.updateFinalMessage(
+                        source.bookSourceUrl,
+                        getString(R.string.dbg_check_failed_short),
+                        success = false
+                    )
                 }
                 val latest = Debug.debugMessageMap[source.bookSourceUrl].orEmpty()
                 source.bookSourceUrl to latest
