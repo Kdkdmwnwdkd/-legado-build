@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ai_usage_title">Usage records</string>
+    <string name="ai_usage_select_all">Select all</string>
+
+    <!--Menu-->
+    <string name="ai_usage_menu_filter_type">Filter by type</string>
+    <string name="ai_usage_menu_filter_book">This book / All</string>
+    <string name="ai_usage_menu_delete_selected">Delete selected</string>
+    <string name="ai_usage_menu_clear_all">Clear all</string>
+
+    <!--Summary-->
+    <string name="ai_usage_scope_current_book">This book</string>
+    <string name="ai_usage_scope_all_books">All books</string>
+    <string name="ai_usage_summary">%1$s · %2$s · %3$d records · in %4$d · cached %5$d · out %6$d · total %7$d · %8$d selected</string>
+
+    <!--Types-->
+    <string name="ai_usage_type_all">All</string>
+    <string name="ai_usage_type_role">Multi-role</string>
+    <string name="ai_usage_type_audio">Audio analysis</string>
+
+    <!--Status-->
+    <string name="ai_usage_status_success">Success</string>
+    <string name="ai_usage_status_failed">Failed</string>
+    <string name="ai_usage_status_cache">Cached</string>
+    <string name="ai_usage_status_unknown">Unknown</string>
+
+    <!--Dialogs-->
+    <string name="ai_usage_delete_title">Delete records</string>
+    <string name="ai_usage_delete_message">Delete the %1$d selected usage records?</string>
+    <string name="ai_usage_clear_title">Clear records</string>
+    <string name="ai_usage_clear_message">Clear all speech AI usage records?</string>
+
+    <!--Record row-->
+    <string name="ai_usage_unknown_chapter">Unknown chapter</string>
+    <string name="ai_usage_tokens_input">in %1$d</string>
+    <string name="ai_usage_tokens_cached">cached %1$d</string>
+    <string name="ai_usage_tokens_output">out %1$d</string>
+    <string name="ai_usage_tokens_total">total %1$d</string>
+</resources>

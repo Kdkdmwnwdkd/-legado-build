@@ -55,9 +55,9 @@ class AiReadAloudUsageRecordActivity : BaseActivity<ActivityThemeManageBinding>(
     }
 
     private fun initView() = binding.run {
-        titleBar.title = "消耗记录"
+        titleBar.title = getString(R.string.ai_usage_title)
         tabBar.visibility = View.GONE
-        btnAdd.text = "全选"
+        btnAdd.text = getString(R.string.ai_usage_select_all)
         btnAdd.background = UiCorner.actionSelector(
             themeCardColorOrDefault(),
             themeMutedColorOrDefault(),
@@ -72,10 +72,10 @@ class AiReadAloudUsageRecordActivity : BaseActivity<ActivityThemeManageBinding>(
     }
 
     override fun onCompatCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(0, MENU_FILTER_TYPE, 0, "类型筛选").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
-        menu.add(0, MENU_FILTER_BOOK, 1, "当前书/全部").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
-        menu.add(0, MENU_DELETE_SELECTED, 2, "删除选中").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
-        menu.add(0, MENU_CLEAR_ALL, 3, "清空全部").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        menu.add(0, MENU_FILTER_TYPE, 0, getString(R.string.ai_usage_menu_filter_type)).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        menu.add(0, MENU_FILTER_BOOK, 1, getString(R.string.ai_usage_menu_filter_book)).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        menu.add(0, MENU_DELETE_SELECTED, 2, getString(R.string.ai_usage_menu_delete_selected)).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        menu.add(0, MENU_CLEAR_ALL, 3, getString(R.string.ai_usage_menu_clear_all)).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
         return super.onCompatCreateOptionsMenu(menu)
     }
 
@@ -112,21 +112,35 @@ class AiReadAloudUsageRecordActivity : BaseActivity<ActivityThemeManageBinding>(
         val totalOutput = records.sumOf { it.outputTokens }
         val total = records.sumOf { it.totalTokens.takeIf { value -> value > 0 } ?: (it.inputTokens + it.outputTokens) }
         val typeText = typeLabel(typeFilter).takeIf { typeFilter.isNotBlank() } ?: getString(R.string.ai_usage_all_types)
-        val bookText = if (currentBookOnly) "当前书" else "全部书籍"
-        binding.tvSummary.text = "$typeText · $bookText · ${records.size} 条 · 输入 $totalInput · 缓存 $totalCached · 输出 $totalOutput · 总 $total · 已选 ${selectedIds.size}"
+        val bookText = if (currentBookOnly) {
+            getString(R.string.ai_usage_scope_current_book)
+        } else {
+            getString(R.string.ai_usage_scope_all_books)
+        }
+        binding.tvSummary.text = getString(
+            R.string.ai_usage_summary,
+            typeText,
+            bookText,
+            records.size,
+            totalInput,
+            totalCached,
+            totalOutput,
+            total,
+            selectedIds.size
+        )
     }
 
     private fun showTypeFilter() {
         val types = listOf(
-            "" to "全部",
-            AiReadAloudUsageRecord.TYPE_ROLE to "多角色",
+            "" to getString(R.string.ai_usage_type_all),
+            AiReadAloudUsageRecord.TYPE_ROLE to getString(R.string.ai_usage_type_role),
             AiReadAloudUsageRecord.TYPE_BGM to getString(R.string.bgm_label_music),
             AiReadAloudUsageRecord.TYPE_SFX to getString(R.string.bgm_label_sfx),
-            AiReadAloudUsageRecord.TYPE_AUDIO to "音频分析"
+            AiReadAloudUsageRecord.TYPE_AUDIO to getString(R.string.ai_usage_type_audio)
         )
         showDialogFragment(
             ComposeActionListDialog.create(
-                title = "类型筛选",
+                title = getString(R.string.ai_usage_menu_filter_type),
                 labels = types.map { if (it.first == typeFilter) "${it.second} ✓" else it.second },
                 negativeText = getString(R.string.cancel),
                 onSelected = { index ->
@@ -160,8 +174,8 @@ class AiReadAloudUsageRecordActivity : BaseActivity<ActivityThemeManageBinding>(
         }
         showDialogFragment(
             ComposeConfirmDialog.create(
-                title = "删除记录",
-                message = "确定删除选中的 ${ids.size} 条消耗记录？",
+                title = getString(R.string.ai_usage_delete_title),
+                message = getString(R.string.ai_usage_delete_message, ids.size),
                 positiveText = getString(R.string.delete),
                 negativeText = getString(R.string.cancel),
                 dangerPositive = true,
@@ -179,8 +193,8 @@ class AiReadAloudUsageRecordActivity : BaseActivity<ActivityThemeManageBinding>(
     private fun confirmClearAll() {
         showDialogFragment(
             ComposeConfirmDialog.create(
-                title = "清空记录",
-                message = "确定清空所有朗读 AI 消耗记录？",
+                title = getString(R.string.ai_usage_clear_title),
+                message = getString(R.string.ai_usage_clear_message),
                 positiveText = getString(R.string.clear),
                 negativeText = getString(R.string.cancel),
                 dangerPositive = true,
@@ -199,7 +213,7 @@ class AiReadAloudUsageRecordActivity : BaseActivity<ActivityThemeManageBinding>(
         showDialogFragment(
             ComposeActionListDialog.create(
                 title = typeLabel(record.type),
-                labels = listOf("删除"),
+                labels = listOf(getString(R.string.delete)),
                 dangerIndices = setOf(0),
                 negativeText = getString(R.string.cancel),
                 onSelected = { index ->
@@ -280,13 +294,25 @@ class AiReadAloudUsageRecordActivity : BaseActivity<ActivityThemeManageBinding>(
                 if (record.batchName.isNotBlank()) append(" · ").append(record.batchName)
             }
             sub.text = buildList {
-                add(record.chapterTitle.ifBlank { record.bookName.ifBlank { "未知章节" } })
+                add(
+                    record.chapterTitle.ifBlank {
+                        record.bookName.ifBlank { getString(R.string.ai_usage_unknown_chapter) }
+                    }
+                )
                 add(formatTime(record.createdAt))
                 if (record.modelId.isNotBlank()) add(record.modelId)
-                add("输入 ${record.inputTokens}")
-                if (record.cachedInputTokens > 0) add("缓存 ${record.cachedInputTokens}")
-                add("输出 ${record.outputTokens}")
-                add("总 ${record.totalTokens.takeIf { it > 0 } ?: (record.inputTokens + record.outputTokens)}")
+                add(getString(R.string.ai_usage_tokens_input, record.inputTokens))
+                if (record.cachedInputTokens > 0) {
+                    add(getString(R.string.ai_usage_tokens_cached, record.cachedInputTokens))
+                }
+                add(getString(R.string.ai_usage_tokens_output, record.outputTokens))
+                add(
+                    getString(
+                        R.string.ai_usage_tokens_total,
+                        record.totalTokens.takeIf { it > 0 }
+                            ?: (record.inputTokens + record.outputTokens)
+                    )
+                )
                 if (record.error.isNotBlank()) add(record.error)
             }.joinToString(" · ")
             itemView.setOnClickListener {
@@ -318,18 +344,18 @@ class AiReadAloudUsageRecordActivity : BaseActivity<ActivityThemeManageBinding>(
         private val timeFormat = SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
 
         private fun typeLabel(type: String): String = when (type) {
-            AiReadAloudUsageRecord.TYPE_ROLE -> "多角色"
+            AiReadAloudUsageRecord.TYPE_ROLE -> appCtx.getString(R.string.ai_usage_type_role)
             AiReadAloudUsageRecord.TYPE_BGM -> appCtx.getString(R.string.bgm_label_music)
             AiReadAloudUsageRecord.TYPE_SFX -> appCtx.getString(R.string.bgm_label_sfx)
-            AiReadAloudUsageRecord.TYPE_AUDIO -> "音频分析"
-            else -> "全部"
+            AiReadAloudUsageRecord.TYPE_AUDIO -> appCtx.getString(R.string.ai_usage_type_audio)
+            else -> appCtx.getString(R.string.ai_usage_type_all)
         }
 
         private fun statusLabel(status: String): String = when (status) {
-            AiReadAloudUsageRecord.STATUS_SUCCESS -> "成功"
-            AiReadAloudUsageRecord.STATUS_FAILED -> "失败"
-            AiReadAloudUsageRecord.STATUS_CACHE -> "缓存"
-            else -> status.ifBlank { "未知" }
+            AiReadAloudUsageRecord.STATUS_SUCCESS -> appCtx.getString(R.string.ai_usage_status_success)
+            AiReadAloudUsageRecord.STATUS_FAILED -> appCtx.getString(R.string.ai_usage_status_failed)
+            AiReadAloudUsageRecord.STATUS_CACHE -> appCtx.getString(R.string.ai_usage_status_cache)
+            else -> status.ifBlank { appCtx.getString(R.string.ai_usage_status_unknown) }
         }
 
         private fun formatTime(time: Long): String {

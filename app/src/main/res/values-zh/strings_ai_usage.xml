@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ai_usage_title">消耗记录</string>
+    <string name="ai_usage_select_all">全选</string>
+
+    <!--Menu-->
+    <string name="ai_usage_menu_filter_type">类型筛选</string>
+    <string name="ai_usage_menu_filter_book">当前书/全部</string>
+    <string name="ai_usage_menu_delete_selected">删除选中</string>
+    <string name="ai_usage_menu_clear_all">清空全部</string>
+
+    <!--Summary-->
+    <string name="ai_usage_scope_current_book">当前书</string>
+    <string name="ai_usage_scope_all_books">全部书籍</string>
+    <string name="ai_usage_summary">%1$s · %2$s · %3$d 条 · 输入 %4$d · 缓存 %5$d · 输出 %6$d · 总 %7$d · 已选 %8$d</string>
+
+    <!--Types-->
+    <string name="ai_usage_type_all">全部</string>
+    <string name="ai_usage_type_role">多角色</string>
+    <string name="ai_usage_type_audio">音频分析</string>
+
+    <!--Status-->
+    <string name="ai_usage_status_success">成功</string>
+    <string name="ai_usage_status_failed">失败</string>
+    <string name="ai_usage_status_cache">缓存</string>
+    <string name="ai_usage_status_unknown">未知</string>
+
+    <!--Dialogs-->
+    <string name="ai_usage_delete_title">删除记录</string>
+    <string name="ai_usage_delete_message">确定删除选中的 %1$d 条消耗记录？</string>
+    <string name="ai_usage_clear_title">清空记录</string>
+    <string name="ai_usage_clear_message">确定清空所有朗读 AI 消耗记录？</string>
+
+    <!--Record row-->
+    <string name="ai_usage_unknown_chapter">未知章节</string>
+    <string name="ai_usage_tokens_input">输入 %1$d</string>
+    <string name="ai_usage_tokens_cached">缓存 %1$d</string>
+    <string name="ai_usage_tokens_output">输出 %1$d</string>
+    <string name="ai_usage_tokens_total">总 %1$d</string>
+</resources>
