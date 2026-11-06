@@ -785,7 +785,10 @@ class HttpReadAloudService : BaseReadAloudService(),
                     } else if (ct?.isNotBlank() == true) {
                         if (!contentType.matches(ct.toRegex())) {
                             throw NoStackTraceException(
-                                "TTS服务器返回错误：" + response.peekBody(8_192).string()
+                                getString(
+                                    R.string.ai_chat_tts_error,
+                                    response.peekBody(8_192).string()
+                                )
                             )
                         }
                     }
@@ -904,7 +907,7 @@ class HttpReadAloudService : BaseReadAloudService(),
         return SpeechRoute(
             engineType = SpeechRoute.ENGINE_SYSTEM,
             engineValue = ReadAloud.ttsEngine.orEmpty(),
-            speakerName = "系统默认",
+            speakerName = getString(R.string.ra_voice_system_default),
             source = SpeechRoute.SOURCE_AUTO
         )
     }
@@ -1144,7 +1147,7 @@ class HttpReadAloudService : BaseReadAloudService(),
             }
 
             Player.STATE_BUFFERING -> {
-                postExoPlaybackPhase("音频加载中")
+                postExoPlaybackPhase(getString(R.string.ra_audio_loading))
             }
 
             Player.STATE_READY -> {
@@ -1202,7 +1205,7 @@ class HttpReadAloudService : BaseReadAloudService(),
             postReadAloudPlaybackPhase(ReadAloudPlaybackState.PHASE_ERROR, message = error.localizedMessage ?: "")
             pauseReadAloud()
         } else {
-            postReadAloudPlaybackPhase(ReadAloudPlaybackState.PHASE_BUFFERING, message = "重试当前音频")
+            postReadAloudPlaybackPhase(ReadAloudPlaybackState.PHASE_BUFFERING, message = getString(R.string.ra_retry_audio))
             retryCurrentCue()
         }
     }

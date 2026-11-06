@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="svc_ai_tasks_running">%1$d AI tasks still running</string>
+    <string name="svc_ai_tasks_processing">Processing AI tasks · %1$d</string>
+
+    <string name="svc_audio_url_error">Invalid audio URL</string>
+    <string name="svc_audio_play_error">Audio playback error\n%1$s</string>
+
+    <string name="svc_cache_book_detail_failed">“%1$s” has an empty table of contents and loading its detail page failed\n%2$s</string>
+    <string name="svc_cache_book_toc_failed">“%1$s” has an empty table of contents and loading the list failed\n%2$s</string>
+
+    <string name="svc_download_no_permission">Download failed: no storage permission</string>
+    <string name="svc_download_error">Download failed, %1$s</string>
+
+    <string name="svc_export_complete">Export complete</string>
+    <string name="svc_export_book_lookup_failed">Failed to load book %1$s</string>
+    <string name="svc_export_asset_too_large">EPUB external template asset too large: %1$s</string>
+    <string name="svc_export_book_no_chapters">Book &lt;%1$s&gt; (%2$d) has no chapter info</string>
+
+    <string name="ra_refreshing_engine">Refreshing speech engine</string>
+    <string name="ra_preparing">Preparing to read aloud</string>
+    <string name="ra_waiting_role">Waiting for role assignment</string>
+    <string name="ra_chapter_unavailable">Unable to load the selected chapter</string>
+    <string name="ra_chapter_no_content">The selected chapter has no readable content</string>
+    <string name="ra_start_timeout">Timed out starting from the selected position</string>
+    <string name="ra_empty_content">Nothing to read aloud</string>
+    <string name="ra_voice_system_default">System default</string>
+    <string name="ra_audio_loading">Loading audio…</string>
+    <string name="ra_retry_audio">Retrying current audio</string>
+    <string name="ra_tts_error_code">TTS error %1$d</string>
+    <string name="ra_tts_error">TTS error</string>
+</resources>

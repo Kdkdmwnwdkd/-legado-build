@@ -135,8 +135,8 @@ class DownloadService : BaseService() {
         }.onFailure {
             it.printStackTrace()
             val msg = when (it) {
-                is SecurityException -> "下载出错,没有存储权限"
-                else -> "下载出错,${it.localizedMessage}"
+                is SecurityException -> getString(R.string.svc_download_no_permission)
+                else -> getString(R.string.svc_download_error, it.localizedMessage)
             }
             toastOnUi(msg)
             AppLog.put(msg, it)

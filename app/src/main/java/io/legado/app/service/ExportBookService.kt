@@ -173,7 +173,7 @@ class ExportBookService : BaseService() {
         exportJob = lifecycleScope.launch(IO) {
             while (isActive) {
                 val (bookUrl, exportConfig) = waitExportBooks.entries.firstOrNull() ?: let {
-                    notificationContentText = "导出完成"
+                    notificationContentText = getString(R.string.svc_export_complete)
                     upExportNotification(true)
                     stopSelf()
                     return@launch
@@ -182,7 +182,7 @@ class ExportBookService : BaseService() {
                 waitExportBooks.remove(bookUrl)
                 val book = appDb.bookDao.getBook(bookUrl)
                 try {
-                    book ?: throw NoStackTraceException("获取${bookUrl}书籍出错")
+                    book ?: throw NoStackTraceException(getString(R.string.svc_export_book_lookup_failed, bookUrl))
                     refreshChapterList(book)
                     notificationContentText = getString(
                         R.string.export_book_notification_content,
@@ -401,7 +401,7 @@ class ExportBookService : BaseService() {
 
     private fun FileDoc.readExternalAssetBytes(maxBytes: Long): ByteArray {
         if (size > maxBytes) {
-            throw NoStackTraceException("EPUB外部模板资源过大: $name")
+            throw NoStackTraceException(getString(R.string.svc_export_asset_too_large, name))
         }
         return uri.readBytes(appCtx, maxBytes)
     }
@@ -744,7 +744,7 @@ class ExportBookService : BaseService() {
             }
             // val totalChapterNum = book.totalChapterNum / scope.size
             if (chapterList.isEmpty()) {
-                throw RuntimeException("书籍<${book.name}>(${epubBookIndex + 1})未找到章节信息")
+                throw RuntimeException(getString(R.string.svc_export_book_no_chapters, book.name, epubBookIndex + 1))
             }
             chapterList = chapterList.subList(
                 epubBookIndex * size,

@@ -239,7 +239,7 @@ class AudioPlayService : BaseService(),
             if (url.isJsonArray()) {
                 val mediaSource = ExoPlayerHelper.getMediaSource(this@AudioPlayService, url)
                 if (mediaSource ==  null) {
-                    NoStackTraceException("url格式错误")
+                    NoStackTraceException(getString(R.string.svc_audio_url_error))
                     return@execute
                 }
                 exoPlayer.setMediaSource(mediaSource)
@@ -407,7 +407,10 @@ class AudioPlayService : BaseService(),
         AudioPlay.status = Status.STOP
         postEvent(EventBus.AUDIO_STATE, Status.STOP)
         AudioPlay.upLoading(false)
-        val errorMsg = "音频播放出错\n${error.errorCodeName} ${error.errorCode}"
+        val errorMsg = getString(
+            R.string.svc_audio_play_error,
+            "${error.errorCodeName} ${error.errorCode}"
+        )
         AppLog.put(errorMsg, error)
         toastOnUi(errorMsg)
     }

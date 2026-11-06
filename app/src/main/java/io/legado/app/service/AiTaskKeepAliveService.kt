@@ -68,11 +68,12 @@ class AiTaskKeepAliveService : BaseService() {
         val text = if (count > 1) {
             tasks.take(3)
                 .joinToString("\n") { "${it.title}：${it.displayText}" }
-                .ifBlank { "还有 $count 个 AI 任务运行中" }
+                .ifBlank { getString(R.string.svc_ai_tasks_running, count) }
         } else {
             AiTaskKeepAlive.content
         }
-        val title = if (count > 1) "AI任务处理中 · $count 个" else AiTaskKeepAlive.title
+        val title = if (count > 1) getString(R.string.svc_ai_tasks_processing, count)
+        else AiTaskKeepAlive.title
         return NotificationCompat.Builder(this, AppConst.channelIdAiTask)
             .setSmallIcon(R.drawable.ic_web_service_noti)
             .setContentTitle(title)
