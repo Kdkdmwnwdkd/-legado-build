@@ -17,10 +17,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.legado.app.R
 import io.legado.app.ui.widget.compose.AppDialogStyle
 import io.legado.app.ui.widget.compose.LegadoMiuixActionButton
 import io.legado.app.ui.widget.compose.toMiuixPalette
@@ -102,7 +104,7 @@ fun ImportSourceItemRow(
         if (onCodeView != null) {
             Spacer(modifier = Modifier.width(8.dp))
             LegadoMiuixActionButton(
-                text = "查看",
+                text = stringResource(R.string.see),
                 palette = palette,
                 onClick = onCodeView,
                 cornerRadius = style.actionRadius,

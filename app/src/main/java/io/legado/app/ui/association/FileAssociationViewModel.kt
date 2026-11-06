@@ -11,6 +11,8 @@ import io.legado.app.help.book.highlight.HighlightImport
 import io.legado.app.model.localBook.LocalBook
 import io.legado.app.utils.*
 import io.legado.app.utils.compress.ZipUtils
+import splitties.init.appCtx
+import io.legado.app.R
 
 class FileAssociationViewModel(application: Application) : BaseAssociationViewModel(application) {
     val importBookLiveData = MutableLiveData<Uri>()
@@ -57,7 +59,7 @@ class FileAssociationViewModel(application: Application) : BaseAssociationViewMo
             }
         }.onError {
             it.printOnDebug()
-            val msg = "无法打开文件\n${it.localizedMessage}"
+            val msg = appCtx.getString(R.string.association_open_file_failed, it.localizedMessage)
             errorLive.postValue(msg)
             AppLog.put(msg, it)
         }

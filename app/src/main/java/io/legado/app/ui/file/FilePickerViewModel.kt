@@ -8,6 +8,8 @@ import io.legado.app.base.BaseViewModel
 import io.legado.app.exception.NoStackTraceException
 import io.legado.app.utils.toastOnUi
 import java.io.File
+import splitties.init.appCtx
+import io.legado.app.R
 
 class FilePickerViewModel(application: Application) : BaseViewModel(application) {
 
@@ -60,10 +62,10 @@ class FilePickerViewModel(application: Application) : BaseViewModel(application)
 
     fun createFolder(name: String) {
         execute {
-            val dir = lastDir ?: throw NoStackTraceException("父文件夹不存在")
+            val dir = lastDir ?: throw NoStackTraceException(appCtx.getString(R.string.file_picker_parent_missing))
             val folder = File(dir, name)
             if (!folder.canonicalPath.contains(dir.canonicalPath)) {
-                throw NoStackTraceException("非法文件名")
+                throw NoStackTraceException(appCtx.getString(R.string.file_picker_invalid_name))
             }
             folder.mkdir()
         }.onSuccess {

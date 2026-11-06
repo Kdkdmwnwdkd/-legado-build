@@ -245,7 +245,7 @@ class RemoteBookActivity : BaseImportBookActivity<RemoteBookViewModel>(),
     }
 
     override fun addToBookShelfAgain(remoteBook: RemoteBook) {
-        alert(getString(R.string.sure), "是否重新加入书架？") {
+        alert(getString(R.string.sure), getString(R.string.remote_book_re_add_confirm)) {
             yesButton {
                 binding.refreshProgressBar.isAutoLoading = true
                 viewModel.addToBookshelf(hashSetOf(remoteBook)) {

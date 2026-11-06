@@ -140,7 +140,7 @@ class FilePickerDialog : BaseDialogFragment(R.layout.dialog_file_chooser),
         when (item?.itemId) {
             R.id.menu_create -> alert(R.string.create_folder) {
                 val alertBinding = DialogEditTextBinding.inflate(layoutInflater).apply {
-                    editView.hint = "文件夹名"
+                    editView.hint = getString(R.string.file_picker_folder_name_hint)
                 }
                 customView { alertBinding.root }
                 okButton {
