@@ -2,19 +2,8 @@
 <resources>
     <!-- 阅读页 AI 浮层 -->
     <string name="read_ai_title">阅读页问 AI</string>
-    <string name="read_ai_window_abilities">当前窗口能力</string>
-    <string name="read_ai_skill_count">Skill：%1$d 个</string>
-    <string name="read_ai_mcp_count">MCP：%1$d 个</string>
-    <string name="read_ai_worldbook_count">世界书：%1$d 个</string>
-    <string name="read_ai_clear_bindings">清空 Skill/MCP</string>
-    <string name="read_ai_worldbook">世界书</string>
-    <string name="read_ai_open_worldbook_manage">打开世界书管理</string>
     <string name="read_ai_worldbook_dialog_title">阅读页问 AI · 世界书</string>
     <string name="read_ai_worldbook_disabled">（停用）</string>
-    <string name="read_ai_manage">管理</string>
-    <string name="read_ai_window_skill">当前窗口 Skill</string>
-    <string name="read_ai_window_mcp">当前窗口 MCP</string>
-    <string name="read_ai_clear">清空</string>
     <string name="read_ai_step_thinking">思考中</string>
     <string name="read_ai_step_thinking_done">思考完成</string>
 
