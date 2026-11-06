@@ -46,4 +46,7 @@
     <string name="discovery_suite_empty_suites">No suites yet</string>
     <string name="discovery_suite_category">Category</string>
     <string name="discovery_suite_save">Save</string>
+    <string name="discovery_dialog_label_select">Select </string>
+    <string name="discovery_dialog_label_toggle">Switch </string>
+    <string name="discovery_dialog_label_action">Action </string>
 </resources>
