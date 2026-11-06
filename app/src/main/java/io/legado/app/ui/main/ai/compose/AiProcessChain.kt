@@ -38,10 +38,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.legado.app.R
 
 @Immutable
 data class AiProcessChainStep(
@@ -168,7 +170,7 @@ private fun StepCountChip(count: Int, style: AiComposeStyle) {
             .padding(horizontal = 9.dp, vertical = 5.dp)
     ) {
         Text(
-            text = "$count 步",
+            text = stringResource(R.string.ai_process_chain_steps, count),
             color = style.colors.accent,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold

@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -65,7 +66,7 @@ internal fun AiCopyTextButton(
     text: String,
     style: AiComposeStyle,
     modifier: Modifier = Modifier,
-    label: String = "复制"
+    label: String = stringResource(R.string.copy_text)
 ) {
     if (text.isBlank()) return
     val clipboardManager = LocalClipboardManager.current
@@ -285,7 +286,7 @@ private fun AiMarkdownCodeBlock(
                 AiCopyTextButton(
                     text = text,
                     style = style,
-                    label = "复制代码"
+                    label = stringResource(R.string.ai_markdown_copy_code)
                 )
             }
             SelectionContainer {

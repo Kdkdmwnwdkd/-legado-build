@@ -108,7 +108,7 @@ class AiImageProviderManageActivity : BaseActivity<ActivityAiProviderManageBindi
         val labels = listOf(
             getString(R.string.ai_image_provider_openai),
             getString(R.string.ai_image_provider_js),
-            "导入 JS 生图规则"
+            getString(R.string.ai_image_import_js_rule)
         )
         showComposeActionListDialog(
             title = getString(R.string.add),
@@ -124,8 +124,8 @@ class AiImageProviderManageActivity : BaseActivity<ActivityAiProviderManageBindi
     }
 
     override fun onCompatCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(0, MENU_IMPORT_RULE, 0, "导入规则").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
-        menu.add(0, MENU_EXPORT_RULES, 1, "导出规则").setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        menu.add(0, MENU_IMPORT_RULE, 0, getString(R.string.ai_image_import_rule)).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        menu.add(0, MENU_EXPORT_RULES, 1, getString(R.string.ai_image_export_rule)).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
         return super.onCompatCreateOptionsMenu(menu)
     }
 
@@ -153,7 +153,7 @@ class AiImageProviderManageActivity : BaseActivity<ActivityAiProviderManageBindi
         return buildList {
             if (!isCurrent) {
                 add(
-                    AppManagementMenuAction("设为当前生图模型") {
+                    AppManagementMenuAction(getString(R.string.ai_image_set_current_model)) {
                         if (!provider.enabled) {
                             toastOnUi(R.string.toast_enable_image_model)
                         } else {
@@ -186,9 +186,9 @@ class AiImageProviderManageActivity : BaseActivity<ActivityAiProviderManageBindi
                 }
             )
             if (isJsRule) {
-                add(AppManagementMenuAction("导出规则") { exportRule(provider) })
+                add(AppManagementMenuAction(getString(R.string.ai_image_export_rule)) { exportRule(provider) })
                 add(
-                    AppManagementMenuAction("复制规则") {
+                    AppManagementMenuAction(getString(R.string.ai_image_copy_rule)) {
                         sendToClip(serializeRule(provider))
                         toastOnUi(R.string.copy_complete)
                     }

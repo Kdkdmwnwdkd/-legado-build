@@ -128,12 +128,18 @@ class AiImageGalleryActivity : BaseActivity<ActivityAiImageGalleryBinding>() {
             reload()
         }
         if (fixedBookKey.isNotBlank()) {
-            addFilterChip("本书", currentFilter == GalleryFilter.BOOK(fixedBookKey)) {
+            addFilterChip(
+                getString(R.string.ai_gallery_filter_book),
+                currentFilter == GalleryFilter.BOOK(fixedBookKey)
+            ) {
                 currentFilter = GalleryFilter.BOOK(fixedBookKey)
                 reload()
             }
         }
-        addFilterChip("角色图", currentFilter == GalleryFilter.SOURCE_TYPE(AiImageGalleryManager.SOURCE_TYPE_CHARACTER_AVATAR)) {
+        addFilterChip(
+                getString(R.string.ai_gallery_filter_character),
+                currentFilter == GalleryFilter.SOURCE_TYPE(AiImageGalleryManager.SOURCE_TYPE_CHARACTER_AVATAR)
+            ) {
             currentFilter = GalleryFilter.SOURCE_TYPE(AiImageGalleryManager.SOURCE_TYPE_CHARACTER_AVATAR)
             reload()
         }
@@ -197,7 +203,10 @@ class AiImageGalleryActivity : BaseActivity<ActivityAiImageGalleryBinding>() {
 
     private fun updateBatchBar() {
         binding.batchBar.isVisible = selectedIds.isNotEmpty()
-        binding.tvBatchCount.text = "已选择 ${selectedIds.size} 张"
+        binding.tvBatchCount.text = getString(
+            R.string.ai_gallery_selected_count,
+            selectedIds.size
+        )
     }
 
     private fun showBatchGroupDialog() {
@@ -248,7 +257,10 @@ class AiImageGalleryActivity : BaseActivity<ActivityAiImageGalleryBinding>() {
     private fun confirmBatchDelete() {
         val ids = selectedIds.toList()
         if (ids.isEmpty()) return
-        alert(title = getString(R.string.delete), message = "删除选中的 ${ids.size} 张图片？") {
+        alert(
+            title = getString(R.string.delete),
+            message = getString(R.string.ai_gallery_delete_confirm, ids.size)
+        ) {
             okButton {
                 lifecycleScope.launch {
                     withContext(Dispatchers.IO) {

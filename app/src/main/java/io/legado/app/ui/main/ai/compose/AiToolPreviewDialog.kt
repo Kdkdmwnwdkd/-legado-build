@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -84,7 +85,7 @@ fun AiToolPreviewDialog(
                         }
                     }
                     Text(
-                        text = "关闭",
+                        text = stringResource(R.string.close),
                         color = style.colors.accent,
                         fontSize = 14.sp,
                         modifier = Modifier
@@ -100,7 +101,7 @@ fun AiToolPreviewDialog(
                     AiToolPreviewType.Generic -> GenericToolPreview(payload.raw, style)
                 }
                 Text(
-                    text = "复制原始数据",
+                    text = stringResource(R.string.ai_tool_preview_copy_raw),
                     color = style.colors.accent,
                     fontSize = 13.sp,
                     modifier = Modifier
@@ -125,7 +126,7 @@ private fun BookResultPreview(
     onDismiss: () -> Unit
 ) {
     if (books.isEmpty()) {
-        EmptyPreviewText("暂无书籍结果", style)
+        EmptyPreviewText(stringResource(R.string.ai_tool_preview_no_books), style)
         return
     }
     val context = LocalContext.current
@@ -191,7 +192,7 @@ private fun BookResultPreview(
 @Composable
 private fun WebResultPreview(results: List<AiWebResultUi>, style: AiComposeStyle) {
     if (results.isEmpty()) {
-        EmptyPreviewText("暂无搜索结果", style)
+        EmptyPreviewText(stringResource(R.string.ai_tool_preview_no_search), style)
         return
     }
     val context = LocalContext.current
@@ -256,7 +257,7 @@ private fun ImageResultPreview(
     onDismiss: () -> Unit
 ) {
     if (images.isEmpty()) {
-        EmptyPreviewText("暂无图片结果", style)
+        EmptyPreviewText(stringResource(R.string.ai_tool_preview_no_images), style)
         return
     }
     val context = LocalContext.current
@@ -294,7 +295,9 @@ private fun ImageResultPreview(
                         onRelease = { it.releaseComposeImage() }
                     )
                     Text(
-                        text = image.prompt.ifBlank { "图片已生成" },
+                        text = image.prompt.ifBlank {
+                            stringResource(R.string.ai_tool_preview_image_generated)
+                        },
                         color = style.colors.secondaryText,
                         fontSize = 12.5.sp,
                         maxLines = 2,
@@ -316,7 +319,7 @@ private fun GenericToolPreview(raw: String, style: AiComposeStyle) {
             .verticalScroll(rememberScrollState())
     ) {
         Text(
-            text = raw.ifBlank { "无结果" },
+            text = raw.ifBlank { stringResource(R.string.ai_tool_preview_no_result) },
             color = style.colors.secondaryText,
             fontSize = 12.5.sp,
             lineHeight = 18.sp

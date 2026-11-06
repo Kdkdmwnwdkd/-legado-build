@@ -162,7 +162,7 @@ class AiChatViewModel : ViewModel() {
             scope = AiAgentSession.SCOPE_CHAT,
             type = AiAgentJob.TYPE_CHAT,
             currentGoal = userContent,
-            currentTask = "AI 回复生成",
+            currentTask = appCtx.getString(R.string.ai_chat_task_reply),
             inputJson = JSONObject()
                 .put("messageCount", requestMessages.size)
                 .put("userContent", userContent.take(2_000))
@@ -172,7 +172,7 @@ class AiChatViewModel : ViewModel() {
         activeAgentRun = agentRun
         var updatedContextSummary = currentSessionSummary()
         val keepAliveId = AiTaskKeepAlive.retain(
-            title = "AI回复生成中",
+            title = appCtx.getString(R.string.ai_chat_task_reply_title),
             content = userContent,
             kind = AiTaskKeepAlive.KIND_CHAT
         )
