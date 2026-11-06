@@ -386,7 +386,7 @@ class RssSortActivity : VMBaseActivity<ActivityRssArtivlesBinding, RssSortViewMo
             val source = viewModel.rssSource ?: return@launch
             if (viewModel.searchKey != null) {
                 sortList.apply {
-                    val name = "搜索"
+                    val name = getString(R.string.search)
                     val url = source.searchUrl ?: return@apply
                     clear()
                     add(Pair(name, url))
@@ -462,7 +462,7 @@ class RssSortActivity : VMBaseActivity<ActivityRssArtivlesBinding, RssSortViewMo
                 return@launch
             }
             val comment =
-                source.getDisplayVariableComment("源变量可在js中通过source.getVariable()获取")
+                source.getDisplayVariableComment(getString(R.string.source_edit_variable_comment))
             val variable = withContext(Dispatchers.IO) { source.getVariable() }
             showDialogFragment(
                 VariableDialog(

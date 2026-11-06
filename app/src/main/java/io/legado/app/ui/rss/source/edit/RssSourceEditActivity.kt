@@ -378,7 +378,7 @@ class RssSourceEditActivity :
                 EditEntity(
                     "shouldOverrideUrlLoading",
                     rs.shouldOverrideUrlLoading,
-                    "url跳转拦截(js, 返回true拦截,js变量url,可以通过js打开url,比如调用阅读搜索,添加书架等,简化规则写法,不用webView js注入)"
+                    getString(R.string.source_edit_override_url_hint)
                 )
             )
         }
@@ -470,7 +470,7 @@ class RssSourceEditActivity :
         viewModel.save(getRssSource()) { source ->
             lifecycleScope.launch {
                 val comment =
-                    source.getDisplayVariableComment("源变量可在js中通过source.getVariable()获取")
+                    source.getDisplayVariableComment(getString(R.string.source_edit_variable_comment))
                 val variable = withContext(Dispatchers.IO) { source.getVariable() }
                 showDialogFragment(
                     VariableDialog(
@@ -490,11 +490,11 @@ class RssSourceEditActivity :
 
     override fun helpActions(): List<SelectItem<String>> {
         return arrayListOf(
-            SelectItem("插入URL参数", "urlOption"),
-            SelectItem("订阅源教程", "ruleHelp"),
-            SelectItem("js教程", "jsHelp"),
-            SelectItem("正则教程", "regexHelp"),
-            SelectItem("选择文件", "selectFile"),
+            SelectItem(getString(R.string.source_edit_insert_url_param), "urlOption"),
+            SelectItem(getString(R.string.source_edit_feed_tutorial), "ruleHelp"),
+            SelectItem(getString(R.string.source_edit_js_tutorial), "jsHelp"),
+            SelectItem(getString(R.string.source_edit_regex_tutorial), "regexHelp"),
+            SelectItem(getString(R.string.source_edit_select_file), "selectFile"),
         )
     }
 

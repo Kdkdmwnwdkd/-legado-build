@@ -350,10 +350,10 @@ class CodeEditActivity :
 
     override fun helpActions(): List<SelectItem<String>> {
         return arrayListOf(
-            SelectItem("书源教程", "ruleHelp"),
-            SelectItem("订阅源教程", "rssRuleHelp"),
-            SelectItem("js教程", "jsHelp"),
-            SelectItem("正则教程", "regexHelp")
+            SelectItem(getString(R.string.source_edit_book_tutorial), "ruleHelp"),
+            SelectItem(getString(R.string.source_edit_feed_tutorial), "rssRuleHelp"),
+            SelectItem(getString(R.string.source_edit_js_tutorial), "jsHelp"),
+            SelectItem(getString(R.string.source_edit_regex_tutorial), "regexHelp")
         )
     }
 

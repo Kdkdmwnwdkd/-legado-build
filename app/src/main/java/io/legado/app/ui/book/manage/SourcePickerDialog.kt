@@ -132,7 +132,7 @@ private fun SourcePickerContent(
     val style = rememberAppDialogStyle()
     val palette = style.toMiuixPalette()
     AppDialogFrame(
-        title = "选择书源",
+        title = stringResource(R.string.cache_manage_select_source),
         scrollContent = false,
         content = {
             Column(modifier = Modifier.fillMaxWidth()) {

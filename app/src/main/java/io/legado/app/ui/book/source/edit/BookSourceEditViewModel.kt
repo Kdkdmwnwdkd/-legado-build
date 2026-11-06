@@ -28,6 +28,7 @@ import io.legado.app.utils.jsonPath
 import io.legado.app.utils.printOnDebug
 import io.legado.app.utils.toastOnUi
 import kotlinx.coroutines.Dispatchers
+import splitties.init.appCtx
 
 
 class BookSourceEditViewModel(application: Application) : BaseViewModel(application) {
@@ -88,7 +89,7 @@ class BookSourceEditViewModel(application: Application) : BaseViewModel(applicat
         execute(context = Dispatchers.Main) {
             val text = context.getClipText()
             if (text.isNullOrBlank()) {
-                throw NoStackTraceException("剪贴板为空")
+                throw NoStackTraceException(appCtx.getString(R.string.toast_clipboard_empty))
             } else {
                 importSource(text, onSuccess)
             }
@@ -135,7 +136,7 @@ class BookSourceEditViewModel(application: Application) : BaseViewModel(applicat
                 }
             }
 
-            else -> throw NoStackTraceException("格式不对")
+            else -> throw NoStackTraceException(appCtx.getString(R.string.wrong_format))
         }
     }
 
