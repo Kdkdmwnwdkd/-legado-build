@@ -666,20 +666,20 @@ private fun BookInfoQuickActionItem.toQuickActionUi(
     val customAlias = BookInfoQuickActionConfig.customButtonAlias(state.sourceUrl)
     return when (type) {
         BookInfoQuickActionType.SOURCE -> BookInfoQuickActionUi(
-            label = alias.ifBlank { "书源" },
+            label = alias.ifBlank { stringResource(R.string.book_source) },
             value = state.originName.cleanBookInfoValue(),
             previewType = BookInfoMetricPreviewType.Source,
             onClick = actions.onChangeSource
         )
         BookInfoQuickActionType.TOC -> BookInfoQuickActionUi(
-            label = alias.ifBlank { "目录" },
+            label = alias.ifBlank { stringResource(R.string.chapter_list) },
             value = if (state.chapterCount > 0) "${state.chapterCount}" else stringResource(R.string.view_toc),
-            suffix = if (state.chapterCount > 0) "章" else "",
+            suffix = if (state.chapterCount > 0) stringResource(R.string.chapter) else "",
             previewType = BookInfoMetricPreviewType.Toc,
             onClick = actions.onOpenToc
         )
         BookInfoQuickActionType.GALLERY -> BookInfoQuickActionUi(
-            label = alias.ifBlank { "图库" },
+            label = alias.ifBlank { stringResource(R.string.gallery) },
             value = if (state.aiImageCount > 0) "${state.aiImageCount}" else stringResource(R.string.ai_image_gallery_empty),
             previewType = BookInfoMetricPreviewType.Gallery,
             onClick = actions.onOpenAiGallery
@@ -940,10 +940,14 @@ private fun BookInfoSourcePreview(
     state: BookInfoUiState,
     style: BookInfoComposeStyle
 ) {
-    BookInfoPreviewTitle("书源详情", style)
-    BookInfoPreviewLine("书源", state.originName.cleanBookInfoValue(), style)
-    BookInfoPreviewLine("书名", state.name, style)
-    BookInfoPreviewLine("作者", state.author, style)
+    BookInfoPreviewTitle(stringResource(R.string.book_info_preview_source_title), style)
+    BookInfoPreviewLine(
+        stringResource(R.string.book_source),
+        state.originName.cleanBookInfoValue(),
+        style
+    )
+    BookInfoPreviewLine(stringResource(R.string.book_name), state.name, style)
+    BookInfoPreviewLine(stringResource(R.string.author), state.author, style)
 }
 
 @Composable
@@ -951,10 +955,10 @@ private fun BookInfoTocMetricPreview(
     state: BookInfoUiState,
     style: BookInfoComposeStyle
 ) {
-    BookInfoPreviewTitle("目录预览", style)
+    BookInfoPreviewTitle(stringResource(R.string.book_info_preview_toc_title), style)
     val currentTitle = state.currentChapterTitle.ifBlank { state.tocText.cleanBookInfoValue() }
     if (currentTitle.isNotBlank()) {
-        BookInfoPreviewLine("当前", currentTitle, style)
+        BookInfoPreviewLine(stringResource(R.string.current), currentTitle, style)
     }
     val chapters = state.currentChapterPreview.ifEmpty { state.chapterPreview.take(8) }
     if (chapters.isEmpty()) {
@@ -997,7 +1001,7 @@ private fun BookInfoGalleryMetricPreview(
     style: BookInfoComposeStyle,
     contentReady: Boolean
 ) {
-    BookInfoPreviewTitle("图库预览", style)
+    BookInfoPreviewTitle(stringResource(R.string.book_info_preview_gallery_title), style)
     if (state.aiImagePaths.isEmpty()) {
         Text(
             text = stringResource(R.string.ai_image_gallery_empty),
@@ -1006,7 +1010,7 @@ private fun BookInfoGalleryMetricPreview(
         )
     } else {
         Text(
-            text = "共 ${state.aiImageCount} 张",
+            text = stringResource(R.string.book_info_images_count, state.aiImageCount),
             color = style.colors.secondaryText,
             fontSize = 12.5.sp
         )
@@ -1284,7 +1288,7 @@ private fun BookInfoCloudEntrySelectorDialog(
         )
         BookInfoCloudEntryModeRow(
             title = stringResource(R.string.book_cloud_cache_package_mode),
-            summary = "从云端备份包上传、下载、用缓存入架",
+            summary = stringResource(R.string.book_cloud_cache_package_summary),
             checked = state.cloudEntryMode == BookCloudEntryMode.CACHE_PACKAGE,
             style = style
         ) {
@@ -1293,7 +1297,7 @@ private fun BookInfoCloudEntrySelectorDialog(
         }
         BookInfoCloudEntryModeRow(
             title = stringResource(R.string.book_cloud_library_chapter_mode),
-            summary = "阅读页显示云按钮，按当前章节切换书库正文",
+            summary = stringResource(R.string.book_cloud_library_chapter_summary),
             checked = state.cloudEntryMode == BookCloudEntryMode.LIBRARY_CHAPTER,
             style = style
         ) {
@@ -1555,9 +1559,9 @@ private fun BookInfoQuickActionEditRow(
 @Composable
 private fun BookInfoQuickActionType.editorTitle(): String {
     return when (this) {
-        BookInfoQuickActionType.SOURCE -> "书源"
-        BookInfoQuickActionType.TOC -> "目录"
-        BookInfoQuickActionType.GALLERY -> "图库"
+        BookInfoQuickActionType.SOURCE -> stringResource(R.string.book_source)
+        BookInfoQuickActionType.TOC -> stringResource(R.string.chapter_list)
+        BookInfoQuickActionType.GALLERY -> stringResource(R.string.gallery)
         BookInfoQuickActionType.GROUP -> stringResource(R.string.group)
         BookInfoQuickActionType.CLOUD -> stringResource(R.string.book_cloud_entry_mode)
         BookInfoQuickActionType.CUSTOM_BUTTON -> stringResource(R.string.custom_button)
@@ -1570,9 +1574,9 @@ private fun BookInfoQuickActionType.editorTitle(): String {
 @Composable
 private fun BookInfoQuickActionType.defaultAliasPlaceholder(): String {
     return when (this) {
-        BookInfoQuickActionType.SOURCE -> "书源"
-        BookInfoQuickActionType.TOC -> "目录"
-        BookInfoQuickActionType.GALLERY -> "图库"
+        BookInfoQuickActionType.SOURCE -> stringResource(R.string.book_source)
+        BookInfoQuickActionType.TOC -> stringResource(R.string.chapter_list)
+        BookInfoQuickActionType.GALLERY -> stringResource(R.string.gallery)
         BookInfoQuickActionType.GROUP -> stringResource(R.string.group)
         BookInfoQuickActionType.CLOUD -> stringResource(R.string.book_cloud_entry_mode)
         BookInfoQuickActionType.CUSTOM_BUTTON -> stringResource(R.string.custom_button)
