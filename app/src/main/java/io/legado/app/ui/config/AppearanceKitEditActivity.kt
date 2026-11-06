@@ -149,9 +149,14 @@ class AppearanceKitEditActivity : BaseActivity<ActivityThemeManageBinding>() {
             MainLayoutPresetConfig.PRESET_REGULAR,
             MainLayoutPresetConfig.PRESET_SIDEBAR
         )
-        val labels = listOf("默认缺省: 常规", "悬浮", "常规", "侧栏")
+        val labels = listOf(
+            getString(R.string.appearance_preset_inherit),
+            getString(R.string.main_layout_preset_default),
+            getString(R.string.main_layout_preset_regular),
+            getString(R.string.main_layout_preset_sidebar)
+        )
         showComposeChoiceListDialog(
-            title = "导航样式",
+            title = getString(R.string.main_layout_preset),
             labels = labels,
             selectedIndex = values.indexOf(current).takeIf { it >= 0 } ?: 0,
             onSelected = { index -> onSelected(values.getOrNull(index)) }
@@ -208,7 +213,7 @@ private fun AppearanceKitEditScreen(
         contentPadding = PaddingValues(16.dp, 14.dp, 16.dp, 28.dp)
     ) {
         item {
-            AppSettingSectionTitle(title = "应用主题", palette = palette)
+            AppSettingSectionTitle(title = stringResource(R.string.appearance_section_title), palette = palette)
             SettingPanel(palette = palette) {
                 OutlinedTextField(
                     value = name,
@@ -231,13 +236,19 @@ private fun AppearanceKitEditScreen(
             Spacer(Modifier.height(14.dp))
             PreviewPanel(kit, palette)
             Spacer(Modifier.height(14.dp))
-            BindingSection("日间", kit.binding, false, dayOptions, palette, {
-                onKitChange(kit.copy(binding = it))
-            }, onSelect)
+            BindingSection(
+                stringResource(R.string.theme_day_short),
+                kit.binding, false, dayOptions, palette, {
+                    onKitChange(kit.copy(binding = it))
+                }, onSelect
+            )
             Spacer(Modifier.height(14.dp))
-            BindingSection("夜间", kit.binding, true, nightOptions, palette, {
-                onKitChange(kit.copy(binding = it))
-            }, onSelect)
+            BindingSection(
+                stringResource(R.string.night),
+                kit.binding, true, nightOptions, palette, {
+                    onKitChange(kit.copy(binding = it))
+                }, onSelect
+            )
             Spacer(Modifier.height(18.dp))
             SaveButton(palette, onSave)
             Spacer(Modifier.height(10.dp))
@@ -248,10 +259,10 @@ private fun AppearanceKitEditScreen(
 
 @Composable
 private fun PreviewPanel(kit: StoredAppearanceKit, palette: AppSettingPalette) {
-    AppSettingSectionTitle(title = "预览", palette = palette)
+    AppSettingSectionTitle(title = stringResource(R.string.preview), palette = palette)
     SettingPanel(palette = palette) {
         Text(
-            text = kit.name.ifBlank { "应用主题" },
+            text = kit.name.ifBlank { stringResource(R.string.appearance_section_title) },
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             color = palette.primaryText
         )
@@ -312,12 +323,12 @@ private fun DeleteButton(palette: AppSettingPalette, onClick: () -> Unit) {
 @Composable
 private fun PresetRow(current: String?, palette: AppSettingPalette, onClick: () -> Unit) {
     val label = when (current) {
-        MainLayoutPresetConfig.PRESET_DEFAULT -> "悬浮"
-        MainLayoutPresetConfig.PRESET_REGULAR -> "常规"
-        MainLayoutPresetConfig.PRESET_SIDEBAR -> "侧栏"
-        else -> "默认缺省: 常规"
+        MainLayoutPresetConfig.PRESET_DEFAULT -> stringResource(R.string.main_layout_preset_default)
+        MainLayoutPresetConfig.PRESET_REGULAR -> stringResource(R.string.main_layout_preset_regular)
+        MainLayoutPresetConfig.PRESET_SIDEBAR -> stringResource(R.string.main_layout_preset_sidebar)
+        else -> stringResource(R.string.appearance_preset_inherit)
     }
-    SettingChoiceRow("导航样式", label, palette, onClick)
+    SettingChoiceRow(stringResource(R.string.main_layout_preset), label, palette, onClick)
 }
 
 @Composable
@@ -338,16 +349,40 @@ private fun BindingSection(
 ) {
     AppSettingSectionTitle(title = title, palette = palette)
     SettingPanel(palette = palette) {
-        BindingRow("界面主题", if (isNight) binding.nightTheme else binding.dayTheme, options.themes, "使用内置界面主题", palette, {
+        BindingRow(
+            stringResource(R.string.appearance_theme),
+            if (isNight) binding.nightTheme else binding.dayTheme,
+            options.themes,
+            stringResource(R.string.appearance_use_builtin_theme),
+            palette,
+            {
             onBindingChange(binding.copy().apply { if (isNight) nightTheme = it else dayTheme = it })
         }, onSelect)
-        BindingRow("顶栏", if (isNight) binding.nightTopBar else binding.dayTopBar, options.topBars, "缺省: 常规顶栏", palette, {
+        BindingRow(
+            stringResource(R.string.appearance_top_bar),
+            if (isNight) binding.nightTopBar else binding.dayTopBar,
+            options.topBars,
+            stringResource(R.string.appearance_default_top_bar),
+            palette,
+            {
             onBindingChange(binding.copy().apply { if (isNight) nightTopBar = it else dayTopBar = it })
         }, onSelect)
-        BindingRow("底栏", if (isNight) binding.nightNavigationBar else binding.dayNavigationBar, options.navigationBars, "使用默认 MD3 常规底栏", palette, {
+        BindingRow(
+            stringResource(R.string.appearance_bottom_bar),
+            if (isNight) binding.nightNavigationBar else binding.dayNavigationBar,
+            options.navigationBars,
+            stringResource(R.string.appearance_default_bottom_bar),
+            palette,
+            {
             onBindingChange(binding.copy().apply { if (isNight) nightNavigationBar = it else dayNavigationBar = it })
         }, onSelect)
-        BindingRow("封面图集", if (isNight) binding.nightCoverCollection else binding.dayCoverCollection, options.coverCollections, "使用默认封面图集", palette, {
+        BindingRow(
+            stringResource(R.string.appearance_cover_collection),
+            if (isNight) binding.nightCoverCollection else binding.dayCoverCollection,
+            options.coverCollections,
+            stringResource(R.string.appearance_default_cover),
+            palette,
+            {
             onBindingChange(binding.copy().apply { if (isNight) nightCoverCollection = it else dayCoverCollection = it })
         }, onSelect)
     }
