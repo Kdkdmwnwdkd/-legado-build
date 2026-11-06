@@ -34,6 +34,7 @@ import splitties.init.appCtx
 import java.io.File
 import java.net.ConnectException
 import java.net.SocketTimeoutException
+import io.legado.app.R
 
 object AiChatSpeechPlayer : TextToSpeech.OnInitListener {
 
@@ -258,7 +259,12 @@ object AiChatSpeechPlayer : TextToSpeech.OnInitListener {
                         throw NoStackTraceException(response.peekBody(8_192).string())
                     }
                     if (!expected.isNullOrBlank() && !contentType.matches(expected.toRegex())) {
-                        throw NoStackTraceException("TTS服务器返回错误：" + response.peekBody(8_192).string())
+                        throw NoStackTraceException(
+                    appCtx.getString(
+                        R.string.ai_chat_tts_error,
+                        response.peekBody(8_192).string()
+                    )
+                )
                     }
                 }
                 currentCoroutineContext().ensureActive()

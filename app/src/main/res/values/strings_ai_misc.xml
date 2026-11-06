@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ai_image_import_js_rule">Import JS image-generation rules</string>
+    <string name="ai_image_import_rule">Import rules</string>
+    <string name="ai_image_export_rule">Export rules</string>
+    <string name="ai_image_set_current_model">Set as current image model</string>
+    <string name="ai_image_copy_rule">Copy rules</string>
+
+    <string name="ai_tool_preview_copy_raw">Copy raw data</string>
+    <string name="ai_tool_preview_no_books">No book results</string>
+    <string name="ai_tool_preview_no_search">No search results</string>
+    <string name="ai_tool_preview_no_images">No image results</string>
+    <string name="ai_tool_preview_image_generated">Image generated</string>
+    <string name="ai_tool_preview_no_result">No results</string>
+
+    <string name="ai_gallery_filter_book">This book</string>
+    <string name="ai_gallery_filter_character">Character images</string>
+    <string name="ai_gallery_selected_count">%1$d selected</string>
+    <string name="ai_gallery_delete_confirm">Delete the %1$d selected images?</string>
+
+    <string name="ai_chat_tts_error">TTS server returned an error: %1$s</string>
+    <string name="ai_chat_task_reply">Generating AI reply</string>
+    <string name="ai_chat_task_reply_title">AI reply is being generated</string>
+
+    <string name="ai_markdown_copy_code">Copy code</string>
+    <string name="ai_process_chain_steps">%1$d steps</string>
+</resources>
