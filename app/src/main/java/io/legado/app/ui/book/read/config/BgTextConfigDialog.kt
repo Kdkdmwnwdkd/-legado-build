@@ -252,7 +252,7 @@ class BgTextConfigDialog : BaseDialogFragment(0) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = ReadBookConfig.durConfig.name.ifBlank { "文字" },
+                    text = ReadBookConfig.durConfig.name.ifBlank { stringResource(R.string.bg_text_default_name) },
                     color = style.secondaryText,
                     fontSize = 13.sp,
                     maxLines = 1,
@@ -329,9 +329,9 @@ class BgTextConfigDialog : BaseDialogFragment(0) {
             }
             ReaderSegmentedOptions(
                 options = listOf(
-                    ReaderOption("0", "关闭"),
-                    ReaderOption("1", "实线"),
-                    ReaderOption("2", "虚线")
+                    ReaderOption("0", stringResource(R.string.bg_text_underline_off)),
+                    ReaderOption("1", stringResource(R.string.bg_text_underline_solid)),
+                    ReaderOption("2", stringResource(R.string.bg_text_underline_dashed))
                 ),
                 selectedValue = underlineMode.toString(),
                 style = style,
@@ -727,7 +727,7 @@ class BgTextConfigDialog : BaseDialogFragment(0) {
     private fun restorePreset() {
         val defaultConfigs = DefaultData.readConfigs
         val layoutNames = defaultConfigs.map { it.name }
-        showComposeChoiceListDialog("选择预设布局", layoutNames) { i ->
+        showComposeChoiceListDialog(getString(R.string.bg_text_choose_preset_layout), layoutNames) { i ->
             if (i >= 0) {
                 ReadBookConfig.durConfig = defaultConfigs[i].copy()
                 refreshTick++
@@ -859,7 +859,7 @@ class BgTextConfigDialog : BaseDialogFragment(0) {
         }.onError {
             it.printOnDebug()
             AppLog.put("导出失败:${it.localizedMessage}", it)
-            longToast("导出失败:${it.localizedMessage}")
+            longToast(getString(R.string.bg_text_export_failed, it.localizedMessage))
         }
     }
 
@@ -878,7 +878,7 @@ class BgTextConfigDialog : BaseDialogFragment(0) {
 
     private fun importNetConfigAlert() {
         showComposeTextInputDialog(
-            title = "输入地址",
+            title = getString(R.string.bg_text_import_address),
             onPositive = { url ->
                 if (url.isNotBlank()) {
                     importNetConfig(url)
@@ -904,7 +904,7 @@ class BgTextConfigDialog : BaseDialogFragment(0) {
             importConfig(uri.readBytes(requireContext()))
         }.onError {
             it.printOnDebug()
-            longToast("导入失败:${it.localizedMessage}")
+            longToast(getString(R.string.bg_text_import_failed, it.localizedMessage))
         }
     }
 
@@ -918,7 +918,7 @@ class BgTextConfigDialog : BaseDialogFragment(0) {
             toastOnUi(R.string.toast_import_success)
         }.onError {
             it.printOnDebug()
-            longToast("导入失败:${it.localizedMessage}")
+            longToast(getString(R.string.bg_text_import_failed, it.localizedMessage))
         }
     }
 

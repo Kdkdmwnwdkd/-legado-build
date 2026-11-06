@@ -64,9 +64,28 @@ class HighlightRuleEditActivity : BaseActivity<ActivityHighlightRuleEditBinding>
     }
     private val editingId get() = intent.getStringExtra("id")
     private val types = listOf("textColor", "background", "underline", "doubleLine", "wavyLine", "strikethrough")
-    private val typeLabels = listOf("文字上色", "背景上色", "下划线", "双下划线", "波浪线", "删除线")
+    private val typeLabels get() = listOf(
+        getString(R.string.highlight_style_text_color),
+        getString(R.string.highlight_style_background),
+        getString(R.string.highlight_style_underline),
+        getString(R.string.highlight_style_double_line),
+        getString(R.string.highlight_style_wavy_line),
+        getString(R.string.highlight_style_strikethrough)
+    )
     private val colors = listOf("accent", "red", "orange", "yellow", "green", "teal", "blue", "purple", "pink", "brown", "gray")
-    private val colorLabels = listOf("阅读强调色", "红色", "橙色", "黄色", "绿色", "青色", "蓝色", "紫色", "粉色", "棕色", "灰色")
+    private val colorLabels get() = listOf(
+        getString(R.string.highlight_color_accent),
+        getString(R.string.highlight_color_red),
+        getString(R.string.highlight_color_orange),
+        getString(R.string.highlight_color_yellow),
+        getString(R.string.highlight_color_green),
+        getString(R.string.highlight_color_teal),
+        getString(R.string.highlight_color_blue),
+        getString(R.string.highlight_color_purple),
+        getString(R.string.highlight_color_pink),
+        getString(R.string.highlight_color_brown),
+        getString(R.string.highlight_color_gray)
+    )
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         if (pendingFont == null) pendingFont = savedInstanceState?.getString("pendingFont")
@@ -124,7 +143,7 @@ class HighlightRuleEditActivity : BaseActivity<ActivityHighlightRuleEditBinding>
                     val id = editingId
                     if (id == null) HighlightRule() else withContext(Dispatchers.IO) {
                         HighlightRules.store.all().find { it.id == id }
-                            ?: error("此高亮规则已被删除，请返回管理页刷新")
+                            ?: error(getString(R.string.highlight_rule_deleted_error))
                     }
                 }
                 binding.run {
@@ -181,12 +200,12 @@ class HighlightRuleEditActivity : BaseActivity<ActivityHighlightRuleEditBinding>
             }
             val font = names.first ?: when {
                 fontId != null -> getString(R.string.reader_assets_missing)
-                Regex("(?i)font-family\\s*:").containsMatchIn(css) && !css.contains("reeden-font:", true) -> "自定义 CSS 字体"
+                Regex("(?i)font-family\\s*:").containsMatchIn(css) && !css.contains("reeden-font:", true) -> getString(R.string.highlight_rule_custom_css_font)
                 else -> getString(R.string.reader_assets_follow_font)
             }
             binding.btnFont.text = getString(R.string.reader_assets_picker_label, getString(R.string.reader_assets_font_label), font)
             binding.btnImage.text = getString(R.string.reader_assets_picker_label, getString(R.string.reader_assets_background_label),
-                names.second ?: if (imageId == null) getString(R.string.reader_assets_no_image) else "原规则背景")
+                names.second ?: if (imageId == null) getString(R.string.reader_assets_no_image) else getString(R.string.highlight_rule_original_background))
         }
     }
 
