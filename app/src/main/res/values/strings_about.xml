@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_beta_badge">Beta</string>
+    <string name="about_beta_update">Beta update</string>
+    <string name="about_beta_download_key">Download key</string>
+    <string name="about_beta_download_url">Download URL</string>
+    <string name="about_beta_enable">Enable beta updates</string>
+    <string name="about_beta_enable_message">When enabled, update checks compare both the stable and the beta channel. A stable build newer than the beta is preferred; otherwise the beta is installed when no newer stable exists.</string>
+    <string name="about_accel_enabled">Enabled · %1$s</string>
+    <string name="about_accel_disabled">Not enabled</string>
+
+    <string name="update_accel_title">Acceleration</string>
+    <string name="update_accel_github_proxy">GitHub acceleration proxy</string>
+    <string name="update_accel_template_hint">The proxy template supports the ${url} placeholder. If it is missing, the original GitHub URL is appended to the proxy address.</string>
+    <string name="update_accel_no_proxy">No proxy</string>
+    <string name="update_accel_add">Add proxy</string>
+    <string name="update_accel_edit">Edit proxy</string>
+</resources>

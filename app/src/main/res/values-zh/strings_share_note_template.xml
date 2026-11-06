@@ -15,4 +15,10 @@
     <string name="share_note_fonts">字体</string>
     <string name="share_note_source_builtin">内置</string>
     <string name="share_note_source_local">本地</string>
+
+    <string name="share_note_default_reader_name">读者</string>
+    <string name="share_note_default_reader_bio">一段认真读过的文字</string>
+    <string name="share_note_preview_template_label">模板</string>
+    <string name="share_note_change_template">更换模板</string>
+    <string name="share_note_done">完成</string>
 </resources>

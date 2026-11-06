@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import io.legado.app.help.update.AppUpdateConfig
 import io.legado.app.ui.widget.compose.AppDialogFrame
+import io.legado.app.R
 import io.legado.app.ui.widget.compose.ComposeDialogFragment
 import io.legado.app.ui.widget.compose.AppDialogSize
 import io.legado.app.ui.widget.compose.LegadoMiuixActionButton
@@ -116,7 +117,7 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
                 }
 
                 AppDialogFrame(
-                    title = "加速管理",
+                    title = getString(R.string.update_accel_title),
                     scrollContent = true,
                     content = {
                         Column(
@@ -124,14 +125,14 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                text = "GitHub 加速代理",
+                                text = getString(R.string.update_accel_github_proxy),
                                 color = style.accent,
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier.fillMaxWidth()
                             )
                             Text(
-                                text = "代理模板支持 \${url} 占位符。未填写占位符时，会自动把原始 GitHub 地址拼到代理地址后面。",
+                                text = getString(R.string.update_accel_template_hint),
                                 color = style.secondaryText,
                                 fontSize = 13.sp,
                                 lineHeight = 18.sp,
@@ -147,7 +148,7 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
                             ) {
                                 item(key = "proxy_none") {
                                     LegadoMiuixChoiceRow(
-                                        text = "不使用代理",
+                                        text = getString(R.string.update_accel_no_proxy),
                                         selected = selectedProxyIndex < 0,
                                         palette = palette,
                                         onClick = {
@@ -181,7 +182,7 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 LegadoMiuixActionButton(
-                                    text = "添加代理",
+                                    text = getString(R.string.update_accel_add),
                                     palette = palette,
                                     onClick = {
                                         showProxyEditDialog(oldValue = null) { value ->
@@ -194,7 +195,7 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 LegadoMiuixActionButton(
-                                    text = "编辑",
+                                    text = getString(R.string.edit),
                                     palette = palette,
                                     onClick = {
                                         val index = selectedProxyIndex
@@ -212,7 +213,7 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 LegadoMiuixActionButton(
-                                    text = "删除",
+                                    text = getString(R.string.delete),
                                     palette = palette,
                                     onClick = {
                                         val index = selectedProxyIndex
@@ -231,7 +232,7 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
                     },
                     actions = {
                         LegadoMiuixActionButton(
-                            text = "确定",
+                            text = getString(R.string.ok),
                             palette = palette,
                             onClick = {
                                 dismissAllowingStateLoss()
@@ -255,7 +256,9 @@ class UpdateAcceleratorComposeDialog : ComposeDialogFragment() {
         onSaved: (String) -> Unit
     ) {
         showComposeTextInputDialog(
-            title = if (oldValue == null) "添加代理" else "编辑代理",
+            title = getString(
+                if (oldValue == null) R.string.update_accel_add else R.string.update_accel_edit
+            ),
             hint = "https://proxy.example/\${url}",
             initialValue = oldValue.orEmpty(),
             onPositive = { value ->

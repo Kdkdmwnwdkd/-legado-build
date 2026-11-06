@@ -15,4 +15,10 @@
     <string name="share_note_fonts">Fonts</string>
     <string name="share_note_source_builtin">Built-in</string>
     <string name="share_note_source_local">Local</string>
+
+    <string name="share_note_default_reader_name">Reader</string>
+    <string name="share_note_default_reader_bio">A line read with care</string>
+    <string name="share_note_preview_template_label">Template</string>
+    <string name="share_note_change_template">Change template</string>
+    <string name="share_note_done">Done</string>
 </resources>
