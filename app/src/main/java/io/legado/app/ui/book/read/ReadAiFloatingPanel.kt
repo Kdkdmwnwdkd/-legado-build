@@ -811,14 +811,14 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
             return
         }
         context.selector(
-            context.getString(R.string.read_ai_window_abilities),
+            context.getString(R.string.ai_chat_window_abilities),
             listOf(
                 context.getString(R.string.ai_new_chat),
                 context.getString(R.string.ai_chat_history),
-                context.getString(R.string.read_ai_skill_count, activeWindowSkills().size),
-                context.getString(R.string.read_ai_mcp_count, windowMcpServerIds.size),
-                context.getString(R.string.read_ai_worldbook_count, activeReadAiWorldBookCount()),
-                context.getString(R.string.read_ai_clear_bindings)
+                context.getString(R.string.ai_chat_skill_count, activeWindowSkills().size),
+                context.getString(R.string.ai_chat_mcp_count, windowMcpServerIds.size),
+                context.getString(R.string.ai_chat_world_book_count, activeReadAiWorldBookCount()),
+                context.getString(R.string.ai_chat_clear_skill_mcp)
             )
         ) { _, _, index ->
             when (index) {
@@ -855,8 +855,8 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
         val worldBooks = AppConfig.aiWorldBookList
         if (worldBooks.isEmpty()) {
             context.selector(
-                context.getString(R.string.read_ai_worldbook),
-                listOf(context.getString(R.string.read_ai_open_worldbook_manage))
+                context.getString(R.string.ai_chat_world_book),
+                listOf(context.getString(R.string.ai_chat_open_world_book_manage))
             ) { _, _, _ ->
                 openWorldBookManage()
             }
@@ -897,7 +897,7 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
                     }
                 }
             }
-            neutralButton(context.getString(R.string.read_ai_manage)) { openWorldBookManage() }
+            neutralButton(context.getString(R.string.ai_chat_manage)) { openWorldBookManage() }
             cancelButton()
         }
     }
@@ -909,7 +909,7 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
             return
         }
         val selected = windowSkillIds.toMutableSet()
-        context.alert(title = context.getString(R.string.read_ai_window_skill)) {
+        context.alert(title = context.getString(R.string.ai_chat_window_skill)) {
             multiChoiceItems(
                 items = skills.map { skill -> skill.name.ifBlank { "Skill" } }.toTypedArray(),
                 checkedItems = BooleanArray(skills.size) { index -> skills[index].id in selected }
@@ -921,7 +921,7 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
                     AppConfig.aiSkillList.any { it.id == id && it.enabled }
                 }
             }
-            neutralButton(context.getString(R.string.read_ai_clear)) {
+            neutralButton(context.getString(R.string.ai_chat_clear)) {
                 windowSkillIds = emptySet()
             }
             cancelButton()
@@ -935,7 +935,7 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
             return
         }
         val selected = windowMcpServerIds.toMutableSet()
-        context.alert(title = context.getString(R.string.read_ai_window_mcp)) {
+        context.alert(title = context.getString(R.string.ai_chat_window_mcp)) {
             multiChoiceItems(
                 items = servers.map { server -> server.name.ifBlank { "MCP" } }.toTypedArray(),
                 checkedItems = BooleanArray(servers.size) { index -> servers[index].id in selected }
@@ -947,7 +947,7 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
                     AppConfig.aiMcpServerList.any { it.id == id && it.enabled }
                 }
             }
-            neutralButton(context.getString(R.string.read_ai_clear)) {
+            neutralButton(context.getString(R.string.ai_chat_clear)) {
                 windowMcpServerIds = emptySet()
             }
             cancelButton()
@@ -1396,8 +1396,8 @@ private fun ReadAiPanelContent(
                                 add(ReadAiMenuAction(stringResource(R.string.ai_chat_history), onToggleHistory))
                                 add(ReadAiMenuAction("Skill", onOpenSkills))
                                 add(ReadAiMenuAction("MCP", onOpenMcp))
-                                add(ReadAiMenuAction(stringResource(R.string.read_ai_worldbook), onOpenWorldBooks))
-                                add(ReadAiMenuAction(stringResource(R.string.read_ai_window_abilities), onOpenAbilities))
+                                add(ReadAiMenuAction(stringResource(R.string.ai_chat_world_book), onOpenWorldBooks))
+                                add(ReadAiMenuAction(stringResource(R.string.ai_chat_window_abilities), onOpenAbilities))
                                 add(ReadAiMenuAction(stringResource(R.string.ai_current_model), onSelectModel))
                             },
                             onDismiss = { menuExpanded = false }

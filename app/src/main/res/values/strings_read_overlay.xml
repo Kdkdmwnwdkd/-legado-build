@@ -2,19 +2,8 @@
 <resources>
     <!-- Read page AI floating panel -->
     <string name="read_ai_title">Ask AI about this page</string>
-    <string name="read_ai_window_abilities">Window capabilities</string>
-    <string name="read_ai_skill_count">Skills: %1$d</string>
-    <string name="read_ai_mcp_count">MCP: %1$d</string>
-    <string name="read_ai_worldbook_count">World books: %1$d</string>
-    <string name="read_ai_clear_bindings">Clear skills/MCP</string>
-    <string name="read_ai_worldbook">World book</string>
-    <string name="read_ai_open_worldbook_manage">Open world book manager</string>
     <string name="read_ai_worldbook_dialog_title">Read page AI · World book</string>
     <string name="read_ai_worldbook_disabled">(disabled)</string>
-    <string name="read_ai_manage">Manage</string>
-    <string name="read_ai_window_skill">Window skills</string>
-    <string name="read_ai_window_mcp">Window MCP</string>
-    <string name="read_ai_clear">Clear</string>
     <string name="read_ai_step_thinking">Thinking</string>
     <string name="read_ai_step_thinking_done">Thought</string>
 
