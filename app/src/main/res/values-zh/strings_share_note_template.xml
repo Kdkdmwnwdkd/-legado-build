@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="share_note_add_template">添加模板</string>
+    <string name="share_note_copy_builtin">复制内置模板新建</string>
+    <string name="share_note_import_html">导入 HTML</string>
+    <string name="share_note_import_zip">导入 ZIP</string>
+    <string name="share_note_preview_header">预览头部</string>
+    <string name="share_note_copy_new">复制新建</string>
+    <string name="share_note_export_html">导出 HTML</string>
+    <string name="share_note_export_zip">导出 ZIP</string>
+    <string name="share_note_summary">管理正文长按摘录分享图片使用的 HTML 模板。预览只显示模板头部，分享时会生成完整图片。</string>
+    <string name="share_note_share_style">分享样式</string>
+    <string name="share_note_style_summary">快速切换摘录分享图片的配色和字体，预览与分享图片会同步更新。</string>
+    <string name="share_note_colors">配色</string>
+    <string name="share_note_fonts">字体</string>
+    <string name="share_note_source_builtin">内置</string>
+    <string name="share_note_source_local">本地</string>
+</resources>
