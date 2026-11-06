@@ -129,7 +129,7 @@ class ImportRssSourceViewModel(app: Application) : BaseViewModel(app) {
                 GSON.fromJsonArray<RssSource>(mText).getOrThrow().let {
                     val source = it.firstOrNull() ?: return@let
                     if (source.sourceUrl.isEmpty()) {
-                        throw NoStackTraceException("不是订阅源")
+                        throw NoStackTraceException(context.getString(R.string.import_not_rss_source))
                     }
                     allSources.addAll(it)
                 }
@@ -139,7 +139,7 @@ class ImportRssSourceViewModel(app: Application) : BaseViewModel(app) {
                 GSON.fromJsonArray<RssSource>(mText).getOrThrow().let {
                     val source = it.firstOrNull() ?: return@let
                     if (source.sourceUrl.isEmpty()) {
-                        throw NoStackTraceException("不是订阅源")
+                        throw NoStackTraceException(context.getString(R.string.import_not_rss_source))
                     }
                     allSources.addAll(it)
                 }
@@ -174,7 +174,7 @@ class ImportRssSourceViewModel(app: Application) : BaseViewModel(app) {
             val items: List<Map<String, Any>> = jsonPath.parse(body).read("$")
             for (item in items) {
                 if (!item.containsKey("sourceUrl")) {
-                    throw NoStackTraceException("不是订阅源")
+                    throw NoStackTraceException(context.getString(R.string.import_not_rss_source))
                 }
                 val jsonItem = jsonPath.parse(item)
                 GSON.fromJsonObject<RssSource>(jsonItem.jsonString()).getOrThrow().let { source ->

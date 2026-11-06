@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import io.legado.app.R
+import splitties.init.appCtx
 import io.legado.app.base.BaseDialogFragment
 import io.legado.app.base.BaseViewModel
 import io.legado.app.constant.AppLog
@@ -107,7 +108,7 @@ class AddToBookshelfDialog() : BaseDialogFragment(R.layout.dialog_add_to_bookshe
 //                    throw NoStackTraceException("${it.name} 已在书架")
 //                } //onFragmentCreated的时候已经判断
                 val baseUrl = NetworkUtils.getBaseUrl(bookUrl)
-                    ?: throw NoStackTraceException("书籍地址格式不对")
+                    ?: throw NoStackTraceException(appCtx.getString(R.string.add_to_shelf_bad_url))
                 val urlMatcher = AnalyzeUrl.paramPattern.matcher(bookUrl)
                 if (urlMatcher.find()) {
                     val origin = GSON.fromJsonObject<AnalyzeUrl.UrlOption>(
@@ -138,7 +139,7 @@ class AddToBookshelfDialog() : BaseDialogFragment(R.layout.dialog_add_to_bookshe
                     } catch (_: Exception) {
                     }
                 }
-                throw NoStackTraceException("未找到匹配书源")
+                throw NoStackTraceException(appCtx.getString(R.string.add_to_shelf_no_source))
             }.onError {
                 AppLog.put("添加书籍 $bookUrl 出错", it)
                 loadErrorLiveData.postValue(it.localizedMessage)

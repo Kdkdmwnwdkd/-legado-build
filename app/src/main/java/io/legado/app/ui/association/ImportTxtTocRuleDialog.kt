@@ -189,9 +189,9 @@ class ImportTxtTocRuleDialog() : ComposeDialogFragment() {
                                 val isChecked = selectStatus.getOrNull(index) ?: false
                                 val localSource = checkSources.getOrNull(index)
                                 val stateText = when {
-                                    localSource == null -> "新增"
-                                    item != localSource -> "更新"
-                                    else -> "已有"
+                                    localSource == null -> stringResource(R.string.import_state_new)
+                                    item != localSource -> stringResource(R.string.import_state_updated)
+                                    else -> stringResource(R.string.import_state_existing)
                                 }
                                 val comment = item.example?.takeIf { it.isNotBlank() }
                                 ImportSourceItemRow(

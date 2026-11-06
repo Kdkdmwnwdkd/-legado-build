@@ -195,8 +195,8 @@ class ImportDictRuleDialog() : ComposeDialogFragment(),
                                 val isChecked = selectStatus.getOrNull(index) ?: false
                                 val localSource = checkSources.getOrNull(index)
                                 val stateText = when (localSource) {
-                                    null -> "新增"
-                                    else -> "已有"
+                                    null -> stringResource(R.string.import_state_new)
+                                    else -> stringResource(R.string.import_state_existing)
                                 }
                                 ImportSourceItemRow(
                                     name = item.name ?: "",

@@ -262,12 +262,12 @@ class ImportReplaceRuleDialog() : ComposeDialogFragment(),
                                     "${item.name}(${item.group})"
                                 }
                                 val stateText = when {
-                                    localRule == null -> "新增"
+                                    localRule == null -> stringResource(R.string.import_state_new)
                                     item.pattern != localRule.pattern
                                             || item.replacement != localRule.replacement
                                             || item.isRegex != localRule.isRegex
-                                            || item.scope != localRule.scope -> "更新"
-                                    else -> "已有"
+                                            || item.scope != localRule.scope -> stringResource(R.string.import_state_updated)
+                                    else -> stringResource(R.string.import_state_existing)
                                 }
                                 ImportSourceItemRow(
                                     name = nameText,
