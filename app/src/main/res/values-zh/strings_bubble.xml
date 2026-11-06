@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bubble_create_manual">手动创建</string>
+    <string name="bubble_import_zip">导入 zip</string>
+    <string name="bubble_upload_success">上传成功</string>
+    <string name="bubble_uploading">正在上传气泡</string>
+    <string name="bubble_default_name">自定义段评气泡</string>
+    <string name="bubble_size_scale">大小倍率</string>
+    <string name="bubble_svg_template">SVG 模板</string>
+    <string name="bubble_export_zip">导出 zip</string>
+    <string name="bubble_share_zip">文件分享</string>
+    <string name="bubble_share_link">直链分享</string>
+
+    <string name="bubble_help_message">段评气泡用于把规则里的 dp 图片转成原生 SVG 气泡。\n\n接入格式：\n&lt;img src=&quot;dp:12,{&quot;pclick&quot;:&quot;...&quot;,&quot;status&quot;:&quot;normal&quot;}&quot;&gt;\n\ndp: 后面的数字会替换 SVG 模板里的 ${num}。\nstatus 可选：normal 使用常规色，emphasis 使用强调色；不写 status 时默认 normal。\nSVG 模板支持 ${color} 和 ${num} 两个占位。\n内置气泡只读；需要自定义时请通过添加或导入创建新气泡。</string>
+</resources>
