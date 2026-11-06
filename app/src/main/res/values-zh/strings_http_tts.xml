@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="http_tts_title">HTTP 朗读规则</string>
+    <string name="http_tts_field_name">名称</string>
+    <string name="http_tts_field_speakers">发言人列表 JSON</string>
+    <string name="http_tts_field_emotions">情绪列表 JSON</string>
+    <string name="http_tts_field_url">url</string>
+    <string name="http_tts_field_content_type">Content-Type</string>
+    <string name="http_tts_field_concurrent_rate">并发率</string>
+    <string name="http_tts_field_thread_count">生成线程数</string>
+    <string name="http_tts_field_login_url">登录 URL</string>
+    <string name="http_tts_field_login_ui">登录 UI</string>
+    <string name="http_tts_field_login_js">登录检测 JS</string>
+    <string name="http_tts_field_header">Header</string>
+    <string name="http_tts_field_js_lib">jsLib</string>
+    <string name="http_tts_action_copy">复制</string>
+    <string name="http_tts_action_paste">粘贴</string>
+    <string name="http_tts_action_clear_login_header">清登录头</string>
+    <string name="http_tts_speakers_hint">发言人可填 [{&quot;speakerName&quot;:&quot;晓晓&quot;,&quot;toneID&quot;:&quot;xxx&quot;}]，也可用 [{&quot;groupName&quot;:&quot;女声&quot;,&quot;items&quot;:[...]}] 分组；情绪字段使用 emotionName / emotionTag。</string>
+</resources>

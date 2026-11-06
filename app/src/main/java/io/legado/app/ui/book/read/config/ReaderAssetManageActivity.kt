@@ -146,7 +146,7 @@ class ReaderAssetManageActivity : BaseActivity<ActivityReaderAssetManageBinding>
 
     override fun onCompatCreateOptionsMenu(menu: Menu): Boolean {
         menu.add(0, 10, 0, R.string.reader_assets_import_folder)
-        menu.add(0, 11, 1, "刷新")
+        menu.add(0, 11, 1, getString(R.string.refresh))
         menu.add(0, 12, 2, R.string.help)
         return super.onCompatCreateOptionsMenu(menu)
     }
@@ -193,7 +193,8 @@ class ReaderAssetManageActivity : BaseActivity<ActivityReaderAssetManageBinding>
         if (files.isEmpty()) { toastOnUi(R.string.reader_assets_search_empty); return }
         if (files.size > 100) { toastOnUi(R.string.toast_import_material_limit); return }
         showComposeConfirmDialog(getString(R.string.reader_assets_import_folder),
-            getString(R.string.reader_assets_import_folder_hint) + "\n\n${files.size} 个文件", onPositive = { work {
+            getString(R.string.reader_assets_import_folder_hint) + "\n\n" +
+                        getString(R.string.reader_assets_file_count, files.size), onPositive = { work {
                 val failures = arrayListOf<String>()
                 val count = withContext(Dispatchers.IO) {
                     files.count { file -> runCatching { ReaderAssets.importUri(file.uri) }
@@ -201,7 +202,8 @@ class ReaderAssetManageActivity : BaseActivity<ActivityReaderAssetManageBinding>
                 }
                 changed()
                 showComposeConfirmDialog(getString(R.string.reader_assets_import),
-                    "已导入或合并 $count 个素材" + if (failures.isEmpty()) "" else "\n\n" + failures.take(10).joinToString("\n"),
+                    getString(R.string.reader_assets_imported_count, count) +
+                        (if (failures.isEmpty()) "" else "\n\n" + failures.take(10).joinToString("\n")),
                     showNegative = false, onPositive = {})
             } })
     }
@@ -281,7 +283,10 @@ class ReaderAssetManageActivity : BaseActivity<ActivityReaderAssetManageBinding>
 
     private fun folderActions(folder: ReaderAssetFolder) {
         if (!canInteract) return
-        showComposeChoiceListDialog(folder.name, listOf("打开文件夹", getString(R.string.reader_assets_remove_folder))) {
+        showComposeChoiceListDialog(folder.name, listOf(
+                getString(R.string.reader_assets_open_folder),
+                getString(R.string.reader_assets_remove_folder)
+            )) {
             if (it == 0) openFolder(Entry(folder = folder))
             else showComposeConfirmDialog(getString(R.string.reader_assets_remove_folder),
                 getString(R.string.reader_assets_remove_folder_hint), onPositive = { work {
@@ -354,7 +359,9 @@ class ReaderAssetManageActivity : BaseActivity<ActivityReaderAssetManageBinding>
             listOf(btnImport, btnFolder, btnDefault, btnUp).forEach { it.isEnabled = canInteract }
             btnUp.visibility = if (navigation.isEmpty()) View.GONE else View.VISIBLE
             tvHint.setText(if (filter == "folder") R.string.reader_assets_folder_hint else R.string.reader_assets_hint)
-            tvSummary.text = if (busy || loading) getString(R.string.reader_assets_busy) else navigation.lastOrNull()?.let { "${it.name} · ${entries.size} 项" }
+            tvSummary.text = if (busy || loading) getString(R.string.reader_assets_busy) else navigation.lastOrNull()?.let {
+                getString(R.string.reader_assets_browse_summary, it.name, entries.size)
+            }
                 ?: getString(
                     R.string.reader_asset_summary,
                     entries.size,
@@ -418,8 +425,13 @@ class ReaderAssetManageActivity : BaseActivity<ActivityReaderAssetManageBinding>
                     asset != null -> listOf(if (asset.id == intent.getStringExtra("selectedId")) getString(R.string.reader_assets_current) else asset.extension.uppercase(),
                         if (asset.kind == "image") "${asset.width} × ${asset.height}" else getString(R.string.reader_assets_fonts),
                         Formatter.formatFileSize(this@ReaderAssetManageActivity, asset.size)).joinToString(" · ")
-                    entry.isFolder -> if (entry.folder != null) "本地来源 · 点击浏览" else "子文件夹"
-                    else -> "待导入 · " + Formatter.formatFileSize(this@ReaderAssetManageActivity, entry.local?.size ?: 0)
+                    entry.isFolder -> if (entry.folder != null) {
+                        getString(R.string.reader_assets_local_source_hint)
+                    } else {
+                        getString(R.string.reader_assets_subfolder)
+                    }
+                    else -> getString(R.string.reader_assets_pending_import) + " · " +
+                        Formatter.formatFileSize(this@ReaderAssetManageActivity, entry.local?.size ?: 0)
                 }
                 tvPreview.visibility = if (isFont) View.VISIBLE else View.GONE
                 ivPreview.visibility = if (isFont) View.GONE else View.VISIBLE
@@ -438,7 +450,7 @@ class ReaderAssetManageActivity : BaseActivity<ActivityReaderAssetManageBinding>
                     it.typeface = this@ReaderAssetManageActivity.uiTypeface()
                 }
                 btnUse.setTextColor(accentColor); btnMore.setTextColor(primaryTextColor)
-                btnUse.text = when { entry.isFolder -> "打开"; entry.local != null -> "导入"; pickKind.isNotBlank() -> getString(R.string.reader_assets_select); else -> getString(R.string.reader_assets_use) }
+                btnUse.text = when { entry.isFolder -> getString(R.string.open); entry.local != null -> getString(R.string.import_str); pickKind.isNotBlank() -> getString(R.string.reader_assets_select); else -> getString(R.string.reader_assets_use) }
                 btnMore.visibility = if (entry.local != null) View.GONE else View.VISIBLE
                 btnUse.setOnClickListener {
                     if (canInteract) when { entry.isFolder -> openFolder(entry); entry.local != null -> importOne(entry.local.uri); asset != null -> select(asset) }
