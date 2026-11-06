@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="discovery_suite_tag_loading">Loading tags...</string>
+    <string name="discovery_suite_source_tag_summary">%1$d sources / %2$d tags</string>
+    <string name="discovery_suite_current_suite">Current suite · %1$d widgets</string>
+    <string name="discovery_suite_widget_count">%1$d widgets</string>
+    <string name="discovery_suite_suite_missing">Suite not found</string>
+
+    <string name="discovery_suite_action_set_current">Set as current</string>
+    <string name="discovery_suite_action_rename">Rename</string>
+    <string name="discovery_suite_action_alias">Alias</string>
+
+    <string name="discovery_suite_widget_type_rank_buttons">Rank buttons</string>
+    <string name="discovery_suite_widget_type_tag_nav">Tag navigation</string>
+
+    <string name="discovery_suite_opacity_multiplier">Opacity multiplier</string>
+    <string name="discovery_suite_opacity_hint">Currently %1$sx, affects suite panel opacity only</string>
+
+    <string name="discovery_suite_edit_widget">Edit widget</string>
+    <string name="discovery_suite_search_source">Search sources</string>
+    <string name="discovery_suite_selected_count">%1$d selected</string>
+    <string name="discovery_suite_clear_current_source">Clear current source</string>
+    <string name="discovery_suite_clear_all">Clear all</string>
+
+    <string name="discovery_suite_source_loading_tags">%1$s: loading tags...</string>
+    <string name="discovery_suite_source_tags_not_loaded">%1$s: tags not loaded yet</string>
+    <string name="discovery_suite_source_no_tags">%1$s: no tags available</string>
+    <string name="discovery_suite_load">Load</string>
+    <string name="discovery_suite_source_loading">Loading</string>
+    <string name="discovery_suite_source_not_loaded">Not loaded</string>
+    <string name="discovery_suite_source_tag_count">%1$d tags</string>
+
+    <string name="discovery_suite_preview_title">%1$s · Classic discovery preview · %2$d selectable tags</string>
+    <string name="discovery_suite_widget_target_count">%1$s · %2$d tags</string>
+
+    <string name="discovery_suite_hint_loading_sources">Loading sources...</string>
+    <string name="discovery_suite_hint_no_sources">No sources available</string>
+    <string name="discovery_suite_hint_loading_tags">Loading tags for this source; %1$d selected</string>
+    <string name="discovery_suite_hint_no_tags">This source has no tags; %1$d selected</string>
+    <string name="discovery_suite_hint_single_tag">Horizontal books takes 1 tag; %1$d selected</string>
+    <string name="discovery_suite_hint_rank_buttons">Rank buttons needs 3-9 tags; %1$d selected</string>
+    <string name="discovery_suite_hint_ranked_list">Ranked list needs 3-9 tags; %1$d selected</string>
+    <string name="discovery_suite_hint_waterfall">Waterfall is pinned to the bottom; %1$d tags selected</string>
+    <string name="discovery_suite_hint_pick_source">Pick a source first, then its tags; %1$d selected</string>
+
+    <string name="discovery_suite_empty_suites">No suites yet</string>
+    <string name="discovery_suite_category">Category</string>
+    <string name="discovery_suite_save">Save</string>
+</resources>
