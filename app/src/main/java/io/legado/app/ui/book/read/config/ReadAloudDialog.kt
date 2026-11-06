@@ -133,8 +133,8 @@ class ReadAloudDialog : BaseDialogFragment(R.layout.dialog_read_aloud) {
         }
         tvTimer.setOnClickListener {
             val times = intArrayOf(0, 5, 10, 15, 30, 60, 90, 180)
-            val timeKeys = times.map { "$it 分钟" }
-            showComposeChoiceListDialog("设定时间", timeKeys) { index ->
+            val timeKeys = times.map { getString(R.string.read_aloud_minutes, it) }
+            showComposeChoiceListDialog(getString(R.string.read_aloud_set_time), timeKeys) { index ->
                 times.getOrNull(index)?.let { time ->
                     ReadAloud.setTimer(requireContext(), time)
                 }

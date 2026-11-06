@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import io.legado.app.R
 import io.legado.app.constant.AppLog
 import io.legado.app.help.config.ShareNoteTemplateManager
@@ -93,7 +94,7 @@ class ShareNoteTemplateSelectDialog : ComposeDialogFragment() {
                     }
                 }
                 AppDialogFrame(
-                    title = "选择分享模板",
+                    title = stringResource(R.string.share_note_pick_template),
                     message = null,
                     scrollContent = false,
                     content = {
@@ -149,7 +150,7 @@ class ShareNoteTemplateSelectDialog : ComposeDialogFragment() {
                     },
                     actions = {
                         LegadoMiuixActionButton(
-                            text = "管理模板",
+                            text = stringResource(R.string.share_note_manage_template),
                             palette = palette.miuix,
                             onClick = {
                                 dismissAllowingStateLoss()

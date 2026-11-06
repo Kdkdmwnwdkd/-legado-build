@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.legado.app.R
+import splitties.init.appCtx
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.BubblePackageManager
 import io.legado.app.model.ImageProvider
@@ -94,7 +95,7 @@ class BubbleQuickSwitchDialog : ComposeDialogFragment() {
                     }
                 }
                 AppDialogFrame(
-                    title = "选择段评气泡",
+                    title = stringResource(R.string.bubble_quick_pick_title),
                     scrollContent = false,
                     content = {
                         LazyColumn(
@@ -105,8 +106,8 @@ class BubbleQuickSwitchDialog : ComposeDialogFragment() {
                         ) {
                             item(key = "forceSoftwareBubble") {
                                 AppManagementListRow(
-                                    title = "强制使用软件气泡",
-                                    subtitle = "识别正文图片形式的段评入口",
+                                    title = stringResource(R.string.bubble_force_software_title),
+                                    subtitle = stringResource(R.string.bubble_force_software_summary),
                                     palette = palette,
                                     switchChecked = forceSoftwareBubble,
                                     onSwitchChange = { checked ->
@@ -152,7 +153,7 @@ class BubbleQuickSwitchDialog : ComposeDialogFragment() {
                                                 overflow = TextOverflow.Ellipsis
                                             )
                                             Text(
-                                                text = if (active) "已应用" else bubbleSourceText(entry.source),
+                                                text = if (active) stringResource(R.string.bubble_applied) else bubbleSourceText(entry.source),
                                                 color = palette.settings.secondaryText,
                                                 fontSize = 12.sp,
                                                 maxLines = 1,
@@ -168,7 +169,7 @@ class BubbleQuickSwitchDialog : ComposeDialogFragment() {
                     actions = {
                         val dialogPalette = rememberAppManagementPalette().miuix
                         LegadoMiuixActionButton(
-                            text = "气泡管理",
+                            text = stringResource(R.string.bubble_manage),
                             palette = dialogPalette,
                             onClick = {
                                 dismissAllowingStateLoss()
@@ -237,9 +238,9 @@ private fun bubblePreviewBitmap(density: Float, config: BubblePackageManager.Con
 
 private fun bubbleSourceText(source: BubblePackageManager.Source): String {
     return when (source) {
-        BubblePackageManager.Source.BUILTIN -> "内置"
-        BubblePackageManager.Source.LOCAL -> "本地"
-        BubblePackageManager.Source.REMOTE -> "远端"
-        BubblePackageManager.Source.BOTH -> "本地 · 远端"
+        BubblePackageManager.Source.BUILTIN -> appCtx.getString(R.string.bubble_source_builtin)
+        BubblePackageManager.Source.LOCAL -> appCtx.getString(R.string.bubble_source_local)
+        BubblePackageManager.Source.REMOTE -> appCtx.getString(R.string.bubble_source_remote)
+        BubblePackageManager.Source.BOTH -> appCtx.getString(R.string.bubble_source_both)
     }
 }

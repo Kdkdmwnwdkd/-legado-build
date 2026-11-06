@@ -84,7 +84,7 @@ class ReaderTemplateDialog : ReaderBottomSheetComposeDialogFragment() {
             val message = getString(R.string.reader_assets_template_done)
             model.perform(enqueue = true) {
                 withContext(Dispatchers.IO) {
-                    if (id.isNotEmpty()) require(ReaderAssets.store.find(id)?.kind == kind && ReaderAssets.store.file(id) != null) { "素材已丢失，请重新导入" }
+                    if (id.isNotEmpty()) require(ReaderAssets.store.find(id)?.kind == kind && ReaderAssets.store.file(id) != null) { getString(R.string.reader_template_asset_missing) }
                 }
                 model.draft?.takeIf { it.id == draftId }?.let { draft ->
                     model.draft = draft.copy(css = if (kind == "font") ReaderTemplateAssetStyle.font(draft.css, id.ifEmpty { null })
@@ -432,7 +432,7 @@ class ReaderTemplateDialog : ReaderBottomSheetComposeDialogFragment() {
                 R.string.reader_template_author_help,
                 R.string.reader_template_javascript_help
             ).joinToString("\n\n") { getString(it) } + "\n\n" + getString(R.string.reader_assets_hint) +
-                "\n可在编辑页直接选择字体和背景，或从素材库复制图片地址、字体 CSS 放入页面代码。",
+                "\n" + getString(R.string.reader_template_font_hint),
             showNegative = false,
             messageInContent = true,
             onPositive = {}

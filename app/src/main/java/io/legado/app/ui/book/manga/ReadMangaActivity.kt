@@ -339,7 +339,7 @@ class ReadMangaActivity : VMBaseActivity<ActivityMangaBinding, ReadMangaViewMode
 
                 if (curFinish) {
                     if (!ReadManga.hasNextChapter) {
-                        loadMoreView.noMore("暂无章节了！")
+                        loadMoreView.noMore(getString(R.string.manga_no_more_chapters))
                     } else if (nextFinish) {
                         loadMoreView.stopLoad()
                     } else {
@@ -450,7 +450,7 @@ class ReadMangaActivity : VMBaseActivity<ActivityMangaBinding, ReadMangaViewMode
                 binding.tvRetry.isVisible = retry
                 binding.tvMsg.text = msg
             } else {
-                loadMoreView.error(null, "加载失败，点击重试")
+                loadMoreView.error(null, getString(R.string.manga_load_failed_retry))
             }
         }
     }
