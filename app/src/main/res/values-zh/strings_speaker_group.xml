@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="speaker_hint_auto_assign">多角色自动分配会优先使用这里启用的发言人</string>
+    <string name="speaker_new_group">新建分组</string>
+    <string name="speaker_edit_group">编辑分组</string>
+    <string name="speaker_add">添加发言人</string>
+    <string name="speaker_rename">重命名</string>
+    <string name="speaker_invalid_tag">已失效</string>
+    <string name="speaker_system_default">系统默认</string>
+    <string name="speaker_default_group">默认分组</string>
+
+    <string name="speaker_invalid_count">%1$d 个失效发言人 · 不参与自动分配</string>
+    <string name="speaker_count_enabled">%1$d 个发言人 · 已启用</string>
+    <string name="speaker_count_disabled">%1$d 个发言人 · 已停用</string>
+    <string name="speaker_option_count">%1$d 个发言人</string>
+    <string name="speaker_selected_count">已选 %1$d</string>
+    <string name="speaker_add_count">添加 %1$d</string>
+
+    <string name="speaker_empty_invalid">没有被标记失效的发言人</string>
+    <string name="speaker_empty_group">这个分组还没有发言人</string>
+    <string name="speaker_expanded">已展开</string>
+    <string name="speaker_collapsed">已收起</string>
+    <string name="speaker_select_all">全选</string>
+    <string name="speaker_unselect_all">取消全选</string>
+</resources>
