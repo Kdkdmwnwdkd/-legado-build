@@ -224,7 +224,7 @@ private fun TextDialogContent(
 
         else -> {
             val displayText = if (content.length >= 32 * 1024) {
-                content.take(32 * 1024) + "\n\n数据太大，无法全部显示…"
+                stringResource(R.string.text_too_large, content.take(32 * 1024))
             } else {
                 content
             }

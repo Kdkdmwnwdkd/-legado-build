@@ -79,7 +79,7 @@ class ExploreShowWaterfallAdapter(
 
     private fun bindKindLabels(binding: ItemSearchWaterfallBinding, item: SearchBook) {
         val labels = buildList {
-            if (callBack.isInBookshelf(item)) add(IN_BOOKSHELF_LABEL)
+            if (callBack.isInBookshelf(item)) add(binding.root.context.getString(R.string.in_bookshelf))
             addAll(item.getKindList())
         }.take(4)
         if (labels.isEmpty()) {
@@ -106,4 +106,3 @@ class ExploreShowWaterfallAdapter(
     }
 }
 
-private const val IN_BOOKSHELF_LABEL = "已在书架"

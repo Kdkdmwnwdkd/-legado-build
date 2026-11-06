@@ -182,7 +182,7 @@ private fun SearchScopeContent(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     ModeChip(
-                        label = "书源",
+                        label = stringResource(R.string.book_source),
                         selected = mode == SearchScopeDialog.ScopeMode.SOURCE,
                         onClick = { onModeChange(SearchScopeDialog.ScopeMode.SOURCE) },
                         style = style
