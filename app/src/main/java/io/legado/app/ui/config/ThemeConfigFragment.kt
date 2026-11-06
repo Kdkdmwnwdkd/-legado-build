@@ -108,9 +108,11 @@ class ThemeConfigFragment : ComposeSettingFragment(), MenuProvider {
                         ),
                         SettingActionSpec(
                             key = KEY_SHARE_NOTE_TEMPLATE_MANAGE,
-                            title = "摘录分享模板",
-                            summary = "管理正文长按分享图片使用的 HTML 模板",
-                            searchKeys = listOf("分享模板", "摘录模板", "笔记模板", "正文分享"),
+                            title = getString(R.string.theme_share_note_template),
+                            summary = getString(R.string.theme_share_note_template_summary),
+                            searchKeys = resources.getStringArray(
+                                R.array.theme_share_note_template_search_keys
+                            ).toList(),
                             onClick = { startActivity<ShareNoteTemplateManageActivity>() }
                         ),
                         SettingActionSpec(

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Appearance kit editor -->
+    <string name="appearance_section_title">App theme</string>
+    <string name="appearance_preset_inherit">Default: Regular</string>
+    <string name="appearance_theme">UI theme</string>
+    <string name="appearance_top_bar">Top bar</string>
+    <string name="appearance_bottom_bar">Bottom bar</string>
+    <string name="appearance_cover_collection">Cover collection</string>
+    <string name="appearance_use_builtin_theme">Use built-in UI theme</string>
+    <string name="appearance_default_top_bar">Default: regular top bar</string>
+    <string name="appearance_default_bottom_bar">Use default MD3 bottom bar</string>
+    <string name="appearance_default_cover">Use default cover collection</string>
+
+    <!-- Share note template entry -->
+    <string name="theme_share_note_template">Excerpt share template</string>
+    <string name="theme_share_note_template_summary">Manage the HTML templates used when sharing images by long-pressing the text</string>
+    <string-array name="theme_share_note_template_search_keys">
+        <item>share template</item>
+        <item>excerpt template</item>
+        <item>note template</item>
+        <item>text share</item>
+    </string-array>
+</resources>
