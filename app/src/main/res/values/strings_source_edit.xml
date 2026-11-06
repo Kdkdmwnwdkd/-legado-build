@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="source_edit_insert_url_param">Insert URL parameter</string>
+    <string name="source_edit_book_tutorial">Book source tutorial</string>
+    <string name="source_edit_feed_tutorial">Feed source tutorial</string>
+    <string name="source_edit_js_tutorial">JS tutorial</string>
+    <string name="source_edit_regex_tutorial">Regex tutorial</string>
+    <string name="source_edit_insert_group">Insert group</string>
+    <string name="source_edit_select_file">Select file</string>
+    <string name="source_edit_variable_comment">Source variables can be read in JS via source.getVariable()</string>
+    <string name="source_edit_override_url_hint">URL redirect interception (JS; return true to intercept). The variable url is available, and urls can be opened via JS, e.g. to invoke Reading search or add to bookshelf. Simplifies rule writing without WebView JS injection.</string>
+    <string name="source_debug_explore_error">Failed to load discovery\n%1$s</string>
+    <string name="source_debug_select_explore">Select discovery</string>
+    <string name="rss_debug_select_category">Select category</string>
+</resources>

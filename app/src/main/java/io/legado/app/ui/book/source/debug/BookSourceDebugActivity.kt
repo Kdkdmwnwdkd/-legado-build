@@ -130,7 +130,7 @@ class BookSourceDebugActivity : VMBaseActivity<ActivitySourceDebugBinding, BookS
             exploreKinds?.firstOrNull()?.let {
                 binding.textFx.text = "${it.title}::${it.url}"
                 if (it.title.startsWith("ERROR:")) {
-                    adapter.addItem("获取发现出错\n${it.url}")
+                    adapter.addItem(getString(R.string.source_debug_explore_error, it.url))
                     openOrCloseHelp(false)
                     searchView.clearFocus()
                     return@launch
@@ -139,7 +139,7 @@ class BookSourceDebugActivity : VMBaseActivity<ActivitySourceDebugBinding, BookS
             @Suppress("USELESS_ELVIS")
             exploreKinds?.map { it.title ?: "" }?.let { exploreKindTitles ->
                 binding.textFx.onLongClick {
-                    selector("选择发现", exploreKindTitles) { _, index ->
+                    selector(getString(R.string.source_debug_select_explore), exploreKindTitles) { _, index ->
                         val explore = exploreKinds[index]
                         binding.textFx.text = "${explore.title}::${explore.url}"
                         searchView.setQuery(binding.textFx.text, true)
