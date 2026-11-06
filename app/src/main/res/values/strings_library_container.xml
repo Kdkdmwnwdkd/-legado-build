@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="library_container_export_all">Export all</string>
+    <string name="library_container_import_encrypted">Import encrypted library container</string>
+    <string name="library_container_import_key_hint">Enter the decryption key</string>
+    <string name="library_container_export_title">Export library container</string>
+    <string name="library_container_decrypt_key_label">Decryption key:\n</string>
+    <string name="library_container_copy_key">Copy key</string>
+    <string name="library_container_copy_url">Copy URL</string>
+
+    <string name="library_container_add">Add library container</string>
+    <string name="library_container_edit_locked">Edit synced sources</string>
+    <string name="library_container_edit">Edit library container</string>
+    <string name="library_container_password">Library encryption password</string>
+    <string name="library_container_min_upload">Min characters per auto upload</string>
+    <string name="library_container_daily_limit">Daily auto-upload chapter limit</string>
+    <string name="library_container_pick_source">Select sources</string>
+
+    <string name="library_container_delete">Delete library container</string>
+    <string name="library_container_delete_message">Delete %1$s?</string>
+
+    <string name="library_container_action_test">Test connection</string>
+    <string name="library_container_action_refresh">Refresh capacity</string>
+    <string name="library_container_action_set_default">Set as default</string>
+    <string name="library_container_action_enable">Enable</string>
+    <string name="library_container_action_disable">Disable</string>
+</resources>

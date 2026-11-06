@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="library_container_export_all">导出全部</string>
+    <string name="library_container_import_encrypted">导入加密书库容器</string>
+    <string name="library_container_import_key_hint">请输入解密密钥</string>
+    <string name="library_container_export_title">导出书库容器</string>
+    <string name="library_container_decrypt_key_label">解密密钥：\n</string>
+    <string name="library_container_copy_key">复制密钥</string>
+    <string name="library_container_copy_url">复制URL</string>
+
+    <string name="library_container_add">添加书库容器</string>
+    <string name="library_container_edit_locked">编辑同步书源</string>
+    <string name="library_container_edit">编辑书库容器</string>
+    <string name="library_container_password">书库加密密码</string>
+    <string name="library_container_min_upload">最少自动上传字数</string>
+    <string name="library_container_daily_limit">每日自动上传章节上限</string>
+    <string name="library_container_pick_source">指定书源</string>
+
+    <string name="library_container_delete">删除书库容器</string>
+    <string name="library_container_delete_message">确认删除 %1$s？</string>
+
+    <string name="library_container_action_test">测试连接</string>
+    <string name="library_container_action_refresh">刷新容量</string>
+    <string name="library_container_action_set_default">设为默认</string>
+    <string name="library_container_action_enable">启用</string>
+    <string name="library_container_action_disable">禁用</string>
+</resources>
