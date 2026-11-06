@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="speaker_hint_auto_assign">Multi-role auto assignment prefers the speakers enabled here</string>
+    <string name="speaker_new_group">New group</string>
+    <string name="speaker_edit_group">Edit group</string>
+    <string name="speaker_add">Add speaker</string>
+    <string name="speaker_rename">Rename</string>
+    <string name="speaker_invalid_tag">Unavailable</string>
+    <string name="speaker_system_default">System default</string>
+    <string name="speaker_default_group">Default group</string>
+
+    <string name="speaker_invalid_count">%1$d unavailable speakers · excluded from auto assignment</string>
+    <string name="speaker_count_enabled">%1$d speakers · Enabled</string>
+    <string name="speaker_count_disabled">%1$d speakers · Disabled</string>
+    <string name="speaker_option_count">%1$d speakers</string>
+    <string name="speaker_selected_count">%1$d selected</string>
+    <string name="speaker_add_count">Add %1$d</string>
+
+    <string name="speaker_empty_invalid">No speakers are marked unavailable</string>
+    <string name="speaker_empty_group">This group has no speakers yet</string>
+    <string name="speaker_expanded">Expanded</string>
+    <string name="speaker_collapsed">Collapsed</string>
+    <string name="speaker_select_all">Select all</string>
+    <string name="speaker_unselect_all">Deselect all</string>
+</resources>

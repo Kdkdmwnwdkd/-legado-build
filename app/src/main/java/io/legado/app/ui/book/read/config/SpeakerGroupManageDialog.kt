@@ -475,7 +475,7 @@ private fun SpeakerGroupManageScreen(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(stringResource(R.string.speaker_manage), color = colors.text, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
                     Text(
-                        "多角色自动分配会优先使用这里启用的发言人",
+                        stringResource(R.string.speaker_hint_auto_assign),
                         color = colors.subText,
                         fontSize = 12.sp,
                         modifier = Modifier.padding(top = 4.dp)
@@ -487,7 +487,12 @@ private fun SpeakerGroupManageScreen(
                 modifier = Modifier.padding(top = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                SpeakerActionButton("新建分组", colors, modifier = Modifier.weight(1f), onClick = actions::openNewGroupEditor)
+                SpeakerActionButton(
+                    stringResource(R.string.speaker_new_group),
+                    colors,
+                    modifier = Modifier.weight(1f),
+                    onClick = actions::openNewGroupEditor
+                )
             }
             if (groups.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -560,9 +565,11 @@ private fun SpeakerGroupCard(
                     Text(group.displayName(), color = colors.text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                     Text(
                         if (invalidGroup) {
-                            "${items.size} 个失效发言人 · 不参与自动分配"
+                            stringResource(R.string.speaker_invalid_count, items.size)
+                        } else if (group.enabled) {
+                            stringResource(R.string.speaker_count_enabled, items.size)
                         } else {
-                            "${items.size} 个发言人 · ${if (group.enabled) "已启用" else "已停用"}"
+                            stringResource(R.string.speaker_count_disabled, items.size)
                         },
                         color = colors.subText,
                         fontSize = 12.sp,
@@ -579,7 +586,11 @@ private fun SpeakerGroupCard(
             }
             if (items.isEmpty()) {
                 Text(
-                    if (invalidGroup) "没有被标记失效的发言人" else "这个分组还没有发言人",
+                    if (invalidGroup) {
+                        stringResource(R.string.speaker_empty_invalid)
+                    } else {
+                        stringResource(R.string.speaker_empty_group)
+                    },
                     color = colors.subText,
                     fontSize = 12.sp
                 )
@@ -599,10 +610,23 @@ private fun SpeakerGroupCard(
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (!invalidGroup) {
-                    SpeakerActionButton("添加发言人", colors, Modifier.weight(1f)) { actions.openSpeakerPicker(group) }
-                    SpeakerSubActionButton("重命名", colors, Modifier.weight(1f)) { actions.openGroupEditor(group) }
+                    SpeakerActionButton(
+                        stringResource(R.string.speaker_add),
+                        colors,
+                        Modifier.weight(1f)
+                    ) { actions.openSpeakerPicker(group) }
+                    SpeakerSubActionButton(
+                        stringResource(R.string.speaker_rename),
+                        colors,
+                        Modifier.weight(1f)
+                    ) { actions.openGroupEditor(group) }
                 }
-                SpeakerSubActionButton("删除", colors, Modifier.weight(1f), danger = true) {
+                SpeakerSubActionButton(
+                    stringResource(R.string.delete),
+                    colors,
+                    Modifier.weight(1f),
+                    danger = true
+                ) {
                     actions.requestDeleteGroup(group)
                 }
             }
@@ -630,7 +654,7 @@ private fun SpeakerItemRow(
                 Text(item.displayName(), color = colors.text, fontSize = 13.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(
                     listOf(
-                        "已失效".takeIf { blocked },
+                        stringResource(R.string.speaker_invalid_tag).takeIf { blocked },
                         item.engineName,
                         item.sourceGroupName,
                         item.toneID
@@ -664,7 +688,16 @@ private fun GroupEditorDialog(
             border = BorderStroke(1.dp, colors.stroke)
         ) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(if (group == null) "新建分组" else "编辑分组", color = colors.text, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    if (group == null) {
+                        stringResource(R.string.speaker_new_group)
+                    } else {
+                        stringResource(R.string.speaker_edit_group)
+                    },
+                    color = colors.text,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
@@ -681,8 +714,17 @@ private fun GroupEditorDialog(
                     )
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    SpeakerSubActionButton("取消", colors, Modifier.weight(1f), onClick = onDismiss)
-                    SpeakerActionButton("保存", colors, Modifier.weight(1f)) { onSave(name, enabled) }
+                    SpeakerSubActionButton(
+                        stringResource(R.string.cancel),
+                        colors,
+                        Modifier.weight(1f),
+                        onClick = onDismiss
+                    )
+                    SpeakerActionButton(
+                        stringResource(R.string.action_save),
+                        colors,
+                        Modifier.weight(1f)
+                    ) { onSave(name, enabled) }
                 }
             }
         }
@@ -827,8 +869,17 @@ private fun SpeakerMultiSelectDialog(
                     }
                 }
                 Row(modifier = Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    SpeakerSubActionButton("取消", colors, Modifier.weight(1f), onClick = onDismiss)
-                    SpeakerActionButton("添加 ${selectedKeys.size}", colors, Modifier.weight(1f)) {
+                    SpeakerSubActionButton(
+                        stringResource(R.string.cancel),
+                        colors,
+                        Modifier.weight(1f),
+                        onClick = onDismiss
+                    )
+                    SpeakerActionButton(
+                        stringResource(R.string.speaker_add_count, selectedKeys.size),
+                        colors,
+                        Modifier.weight(1f)
+                    ) {
                         val picked = engineGroups
                             .flatMap { it.options }
                             .filter { option ->
@@ -882,9 +933,15 @@ private fun SpeakerSourceGroupHeaderRow(
                 )
                 Text(
                     buildList {
-                        add(if (expanded) "已展开" else "已收起")
+                        add(
+                            if (expanded) {
+                                stringResource(R.string.speaker_expanded)
+                            } else {
+                                stringResource(R.string.speaker_collapsed)
+                            }
+                        )
                         add(sourceGroup.subtitle)
-                        if (selectedCount > 0) add("已选 $selectedCount")
+                        if (selectedCount > 0) add(stringResource(R.string.speaker_selected_count, selectedCount))
                     }.filter { it.isNotBlank() }.joinToString(" · "),
                     color = colors.subText,
                     fontSize = 11.sp,
@@ -898,7 +955,11 @@ private fun SpeakerSourceGroupHeaderRow(
                 onClick = onSelectToggle
             ) {
                 Text(
-                    if (allSelected) "取消全选" else "全选",
+                    if (allSelected) {
+                        stringResource(R.string.speaker_unselect_all)
+                    } else {
+                        stringResource(R.string.speaker_select_all)
+                    },
                     color = if (selectableCount > 0) colors.accent else colors.subText,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold
@@ -972,8 +1033,19 @@ private fun ConfirmDeleteGroupDialog(
                     fontSize = 13.sp
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    SpeakerSubActionButton("取消", colors, Modifier.weight(1f), onClick = onDismiss)
-                    SpeakerSubActionButton("删除", colors, Modifier.weight(1f), danger = true, onClick = onConfirm)
+                    SpeakerSubActionButton(
+                        stringResource(R.string.cancel),
+                        colors,
+                        Modifier.weight(1f),
+                        onClick = onDismiss
+                    )
+                    SpeakerSubActionButton(
+                        stringResource(R.string.delete),
+                        colors,
+                        Modifier.weight(1f),
+                        danger = true,
+                        onClick = onConfirm
+                    )
                 }
             }
         }
@@ -1094,12 +1166,16 @@ private fun buildSpeakerSourceGroups(
         }
         .map { (sourceGroupId, options) ->
             val sourceName = options.firstOrNull()?.groupName?.takeIf { it.isNotBlank() }
-                ?: if (engine.engineType == SpeechRoute.ENGINE_SYSTEM) "系统默认" else "默认分组"
+                ?: if (engine.engineType == SpeechRoute.ENGINE_SYSTEM) {
+                    appCtx.getString(R.string.speaker_system_default)
+                } else {
+                    appCtx.getString(R.string.speaker_default_group)
+                }
             SpeakerSourceGroupUi(
                 key = "${engine.key}:$sourceGroupId",
                 title = sourceName,
                 subtitle = buildList {
-                    add("${options.size} 个发言人")
+                    add(appCtx.getString(R.string.speaker_option_count, options.size))
                     engine.title.takeIf { it.isNotBlank() && it != sourceName }?.let(::add)
                 }.joinToString(" · "),
                 options = options.sortedWith(
@@ -1108,7 +1184,11 @@ private fun buildSpeakerSourceGroups(
                 )
             )
         }
-        .sortedWith(compareBy<SpeakerSourceGroupUi> { it.title == "默认分组" }.thenBy { it.title })
+        .sortedWith(
+            compareBy<SpeakerSourceGroupUi> {
+                it.title == appCtx.getString(R.string.speaker_default_group)
+            }.thenBy { it.title }
+        )
 }
 
 private fun SpeechVoiceOption.matchesSpeakerQuery(query: String): Boolean {
