@@ -33,6 +33,7 @@ import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import androidx.compose.ui.res.stringResource
 import io.legado.app.R
 import io.legado.app.constant.AppLog
 import io.legado.app.help.config.ShareNoteTemplateManager
@@ -286,7 +287,7 @@ class ShareNotePreviewOverlay private constructor(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             ReaderTextAction(
-                text = "模板",
+                text = stringResource(R.string.share_note_preview_template_label),
                 style = style,
                 enabled = !busyState,
                 onClick = ::showTemplatePanel,
@@ -319,20 +320,20 @@ class ShareNotePreviewOverlay private constructor(
     @Composable
     private fun ShareNoteTemplatePanel(style: AppDialogStyle) {
         ReaderSheetHeader(
-            title = "更换模板",
+            title = stringResource(R.string.share_note_change_template),
             subtitle = selectedTemplateName,
             style = style,
             trailing = {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     ReaderTextAction(
-                        text = "管理",
+                        text = stringResource(R.string.ai_chat_manage),
                         style = style,
                         modifier = Modifier.width(70.dp),
                         enabled = !busyState,
                         onClick = ::openTemplateManage
                     )
                     ReaderTextAction(
-                        text = "完成",
+                        text = stringResource(R.string.share_note_done),
                         style = style,
                         modifier = Modifier.width(70.dp),
                         enabled = !busyState,
@@ -343,7 +344,7 @@ class ShareNotePreviewOverlay private constructor(
         )
         ReaderSectionCard(
             style = style,
-            title = "模板",
+            title = stringResource(R.string.share_note_preview_template_label),
             contentPadding = PaddingValues(horizontal = 9.dp, vertical = 8.dp)
         ) {
             ReaderSegmentedOptions(
@@ -359,7 +360,7 @@ class ShareNotePreviewOverlay private constructor(
         }
         ReaderSectionCard(
             style = style,
-            title = "配色",
+            title = stringResource(R.string.share_note_colors),
             contentPadding = PaddingValues(horizontal = 9.dp, vertical = 8.dp)
         ) {
             ReaderSegmentedOptions(
@@ -375,7 +376,7 @@ class ShareNotePreviewOverlay private constructor(
         }
         ReaderSectionCard(
             style = style,
-            title = "字体",
+            title = stringResource(R.string.share_note_fonts),
             contentPadding = PaddingValues(horizontal = 9.dp, vertical = 8.dp)
         ) {
             ReaderSegmentedOptions(

@@ -74,7 +74,7 @@ class AboutFragment : ComposeSettingFragment() {
                         },
                         action(
                             key = KEY_INTERNAL_BETA,
-                            title = "内测版",
+                            title = getString(R.string.about_beta_badge),
                             summary = internalBetaSummary()
                         ) {
                             showInternalBetaDialog()
@@ -156,24 +156,27 @@ class AboutFragment : ComposeSettingFragment() {
         val enabled = AppUpdateConfig.internalBetaConfigured
         val url = AppUpdateConfig.internalBetaUrl.orEmpty()
         return if (enabled) {
-            "已启用 · $url"
+            getString(R.string.about_accel_enabled, url)
         } else {
-            "未启用"
+            getString(R.string.about_accel_disabled)
         }
     }
 
     private fun showInternalBetaDialog() {
         showComposeTextFormDialogWithChecks(
-            title = "内测版更新",
-            labels = listOf("下载密钥", "下载地址"),
+            title = getString(R.string.about_beta_update),
+            labels = listOf(
+                getString(R.string.about_beta_download_key),
+                getString(R.string.about_beta_download_url)
+            ),
             initialValues = listOf(
                 AppUpdateConfig.internalBetaKey.orEmpty(),
                 AppUpdateConfig.internalBetaUrl.orEmpty()
             ),
             passwordFields = setOf(0),
-            checkboxLabels = listOf("启用内测版更新"),
+            checkboxLabels = listOf(getString(R.string.about_beta_enable)),
             checkedIndices = if (AppUpdateConfig.internalBetaEnabled) setOf(0) else emptySet(),
-            message = "启用后，检测更新会优先比较正式版和内测版。正式版版本高于内测版时更新正式版，否则在没有更高正式版时更新内测版。",
+            message = getString(R.string.about_beta_enable_message),
             validateInput = { values ->
                 val key = values.getOrNull(0).orEmpty().trim()
                 val url = values.getOrNull(1).orEmpty().trim()

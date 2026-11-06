@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
 import io.legado.app.R
+import splitties.init.appCtx
 import io.legado.app.constant.AppLog
 import io.legado.app.help.config.ShareNoteTemplateManager
 import io.legado.app.help.glide.ImageLoader
@@ -78,8 +79,8 @@ object ShareNoteImageRenderer {
     )
 
     data class Profile(
-        val name: String = "读者",
-        val bio: String = "一段认真读过的文字",
+        val name: String = appCtx.getString(R.string.share_note_default_reader_name),
+        val bio: String = appCtx.getString(R.string.share_note_default_reader_bio),
         val avatar: String? = null
     )
 
