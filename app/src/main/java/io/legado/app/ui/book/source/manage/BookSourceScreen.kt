@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.legado.app.R
 import io.legado.app.data.entities.BookSourcePart
+import io.legado.app.model.Debug
 import io.legado.app.ui.widget.compose.AppManagementLazyColumn
 import io.legado.app.ui.widget.compose.AppManagementListRow
 import io.legado.app.ui.widget.compose.AppManagementMenuAction
@@ -94,7 +95,7 @@ internal fun BookSourceScreen(
             debugMessage = message,
             debugInProgress = message.isNotBlank() &&
                 isChecking &&
-                !message.contains(FINAL_DEBUG_MESSAGE_REGEX),
+                !Debug.hasFinalMessage(source.bookSourceUrl),
             isSelected = source.bookSourceUrl in selectedUrls,
             isSelectMode = isSelectMode,
             palette = palette,
@@ -238,4 +239,3 @@ private fun BookSourceItemRow(
     )
 }
 
-private val FINAL_DEBUG_MESSAGE_REGEX = Regex("成功|失败")
