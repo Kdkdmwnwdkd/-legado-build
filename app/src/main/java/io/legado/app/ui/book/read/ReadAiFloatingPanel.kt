@@ -320,14 +320,14 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
             bookKey = AiMemoryStore.bookKey(context.bookName, context.author),
             sessionId = requestSessionId,
             companionId = READ_AI_COMPANION_ID,
-            title = context.bookName.ifBlank { "阅读页问AI" }
+            title = context.bookName.ifBlank { resources.getString(R.string.read_ai_title) }
         )
         val agentRun = AiAgentStateStore.startRun(
             sessionId = requestSessionId,
             scope = AiAgentSession.SCOPE_READ_AI,
             type = AiAgentJob.TYPE_READ_AI,
             currentGoal = question,
-            currentTask = "阅读页问 AI",
+            currentTask = resources.getString(R.string.read_ai_title),
             inputJson = JSONObject()
                 .put("bookName", context.bookName)
                 .put("author", context.author)
@@ -339,7 +339,7 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
         activeAgentRun = agentRun
         streamingAssistantMessageId = pendingAssistantId
         val keepAliveId = AiTaskKeepAlive.retain(
-            title = "阅读页问AI",
+            title = resources.getString(R.string.read_ai_title),
             content = "${context.bookName} · $question",
             kind = AiTaskKeepAlive.KIND_READ_AI
         )
@@ -811,14 +811,14 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
             return
         }
         context.selector(
-            "当前窗口能力",
+            context.getString(R.string.read_ai_window_abilities),
             listOf(
-                "新建对话",
-                "历史记录",
-                "Skill：${activeWindowSkills().size} 个",
-                "MCP：${windowMcpServerIds.size} 个",
-                "世界书：${activeReadAiWorldBookCount()} 个",
-                "清空 Skill/MCP"
+                context.getString(R.string.ai_new_chat),
+                context.getString(R.string.ai_chat_history),
+                context.getString(R.string.read_ai_skill_count, activeWindowSkills().size),
+                context.getString(R.string.read_ai_mcp_count, windowMcpServerIds.size),
+                context.getString(R.string.read_ai_worldbook_count, activeReadAiWorldBookCount()),
+                context.getString(R.string.read_ai_clear_bindings)
             )
         ) { _, _, index ->
             when (index) {
@@ -854,7 +854,10 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
     private fun showReadAiWorldBookDialog() {
         val worldBooks = AppConfig.aiWorldBookList
         if (worldBooks.isEmpty()) {
-            context.selector("世界书", listOf("打开世界书管理")) { _, _, _ ->
+            context.selector(
+                context.getString(R.string.read_ai_worldbook),
+                listOf(context.getString(R.string.read_ai_open_worldbook_manage))
+            ) { _, _, _ ->
                 openWorldBookManage()
             }
             return
@@ -866,10 +869,10 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
                         it.targetKey == READ_AI_COMPANION_ID
             }
         }.mapTo(linkedSetOf()) { it.id }
-        context.alert(title = "阅读页问 AI · 世界书") {
+        context.alert(title = context.getString(R.string.read_ai_worldbook_dialog_title)) {
             multiChoiceItems(
                 items = worldBooks.map { book ->
-                    "${book.name}${if (book.enabled) "" else "（停用）"}"
+                    "${book.name}${if (book.enabled) "" else context.getString(R.string.read_ai_worldbook_disabled)}"
                 }.toTypedArray(),
                 checkedItems = BooleanArray(worldBooks.size) { index -> worldBooks[index].id in selected }
             ) { _, which, isChecked ->
@@ -894,7 +897,7 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
                     }
                 }
             }
-            neutralButton("管理") { openWorldBookManage() }
+            neutralButton(context.getString(R.string.read_ai_manage)) { openWorldBookManage() }
             cancelButton()
         }
     }
@@ -906,7 +909,7 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
             return
         }
         val selected = windowSkillIds.toMutableSet()
-        context.alert(title = "当前窗口 Skill") {
+        context.alert(title = context.getString(R.string.read_ai_window_skill)) {
             multiChoiceItems(
                 items = skills.map { skill -> skill.name.ifBlank { "Skill" } }.toTypedArray(),
                 checkedItems = BooleanArray(skills.size) { index -> skills[index].id in selected }
@@ -918,7 +921,7 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
                     AppConfig.aiSkillList.any { it.id == id && it.enabled }
                 }
             }
-            neutralButton("清空") {
+            neutralButton(context.getString(R.string.read_ai_clear)) {
                 windowSkillIds = emptySet()
             }
             cancelButton()
@@ -932,7 +935,7 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
             return
         }
         val selected = windowMcpServerIds.toMutableSet()
-        context.alert(title = "当前窗口 MCP") {
+        context.alert(title = context.getString(R.string.read_ai_window_mcp)) {
             multiChoiceItems(
                 items = servers.map { server -> server.name.ifBlank { "MCP" } }.toTypedArray(),
                 checkedItems = BooleanArray(servers.size) { index -> servers[index].id in selected }
@@ -944,7 +947,7 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
                     AppConfig.aiMcpServerList.any { it.id == id && it.enabled }
                 }
             }
-            neutralButton("清空") {
+            neutralButton(context.getString(R.string.read_ai_clear)) {
                 windowMcpServerIds = emptySet()
             }
             cancelButton()
@@ -1393,8 +1396,8 @@ private fun ReadAiPanelContent(
                                 add(ReadAiMenuAction(stringResource(R.string.ai_chat_history), onToggleHistory))
                                 add(ReadAiMenuAction("Skill", onOpenSkills))
                                 add(ReadAiMenuAction("MCP", onOpenMcp))
-                                add(ReadAiMenuAction("世界书", onOpenWorldBooks))
-                                add(ReadAiMenuAction("窗口能力", onOpenAbilities))
+                                add(ReadAiMenuAction(stringResource(R.string.read_ai_worldbook), onOpenWorldBooks))
+                                add(ReadAiMenuAction(stringResource(R.string.read_ai_window_abilities), onOpenAbilities))
                                 add(ReadAiMenuAction(stringResource(R.string.ai_current_model), onSelectModel))
                             },
                             onDismiss = { menuExpanded = false }
@@ -1713,8 +1716,8 @@ private fun ReadAiMessage.toProcessStep(): AiProcessStepUi {
         else -> AiProcessStepUi(
             id = id,
             type = AiProcessStepType.Thinking,
-            title = statusLabel?.takeIf { it.isNotBlank() } ?: if (pending) "思考中" else "思考完成",
-            subtitle = summarizeReadAiProcessDetail(detail, if (pending) "思考中" else "思考完成"),
+            title = statusLabel?.takeIf { it.isNotBlank() } ?: appCtx.getString(if (pending) R.string.read_ai_step_thinking else R.string.read_ai_step_thinking_done),
+            subtitle = summarizeReadAiProcessDetail(detail, appCtx.getString(if (pending) R.string.read_ai_step_thinking else R.string.read_ai_step_thinking_done)),
             detail = detail,
             pending = pending,
             success = true,
