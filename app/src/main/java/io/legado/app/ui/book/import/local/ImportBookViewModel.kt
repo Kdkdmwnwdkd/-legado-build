@@ -154,7 +154,7 @@ class ImportBookViewModel(application: Application) : BaseViewModel(application)
                         importProgressFlow.value = progress
                         onProgress(progress)
                     }
-                    emitItemStage("读取文件信息 ${item.name}")
+                    emitItemStage(appCtx.getString(R.string.import_reading_file_info, item.name))
                     val books = LocalBook.importFiles(item.file.uri) { stage ->
                         emitItemStage("$stage ${item.name}")
                     }
@@ -166,17 +166,24 @@ class ImportBookViewModel(application: Application) : BaseViewModel(application)
                             if (shouldEmit) {
                                 lastEmitTime = now
                                 val stageName = when (stage) {
-                                    "toc" -> "目录解析"
-                                    "index" -> "索引构建"
-                                    "layout" -> "排版缓存"
-                                    else -> "正文解码"
+                                    "toc" -> appCtx.getString(R.string.import_stage_toc)
+                                    "index" -> appCtx.getString(R.string.import_stage_index)
+                                    "layout" -> appCtx.getString(R.string.import_stage_layout)
+                                    else -> appCtx.getString(R.string.import_stage_decode)
                                 }
                                 val decodeProgress = ImportProgress(
                                     total = total,
                                     processed = processed,
                                     imported = imported,
                                     failed = failed,
-                                    message = "$stageName ${book.name}: $title ($stageProcessed/${max(stageTotal, 1)})"
+                                    message = appCtx.getString(
+                                    R.string.import_stage_progress,
+                                    stageName,
+                                    book.name,
+                                    title,
+                                    stageProcessed,
+                                    max(stageTotal, 1)
+                                )
                                 )
                                 importProgressFlow.value = decodeProgress
                                 onProgress(decodeProgress)
@@ -195,7 +202,7 @@ class ImportBookViewModel(application: Application) : BaseViewModel(application)
                     processed = processed,
                     imported = imported,
                     failed = failed,
-                    message = "导入 ${item.name}"
+                    message = appCtx.getString(R.string.import_start_book, item.name)
                 )
                 importProgressFlow.value = progress
                 onProgress(progress)

@@ -125,8 +125,8 @@ class ImportBookActivity : BaseImportBookActivity<ImportBookViewModel>(),
         val selected = HashSet(adapter.selected)
         importProgressDialog?.dismiss()
         importProgressDialog = progressDialog(
-            title = "导入书籍",
-            message = "准备导入...",
+            title = getString(R.string.book_local),
+            message = getString(R.string.import_preparing),
         ) {
             max = selected.size.coerceAtLeast(1)
             progress = 0
@@ -177,7 +177,12 @@ class ImportBookActivity : BaseImportBookActivity<ImportBookViewModel>(),
                     binding.tvPath.text = currentPathText
                 } else {
                     binding.refreshProgressBar.isAutoLoading = true
-                    binding.tvPath.text = "扫描中：已扫${progress.scannedDirs}个文件夹，发现${progress.foundBooks}本，待扫${progress.pendingDirs}个"
+                    binding.tvPath.text = getString(
+                        R.string.import_scanning_progress,
+                        progress.scannedDirs,
+                        progress.foundBooks,
+                        progress.pendingDirs
+                    )
                 }
             }
         }
@@ -189,13 +194,26 @@ class ImportBookActivity : BaseImportBookActivity<ImportBookViewModel>(),
                 } else {
                     binding.refreshProgressBar.isAutoLoading = true
                     val message = progress.message.ifBlank {
-                        "导入中：${progress.processed}/${progress.total}，成功${progress.imported}，失败${progress.failed}"
+                        getString(
+                            R.string.import_progress_message,
+                            progress.processed,
+                            progress.total,
+                            progress.imported,
+                            progress.failed
+                        )
                     }
                     binding.tvPath.text = message
                     importProgressDialog?.run {
                         max = progress.total
                         this.progress = progress.processed
-                        setMessage("${message}\n成功${progress.imported}本，失败${progress.failed}本")
+                        setMessage(
+                            getString(
+                                R.string.import_progress_detail,
+                                message,
+                                progress.imported,
+                                progress.failed
+                            )
+                        )
                     }
                 }
             }
@@ -317,7 +335,7 @@ class ImportBookActivity : BaseImportBookActivity<ImportBookViewModel>(),
 
     private fun alertImportFileName() {
         alert(R.string.import_file_name) {
-            setMessage("""使用js处理文件名变量src，将书名作者分别赋值到变量name author""")
+            setMessage(getString(R.string.import_file_name_hint))
             val alertBinding = DialogEditTextBinding.inflate(layoutInflater).apply {
                 editView.hint = "js"
                 editView.setText(AppConfig.bookImportFileName)

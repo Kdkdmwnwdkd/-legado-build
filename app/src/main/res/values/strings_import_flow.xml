@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="import_scanning_progress">Scanning: %1$d folders scanned, %2$d books found, %3$d folders pending</string>
+    <string name="import_preparing">Preparing to import…</string>
+    <string name="import_progress_message">Importing: %1$d/%2$d, %3$d succeeded, %4$d failed</string>
+    <string name="import_progress_detail">%1$s\n%2$d books succeeded, %3$d failed</string>
+    <string name="import_file_name_hint">Use JS to handle the file name variable src, assigning the book title and author to the variables name and author</string>
+    <string name="import_reading_file_info">Reading file info: %1$s</string>
+    <string name="import_stage_toc">Parsing table of contents</string>
+    <string name="import_stage_index">Building index</string>
+    <string name="import_stage_layout">Caching layout</string>
+    <string name="import_stage_decode">Decoding text</string>
+    <string name="import_stage_progress">%1$s %2$s: %3$s (%4$d/%5$d)</string>
+    <string name="import_start_book">Importing %1$s</string>
+
+    <string name="remote_book_re_add_confirm">Add it back to the bookshelf?</string>
+
+    <string name="association_open_file_failed">Unable to open file\n%1$s</string>
+    <string name="association_import_layout_success">Layout imported</string>
+    <string name="association_open_url_confirm">Requesting to open a link or app. Continue?</string>
+
+    <string name="file_picker_parent_missing">Parent folder does not exist</string>
+    <string name="file_picker_invalid_name">Invalid file name</string>
+    <string name="file_picker_folder_name_hint">Folder name</string>
+</resources>

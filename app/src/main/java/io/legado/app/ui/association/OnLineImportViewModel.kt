@@ -66,7 +66,7 @@ class OnLineImportViewModel(app: Application) : BaseAssociationViewModel(app) {
                 return@execute config.name
             }
         }.onSuccess {
-            finally.invoke(context.getString(R.string.success), "导入排版成功")
+            finally.invoke(context.getString(R.string.success), context.getString(R.string.association_import_layout_success))
         }.onError {
             finally.invoke(
                 context.getString(R.string.error),

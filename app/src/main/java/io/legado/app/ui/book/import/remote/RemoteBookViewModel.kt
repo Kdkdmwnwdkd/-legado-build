@@ -107,7 +107,7 @@ class RemoteBookViewModel(application: Application) : BaseViewModel(application)
             }
             isDefaultWebdav = true
             remoteBookWebDav = AppWebDav.defaultBookWebDav
-                ?: throw NoStackTraceException("webDav没有配置")
+                ?: throw NoStackTraceException(appCtx.getString(R.string.webdav_not_configured))
         }.onError {
             context.toastOnUi(appCtx.getString(R.string.toast_webdav_init_failed, it.localizedMessage))
         }.onSuccess {
@@ -118,7 +118,7 @@ class RemoteBookViewModel(application: Application) : BaseViewModel(application)
     fun loadRemoteBookList(path: String?, loadCallback: (loading: Boolean) -> Unit) {
         executeLazy {
             val bookWebDav = remoteBookWebDav
-                ?: throw NoStackTraceException("没有配置webDav")
+                ?: throw NoStackTraceException(appCtx.getString(R.string.webdav_not_configured))
             dataCallback?.clear()
             val url = path ?: bookWebDav.rootBookUrl
             val bookList = bookWebDav.getRemoteBookList(url)
@@ -136,7 +136,7 @@ class RemoteBookViewModel(application: Application) : BaseViewModel(application)
     fun addToBookshelf(remoteBooks: HashSet<RemoteBook>, finally: () -> Unit) {
         execute {
             val bookWebDav = remoteBookWebDav
-                ?: throw NoStackTraceException("没有配置webDav")
+                ?: throw NoStackTraceException(appCtx.getString(R.string.webdav_not_configured))
             remoteBooks.forEach { remoteBook ->
                 val downloadBookUri = bookWebDav.downloadRemoteBook(remoteBook)
                 LocalBook.importFiles(downloadBookUri).forEach { book ->

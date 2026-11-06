@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="import_scanning_progress">扫描中：已扫%1$d个文件夹，发现%2$d本，待扫%3$d个</string>
+    <string name="import_preparing">准备导入...</string>
+    <string name="import_progress_message">导入中：%1$d/%2$d，成功%3$d，失败%4$d</string>
+    <string name="import_progress_detail">%1$s\n成功%2$d本，失败%3$d本</string>
+    <string name="import_file_name_hint">使用js处理文件名变量src，将书名作者分别赋值到变量name author</string>
+    <string name="import_reading_file_info">读取文件信息 %1$s</string>
+    <string name="import_stage_toc">目录解析</string>
+    <string name="import_stage_index">索引构建</string>
+    <string name="import_stage_layout">排版缓存</string>
+    <string name="import_stage_decode">正文解码</string>
+    <string name="import_stage_progress">%1$s %2$s: %3$s (%4$d/%5$d)</string>
+    <string name="import_start_book">导入 %1$s</string>
+
+    <string name="remote_book_re_add_confirm">是否重新加入书架？</string>
+
+    <string name="association_open_file_failed">无法打开文件\n%1$s</string>
+    <string name="association_import_layout_success">导入排版成功</string>
+    <string name="association_open_url_confirm">正在请求跳转链接/应用，是否跳转？</string>
+
+    <string name="file_picker_parent_missing">父文件夹不存在</string>
+    <string name="file_picker_invalid_name">非法文件名</string>
+    <string name="file_picker_folder_name_hint">文件夹名</string>
+</resources>

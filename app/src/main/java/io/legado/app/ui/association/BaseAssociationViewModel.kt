@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import io.legado.app.base.BaseViewModel
 import io.legado.app.utils.inputStream
 import io.legado.app.utils.jsonPath
+import splitties.init.appCtx
+import io.legado.app.R
 
 abstract class BaseAssociationViewModel(application: Application) : BaseViewModel(application) {
 
@@ -37,7 +39,7 @@ abstract class BaseAssociationViewModel(application: Application) : BaseViewMode
             map.containsKey("name") && map.containsKey("url") ->
                 successLive.postValue("httpTts" to uri.toString())
 
-            else -> errorLive.postValue("格式不对")
+            else -> errorLive.postValue(appCtx.getString(R.string.wrong_format))
         }
     }
 

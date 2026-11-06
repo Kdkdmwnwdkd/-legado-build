@@ -21,6 +21,7 @@ import io.legado.app.utils.isUri
 import io.legado.app.utils.readText
 import io.legado.app.utils.splitNotBlank
 import splitties.init.appCtx
+import io.legado.app.R
 
 class ImportReplaceRuleViewModel(app: Application) : BaseViewModel(app) {
     var isAddGroup = false
@@ -109,7 +110,7 @@ class ImportReplaceRuleViewModel(app: Application) : BaseViewModel(app) {
                 importAwait(text.toUri().readText(appCtx))
             }
 
-            else -> throw NoStackTraceException("格式不对")
+            else -> throw NoStackTraceException(appCtx.getString(R.string.wrong_format))
         }
     }
 
