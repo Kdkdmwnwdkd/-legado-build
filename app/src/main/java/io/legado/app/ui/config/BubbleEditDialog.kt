@@ -87,7 +87,9 @@ class BubbleEditDialog : ComposeDialogFragment() {
         val dayEmphasis = args.getString(ARG_DAY_EMPHASIS).orEmpty()
         val nightNormal = args.getString(ARG_NIGHT_NORMAL).orEmpty()
         val nightEmphasis = args.getString(ARG_NIGHT_EMPHASIS).orEmpty()
-        val titleText = args.getString(ARG_TITLE).orEmpty()
+        val titleText = getString(
+            if (args.getBoolean(ARG_IS_ADD)) R.string.add else R.string.edit
+        )
 
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -143,7 +145,7 @@ class BubbleEditDialog : ComposeDialogFragment() {
     }
 
     companion object {
-        private const val ARG_TITLE = "title"
+        private const val ARG_IS_ADD = "isAdd"
         private const val ARG_NAME = "name"
         private const val ARG_SVG = "svg"
         private const val ARG_SIZE_SCALE = "sizeScale"
@@ -164,7 +166,7 @@ class BubbleEditDialog : ComposeDialogFragment() {
         ): BubbleEditDialog {
             return BubbleEditDialog().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_TITLE, if (isAdd) "添加" else "编辑")
+                    putBoolean(ARG_IS_ADD, isAdd)
                     putString(ARG_NAME, config.name)
                     putString(ARG_SVG, config.svgTemplate)
                     putFloat(ARG_SIZE_SCALE, config.sizeScale)
@@ -227,13 +229,13 @@ private fun BubbleEditContent(
                         name = it
                         onNameChanged(it)
                     },
-                    label = "名称",
+                    label = stringResource(R.string.name),
                     style = style
                 )
 
                 // Size scale row
                 EditOptionRow(
-                    title = "大小倍率",
+                    title = stringResource(R.string.bubble_size_scale),
                     value = sizeScaleDisplay,
                     style = style,
                     onClick = onOpenSizeScalePicker
@@ -241,7 +243,7 @@ private fun BubbleEditContent(
 
                 // Color rows
                 ColorOptionRow(
-                    title = "日间常规色",
+                    title = stringResource(R.string.bubble_day_normal_color),
                     colorHex = dayNormal ?: BubblePackageManager.DEFAULT_NORMAL_COLOR,
                     style = style,
                     onClick = {
@@ -252,7 +254,7 @@ private fun BubbleEditContent(
                     }
                 )
                 ColorOptionRow(
-                    title = "日间强调色",
+                    title = stringResource(R.string.bubble_day_accent_color),
                     colorHex = dayEmphasis ?: BubblePackageManager.DEFAULT_EMPHASIS_COLOR,
                     style = style,
                     onClick = {
@@ -263,7 +265,7 @@ private fun BubbleEditContent(
                     }
                 )
                 ColorOptionRow(
-                    title = "夜间常规色",
+                    title = stringResource(R.string.bubble_night_normal_color),
                     colorHex = nightNormal ?: BubblePackageManager.DEFAULT_NORMAL_COLOR,
                     style = style,
                     onClick = {
@@ -274,7 +276,7 @@ private fun BubbleEditContent(
                     }
                 )
                 ColorOptionRow(
-                    title = "夜间强调色",
+                    title = stringResource(R.string.bubble_night_accent_color),
                     colorHex = nightEmphasis ?: BubblePackageManager.DEFAULT_EMPHASIS_COLOR,
                     style = style,
                     onClick = {
@@ -287,8 +289,8 @@ private fun BubbleEditContent(
 
                 // SVG template row
                 EditOptionRow(
-                    title = "SVG 模板",
-                    value = "点击编辑，支持 \${color} 和 \${num}",
+                    title = stringResource(R.string.bubble_svg_template),
+                    value = stringResource(R.string.bubble_svg_template_hint),
                     style = style,
                     onClick = onOpenSvgEditor
                 )

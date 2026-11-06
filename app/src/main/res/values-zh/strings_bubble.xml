@@ -11,5 +11,19 @@
     <string name="bubble_share_zip">文件分享</string>
     <string name="bubble_share_link">直链分享</string>
 
+    <string name="bubble_force_software_title">强制使用软件气泡</string>
+    <string name="bubble_force_software_summary">识别正文图片形式的段评入口，并使用当前气泡样式渲染</string>
+    <string name="bubble_apply">应用</string>
+    <string name="bubble_applied">已应用</string>
+    <string name="bubble_source_builtin">内置</string>
+    <string name="bubble_source_local">本地</string>
+    <string name="bubble_source_remote">云端</string>
+    <string name="bubble_source_both">本地 + 云端</string>
+    <string name="bubble_day_normal_color">日间常规色</string>
+    <string name="bubble_day_accent_color">日间强调色</string>
+    <string name="bubble_night_normal_color">夜间常规色</string>
+    <string name="bubble_night_accent_color">夜间强调色</string>
+    <string name="bubble_svg_template_hint">点击编辑，支持 ${color} 和 ${num}</string>
+
     <string name="bubble_help_message">段评气泡用于把规则里的 dp 图片转成原生 SVG 气泡。\n\n接入格式：\n&lt;img src=&quot;dp:12,{&quot;pclick&quot;:&quot;...&quot;,&quot;status&quot;:&quot;normal&quot;}&quot;&gt;\n\ndp: 后面的数字会替换 SVG 模板里的 ${num}。\nstatus 可选：normal 使用常规色，emphasis 使用强调色；不写 status 时默认 normal。\nSVG 模板支持 ${color} 和 ${num} 两个占位。\n内置气泡只读；需要自定义时请通过添加或导入创建新气泡。</string>
 </resources>
