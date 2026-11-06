@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bubble_quick_pick_title">Choose paragraph comment bubble</string>
+    <string name="read_menu_jump_confirm_title">Jump to chapter</string>
+    <string name="read_menu_jump_confirm_message">Jump to this chapter?</string>
+    <string name="share_note_pick_template">Choose share template</string>
+    <string name="share_note_manage_template">Manage templates</string>
+    <string name="read_aloud_minutes">%1$d min</string>
+    <string name="read_aloud_set_time">Set duration</string>
+    <string name="reader_template_asset_missing">Asset is missing, please import it again</string>
+    <string name="reader_template_font_hint">You can pick fonts and backgrounds on the edit page, or copy image URLs and font CSS from the asset library into the page code.</string>
+    <string name="manga_no_more_chapters">No more chapters!</string>
+    <string name="manga_load_failed_retry">Failed to load, tap to retry</string>
+</resources>
