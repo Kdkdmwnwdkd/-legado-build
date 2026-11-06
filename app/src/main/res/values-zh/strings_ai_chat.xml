@@ -50,4 +50,32 @@
     <string name="ai_chat_role_main">主角</string>
     <string name="ai_chat_role_important">重要</string>
     <string name="ai_chat_role_normal">普通</string>
+
+    <string name="ai_chat_browse_world_book">浏览世界书</string>
+    <string name="ai_chat_auto_speak_option">自动播放语音：%1$s</string>
+    <string name="ai_chat_switch_on">开</string>
+    <string name="ai_chat_switch_off">关</string>
+    <string name="ai_tavern">AI 酒馆</string>
+    <string name="ai_chat_character_and_sessions">角色与会话</string>
+    <string name="ai_chat_sessions">会话</string>
+    <string name="ai_chat_no_history_sessions">还没有历史会话</string>
+    <string name="ai_chat_more_sessions">还有 %1$d 个会话</string>
+    <string name="ai_chat_default_system_prompt">默认系统提示词</string>
+    <string name="ai_chat_role_with_book">角色 · %1$s</string>
+    <string name="ai_chat_role_label">角色</string>
+    <string name="ai_chat_untitled_session">未命名会话</string>
+    <string name="ai_chat_session_meta">%1$s · %2$d 条消息</string>
+    <string name="ai_chat_books_pill">书籍结果 %1$d 条</string>
+    <string name="ai_chat_books_title">书籍结果</string>
+    <string name="ai_chat_books_count">共 %1$d 条</string>
+    <string name="ai_chat_images_pill">图片结果 %1$d 张</string>
+    <string name="ai_chat_images_title">图片结果</string>
+    <string name="ai_chat_images_count">共 %1$d 张</string>
+    <string name="ai_chat_found_results">找到 %1$d 条结果</string>
+    <string name="ai_chat_search_keyword">搜索：%1$s</string>
+    <string name="ai_chat_found_pages">找到 %1$d 条网页</string>
+    <string name="ai_chat_character_avatar">角色头像</string>
+    <string name="ai_chat_found_avatars">找到 %1$d 张角色头像</string>
+    <string name="ai_chat_character_profile">角色资料</string>
+    <string name="ai_chat_unnamed">未命名</string>
 </resources>

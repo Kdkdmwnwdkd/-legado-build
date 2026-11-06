@@ -397,9 +397,10 @@ private fun parseToolDisplayPayload(
                 type = AiToolPreviewType.BookResults,
                 title = context.getString(R.string.ai_tool_book_source_search),
                 summary = if (books.isNotEmpty()) {
-                    "找到 ${books.size} 条结果"
+                    context.getString(R.string.ai_chat_found_results, books.size)
                 } else {
-                    root?.optString("keyword")?.takeIf { it.isNotBlank() }?.let { "搜索：$it" }
+                    root?.optString("keyword")?.takeIf { it.isNotBlank() }
+                        ?.let { context.getString(R.string.ai_chat_search_keyword, it) }
                         ?: summarizeProcessDetail(raw, context.getString(R.string.ai_tool_status_calling))
                 },
                 raw = raw,
@@ -425,9 +426,10 @@ private fun parseToolDisplayPayload(
                 type = AiToolPreviewType.WebResults,
                 title = context.getString(R.string.ai_tool_web_search),
                 summary = if (webResults.isNotEmpty()) {
-                    "找到 ${webResults.size} 条网页"
+                    context.getString(R.string.ai_chat_found_pages, webResults.size)
                 } else {
-                    root?.optString("query")?.takeIf { it.isNotBlank() }?.let { "搜索：$it" }
+                    root?.optString("query")?.takeIf { it.isNotBlank() }
+                        ?.let { context.getString(R.string.ai_chat_search_keyword, it) }
                         ?: summarizeProcessDetail(raw, context.getString(R.string.ai_tool_status_calling))
                 },
                 raw = raw,
@@ -449,7 +451,7 @@ private fun parseToolDisplayPayload(
             val image = parseImageResult(raw)
             AiToolDisplayPayload(
                 type = AiToolPreviewType.ImageResult,
-                title = "角色头像",
+                title = context.getString(R.string.ai_chat_character_avatar),
                 summary = image?.prompt?.takeIf { it.isNotBlank() } ?: appCtx.getString(R.string.ai_avatar_updated),
                 raw = raw,
                 images = listOfNotNull(image)
@@ -460,15 +462,15 @@ private fun parseToolDisplayPayload(
             if (images.isNotEmpty()) {
                 AiToolDisplayPayload(
                     type = AiToolPreviewType.ImageResult,
-                    title = "角色头像",
-                    summary = "找到 ${images.size} 张角色头像",
+                    title = context.getString(R.string.ai_chat_character_avatar),
+                    summary = context.getString(R.string.ai_chat_found_avatars, images.size),
                     raw = raw,
                     images = images
                 )
             } else {
                 AiToolDisplayPayload(
                     type = AiToolPreviewType.Generic,
-                    title = "角色资料",
+                    title = context.getString(R.string.ai_chat_character_profile),
                     summary = summarizeProcessDetail(raw, context.getString(R.string.ai_tool_status_done)),
                     raw = raw
                 )
@@ -488,7 +490,7 @@ private fun JSONObject.toSearchBookUi(): AiSearchBookUi? {
     val origin = optString("origin")
     if (bookUrl.isBlank() || origin.isBlank()) return null
     return AiSearchBookUi(
-        name = optString("name").ifBlank { "未命名" },
+        name = optString("name").ifBlank { appCtx.getString(R.string.ai_chat_unnamed) },
         author = optString("author"),
         originName = optString("originName"),
         kind = optString("kind"),

@@ -50,4 +50,32 @@
     <string name="ai_chat_role_main">Protagonist</string>
     <string name="ai_chat_role_important">Important</string>
     <string name="ai_chat_role_normal">Ordinary</string>
+
+    <string name="ai_chat_browse_world_book">Browse world books</string>
+    <string name="ai_chat_auto_speak_option">Auto-play voice: %1$s</string>
+    <string name="ai_chat_switch_on">On</string>
+    <string name="ai_chat_switch_off">Off</string>
+    <string name="ai_tavern">AI Tavern</string>
+    <string name="ai_chat_character_and_sessions">Characters &amp; sessions</string>
+    <string name="ai_chat_sessions">Sessions</string>
+    <string name="ai_chat_no_history_sessions">No conversation history yet</string>
+    <string name="ai_chat_more_sessions">%1$d more sessions</string>
+    <string name="ai_chat_default_system_prompt">Default system prompt</string>
+    <string name="ai_chat_role_with_book">Character · %1$s</string>
+    <string name="ai_chat_role_label">Character</string>
+    <string name="ai_chat_untitled_session">Untitled session</string>
+    <string name="ai_chat_session_meta">%1$s · %2$d messages</string>
+    <string name="ai_chat_books_pill">%1$d book results</string>
+    <string name="ai_chat_books_title">Book results</string>
+    <string name="ai_chat_books_count">%1$d in total</string>
+    <string name="ai_chat_images_pill">%1$d image results</string>
+    <string name="ai_chat_images_title">Image results</string>
+    <string name="ai_chat_images_count">%1$d in total</string>
+    <string name="ai_chat_found_results">%1$d results found</string>
+    <string name="ai_chat_search_keyword">Search: %1$s</string>
+    <string name="ai_chat_found_pages">%1$d web pages found</string>
+    <string name="ai_chat_character_avatar">Character avatar</string>
+    <string name="ai_chat_found_avatars">%1$d character avatars found</string>
+    <string name="ai_chat_character_profile">Character profile</string>
+    <string name="ai_chat_unnamed">Untitled</string>
 </resources>
