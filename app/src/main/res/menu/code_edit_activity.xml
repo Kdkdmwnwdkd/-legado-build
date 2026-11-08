@@ -17,6 +17,18 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/menu_debug_source"
+        android:title="@string/debug_source"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_login_source"
+        android:title="@string/login"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_change_theme"
         android:title="@string/change_theme"
         app:showAsAction="never" />

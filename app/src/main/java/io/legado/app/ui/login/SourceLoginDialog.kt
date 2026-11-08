@@ -71,6 +71,8 @@ class SourceLoginDialog : BaseDialogFragment(R.layout.dialog_login, true),
     private var lastClickTime: Long = 0
     private var oKToClose = false
     private var rowUis: List<RowUi>? = null
+    // 登录界面 v2：界面由脚本按 state 渲染，走独立的渲染器
+    private var v2Delegate: SourceLoginV2Delegate? = null
     private var rowUiName = arrayListOf<String>()
     private var hasChange = false
     private var loginUrl: String? = null
@@ -643,6 +645,41 @@ class SourceLoginDialog : BaseDialogFragment(R.layout.dialog_login, true),
         }
     }
 
+    /**
+     * 登录界面 v2：菜单只保留登录头与日志，界面与提交都由脚本驱动
+     */
+    private fun setupLoginUiV2(source: BaseSource) {
+        v2Delegate = SourceLoginV2Delegate(
+            this,
+            binding,
+            source,
+            viewModel.book,
+            viewModel.chapter
+        ).also { it.start() }
+        binding.toolBar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.menu_ok -> {
+                    // v2 由 loginAction 返回 close 关闭，这里不提供直接提交
+                    context?.toastOnUi(R.string.login_ui_v2_use_button)
+                }
+
+                R.id.menu_show_login_header -> alert {
+                    setTitle(R.string.login_header)
+                    source.getLoginHeader()?.takeIf { it.isNotBlank() }?.let { loginHeader ->
+                        setMessage(loginHeader)
+                        positiveButton(R.string.copy_text) {
+                            appCtx.sendToClip(loginHeader)
+                        }
+                    } ?: setMessage(R.string.empty)
+                }
+
+                R.id.menu_del_login_header -> source.removeLoginHeader()
+                R.id.menu_log -> showDialogFragment<AppLogDialog>()
+            }
+            return@setOnMenuItemClickListener true
+        }
+    }
+
     private fun buttonUi(source: BaseSource, rowUis: List<RowUi>?) {
         rowUiBuilder(source, rowUis, false)
         binding.toolBar.setOnMenuItemClickListener { item ->
@@ -680,7 +717,9 @@ class SourceLoginDialog : BaseDialogFragment(R.layout.dialog_login, true),
                 else -> null
             }
         }
-        if (codeStr != null) {
+        if (source.isLoginUiV2()) {
+            setupLoginUiV2(source)
+        } else if (codeStr != null) {
             lifecycleScope.launch(Main) {
                 withContext(IO) {
                     val loginUiJson = evalUiJs(codeStr)
@@ -798,6 +837,8 @@ class SourceLoginDialog : BaseDialogFragment(R.layout.dialog_login, true),
     }
 
     override fun onDismiss(dialog: DialogInterface) {
+        v2Delegate?.destroy()
+        v2Delegate = null
         if (!oKToClose && hasChange) {
             val loginInfo = viewModel.loginInfo
             if (loginInfo.isEmpty()) {

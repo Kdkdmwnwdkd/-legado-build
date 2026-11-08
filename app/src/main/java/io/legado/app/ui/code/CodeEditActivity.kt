@@ -22,6 +22,7 @@ import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.EditorSearcher
 import io.github.rosemoe.sora.widget.EditorSearcher.SearchOptions
 import io.legado.app.R
+import com.script.rhino.RhinoScriptEngine
 import io.legado.app.base.VMBaseActivity
 import io.legado.app.help.CacheManager
 import io.legado.app.constant.PreferKey
@@ -46,6 +47,13 @@ class CodeEditActivity :
     VMBaseActivity<ActivityCodeEditBinding, CodeEditViewModel>(),
     KeyboardToolPop.CallBack, ChangeThemeDialog.CallBack, SettingsDialog.CallBack {
     companion object {
+        const val EXTRA_RESULT_ACTION = "resultAction"
+        const val EXTRA_CHECK_JAVASCRIPT_SYNTAX = "checkJavaScriptSyntax"
+        const val EXTRA_SHOW_DEBUG_SOURCE = "showDebugSource"
+        const val EXTRA_SHOW_LOGIN_SOURCE = "showLoginSource"
+        const val RESULT_ACTION_DEBUG_SOURCE = "debugSource"
+        const val RESULT_ACTION_LOGIN_SOURCE = "loginSource"
+
         private var isInitialized = false
         private var findText = ""
         private var replaceText = ""
@@ -60,6 +68,11 @@ class CodeEditActivity :
     private val editorSearcher: EditorSearcher by lazy { editor.searcher }
     private var searchOptions: SearchOptions? = null
     private var menuSaveBtn: MenuItem? = null
+    private var menuDebugSource: MenuItem? = null
+    private var menuLoginSource: MenuItem? = null
+    // 从书源编辑页进入时，保存后可直接跳调试/登录
+    private val showDebugSource get() = intent.getBooleanExtra(EXTRA_SHOW_DEBUG_SOURCE, false)
+    private val showLoginSource get() = intent.getBooleanExtra(EXTRA_SHOW_LOGIN_SOURCE, false)
 
     private val isDark
         get() = AppConfig.editTemeAuto && ThemeConfig.isDarkTheme()
@@ -108,15 +121,16 @@ class CodeEditActivity :
     /**
      * 使用super.finish(),防止循环回调
      * */
-    private fun save(check: Boolean) {
+    private fun save(check: Boolean, resultAction: String? = null) {
         if (!viewModel.writable) return super.finish()
         val text = editor.text.toString()
         val cursorPos = editor.cursor?.left ?: 0
         when {
             text == viewModel.initialText -> {
-                if (cursorPos > 0) {
+                if (cursorPos > 0 || resultAction != null) {
                     val result = Intent().apply {
                         putExtra("cursorPosition", cursorPos)
+                        resultAction?.let { putExtra(EXTRA_RESULT_ACTION, it) }
                     }
                     setResult(RESULT_OK, result)
                 }
@@ -138,22 +152,51 @@ class CodeEditActivity :
                 }
             }
             else -> {
-                val result = Intent().apply {
-                    // Keep large payloads out of Binder; some ROMs fail well under 1MB.
-                    val bytes = text.toByteArray(Charsets.UTF_8).size
-                    if (bytes > 100_000) {
-                        val key = "code_edit_result_" + System.nanoTime()
-                        CacheManager.putMemory(key, text)
-                        putExtra("cacheKey", key)
-                    } else {
-                        putExtra("text", text)
+                val syntaxError = checkJavaScriptSyntax(text)
+                if (syntaxError != null) {
+                    alert(R.string.js_syntax_error) {
+                        setMessage(syntaxError)
+                        positiveButton(R.string.continue_save) {
+                            finishWithText(text, cursorPos, resultAction)
+                        }
+                        negativeButton(R.string.cancel)
                     }
-                    putExtra("cursorPosition", cursorPos)
+                    return
                 }
-                setResult(RESULT_OK, result)
-                super.finish()
+                finishWithText(text, cursorPos, resultAction)
             }
         }
+    }
+
+    /**
+     * 只有从书源编辑页进来才校验，普通文本编辑不该被 JS 语法挡住
+     */
+    private fun checkJavaScriptSyntax(text: String): String? {
+        if (!intent.getBooleanExtra(EXTRA_CHECK_JAVASCRIPT_SYNTAX, false)) return null
+        if (text.isBlank()) return null
+        return runCatching {
+            RhinoScriptEngine.compile(text)
+        }.exceptionOrNull()?.let {
+            it.localizedMessage ?: it.toString()
+        }
+    }
+
+    private fun finishWithText(text: String, cursorPos: Int, resultAction: String?) {
+        val result = Intent().apply {
+            // Keep large payloads out of Binder; some ROMs fail well under 1MB.
+            val bytes = text.toByteArray(Charsets.UTF_8).size
+            if (bytes > 100_000) {
+                val key = "code_edit_result_" + System.nanoTime()
+                CacheManager.putMemory(key, text)
+                putExtra("cacheKey", key)
+            } else {
+                putExtra("text", text)
+            }
+            putExtra("cursorPosition", cursorPos)
+            resultAction?.let { putExtra(EXTRA_RESULT_ACTION, it) }
+        }
+        setResult(RESULT_OK, result)
+        super.finish()
     }
 
     override fun upEdit(fontSize: Int?, autoComplete: Boolean?, autoWarp: Boolean?, editNonPrintable: Int?) {
@@ -197,6 +240,12 @@ class CodeEditActivity :
 
     override fun onCompatCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.code_edit_activity, menu)
+        menuDebugSource = menu.findItem(R.id.menu_debug_source).apply {
+            isVisible = showDebugSource
+        }
+        menuLoginSource = menu.findItem(R.id.menu_login_source).apply {
+            isVisible = showLoginSource
+        }
         menuSaveBtn = menu.findItem(R.id.menu_save).apply {
             isVisible = viewModel.writable
         }
@@ -331,6 +380,8 @@ class CodeEditActivity :
         when (item.itemId) {
             R.id.menu_search -> search()
             R.id.menu_save -> save(false)
+            R.id.menu_debug_source -> save(false, RESULT_ACTION_DEBUG_SOURCE)
+            R.id.menu_login_source -> save(false, RESULT_ACTION_LOGIN_SOURCE)
             R.id.menu_format_code -> viewModel.formatCode(editor)
             R.id.menu_change_theme -> showDialogFragment(ChangeThemeDialog())
             R.id.menu_config_settings -> showDialogFragment(SettingsDialog(this, this))

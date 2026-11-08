@@ -103,7 +103,16 @@ class BookSourceEditActivity :
         softKeyboardTool.attachToWindow(window)
         initView()
         viewModel.initData(intent) {
-            upSourceView(viewModel.bookSource)
+            val source = viewModel.bookSource
+            // JS 单文件源的表单没有意义，直接进脚本编辑器
+            if (savedInstanceState == null && source != null && source.isJsSource()) {
+                startActivity<JsSourceEditActivity> {
+                    putExtra(JsSourceEditActivity.EXTRA_SOURCE_URL, source.bookSourceUrl)
+                }
+                finish()
+                return@initData
+            }
+            upSourceView(source)
         }
     }
 

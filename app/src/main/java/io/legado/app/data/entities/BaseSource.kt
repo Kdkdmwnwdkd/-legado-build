@@ -6,8 +6,10 @@ import com.script.ScriptBindings
 import com.script.buildScriptBindings
 import com.script.rhino.RhinoScriptEngine
 import io.legado.app.constant.AppConst
+import io.legado.app.constant.AppPattern
 import io.legado.app.constant.AppLog
 import io.legado.app.data.entities.rule.RowUi
+import io.legado.app.exception.NoStackTraceException
 import io.legado.app.help.CacheManager
 import io.legado.app.help.ConcurrentRateLimiter.Companion.updateConcurrentRate
 import io.legado.app.help.JsExtensions
@@ -17,6 +19,8 @@ import io.legado.app.help.http.CookieStore
 import io.legado.app.help.source.clearExploreKindsCache
 import io.legado.app.help.source.getShareScope
 import io.legado.app.model.SharedJsScope.remove
+import io.legado.app.model.jsSource.JsSourceEngine
+import io.legado.app.model.login.LoginUiV2
 import io.legado.app.utils.GSON
 import io.legado.app.utils.GSONStrict
 import io.legado.app.utils.fromJsonArray
@@ -77,6 +81,91 @@ interface BaseSource : JsExtensions {
             loginJs.startsWith("<js>") -> loginJs.substring(4, loginJs.lastIndexOf("<"))
             else -> loginJs
         }
+    }
+
+    private fun extractInlineJs(rule: String?): String? {
+        val text = rule?.trim().orEmpty()
+        if (text.isBlank()) return null
+        val matcher = AppPattern.JS_PATTERN.matcher(text)
+        if (!matcher.matches()) return null
+        return (matcher.group(1) ?: matcher.group(2))?.trim()
+    }
+
+    /**
+     * loginUi 里内联的脚本（@js: / <js></js>），静态界面时返回 null
+     */
+    fun getLoginUiJs(): String? {
+        return extractInlineJs(loginUi)
+    }
+
+    /**
+     * 是否为动态登录界面（协议 v2）
+     */
+    fun isLoginUiV2(): Boolean {
+        return LoginUiV2.isV2(loginUi)
+    }
+
+    /**
+     * 调用脚本里的 loginUi(state) 生成界面
+     */
+    fun evalLoginUiV2(
+        stateJson: String,
+        book: Book? = null,
+        chapter: BookChapter? = null,
+    ): String? {
+        val loginJs = getLoginJs()
+            ?: throw NoStackTraceException("登录UI v2 缺少 loginUi/loginAction 脚本")
+        val result = evalJS(
+            "$loginJs\nloginUi(JSON.parse(String(__loginState)))"
+        ) {
+            put("__loginState", stateJson)
+            put("book", book)
+            put("chapter", chapter)
+        }
+        return JsSourceEngine.normalizeJsResult(result)
+    }
+
+    /**
+     * 调用脚本里的 loginAction(action, state, form)，返回渲染/登录/关闭指令
+     */
+    fun evalLoginActionV2(
+        action: String,
+        stateJson: String,
+        formJson: String,
+        book: Book? = null,
+        chapter: BookChapter? = null,
+    ): String? {
+        val loginJs = getLoginJs()
+            ?: throw NoStackTraceException("登录UI v2 缺少 loginUi/loginAction 脚本")
+        val result = evalJS(
+            "$loginJs\n" +
+                "loginAction(String(__loginAction), JSON.parse(String(__loginState)), " +
+                "JSON.parse(String(__loginForm)))"
+        ) {
+            put("__loginAction", action)
+            put("__loginState", stateJson)
+            put("__loginForm", formJson)
+            put("book", book)
+            put("chapter", chapter)
+        }
+        return JsSourceEngine.normalizeJsResult(result)
+    }
+
+    /**
+     * 是否有登录界面（静态表单或 v2 动态界面）
+     */
+    fun hasLoginForm(): Boolean {
+        val form = loginUi?.trim().orEmpty()
+        if (form.isEmpty()) return false
+        if (LoginUiV2.isV2(form)) return true
+        return form.filterNot { it.isWhitespace() } != "[]"
+    }
+
+    /**
+     * 是否配置了登录（登录脚本或登录界面）
+     */
+    fun hasLogin(): Boolean {
+        return !loginUrl.isNullOrBlank() || hasLoginForm()
     }
 
     /**
@@ -185,6 +274,8 @@ interface BaseSource : JsExtensions {
     }
 
     fun getLoginInfoMap(): MutableMap<String, String> {
+        // v2 的界面由脚本按 state 渲染，字段不来自 loginUi 文本
+        if (loginUi?.trim()?.let { LoginUiV2.isV2(it) } == true) return mutableMapOf()
         val json = getLoginInfo() ?: if (loginUi.isNullOrBlank()) {
             return mutableMapOf()
         } else {
