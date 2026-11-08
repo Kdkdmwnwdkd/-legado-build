@@ -43,6 +43,14 @@ object AppUpdate {
     }
 
     fun versionCodeFromFileName(fileName: String): Long {
+        // 本仓库命名：shimmer_3.26.110817_110817.apk
+        Regex("""^.+?_(\d+(?:\.\d+)+)_(\d+)\.apk$""")
+            .matchEntire(fileName)
+            ?.groupValues
+            ?.getOrNull(2)
+            ?.toLongOrNull()
+            ?.let { return it }
+        // 上游命名兜底
         return Regex("""^.+?_.+?_([^_]+)(?:_(\d+))?\.apk$""")
             .matchEntire(fileName)
             ?.groupValues
@@ -51,11 +59,34 @@ object AppUpdate {
             ?: 0L
     }
 
+    /**
+     * 按点分段比较版本名，避免 "nightly" > "3.26.x" 这种字符串比较误判。
+     */
+    fun compareVersionName(left: String, right: String): Int {
+        fun segments(v: String): List<Long> =
+            v.trim().removePrefix("v")
+                .split('.', '-', '_', '+')
+                .mapNotNull { it.toLongOrNull() }
+
+        val a = segments(left)
+        val b = segments(right)
+        if (a.isEmpty() || b.isEmpty()) {
+            // 有一方不是数字版本（例如 "nightly"），交给字符串比较，但至少不会误判成无限更新
+            return left.compareTo(right)
+        }
+        for (i in 0 until maxOf(a.size, b.size)) {
+            val x = a.getOrElse(i) { 0L }
+            val y = b.getOrElse(i) { 0L }
+            if (x != y) return x.compareTo(y)
+        }
+        return 0
+    }
+
     fun isNewerThanCurrent(updateInfo: UpdateInfo): Boolean {
         return if (updateInfo.versionCode > 0L) {
             updateInfo.versionCode > AppConst.appInfo.versionCode
         } else {
-            updateInfo.tagName > AppConst.appInfo.versionName
+            compareVersionName(updateInfo.tagName, AppConst.appInfo.versionName) > 0
         }
     }
 
@@ -63,7 +94,7 @@ object AppUpdate {
         return if (left.versionCode > 0L && right.versionCode > 0L) {
             left.versionCode.compareTo(right.versionCode)
         } else {
-            left.tagName.compareTo(right.tagName)
+            compareVersionName(left.tagName, right.tagName)
         }
     }
 

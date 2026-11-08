@@ -37,9 +37,15 @@ object AppUpdateGitHub : AppUpdate.AppUpdateInterface {
             .getOrElse {
                 throw NoStackTraceException("获取新版本出错" + it.localizedMessage)
             }
-            .filterNot { it.isPreRelease }
+            // 本仓库同时发正式版和 nightly（prerelease），两种都要能被识别，
+            // 否则装了 nightly 的用户永远「已是最新」。
             .flatMap { it.gitReleaseToAppReleaseInfo() }
-            .sortedByDescending { it.createdAt }
+            // 资产名里没有版本号的（早期命名）跳过，避免提示了更新却无法比较大小
+            .filter { it.versionCode > 0L || it.versionName.isNotBlank() }
+            .sortedWith(
+                compareByDescending<AppReleaseInfo> { it.versionCode }
+                    .thenByDescending { it.createdAt }
+            )
     }
 
     override fun check(
@@ -51,19 +57,26 @@ object AppUpdateGitHub : AppUpdate.AppUpdateInterface {
     }
 
     suspend fun checkNow(): AppUpdate.UpdateInfo {
+        val current = AppConst.appInfo
         return getLatestRelease()
             .filter { it.appVariant == checkVariant }
             .filter { it.supportsDeviceAbi() }
+            // 版本名不是数字形式（例如 tag 是 nightly 又解析不出资产名）时直接跳过，
+            // 否则会拿 "nightly" 和 "3.26.x" 做字符串比较，永远提示有新版本。
+            .filter {
+                it.versionCode > 0L ||
+                    Regex("""^\d+(?:\.\d+)+""").containsMatchIn(it.versionName)
+            }
             .firstOrNull {
                 if (it.versionCode > 0L) {
-                    it.versionCode > AppConst.appInfo.versionCode
+                    it.versionCode > current.versionCode
                 } else {
-                    it.versionName > AppConst.appInfo.versionName
+                    AppUpdate.compareVersionName(it.versionName, current.versionName) > 0
                 }
             }
             ?.let {
                 AppUpdate.UpdateInfo(
-                    tagName = it.versionName,
+                    tagName = it.versionName.ifBlank { it.tagName },
                     updateLog = it.note,
                     downloadUrl = AppUpdateConfig.applyGithubProxy(it.downloadUrl),
                     fileName = it.name,

@@ -104,8 +104,9 @@ android {
             }
             manifestPlaceholders.put("app_name", "@string/app_launcher_name")
 
-            applicationIdSuffix '.debug'
-            versionNameSuffix 'debug'
+            // 不再追加 .debug 后缀：debug 与 release 必须同包名，
+            // 否则两者在系统里是两个独立应用，升级时无法覆盖安装，
+            // 用户看到的就是「每更新一次都像装了个新应用」。
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'cronet-proguard-rules.pro'
         }

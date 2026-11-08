@@ -122,10 +122,15 @@ jobs:
           else
             TASK=assembleAppRelease
           fi
-          echo "构建类型: $BUILD_TYPE ($TASK)"
+          # 版本名不要带 -nightly 之类的非数字后缀，应用内更新按点分段比较版本，
+          # 带后缀会让「3.26.110817-nightly」这种值难以正确排序。
+          VERSION_NAME="3.$(TZ=Asia/Shanghai date +%y.%m%d%H%M)"
+          echo "构建类型: $BUILD_TYPE ($TASK) 版本: $VERSION_NAME ($VERSION_CODE)"
+          echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
+          echo "VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
           ./gradlew ":app:${TASK}" \
             -Pabi=arm64-v8a \
-            -PVERSION_NAME="3.$(TZ=Asia/Shanghai date +%y.%m%d%H%M)-nightly" \
+            -PVERSION_NAME="$VERSION_NAME" \
             -PVERSION_CODE="$VERSION_CODE" \
             --max-workers=2 \
             --stacktrace
@@ -135,9 +140,14 @@ jobs:
         run: |
           APK_PATH=$(find app/build/outputs/apk -type f -name '*.apk' | head -n 1)
           test -n "$APK_PATH"
-          APK_NAME=$(basename "$APK_PATH")
-          echo "path=$APK_PATH" >> "$GITHUB_OUTPUT"
+          # 资产名必须带版本名与 versionCode：应用内「检查更新」就是靠这个解析的，
+          # 默认的 app-app-release.apk 里没有任何版本信息，只能永远显示「已是最新」。
+          APK_NAME="shimmer_${VERSION_NAME}_${VERSION_CODE}.apk"
+          mkdir -p dist
+          cp "$APK_PATH" "dist/$APK_NAME"
+          echo "path=dist/$APK_NAME" >> "$GITHUB_OUTPUT"
           echo "name=$APK_NAME" >> "$GITHUB_OUTPUT"
+          echo "重命名产物: $APK_NAME"
 
       - name: Publish to nightly tag
         env:
@@ -150,6 +160,7 @@ jobs:
           - Commit: ${{ github.sha }}
           - 分支: ${{ github.ref_name }}
           - APK: ${{ steps.apk.outputs.name }}
+          - 版本: ${VERSION_NAME} (${VERSION_CODE})
           - 构建时间: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
           包名 io.legado.app.shimmer。与已安装的正式版同签名时可直接覆盖升级；
