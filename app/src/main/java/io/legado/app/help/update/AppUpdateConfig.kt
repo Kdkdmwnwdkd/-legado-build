@@ -82,9 +82,15 @@ object AppUpdateConfig {
             ?.let { mapOf(INTERNAL_BETA_KEY_HEADER to it) }
             ?: emptyMap()
 
+    /**
+     * 国内直连 github.com 与 api.github.com 常年跑不满带宽，
+     * 用户没有自己配加速时默认走这个，失败会自动回退直连。
+     */
+    private const val DEFAULT_PROXY_TEMPLATE = "https://gh-proxy.com/\${url}"
+
     fun applyGithubProxy(url: String): String {
         val template = selectedGithubProxyTemplate?.trim().orEmpty()
-        if (template.isBlank()) return url
+            .ifBlank { DEFAULT_PROXY_TEMPLATE }
         return when {
             template.contains(URL_PLACEHOLDER) -> template.replace(URL_PLACEHOLDER, url)
             template.contains("{url}") -> template.replace("{url}", url)
