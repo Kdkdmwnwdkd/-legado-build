@@ -155,6 +155,14 @@ object BookChapterList {
                 }
             }
         }
+        updateBookTocInfo(book, list)
+        return list
+    }
+
+    /**
+     * 目录获取后同步书籍的章节数、最新章节、阅读进度标题等元信息
+     */
+    suspend fun updateBookTocInfo(book: Book, list: ArrayList<BookChapter>) {
         val replaceRules = ContentProcessor.get(book).getTitleReplaceRules()
         val replaceBook = book.toReplaceBook()
         book.durChapterTitle = list.getOrElse(book.durChapterIndex) { list.last() }
@@ -178,7 +186,6 @@ object BookChapterList {
                 )
         currentCoroutineContext().ensureActive()
         upChapterInfo(list, book)
-        return list
     }
 
     private suspend fun analyzeChapterList(

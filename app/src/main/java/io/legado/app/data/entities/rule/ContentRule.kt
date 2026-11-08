@@ -21,8 +21,22 @@ data class ContentRule(
     var imageDecode: String? = null, //图片bytes二次解密js, 返回解密后的bytes
     var payAction: String? = null,    //购买操作,js或者包含{{js}}的url
     /**  监听到事件后执行的回调js代码  **/
-    var callBackJs: String? = null
+    var callBackJs: String? = null,
+    var contentBatch: String? = null,  //批量正文规则，支持JS
+    var maxBatchSize: Int? = null      //最大批量数量，默认null表示不支持批量
 ) : Parcelable {
+
+    override fun toString(): String = buildString {
+        // 保持与上游一致的字符串形态，避免影响书源校验值
+        append("ContentRule(content=$content, subContent=$subContent, title=$title, ")
+        append("nextContentUrl=$nextContentUrl, webJs=$webJs, sourceRegex=$sourceRegex, ")
+        append("replaceRegex=$replaceRegex, imageStyle=$imageStyle, imageDecode=$imageDecode, ")
+        append("payAction=$payAction, callBackJs=$callBackJs")
+        if (contentBatch != null || maxBatchSize != null) {
+            append(", contentBatch=$contentBatch, maxBatchSize=$maxBatchSize")
+        }
+        append(')')
+    }
 
 
     companion object {

@@ -26,6 +26,7 @@ import io.legado.app.help.http.dns.DnsScope
 import io.legado.app.help.source.SourceHelp
 import io.legado.app.help.source.SourceVerificationHelp
 import io.legado.app.help.source.getSourceType
+import io.legado.app.model.BatchContentContext
 import io.legado.app.model.Debug
 import io.legado.app.model.analyzeRule.AnalyzeUrl
 import io.legado.app.model.analyzeRule.QueryTTF
@@ -83,6 +84,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 import androidx.core.net.toUri
 import io.legado.app.help.config.ReadBookConfig
 import io.legado.app.help.config.ThemeConfig
+import org.mozilla.javascript.Wrapper
 
 /**
  * js扩展类, 在js中通过java变量调用
@@ -98,6 +100,31 @@ interface JsExtensions : JsEncodeUtils {
     fun getNetworkDnsScope(): DnsScope = if (getSource() is HttpTTS) DnsScope.MEDIA else DnsScope.READING
     fun getTag(): String?
     fun isWebSocketAllowed(): Boolean = false
+
+    /**
+     * 当前批量正文下载上下文，非批量流程返回 null
+     */
+    fun getBatchContext(): BatchContentContext? = null
+
+    /**
+     * 批量下载时回存单章正文。
+     *
+     * 书源在 contentBatch 规则里每处理完一章即可调用，内容会立刻写入缓存，
+     * 不必等整批结束。只能在批量流程内调用。
+     *
+     * @param chapter 本批章节数组里的章节对象，也可传章节 url；
+     *   目录里存在多章共用同一 url 时必须传章节对象，否则无法区分是哪一章
+     * @param content 章节正文，会套用书源的正文替换规则后保存
+     * @return 是否成功保存
+     */
+    @JavascriptInterface
+    fun cacheContent(chapter: Any?, content: String): Boolean {
+        val batchContext = getBatchContext()
+            ?: throw NoStackTraceException("java.cacheContent 只能在批量正文规则中调用")
+        // JS 里传进来的 Java 对象会被 Rhino 包一层，先解包再认章节
+        val identifier = if (chapter is Wrapper) chapter.unwrap() else chapter
+        return batchContext.saveContent(identifier, content)
+    }
 
     private val context: CoroutineContext
         get() = rhinoContextOrNull?.coroutineContext ?: EmptyCoroutineContext
