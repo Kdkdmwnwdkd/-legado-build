@@ -42,6 +42,7 @@ import io.legado.app.ui.book.read.page.entities.TextChapter
 import io.legado.app.ui.book.read.page.entities.TextLine
 import io.legado.app.ui.book.read.page.entities.TextPage
 import io.legado.app.ui.book.read.page.entities.column.ImageColumn
+import io.legado.app.ui.book.read.page.entities.column.ReviewColumn
 import io.legado.app.ui.book.read.page.entities.column.TextColumn
 import io.legado.app.utils.dpToPx
 import io.legado.app.utils.fastSum
@@ -66,6 +67,7 @@ import io.legado.app.data.appDb
 import io.legado.app.ui.book.read.page.entities.TextLine.Companion.atLeastApi28
 import io.legado.app.ui.book.read.page.entities.column.TextHtmlColumn
 import io.legado.app.ui.book.read.page.provider.ChapterProvider.reviewStr
+import io.legado.app.ui.book.read.page.provider.ChapterProvider.reviewCountStr
 import io.legado.app.ui.book.read.page.provider.ChapterProvider.srcReplaceStr
 import io.legado.app.ui.book.read.page.provider.ChapterProvider.srcReplaceChar
 import io.legado.app.ui.book.read.page.provider.ChapterProvider.srcReplacementChar
@@ -86,6 +88,8 @@ import io.legado.app.model.localBook.EpubPageColor
 import io.legado.app.ui.book.read.page.entities.column.BaseColumn
 import io.legado.app.ui.book.read.page.entities.column.TextBaseColumn
 import io.legado.app.ui.book.read.page.provider.ChapterProvider.reviewChar
+import io.legado.app.ui.book.read.page.provider.ChapterProvider.reviewCountChar
+import io.legado.app.model.ReviewSummaryStore
 import io.legado.app.utils.GSON
 import io.legado.app.utils.fromJsonObject
 import org.json.JSONObject
@@ -120,6 +124,8 @@ class TextChapterLayout(
 
     private val contentPaint = ChapterProvider.contentPaint
     private val reviewCharWidth by lazy { contentPaint.measureText(srcReplaceStr) * 1.5556f }
+    // 当前段落的段评摘要（排版按段落顺序进行，逐段设置）
+    private var currentReviewSummary: ReviewSummaryStore.Summary? = null
     private val contentPaintTextHeight = ChapterProvider.contentPaintTextHeight
     private val contentPaintFontMetrics = ChapterProvider.contentPaintFontMetrics
 
@@ -372,6 +378,9 @@ class TextChapterLayout(
         contents.forEachIndexed { contentIndex, content ->
             currentCoroutineContext().ensureActive()
             currentSourceIndex = bookContent.sourceIndexes.getOrElse(contentIndex) { contentIndex }
+            currentReviewSummary = ReviewSummaryStore.getCount(
+                book.bookUrl, bookChapter.index, contentIndex + 1
+            )
             if (adaptSpecialStyle) {
                 val text = content.trim()
                 if (text == "[newpage]") {
@@ -2106,12 +2115,38 @@ class TextChapterLayout(
             textLine.upTopBottom(durY, layoutTextHeight, layoutFontMetrics)
             val textPage = pendingTextPage
             textPage.addLine(textLine)
+            if (lineIndex == layout.lineCount - 1) {
+                appendReviewColumn(absStartX, textLine)
+            }
             durY += layoutTextHeight * lineSpacingExtra
             if (textPage.height < durY) {
                 textPage.height = durY
             }
         }
         durY += layoutTextHeight * paragraphSpacing / 10f
+    }
+
+    /**
+     * 在段落最后一行的行尾追加段评气泡列。
+     * 不往正文字符串里塞占位符，避免 chapterPosition / 选中映射整体错位。
+     */
+    private fun appendReviewColumn(absStartX: Int, textLine: TextLine) {
+        if (!AppConfig.enableReview) return
+        val summary = currentReviewSummary ?: return
+        if (summary.count <= 0 || textLine.isTitle) return
+        val lastColumn = textLine.columns.lastOrNull() ?: return
+        val start = lastColumn.end + 2f
+        val maxEnd = absStartX + visibleWidth
+        val end = minOf(start + reviewCharWidth, maxEnd.toFloat())
+        if (end - start < contentPaint.textSize * 0.5f) return
+        textLine.addColumn(
+            ReviewColumn(
+                start = start,
+                end = end,
+                count = summary.count,
+                dataKey = summary.dataKey,
+            )
+        )
     }
 
     private fun calcTextLinePosition(
@@ -2310,13 +2345,6 @@ class TextChapterLayout(
                     click = click
                 )
             }
-//            isLineEnd && char == ChapterProvider.reviewChar -> {
-//                ReviewColumn(
-//                    start = absStartX + xStart,
-//                    end = absStartX + xEnd,
-//                    count = 10
-//                )
-//            }
 
             else -> {
                 TextColumn(

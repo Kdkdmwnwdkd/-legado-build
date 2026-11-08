@@ -2934,4 +2934,16 @@ bookUrl：%7$s
     <string name="ra_prev_chapter">上一章</string>
     <string name="ra_next_chapter_short">下一章</string>
     <string name="ra_select_voice">选择发言人</string>
+    <string name="login_ui_v2_render_error">登录界面加载失败，loginUi(state) 必须返回 {rows:[...]}，详情见日志</string>
+    <string name="login_ui_v2_action_error">登录操作失败：%1$s</string>
+    <string name="login_ui_v2_invalid_action">loginAction 返回了无效的命令对象</string>
+    <string name="login_ui_v2_save_error">登录信息保存失败</string>
+    <string name="login_ui_v2_use_button">该登录界面由书源脚本驱动，请使用界面内的按钮</string>
+    <string name="js_source_edit">JS 书源</string>
+    <string name="js_syntax_error">JavaScript 语法有误</string>
+    <string name="continue_save">仍然保存</string>
+    <string name="review_detail_title">段评</string>
+    <string name="review_reply_count">%1$d 条回复</string>
+    <string name="review_reply_empty">暂无回复</string>
+    <string name="anonymous">匿名</string>
 </resources>

@@ -2052,7 +2052,7 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
         get() = appCtx.getPrefBoolean(PreferKey.onlyUpdateRead)
 
     var enableReview: Boolean
-        get() = BuildConfig.DEBUG && appCtx.getPrefBoolean(PreferKey.enableReview, false)
+        get() = appCtx.getPrefBoolean(PreferKey.enableReview, false)
         set(value) {
             appCtx.putPrefBoolean(PreferKey.enableReview, value)
         }

@@ -16,7 +16,9 @@ import io.legado.app.ui.book.read.page.provider.ChapterProvider
 data class ReviewColumn(
     override var start: Float,
     override var end: Float,
-    val count: Int = 0
+    val count: Int = 0,
+    /** 段评详情请求所需的段内数据（书源 summaryParagraphDataRule 的产出） */
+    val dataKey: String = "",
 ) : BaseColumn {
 
     override var textLine: TextLine = emptyTextLine
@@ -26,7 +28,7 @@ data class ReviewColumn(
         } else {
             ChapterProvider.contentPaint
         }
-        drawToCanvas(canvas, textLine.lineBase, textPaint.textSize)
+        drawToCanvas(canvas, textLine.lineBase - textLine.lineTop, textPaint.textSize)
     }
 
     val countText by lazy {

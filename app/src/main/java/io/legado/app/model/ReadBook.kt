@@ -9,6 +9,11 @@ import io.legado.app.data.entities.BookChapter
 import io.legado.app.data.entities.ReadRecentBook
 import io.legado.app.data.entities.BookProgress
 import io.legado.app.data.entities.BookSource
+import io.legado.app.model.analyzeRule.AnalyzeUrl
+import io.legado.app.model.analyzeRule.ReviewRuleParser
+import io.legado.app.model.jsSource.JsSourceReview
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.withTimeoutOrNull
 import io.legado.app.data.entities.ReadRecord
 import io.legado.app.help.AppCloudStorage
 import io.legado.app.help.ReadRecordDailyHelper
@@ -1363,6 +1368,7 @@ object ReadBook : CoroutineScope by MainScope() {
                 )
             }
             val displayTitle = contents.displayTitle ?: fallbackDisplayTitle
+            loadReviewSummaryAwait(book, chapter)
             ensureActive()
             if (!isChapterLoadRequestCurrent(
                     book.bookUrl,
@@ -1572,6 +1578,67 @@ object ReadBook : CoroutineScope by MainScope() {
         job.start()
     }
 
+    /**
+     * 加载段评摘要（段落号 -> 数量），排版阶段直接从 [ReviewSummaryStore] 取用。
+     * 段评是可选能力，任何失败都不影响正文加载。
+     */
+    private suspend fun loadReviewSummaryAwait(book: Book, chapter: BookChapter) {
+        if (!AppConfig.enableReview) return
+        val source = bookSource ?: return
+        val rule = source.ruleReview
+        if (!source.isJsSource() && (rule == null || !rule.hasSummaryRule())) {
+            return
+        }
+        try {
+            withTimeoutOrNull(5000) {
+                val summary = HashMap<Int, ReviewSummaryStore.Summary>()
+                if (source.isJsSource()) {
+                    val result = JsSourceReview.getReviewSummaryAwait(source, book, chapter)
+                        ?: return@withTimeoutOrNull
+                    result.counts.forEach { (index, count) ->
+                        summary[index] = ReviewSummaryStore.Summary(
+                            count = count,
+                            dataKey = result.keys[index].orEmpty(),
+                        )
+                    }
+                } else {
+                    val urlRule = rule?.reviewSummaryUrl?.takeIf { it.isNotBlank() }
+                        ?: return@withTimeoutOrNull
+                    val analyzeUrl = AnalyzeUrl(
+                        mUrl = urlRule,
+                        baseUrl = chapter.url,
+                        source = source,
+                        ruleData = book,
+                        chapter = chapter,
+                        coroutineContext = currentCoroutineContext(),
+                    )
+                    val body = analyzeUrl.getStrResponseAwait(useWebView = false).body
+                        ?: return@withTimeoutOrNull
+                    val result = ReviewRuleParser.parseSummary(
+                        body = body,
+                        rule = rule,
+                        source = source,
+                        book = book,
+                        chapter = chapter,
+                        baseUrl = analyzeUrl.url,
+                        context = currentCoroutineContext(),
+                    ) ?: return@withTimeoutOrNull
+                    result.counts.forEach { (index, count) ->
+                        summary[index] = ReviewSummaryStore.Summary(
+                            count = count,
+                            dataKey = result.keys[index].orEmpty(),
+                        )
+                    }
+                }
+                ReviewSummaryStore.put(book.bookUrl, chapter.index, summary)
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            AppLog.put("加载段评摘要失败\n${e.localizedMessage}", e)
+        }
+    }
+
     suspend fun contentLoadFinishAwait(
         book: Book,
         chapter: BookChapter,
@@ -1606,6 +1673,7 @@ object ReadBook : CoroutineScope by MainScope() {
                 )
             }
             val displayTitle = contents.displayTitle ?: fallbackDisplayTitle
+            loadReviewSummaryAwait(book, chapter)
             ensureActive()
             if (!isChapterLoadRequestCurrent(
                     book.bookUrl,

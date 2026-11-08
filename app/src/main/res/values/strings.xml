@@ -2995,4 +2995,16 @@ Type &quot;%2$s&quot; to confirm.</string>
     <string name="ra_prev_chapter">Previous chapter</string>
     <string name="ra_next_chapter_short">Next chapter</string>
     <string name="ra_select_voice">Select voice</string>
+    <string name="login_ui_v2_render_error">Login UI failed to load. loginUi(state) must return {rows:[...]}. See logs.</string>
+    <string name="login_ui_v2_action_error">Login action failed: %1$s</string>
+    <string name="login_ui_v2_invalid_action">loginAction returned an invalid command object</string>
+    <string name="login_ui_v2_save_error">Failed to save login info</string>
+    <string name="login_ui_v2_use_button">This login page is driven by the source script, please use its buttons</string>
+    <string name="js_source_edit">JS Source</string>
+    <string name="js_syntax_error">JavaScript syntax error</string>
+    <string name="continue_save">Save anyway</string>
+    <string name="review_detail_title">Paragraph comments</string>
+    <string name="review_reply_count">%1$d replies</string>
+    <string name="review_reply_empty">No replies</string>
+    <string name="anonymous">Anonymous</string>
 </resources>
