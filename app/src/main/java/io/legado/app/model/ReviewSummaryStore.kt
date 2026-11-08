@@ -21,6 +21,7 @@ object ReviewSummaryStore {
 
     private fun key(bookUrl: String, chapterIndex: Int) = "$bookUrl\u0000$chapterIndex"
 
+    @Synchronized
     fun put(bookUrl: String, chapterIndex: Int, items: Map<Int, Summary>) {
         val key = key(bookUrl, chapterIndex)
         if (items.isEmpty()) {
@@ -44,6 +45,7 @@ object ReviewSummaryStore {
         return cache[key(bookUrl, chapterIndex)]?.get(paragraphNum)
     }
 
+    @Synchronized
     fun clear() {
         cache.clear()
         order.clear()

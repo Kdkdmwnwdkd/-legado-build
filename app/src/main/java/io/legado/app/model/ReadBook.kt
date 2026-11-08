@@ -109,6 +109,11 @@ object ReadBook : CoroutineScope by MainScope() {
     private val loadingChapters = arrayListOf<Int>()
     private val readRecord = ReadRecord()
     private val chapterLoadingJobs = ConcurrentHashMap<Int, Coroutine<*>>()
+    //段评摘要走后台，绝不阻塞正文排版
+    private val reviewSummaryScope = CoroutineScope(SupervisorJob() + IO)
+    private val reviewSummaryJobs = ConcurrentHashMap<Int, Job>()
+    //记录已请求过的章节，避免「这一章没有段评」时每次排版都重新发请求
+    private val reviewSummaryAttempted = ConcurrentHashMap.newKeySet<String>()
     private val paragraphRuleProcessingSemaphore = Semaphore(1)
     private val chapterLoadingLayoutKeys = ConcurrentHashMap<Int, String>()
     private val chapterLoadGenerations = ConcurrentHashMap<Int, Long>()
@@ -1368,7 +1373,8 @@ object ReadBook : CoroutineScope by MainScope() {
                 )
             }
             val displayTitle = contents.displayTitle ?: fallbackDisplayTitle
-            loadReviewSummaryAwait(book, chapter)
+            //段评摘要在后台补，正文排版不等它
+            requestReviewSummary(book, chapter)
             ensureActive()
             if (!isChapterLoadRequestCurrent(
                     book.bookUrl,
@@ -1579,22 +1585,50 @@ object ReadBook : CoroutineScope by MainScope() {
     }
 
     /**
-     * 加载段评摘要（段落号 -> 数量），排版阶段直接从 [ReviewSummaryStore] 取用。
-     * 段评是可选能力，任何失败都不影响正文加载。
+     * 段评摘要走后台，正文排版不等它。
+     *
+     * 早期实现是 await 在排版前面，慢网下开章最多卡 5 秒（表现为黑屏），
+     * 这里改成后台补，到位后如果用户还停在这一章，再静默重排一次补气泡。
      */
-    private suspend fun loadReviewSummaryAwait(book: Book, chapter: BookChapter) {
+    private fun requestReviewSummary(book: Book, chapter: BookChapter) {
         if (!AppConfig.enableReview) return
         val source = bookSource ?: return
+        if (!source.isJsSource() && source.ruleReview?.hasSummaryRule() != true) return
+        //已有缓存就不再请求，否则重排会反复触发网络
+        if (ReviewSummaryStore.get(book.bookUrl, chapter.index) != null) return
+        if (reviewSummaryAttempted.size > 512) reviewSummaryAttempted.clear()
+        if (!reviewSummaryAttempted.add("${book.bookUrl}#${chapter.index}")) return
+        if (reviewSummaryJobs[chapter.index]?.isActive == true) return
+        reviewSummaryJobs[chapter.index] = reviewSummaryScope.launch {
+            if (!loadReviewSummaryAwait(book, chapter)) return@launch
+            if (!AppConfig.enableReview) return@launch
+            if (durChapterIndex != chapter.index || this@ReadBook.book?.bookUrl != book.bookUrl) {
+                return@launch
+            }
+            AppLog.putDebug("段评摘要到位，补一次排版: ${chapter.title}")
+            launch(Main) { relayoutCurrentContent("review-summary") }
+        }
+    }
+
+    /**
+     * 加载段评摘要（段落号 -> 数量），排版阶段直接从 [ReviewSummaryStore] 取用。
+     * 段评是可选能力，任何失败都不影响正文加载。
+     *
+     * @return 是否拿到了非空结果
+     */
+    private suspend fun loadReviewSummaryAwait(book: Book, chapter: BookChapter): Boolean {
+        if (!AppConfig.enableReview) return false
+        val source = bookSource ?: return false
         val rule = source.ruleReview
         if (!source.isJsSource() && (rule == null || !rule.hasSummaryRule())) {
-            return
+            return false
         }
-        try {
+        return try {
             withTimeoutOrNull(5000) {
                 val summary = HashMap<Int, ReviewSummaryStore.Summary>()
                 if (source.isJsSource()) {
                     val result = JsSourceReview.getReviewSummaryAwait(source, book, chapter)
-                        ?: return@withTimeoutOrNull
+                        ?: return@withTimeoutOrNull false
                     result.counts.forEach { (index, count) ->
                         summary[index] = ReviewSummaryStore.Summary(
                             count = count,
@@ -1603,7 +1637,7 @@ object ReadBook : CoroutineScope by MainScope() {
                     }
                 } else {
                     val urlRule = rule?.reviewSummaryUrl?.takeIf { it.isNotBlank() }
-                        ?: return@withTimeoutOrNull
+                        ?: return@withTimeoutOrNull false
                     val analyzeUrl = AnalyzeUrl(
                         mUrl = urlRule,
                         baseUrl = chapter.url,
@@ -1613,7 +1647,7 @@ object ReadBook : CoroutineScope by MainScope() {
                         coroutineContext = currentCoroutineContext(),
                     )
                     val body = analyzeUrl.getStrResponseAwait(useWebView = false).body
-                        ?: return@withTimeoutOrNull
+                        ?: return@withTimeoutOrNull false
                     val result = ReviewRuleParser.parseSummary(
                         body = body,
                         rule = rule,
@@ -1622,7 +1656,7 @@ object ReadBook : CoroutineScope by MainScope() {
                         chapter = chapter,
                         baseUrl = analyzeUrl.url,
                         context = currentCoroutineContext(),
-                    ) ?: return@withTimeoutOrNull
+                    ) ?: return@withTimeoutOrNull false
                     result.counts.forEach { (index, count) ->
                         summary[index] = ReviewSummaryStore.Summary(
                             count = count,
@@ -1631,11 +1665,13 @@ object ReadBook : CoroutineScope by MainScope() {
                     }
                 }
                 ReviewSummaryStore.put(book.bookUrl, chapter.index, summary)
-            }
+                summary.isNotEmpty()
+            } ?: false
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
             AppLog.put("加载段评摘要失败\n${e.localizedMessage}", e)
+            false
         }
     }
 
@@ -1673,7 +1709,8 @@ object ReadBook : CoroutineScope by MainScope() {
                 )
             }
             val displayTitle = contents.displayTitle ?: fallbackDisplayTitle
-            loadReviewSummaryAwait(book, chapter)
+            //段评摘要在后台补，正文排版不等它
+            requestReviewSummary(book, chapter)
             ensureActive()
             if (!isChapterLoadRequestCurrent(
                     book.bookUrl,
