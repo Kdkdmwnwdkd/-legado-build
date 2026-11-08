@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--App-->
-    <string name="app_name">阅读Shimmer</string>
-    <string name="app_launcher_name">Shimmer</string>
+    <string name="app_name">阅读</string>
+    <string name="app_launcher_name">阅读</string>
     <string name="app_name_a">阅读Shimmer·A</string>
     <string name="app_name_s" translatable="false">阅读ShimmerPlus</string>
     <string name="receiving_shared_label">阅读Shimmer Search</string>
@@ -1856,7 +1856,7 @@ Note: custom buttons are meant for reading and helper actions; do not modify the
     <string name="video_setting">Video settings</string>
     <string name="video_setting_summary">Autoplay, fullscreen playback, and more</string>
     <string name="history">History</string>
-    <string name="app_name_sigma">阅读Shimmer</string>
+    <string name="app_name_sigma">阅读</string>
     <string name="about_description_sigma">阅读Shimmer is an independent Android reader focused on the reading experience, book source tools, and AI assistance.</string>
     <string name="contributors_summary_sigma">Maintained at Kdkdmwnwdkd/-legado-build; see GitHub for details</string>
     <string name="app_share_description_sigma">阅读Shimmer download link:\nhttps://github.com/Kdkdmwnwdkd/-legado-build/releases</string>
