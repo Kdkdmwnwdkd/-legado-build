@@ -42,6 +42,29 @@ jobs:
             echo "kotlin.daemon.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g"
           } >> gradle.properties
 
+      - name: Prepare Gradle distribution
+        # GitHub 的 gradle-distributions release 资产偶发 504，
+        # 官方源探测失败就切国内镜像，避免整条流水线卡在 wrapper 下载。
+        run: |
+          OFFICIAL="https://services.gradle.org/distributions/gradle-9.6.0-bin.zip"
+          MIRRORS=(
+            "https://mirrors.cloud.tencent.com/gradle/gradle-9.6.0-bin.zip"
+            "https://repo.huaweicloud.com/gradle/gradle-9.6.0-bin.zip"
+          )
+          probe() { curl -fsL -r 0-65535 --max-time 25 -o /dev/null "$1"; }
+          if probe "$OFFICIAL"; then
+            echo "官方源可用"
+            exit 0
+          fi
+          for M in "${MIRRORS[@]}"; do
+            if probe "$M"; then
+              echo "切换镜像: $M"
+              sed -i "s#^distributionUrl=.*#distributionUrl=${M}#" gradle/wrapper/gradle-wrapper.properties
+              exit 0
+            fi
+          done
+          echo "所有源均不可用，交给 wrapper 自行重试"
+
       - name: Assemble debug
         run: ./gradlew :app:assembleAppDebug -Pabi=arm64-v8a --max-workers=2 --stacktrace
 
@@ -81,6 +104,29 @@ jobs:
             echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
             echo "kotlin.daemon.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g"
           } >> gradle.properties
+
+      - name: Prepare Gradle distribution
+        # GitHub 的 gradle-distributions release 资产偶发 504，
+        # 官方源探测失败就切国内镜像，避免整条流水线卡在 wrapper 下载。
+        run: |
+          OFFICIAL="https://services.gradle.org/distributions/gradle-9.6.0-bin.zip"
+          MIRRORS=(
+            "https://mirrors.cloud.tencent.com/gradle/gradle-9.6.0-bin.zip"
+            "https://repo.huaweicloud.com/gradle/gradle-9.6.0-bin.zip"
+          )
+          probe() { curl -fsL -r 0-65535 --max-time 25 -o /dev/null "$1"; }
+          if probe "$OFFICIAL"; then
+            echo "官方源可用"
+            exit 0
+          fi
+          for M in "${MIRRORS[@]}"; do
+            if probe "$M"; then
+              echo "切换镜像: $M"
+              sed -i "s#^distributionUrl=.*#distributionUrl=${M}#" gradle/wrapper/gradle-wrapper.properties
+              exit 0
+            fi
+          done
+          echo "所有源均不可用，交给 wrapper 自行重试"
 
       - name: Unit tests
         # 只跑 debug 变体：gradlew test 会同时编译 debug/release 两套 Kotlin，
