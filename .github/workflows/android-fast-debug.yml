@@ -1,9 +1,20 @@
-name: Nightly Debug
+name: Nightly Build
 
 # 只发布到固定的 nightly 标签，绝不按「最新 release」定位，
 # 避免把正式版的 APK 和说明覆盖掉。
+#
+# 默认出 release 包：debug 包带 debuggable=true 且内置 Compose tooling，
+# 装到手机上明显发涩，不适合日常读。
 on:
   workflow_dispatch:
+    inputs:
+      build_type:
+        description: "构建类型（release 流畅，debug 方便抓日志）"
+        type: choice
+        options:
+          - release
+          - debug
+        default: release
 
 permissions:
   contents: write
@@ -51,8 +62,12 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           if [ -z "$KEYSTORE_B64" ]; then
-            echo "未配置 KEYSTORE_B64，本次使用默认 debug 签名。"
-            exit 0
+            if [ "${{ inputs.build_type || 'release' }}" = "debug" ]; then
+              echo "未配置 KEYSTORE_B64，本次使用默认 debug 签名。"
+              exit 0
+            fi
+            echo "::error::release 包必须有签名，请配置 secrets.KEYSTORE_B64（或把 build_type 选成 debug）。"
+            exit 1
           fi
           KEYSTORE="$RUNNER_TEMP/release.jks"
           printf '%s' "$KEYSTORE_B64" | base64 -d > "$KEYSTORE"
@@ -97,10 +112,18 @@ jobs:
           echo "Maven 镜像兜底已启用: $GUH/init.d/99-mirrors.gradle"
 
 
-      - name: Build arm64 debug APK
+      - name: Build arm64 APK
+        env:
+          BUILD_TYPE: ${{ inputs.build_type || 'release' }}
         run: |
           VERSION_CODE=$(( $(date -u +%s) / 60 ))
-          ./gradlew :app:assembleAppDebug \
+          if [ "$BUILD_TYPE" = "debug" ]; then
+            TASK=assembleAppDebug
+          else
+            TASK=assembleAppRelease
+          fi
+          echo "构建类型: $BUILD_TYPE ($TASK)"
+          ./gradlew ":app:${TASK}" \
             -Pabi=arm64-v8a \
             -PVERSION_NAME="3.$(TZ=Asia/Shanghai date +%y.%m%d%H%M)-nightly" \
             -PVERSION_CODE="$VERSION_CODE" \
@@ -122,14 +145,15 @@ jobs:
         run: |
           TAG="nightly"
           cat > notes.md <<EOF
-          阅读Shimmer 每日构建（调试版）
+          阅读Shimmer 每日构建（${{ inputs.build_type || 'release' }}）
 
           - Commit: ${{ github.sha }}
           - 分支: ${{ github.ref_name }}
           - APK: ${{ steps.apk.outputs.name }}
           - 构建时间: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-          调试版与正式版签名不同，安装前请先卸载另一个版本。
+          包名 io.legado.app.shimmer。与已安装的正式版同签名时可直接覆盖升级；
+          若提示签名冲突，先卸载旧包再装（数据请提前备份）。
           EOF
 
           if gh release view "$TAG" >/dev/null 2>&1; then
