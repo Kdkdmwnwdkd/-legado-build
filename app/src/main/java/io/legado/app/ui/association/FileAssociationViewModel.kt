@@ -79,6 +79,10 @@ class FileAssociationViewModel(application: Application) : BaseAssociationViewMo
             it.printOnDebug()
             AppLog.put("尝试导入为JSON文件失败\n${it.localizedMessage}", it)
         }
+        if (fileDoc.name.endsWith(".js", ignoreCase = true)) {
+            importJsSource(fileDoc.uri)
+            return
+        }
         if (fileDoc.name.endsWith(".red", ignoreCase = true)) {
             importRedThemeLiveData.postValue(fileDoc.uri)
             return

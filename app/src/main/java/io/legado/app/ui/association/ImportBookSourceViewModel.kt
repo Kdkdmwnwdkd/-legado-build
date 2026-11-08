@@ -19,6 +19,8 @@ import io.legado.app.help.http.newCallResponseBody
 import io.legado.app.help.http.importHttpClient as okHttpClient
 import io.legado.app.help.source.SourceHelp
 import io.legado.app.model.RuleUpdate
+import io.legado.app.model.jsSource.JsSourceConfig
+import kotlinx.coroutines.currentCoroutineContext
 import io.legado.app.utils.GSON
 import io.legado.app.utils.fromJsonArray
 import io.legado.app.utils.fromJsonObject
@@ -269,17 +271,29 @@ class ImportBookSourceViewModel(app: Application) : BaseViewModel(app) {
                 mText.isUri() -> {
                     val uri = Uri.parse(mText)
                     uri.inputStream(context).getOrThrow().use { inputS ->
-                        GSON.fromJsonArray<BookSource>(inputS).getOrThrow().let {
-                            val source = it.firstOrNull() ?: return@let
-                            if (source.bookSourceUrl.isEmpty()) {
-                                throw NoStackTraceException(context.getString(R.string.import_not_book_source))
+                        val content = inputS.bufferedReader().readText().trim()
+                        if (content.isJsonArray()) {
+                            GSON.fromJsonArray<BookSource>(content).getOrThrow().let {
+                                val source = it.firstOrNull() ?: return@let
+                                if (source.bookSourceUrl.isEmpty()) {
+                                    throw NoStackTraceException(context.getString(R.string.import_not_book_source))
+                                }
+                                allSources.addAll(it)
                             }
-                            allSources.addAll(it)
+                        } else {
+                            allSources.add(JsSourceConfig.extract(content, currentCoroutineContext()))
                         }
                     }
                 }
 
-                else -> throw NoStackTraceException(context.getString(R.string.wrong_format))
+                else -> runCatching {
+                    // 纯 JS 单文件书源：执行脚本取 config 生成书源
+                    allSources.add(JsSourceConfig.extract(mText, currentCoroutineContext()))
+                }.getOrElse {
+                    throw NoStackTraceException(
+                        "${context.getString(R.string.wrong_format)}\n${it.localizedMessage}"
+                    )
+                }
             }
         }.onError {
             errorLiveData.postValue("ImportError:${it.localizedMessage}")
@@ -303,12 +317,17 @@ class ImportBookSourceViewModel(app: Application) : BaseViewModel(app) {
                 url(url)
             }
         }.useLimitedImportStream {
-            GSON.fromJsonArray<BookSource>(it).getOrThrow().let { list ->
-                val source = list.firstOrNull() ?: return@let
-                if (source.bookSourceUrl.isEmpty()) {
-                    throw NoStackTraceException(context.getString(R.string.import_not_book_source))
+            val content = it.bufferedReader().readText().trim()
+            if (content.isJsonArray()) {
+                GSON.fromJsonArray<BookSource>(content).getOrThrow().let { list ->
+                    val source = list.firstOrNull() ?: return@let
+                    if (source.bookSourceUrl.isEmpty()) {
+                        throw NoStackTraceException(context.getString(R.string.import_not_book_source))
+                    }
+                    allSources.addAll(list)
                 }
-                allSources.addAll(list)
+            } else {
+                allSources.add(JsSourceConfig.extract(content, currentCoroutineContext()))
             }
         }
     }

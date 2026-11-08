@@ -14,6 +14,13 @@ abstract class BaseAssociationViewModel(application: Application) : BaseViewMode
     val successLive = MutableLiveData<Pair<String, String>>()
     val errorLive = MutableLiveData<String>()
 
+    /**
+     * 纯 JS 单文件书源：不走 JSON 结构判断，直接交给书源导入对话框解析脚本
+     */
+    fun importJsSource(uri: Uri) {
+        successLive.postValue("bookSource" to uri.toString())
+    }
+
     fun importJson(uri: Uri) {
         val map = readFirstJsonObject(uri)
 
