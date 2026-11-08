@@ -1,0 +1,20 @@
+// CI 专用：绕开 GitHub release 资产的 504。
+//
+// Maven Central 对部分 JetBrains 构件会 302 到 github.com/JetBrains/...，
+// GitHub 那边一抽风，整条构建就卡在依赖下载（gradle 发行包同理）。
+// 这里只把 Maven Central 的地址换成国内镜像，仓库数量、顺序、content 过滤
+// 全部保持不变，所以 com.github.* 的 jitpack 依赖不受影响。
+//
+// 只由 CI 通过 --init-script 加载，本地构建仍走原来的仓库。
+
+gradle.settingsEvaluated { settings ->
+    [settings.pluginManagement.repositories,
+     settings.dependencyResolutionManagement.repositories].each { repositories ->
+        repositories.withType(MavenArtifactRepository).configureEach { repo ->
+            def url = repo.url.toString()
+            if (url.contains('repo.maven.apache.org') || url.contains('repo1.maven.org')) {
+                repo.url = 'https://maven.aliyun.com/repository/public'
+            }
+        }
+    }
+}

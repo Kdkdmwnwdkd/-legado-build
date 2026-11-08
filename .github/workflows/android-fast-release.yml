@@ -105,6 +105,16 @@ jobs:
           done
           echo "所有源均不可用，交给 wrapper 自行重试"
 
+      - name: Use Maven mirror
+        # 配合上一步：Maven Central 的 JetBrains 构件会 302 到 GitHub，
+        # 同样受 504 影响，这里换成国内镜像（仓库数量与 content 过滤不变）。
+        run: |
+          GUH="${GRADLE_USER_HOME:-$HOME/.gradle}"
+          mkdir -p "$GUH/init.d"
+          cp .github/ci/mirrors.gradle "$GUH/init.d/99-mirrors.gradle"
+          echo "Maven 镜像兜底已启用: $GUH/init.d/99-mirrors.gradle"
+
+
       - name: Build arm64-v8a
         run: |
           chmod +x gradlew
