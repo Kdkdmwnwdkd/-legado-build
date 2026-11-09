@@ -177,6 +177,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
     private var sideNavigationBackgroundKey: String? = null
     private var sideNavigationBackgroundBitmap: Bitmap? = null
     private var aiFloatingBall: FrameLayout? = null
+    private var aiFloatingBallIsMascot = false
     private var aiFloatingBallDragged = false
     private val aiFloatingBallAttachRunnable = Runnable {
         aiFloatingBall?.let { placeAiFloatingBall(it, animate = true, attached = true) }
@@ -364,6 +365,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
         }
         refreshMainThemeBackground()
         refreshBottomNavigationConfig()
+        aiFloatingBall?.takeIf { it.isVisible }?.let { (it as? AiMascotView)?.startIdle() }
         binding.root.post {
             scheduleLiquidGlassWarmup()
         }
@@ -374,6 +376,8 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
 
     override fun onPause() {
         binding.root.removeCallbacks(shibbolethImportRunnable)
+        // 离开首页就停掉待机动画，没有必要在后台空转。
+        (aiFloatingBall as? AiMascotView)?.stopIdle()
         super.onPause()
     }
 
@@ -892,12 +896,21 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
 
     private fun updateAiFloatingBall(): Unit = binding.run {
         if (!shouldShowAiFloatingBall()) {
+            (aiFloatingBall as? AiMascotView)?.stopIdle()
             aiFloatingBall?.removeCallbacks(aiFloatingBallAttachRunnable)
             aiFloatingBall?.isVisible = false
             return
         }
-        val ball = aiFloatingBall ?: createAiFloatingBall().also {
+        // 用户自定义过入口图标时退回原来的圆形小球，其余情况显示助手形象。
+        val mascot = !NavigationBarIconConfig.hasCurrentSingleIcon(NavigationBarIconConfig.EXTRA_SEARCH)
+        if (aiFloatingBall != null && aiFloatingBallIsMascot != mascot) {
+            (aiFloatingBall as? AiMascotView)?.stopIdle()
+            aiFloatingBall?.let { root.removeView(it) }
+            aiFloatingBall = null
+        }
+        val ball = aiFloatingBall ?: createAiFloatingBall(mascot).also {
             aiFloatingBall = it
+            aiFloatingBallIsMascot = mascot
             it.visibility = View.INVISIBLE
             root.addView(it)
         }
@@ -912,29 +925,39 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                 !isSidebarMode()
     }
 
-    private fun createAiFloatingBall(): FrameLayout {
-        val size = resources.getDimensionPixelSize(R.dimen.main_ai_floating_ball_size)
-        val iconPadding = resources.getDimensionPixelSize(R.dimen.main_ai_floating_ball_icon_padding)
-        return FrameLayout(this).apply {
-            elevation = resources.getDimension(R.dimen.main_search_button_elevation)
-            background = createSolidBottomShellDrawable(bottomBarCornerRadius, oval = true)
-            layoutParams = ConstraintLayout.LayoutParams(size, size)
-            addView(ImageView(this@MainActivity).apply {
-                scaleType = ImageView.ScaleType.CENTER_INSIDE
-                setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
-                layoutParams = FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
+    private fun createAiFloatingBall(mascot: Boolean): FrameLayout {
+        val ball = if (mascot) {
+            AiMascotView(this).apply {
+                layoutParams = ConstraintLayout.LayoutParams(
+                    resources.getDimensionPixelSize(R.dimen.main_ai_mascot_width),
+                    resources.getDimensionPixelSize(R.dimen.main_ai_mascot_height)
                 )
-            })
-            syncAiFloatingBallIcon(this)
-            setOnClickListener {
-                if (!aiFloatingBallDragged) {
-                    startActivity(Intent(this@MainActivity, AiChatActivity::class.java))
-                }
             }
-            setOnTouchListener(AiFloatingBallTouchListener(this))
+        } else {
+            val size = resources.getDimensionPixelSize(R.dimen.main_ai_floating_ball_size)
+            val iconPadding = resources.getDimensionPixelSize(R.dimen.main_ai_floating_ball_icon_padding)
+            FrameLayout(this).apply {
+                elevation = resources.getDimension(R.dimen.main_search_button_elevation)
+                background = createSolidBottomShellDrawable(bottomBarCornerRadius, oval = true)
+                layoutParams = ConstraintLayout.LayoutParams(size, size)
+                addView(ImageView(this@MainActivity).apply {
+                    scaleType = ImageView.ScaleType.CENTER_INSIDE
+                    setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+                    layoutParams = FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                })
+            }
         }
+        ball.setOnClickListener {
+            if (!aiFloatingBallDragged) {
+                startActivity(Intent(this@MainActivity, AiChatActivity::class.java))
+            }
+        }
+        ball.setOnTouchListener(AiFloatingBallTouchListener(ball))
+        syncAiFloatingBallIcon(ball)
+        return ball
     }
 
     private fun scheduleAiFloatingBallAttach() {
@@ -946,6 +969,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
         ball.bringToFront()
         if (placeAiFloatingBall(ball, animate = false, attached = true)) {
             ball.isVisible = true
+            (ball as? AiMascotView)?.startIdle()
             scheduleAiFloatingBallAttach()
             return
         }
@@ -969,7 +993,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
         val parentHeight = root.height
         if (parentWidth <= 0 || parentHeight <= 0 || ball.width <= 0 || ball.height <= 0) return@run false
         val side = getPrefInt(PreferKey.aiFloatingBallSide, 1).coerceIn(0, 1)
-        val yPercent = getPrefInt(PreferKey.aiFloatingBallYPercent, 50).coerceIn(8, 92)
+        val yPercent = getPrefInt(PreferKey.aiFloatingBallYPercent, 66).coerceIn(8, 92)
         val hiddenOffset = 0f
         val targetX = if (side == 0) -hiddenOffset else parentWidth - ball.width + hiddenOffset
         val safeMargin = resources.getDimensionPixelSize(R.dimen.main_ai_floating_ball_safe_margin)
@@ -1007,6 +1031,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                     downX = target.x
                     downY = target.y
                     aiFloatingBallDragged = false
+                    (target as? AiMascotView)?.onPressDown()
                     return true
                 }
                 MotionEvent.ACTION_MOVE -> {
@@ -1023,10 +1048,12 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                             .coerceAtLeast(12.dpToPx())
                             .toFloat()
                         target.y = (downY + dy).coerceIn(topLimit, bottomLimit)
+                        (target as? AiMascotView)?.onDragTilt(dx)
                     }
                     return true
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    val mascot = target as? AiMascotView
                     if (aiFloatingBallDragged) {
                         val side = if (target.x + target.width / 2f < binding.root.width / 2f) 0 else 1
                         val availableHeight = (binding.root.height - bottomNavigationInset - target.height).coerceAtLeast(1)
@@ -1036,8 +1063,15 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                         putPrefInt(PreferKey.aiFloatingBallYPercent, yPercent)
                         placeAiFloatingBall(target, animate = true, attached = false)
                         scheduleAiFloatingBallAttach()
+                        mascot?.onRelease()
                     } else if (event.actionMasked == MotionEvent.ACTION_UP) {
-                        target.performClick()
+                        if (mascot != null) {
+                            mascot.playTapBounce { target.performClick() }
+                        } else {
+                            target.performClick()
+                        }
+                    } else {
+                        mascot?.onRelease()
                     }
                     return true
                 }
@@ -1648,6 +1682,8 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
     }
 
     private fun syncAiFloatingBallIcon(ball: View) {
+        // 形象模式下立绘由 AiMascotView 自己维护，不需要外部换图。
+        if (ball is AiMascotView) return
         val container = ball as? ViewGroup ?: return
         val imageView = container.getChildAt(0) as? ImageView ?: return
         val hasCustomSearchIcon = NavigationBarIconConfig.hasCurrentSingleIcon(NavigationBarIconConfig.EXTRA_SEARCH)
