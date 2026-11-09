@@ -27,7 +27,7 @@ data class ContentRule(
 ) : Parcelable {
 
     override fun toString(): String = buildString {
-        // 保持与上游一致的字符串形态，避免影响书源校验值
+        // 字符串形态保持不变，避免影响书源校验值
         append("ContentRule(content=$content, subContent=$subContent, title=$title, ")
         append("nextContentUrl=$nextContentUrl, webJs=$webJs, sourceRegex=$sourceRegex, ")
         append("replaceRegex=$replaceRegex, imageStyle=$imageStyle, imageDecode=$imageDecode, ")

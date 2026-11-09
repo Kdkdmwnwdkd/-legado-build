@@ -97,7 +97,7 @@ data class BookSource(
     // 段评规则
     var ruleReview: ReviewRule? = null,
     // 纯 JavaScript 单文件书源主脚本。非空时为 JS 源，
-    // 本分支暂不执行脚本抓取流程，仅保证导入导出与上游一致、不丢字段
+    // 暂不执行脚本抓取流程，仅保证导入导出字段完整、不丢失
     var mainJs: String? = null,
     @ColumnInfo(defaultValue = "0")
     var eventListener: Boolean = false, // 是否监听事件来执行回调规则

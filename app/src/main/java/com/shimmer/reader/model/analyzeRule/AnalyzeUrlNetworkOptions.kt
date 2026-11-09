@@ -1,7 +1,7 @@
 package com.shimmer.reader.model.analyzeRule
 
 /**
- * AnalyzeUrl 的网络选项解析辅助函数（与上游保持一致）
+ * AnalyzeUrl 的网络选项解析辅助函数（保持既有行为）
  */
 
 private const val MIN_DERIVED_CALL_TIMEOUT_MILLIS = 60_000L

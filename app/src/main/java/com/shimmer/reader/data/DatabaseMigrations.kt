@@ -31,7 +31,7 @@ object DatabaseMigrations {
 
     /**
      * 书源表新增 mainJs 列（纯 JS 单文件书源主脚本）。
-     * 上游在 113 版就带了该列，因此这里先探测再添加，避免与上游同版本号的数据文件冲突。
+     * 该列在 113 版就已存在，因此这里先探测再添加，避免与旧版本号的数据文件冲突。
      */
     val MIGRATION_113_114 = object : Migration(113, 114) {
         override fun migrate(db: SupportSQLiteDatabase) {

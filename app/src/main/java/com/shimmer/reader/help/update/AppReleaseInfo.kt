@@ -22,7 +22,7 @@ data class AppReleaseInfo(
      */
     private val nightlyNameRegex = Regex("""^.+?_(\d+(?:\.\d+)+)_(\d+)\.apk$""")
 
-    /** 上游格式：xxx_yyy_zzz.apk，保持兼容，避免影响其他渠道 */
+    /** 历史格式：xxx_yyy_zzz.apk，保持兼容，避免影响其他渠道 */
     private val apkNameRegex = Regex("""^.+?_.+?_([^_]+)(?:_(\d+))?\.apk$""")
 
     private val nightlyMatch = nightlyNameRegex.matchEntire(name)

@@ -20,7 +20,7 @@ data class ReviewRule(
     var postQuoteUrl: String? = null,       // 发送回复段评URL
     var deleteUrl: String? = null,          // 删除段评URL
 
-    // 段评摘要与详情页（与上游保持字段一致，保证书源导入导出无损）
+    // 段评摘要与详情页（字段保持一致，保证书源导入导出无损）
     var enabled: Boolean = false,                 // 是否启用段评
     var reviewSummaryUrl: String? = null,         // 段评摘要URL
     var summaryListRule: String? = null,          // 摘要列表规则

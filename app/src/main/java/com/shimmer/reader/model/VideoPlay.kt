@@ -475,7 +475,7 @@ object VideoPlay : CoroutineScope by MainScope(){
         }
     }
 
-    //播放器移植 - 辅助函数
+    //播放器适配 - 辅助函数
     @SuppressLint("StaticFieldLeak")
     private var sSwitchVideo: StandardGSYVideoPlayer? = null
     private var sMediaPlayerListener: GSYMediaPlayerListener? = null

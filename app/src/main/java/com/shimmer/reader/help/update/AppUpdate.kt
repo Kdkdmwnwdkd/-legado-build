@@ -50,7 +50,7 @@ object AppUpdate {
             ?.getOrNull(2)
             ?.toLongOrNull()
             ?.let { return it }
-        // 上游命名兜底
+        // 旧命名兜底
         return Regex("""^.+?_.+?_([^_]+)(?:_(\d+))?\.apk$""")
             .matchEntire(fileName)
             ?.groupValues
