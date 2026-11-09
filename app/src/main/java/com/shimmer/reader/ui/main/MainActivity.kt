@@ -1648,13 +1648,24 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
     }
 
     private fun syncAiFloatingBallIcon(ball: View) {
-        val imageView = (ball as? ViewGroup)?.getChildAt(0) as? ImageView ?: return
+        val container = ball as? ViewGroup ?: return
+        val imageView = container.getChildAt(0) as? ImageView ?: return
         val hasCustomSearchIcon = NavigationBarIconConfig.hasCurrentSingleIcon(NavigationBarIconConfig.EXTRA_SEARCH)
-        imageView.setImageDrawable(searchSingleDrawable())
-        imageView.imageTintList = if (hasCustomSearchIcon) {
-            null
+        if (hasCustomSearchIcon) {
+            // 用户自定义过入口图标时优先尊重，回到原先的搜索图标逻辑。
+            imageView.setImageDrawable(searchSingleDrawable())
+            imageView.imageTintList = null
+            imageView.scaleType = ImageView.ScaleType.CENTER_INSIDE
+            val iconPadding = resources.getDimensionPixelSize(R.dimen.main_ai_floating_ball_icon_padding)
+            imageView.setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+            container.clipToOutline = false
         } else {
-            binding.bottomNavigationView.createThemeColorStateList()
+            // 默认显示助手形象，圆形容器直接把头像裁成圆形。
+            imageView.setImageResource(R.drawable.ai_mascot_avatar)
+            imageView.imageTintList = null
+            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+            imageView.setPadding(0, 0, 0, 0)
+            container.clipToOutline = true
         }
     }
 

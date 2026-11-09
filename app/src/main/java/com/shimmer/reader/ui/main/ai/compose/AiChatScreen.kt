@@ -111,6 +111,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.min
 import kotlin.math.abs
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
 
 @Stable
 data class AiChatScreenActions(
@@ -1255,18 +1261,21 @@ private fun AiCompanionAvatar(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                painter = painterResource(
-                    if (companion.id == AiChatCompanionConfig.DEFAULT_COMPANION_ID) {
-                        R.drawable.ic_bottom_ai_e
-                    } else {
-                        R.drawable.ic_bottom_person_e
-                    }
-                ),
-                contentDescription = null,
-                tint = style.colors.accent,
-                modifier = Modifier.size((sizeDp * 0.55f).dp)
-            )
+            if (companion.id == AiChatCompanionConfig.DEFAULT_COMPANION_ID) {
+                Image(
+                    painter = painterResource(R.drawable.ai_mascot_avatar),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                Icon(
+                    painter = painterResource(R.drawable.ic_bottom_person_e),
+                    contentDescription = null,
+                    tint = style.colors.accent,
+                    modifier = Modifier.size((sizeDp * 0.55f).dp)
+                )
+            }
         }
     }
 }
@@ -1298,11 +1307,26 @@ private fun AiEmptyState(style: AiComposeStyle, onSend: (String) -> Boolean) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_bottom_ai_e),
+        val breath = rememberInfiniteTransition(label = "mascotBreath")
+        val mascotScale by breath.animateFloat(
+            initialValue = 0.985f,
+            targetValue = 1.015f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 2600, easing = LinearOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "mascotScale"
+        )
+        Image(
+            painter = painterResource(R.drawable.ai_mascot),
             contentDescription = stringResource(R.string.ai),
-            tint = style.colors.secondaryText,
-            modifier = Modifier.size(28.dp)
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .height(156.dp)
+                .graphicsLayer {
+                    scaleX = mascotScale
+                    scaleY = mascotScale
+                }
         )
         Text(
             text = stringResource(R.string.ai_chat_empty),
