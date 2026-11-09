@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -53,13 +54,17 @@ import com.shimmer.reader.help.book.BookTagHelper
 import com.shimmer.reader.help.config.AppConfig
 import com.shimmer.reader.lib.theme.accentColor
 import com.shimmer.reader.lib.theme.primaryColor
+import com.shimmer.reader.ui.about.ReadRecordActivity
 import com.shimmer.reader.ui.book.info.BookInfoNavigator
 import com.shimmer.reader.ui.main.MainViewModel
 import com.shimmer.reader.ui.main.bookshelf.compose.BookshelfBookItemUi
+import com.shimmer.reader.ui.main.bookshelf.compose.BookshelfBriefCard
 import com.shimmer.reader.ui.main.bookshelf.compose.BookshelfGridItem
 import com.shimmer.reader.ui.main.bookshelf.compose.BookshelfItemUi
 import com.shimmer.reader.ui.main.bookshelf.compose.BookshelfListItem
 import com.shimmer.reader.ui.main.bookshelf.compose.BookshelfSnapshotStore
+import com.shimmer.reader.ui.main.bookshelf.compose.ShelfBrief
+import com.shimmer.reader.ui.main.bookshelf.compose.ShelfBriefLoader
 import com.shimmer.reader.ui.main.bookshelf.compose.buildBookshelfItems
 import com.shimmer.reader.ui.main.bookshelf.compose.rememberBookshelfListRenderConfig
 import com.shimmer.reader.ui.main.bookshelf.compose.updateBookshelfItemUpdating
@@ -133,6 +138,7 @@ class BooksFragment() : BaseFragment(R.layout.fragment_books) {
     private var composeListItemStyle by mutableIntStateOf(AppConfig.bookshelfListItemStyle)
     private var composeListIntroLines by mutableIntStateOf(AppConfig.bookshelfListIntroLines)
     private var scrollToTopWhenReturnFromRead = false
+    private var shelfBrief by mutableStateOf<ShelfBrief?>(null)
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
         arguments?.let {
@@ -145,10 +151,12 @@ class BooksFragment() : BaseFragment(R.layout.fragment_books) {
         }
         initRecyclerView()
         upRecyclerData()
+        refreshShelfBrief()
     }
 
     override fun onResume() {
         super.onResume()
+        refreshShelfBrief()
         if (scrollToTopWhenReturnFromRead) {
             scrollToTopWhenReturnFromRead = false
             binding.root.post {
@@ -339,6 +347,15 @@ class BooksFragment() : BaseFragment(R.layout.fragment_books) {
                     bottom = marginDp + bottomBarPadding + 12.dp
                 )
             ) {
+                if (position == 0) {
+                    item(
+                        key = "shelf_brief",
+                        contentType = "shelf_brief",
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        ShelfBriefHeader()
+                    }
+                }
                 items(
                     items = composeItems,
                     key = { it.key },
@@ -425,6 +442,11 @@ class BooksFragment() : BaseFragment(R.layout.fragment_books) {
                     bottom = marginDp + bottomBarPadding + 12.dp
                 )
             ) {
+                if (position == 0) {
+                    item(key = "shelf_brief", contentType = "shelf_brief") {
+                        ShelfBriefHeader()
+                    }
+                }
                 items(
                     items = composeItems,
                     key = { it.key },
@@ -795,6 +817,37 @@ class BooksFragment() : BaseFragment(R.layout.fragment_books) {
             val book = withContext(IO) { appDb.bookDao.getBook(bookUrl) } ?: return@launch
             openBookInfo(book)
         }
+    }
+
+    /** 顶部卡片的数字每次回到书架都重算，读完一本书回来时长会变。 */
+    private fun refreshShelfBrief() {
+        // 只有第一个分组承担首页职责，其余分组页不重复显示这张卡片。
+        if (view == null || position != 0) return
+        viewLifecycleOwner.lifecycleScope.launch {
+            val brief = runCatching { ShelfBriefLoader.load() }.getOrNull() ?: return@launch
+            shelfBrief = brief
+        }
+    }
+
+    @Composable
+    private fun ShelfBriefHeader() {
+        val brief = shelfBrief ?: return
+        BookshelfBriefCard(
+            brief = brief,
+            onOpenRecent = {
+                val bookUrl = brief.recentBookUrl
+                if (bookUrl.isNullOrBlank()) {
+                    startActivity<ReadRecordActivity>()
+                } else {
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        val book = withContext(IO) { appDb.bookDao.getBook(bookUrl) }
+                            ?: return@launch
+                        open(book)
+                    }
+                }
+            },
+            onOpenRecord = { startActivity<ReadRecordActivity>() }
+        )
     }
 
     private fun updateComposeItemUpdating(bookUrl: String) {

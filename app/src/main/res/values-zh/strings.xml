@@ -3003,4 +3003,12 @@ bookUrl：%7$s
     <string name="review_reply_count">%1$d 条回复</string>
     <string name="review_reply_empty">暂无回复</string>
     <string name="anonymous">匿名</string>
+    <string name="shelf_brief_today">今日阅读</string>
+    <string name="shelf_brief_streak">连续 %1$d 天</string>
+    <string name="shelf_brief_streak_none">还没有连续记录</string>
+    <string name="shelf_brief_goal">每天目标 %1$d 分钟</string>
+    <string name="shelf_brief_minutes">%1$d 分钟</string>
+    <string name="shelf_brief_hours">%1$d 小时 %2$d 分</string>
+    <string name="shelf_brief_continue">继续《%1$s》</string>
+    <string name="shelf_brief_none_today">还没开始</string>
 </resources>

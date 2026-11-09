@@ -3064,4 +3064,12 @@ Type &quot;%2$s&quot; to confirm.</string>
     <string name="review_reply_count">%1$d replies</string>
     <string name="review_reply_empty">No replies</string>
     <string name="anonymous">Anonymous</string>
+    <string name="shelf_brief_today">Read today</string>
+    <string name="shelf_brief_streak">%1$d-day streak</string>
+    <string name="shelf_brief_streak_none">No streak yet</string>
+    <string name="shelf_brief_goal">Daily goal %1$d min</string>
+    <string name="shelf_brief_minutes">%1$d min</string>
+    <string name="shelf_brief_hours">%1$dh %2$dm</string>
+    <string name="shelf_brief_continue">Continue %1$s</string>
+    <string name="shelf_brief_none_today">Not yet</string>
 </resources>
