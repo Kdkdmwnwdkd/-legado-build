@@ -106,7 +106,7 @@ object ReadAloud {
         play: Boolean = BaseReadAloudService.isPlay()
     ) {
         if (!BaseReadAloudService.isRun) return
-        ReadBook.resumeReadAloudFollow()
+        ReadBook.resumeReadAloudFollow(jumpToPosition = false)
         val intent = Intent(context, aloudClass)
         intent.action = IntentAction.moveTo
         intent.putExtra("cueIndex", cueIndex)
@@ -173,7 +173,7 @@ object ReadAloud {
 
     fun prevParagraph(context: Context) {
         if (BaseReadAloudService.isRun) {
-            ReadBook.resumeReadAloudFollow()
+            ReadBook.resumeReadAloudFollow(jumpToPosition = false)
             val intent = Intent(context, aloudClass)
             intent.action = IntentAction.prevParagraph
             context.startForegroundServiceCompat(intent)
@@ -182,7 +182,7 @@ object ReadAloud {
 
     fun nextParagraph(context: Context) {
         if (BaseReadAloudService.isRun) {
-            ReadBook.resumeReadAloudFollow()
+            ReadBook.resumeReadAloudFollow(jumpToPosition = false)
             val intent = Intent(context, aloudClass)
             intent.action = IntentAction.nextParagraph
             context.startForegroundServiceCompat(intent)
@@ -191,7 +191,7 @@ object ReadAloud {
 
     fun prevChapter(context: Context, continuePlayback: Boolean = BaseReadAloudService.isPlay()) {
         if (BaseReadAloudService.isRun) {
-            ReadBook.resumeReadAloudFollow()
+            ReadBook.resumeReadAloudFollow(jumpToPosition = false)
             val intent = Intent(context, aloudClass)
             intent.action = IntentAction.prev
             intent.putExtra("continuePlayback", continuePlayback)
@@ -201,7 +201,7 @@ object ReadAloud {
 
     fun nextChapter(context: Context, continuePlayback: Boolean = BaseReadAloudService.isPlay()) {
         if (BaseReadAloudService.isRun) {
-            ReadBook.resumeReadAloudFollow()
+            ReadBook.resumeReadAloudFollow(jumpToPosition = false)
             val intent = Intent(context, aloudClass)
             intent.action = IntentAction.next
             intent.putExtra("continuePlayback", continuePlayback)
@@ -215,7 +215,7 @@ object ReadAloud {
         continuePlayback: Boolean = BaseReadAloudService.isPlay()
     ) {
         if (BaseReadAloudService.isRun) {
-            ReadBook.resumeReadAloudFollow()
+            ReadBook.resumeReadAloudFollow(jumpToPosition = false)
             val intent = Intent(context, aloudClass)
             intent.action = IntentAction.selectChapter
             intent.putExtra("chapterIndex", chapterIndex)

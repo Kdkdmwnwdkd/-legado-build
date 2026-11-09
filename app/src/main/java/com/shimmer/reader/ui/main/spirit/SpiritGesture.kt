@@ -20,29 +20,50 @@ data class SpiritGesture(
         require(keys.first().atMs == 0) { "第一个关键帧必须落在 0ms" }
     }
 
-    val durationMs: Int get() = keys.last().atMs
+    /** 关键帧的时间与字段值在构造时摊平，算帧时只做乘加，不碰分配。 */
+    private val times: IntArray = IntArray(keys.size) { keys[it].atMs }
+    private val values: Array<FloatArray> = Array(keys.size) { keys[it].pose.toArray() }
+    private val slopeIn = FloatArray(SpiritPose.FIELDS)
+    private val slopeOut = FloatArray(SpiritPose.FIELDS)
+
+    val durationMs: Int = keys.last().atMs
 
     /** 取动作进行到 [elapsedMs] 时的姿势，超出范围返回静止。 */
     fun poseAt(elapsedMs: Int): SpiritPose {
-        if (elapsedMs <= 0) return keys.first().pose
-        if (elapsedMs >= durationMs) return SpiritPose.REST
+        val out = FloatArray(SpiritPose.FIELDS)
+        evaluate(elapsedMs, out)
+        return SpiritPose.of(out)
+    }
+
+    /**
+     * 把 [elapsedMs] 时刻的姿势写进 [dst]，不产生任何临时对象。
+     *
+     * 待机动画常驻在首页，60 帧下每秒要算几十次，这里省下的分配
+     * 直接决定了低端机上会不会隔一会儿卡一下。
+     */
+    fun evaluate(elapsedMs: Int, dst: FloatArray) {
+        if (elapsedMs <= 0) {
+            values[0].copyInto(dst, 0, 0, SpiritPose.FIELDS)
+            return
+        }
+        if (elapsedMs >= durationMs) {
+            java.util.Arrays.fill(dst, 0, SpiritPose.FIELDS, 0f)
+            return
+        }
         var index = 0
-        while (index < keys.size - 2 && keys[index + 1].atMs <= elapsedMs) index++
-        val current = keys[index]
-        val next = keys[index + 1]
-        val span = (next.atMs - current.atMs).coerceAtLeast(1)
-        val t = (elapsedMs - current.atMs).toFloat() / span
-
+        while (index < times.size - 2 && times[index + 1] <= elapsedMs) index++
+        val a = values[index]
+        val b = values[index + 1]
         // 前一个点与后一个点决定两端切线，端点外侧用自身补齐，避免起手就抖。
-        val before = keys.getOrElse(index - 1) { current }
-        val after = keys.getOrElse(index + 2) { next }
-        val a = current.pose.toArray()
-        val b = next.pose.toArray()
-        val previous = before.pose.toArray()
-        val following = after.pose.toArray()
-        val slopeIn = FloatArray(SpiritPose.FIELDS) { i -> (b[i] - previous[i]) * 0.5f }
-        val slopeOut = FloatArray(SpiritPose.FIELDS) { i -> (following[i] - a[i]) * 0.5f }
+        val previous = values[if (index > 0) index - 1 else index]
+        val following = values[if (index + 2 < values.size) index + 2 else index + 1]
+        for (i in 0 until SpiritPose.FIELDS) {
+            slopeIn[i] = (b[i] - previous[i]) * 0.5f
+            slopeOut[i] = (following[i] - a[i]) * 0.5f
+        }
 
+        val span = (times[index + 1] - times[index]).coerceAtLeast(1)
+        val t = (elapsedMs - times[index]).toFloat() / span
         val t2 = t * t
         val t3 = t2 * t
         val h00 = 2f * t3 - 3f * t2 + 1f
@@ -50,10 +71,9 @@ data class SpiritGesture(
         val h01 = -2f * t3 + 3f * t2
         val h11 = t3 - t2
 
-        val out = FloatArray(SpiritPose.FIELDS) { i ->
-            h00 * a[i] + h10 * slopeIn[i] + h01 * b[i] + h11 * slopeOut[i]
+        for (i in 0 until SpiritPose.FIELDS) {
+            dst[i] = h00 * a[i] + h10 * slopeIn[i] + h01 * b[i] + h11 * slopeOut[i]
         }
-        return SpiritPose.of(out)
     }
 }
 

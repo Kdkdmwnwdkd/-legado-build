@@ -38,13 +38,16 @@ class SpiritMesh(val cols: Int = 10, val rows: Int = 28) {
     /**
      * 求一帧的顶点坐标，单位 px，原点在控件左上角。
      *
+     * [pose] 按 [SpiritPose] 的字段顺序摊平（turn / nod / bend / weight / flow / puff / peek / press），
+     * 直接读数组而不是对象，省掉每帧的拆装箱。
+     *
      * [hemPhase] 由调用方按时间推进，停下不动时也应该缓慢变化，
      * 否则人物会像被冻住；[dragX]/[dragY] 是拖拽时上半身的滞后量。
      */
     fun deform(
         width: Float,
         height: Float,
-        pose: SpiritPose,
+        pose: FloatArray,
         hemPhase: Float,
         dragX: Float = 0f,
         dragY: Float = 0f,
@@ -55,16 +58,16 @@ class SpiritMesh(val cols: Int = 10, val rows: Int = 28) {
         val footY = height * FOOT_LINE
 
         // 三个转角一次算好，循环里只做乘加。
-        val footSin = sin(pose.weight * DEG)
-        val footCos = cos(pose.weight * DEG)
-        val waistSin = sin(pose.bend * DEG)
-        val waistCos = cos(pose.bend * DEG)
-        val neckSin = sin(pose.turn * DEG)
-        val neckCos = cos(pose.turn * DEG)
+        val footSin = sin(pose[3] * DEG)
+        val footCos = cos(pose[3] * DEG)
+        val waistSin = sin(pose[2] * DEG)
+        val waistCos = cos(pose[2] * DEG)
+        val neckSin = sin(pose[0] * DEG)
+        val neckCos = cos(pose[0] * DEG)
 
-        val stretch = 1f + pose.puff - pose.press
-        val nodShift = pose.nod * height
-        val hemAmp = width * HEM_AMPLITUDE * pose.flow
+        val stretch = 1f + pose[5] - pose[7]
+        val nodShift = pose[1] * height
+        val hemAmp = width * HEM_AMPLITUDE * pose[4]
 
         var index = 0
         for (row in 0..rows) {

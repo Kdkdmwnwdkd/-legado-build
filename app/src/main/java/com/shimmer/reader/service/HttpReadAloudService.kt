@@ -1114,8 +1114,12 @@ class HttpReadAloudService : BaseReadAloudService(),
                     readAloudNumber + cueStartOffset + position >
                     textChapter.getReadLength(pageIndex + 1)
                 ) {
+                    // 页码照常往前推，保证恢复跟随时不会错位一页；
+                    // 但用户自己翻到别处在看的时候，别把页面拽回朗读位置。
                     pageIndex++
-                    ReadBook.moveToNextPage(fromReadAloud = true)
+                    if (!ReadBook.readAloudFollowPaused) {
+                        ReadBook.moveToNextPage(fromReadAloud = true)
+                    }
                     upTtsProgress(readAloudNumber + cueStartOffset + position.toInt())
                 }
                 if (position >= speakTextLength) break

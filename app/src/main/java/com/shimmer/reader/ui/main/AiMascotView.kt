@@ -14,6 +14,7 @@ import com.shimmer.reader.ui.main.spirit.SpiritGestureId
 import com.shimmer.reader.ui.main.spirit.SpiritMesh
 import com.shimmer.reader.ui.main.spirit.SpiritPose
 import com.shimmer.reader.ui.main.spirit.SpiritRepertoire
+import java.lang.ref.SoftReference
 import kotlin.math.abs
 import kotlin.math.exp
 import kotlin.math.sin
@@ -49,6 +50,9 @@ class AiMascotView(context: Context) : View(context) {
     private val ink = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG)
     private var figure: Bitmap? = null
 
+    /** 按控件尺寸缩过的绘制用图，直接画原图会让每帧多采样几十万像素。 */
+    private var renderFigure: Bitmap? = null
+
     private var alphaMask: ByteArray? = null
     private var maskWidth = 0
     private var maskHeight = 0
@@ -76,6 +80,19 @@ class AiMascotView(context: Context) : View(context) {
     private var squashAtSec = -1f
     private var peekShift = 0f
 
+    /** 每帧复用的两块缓冲：当前姿势、动作叠加量。 */
+    private val poseValues = FloatArray(SpiritPose.FIELDS)
+    private val gestureValues = FloatArray(SpiritPose.FIELDS)
+
+    private var tapCallback: (() -> Unit)? = null
+    private val tapRunnable = Runnable {
+        // 页面已经走了就别再触发点击，否则会在销毁后启动 Activity。
+        if (!isAttachedToWindow) return@Runnable
+        if (!running) startIdle()
+        tapCallback?.invoke()
+        tapCallback = null
+    }
+
     private val density = resources.displayMetrics.density
     private val bobAmplitude = 3.2f * density
     private val leanLimit = 11f
@@ -99,13 +116,45 @@ class AiMascotView(context: Context) : View(context) {
     }
 
     private fun readFigure() {
+        // 首页来回切换时这个 View 会被反复重建，立绘解一次就够了，
+        // 每次重新 decode 860×1290 的位图会平白多出 4MB 的抖动。
+        val cached = cachedFigure?.get()?.takeIf { !it.isRecycled }
+        if (cached != null) {
+            figure = cached
+            buildMask(cached)
+            return
+        }
         val options = BitmapFactory.Options().apply {
             inPreferredConfig = Bitmap.Config.ARGB_8888
             inScaled = false
         }
         val bitmap = BitmapFactory.decodeResource(resources, R.drawable.ai_mascot_ball, options) ?: return
         figure = bitmap
+        cachedFigure = SoftReference(bitmap)
         buildMask(bitmap)
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        rebuildRenderFigure(w)
+    }
+
+    /**
+     * 把立绘缩到控件宽度的 1.6 倍——留一点超采样保证边缘不糊，
+     * 同时把每帧要采样的像素从一百多万降到二十来万。
+     */
+    private fun rebuildRenderFigure(viewWidth: Int) {
+        val source = figure ?: return
+        if (viewWidth <= 0) return
+        val targetWidth = (viewWidth * RENDER_SUPERSAMPLE).toInt().coerceAtLeast(1)
+        if (targetWidth >= source.width) {
+            renderFigure = source
+            return
+        }
+        val targetHeight = (source.height.toFloat() * targetWidth / source.width).toInt().coerceAtLeast(1)
+        renderFigure = runCatching {
+            Bitmap.createScaledBitmap(source, targetWidth, targetHeight, true)
+        }.getOrNull() ?: source
     }
 
     /** 读一张低分辨率透明度表，用来判断手指有没有落在人物身上。 */
@@ -163,6 +212,9 @@ class AiMascotView(context: Context) : View(context) {
 
     override fun onDetachedFromWindow() {
         pauseTicker()
+        // 点击回调是延时的，页面走了就不该再执行。
+        removeCallbacks(tapRunnable)
+        tapCallback = null
         super.onDetachedFromWindow()
     }
 
@@ -182,8 +234,15 @@ class AiMascotView(context: Context) : View(context) {
         lastTickMs = 0L
         quietRounds = 0
         mode = Mode.STILL
-        // 刚回到书架，先打个招呼。
-        beginGesture(SpiritGestureId.GREETING)
+        writeCurrentPose()
+        val now = SystemClock.uptimeMillis()
+        // 来回切页面时不必每次都打招呼，隔几分钟没见才抬头看一眼。
+        if (lastGreetingAtMs == 0L || now - lastGreetingAtMs > GREETING_INTERVAL_MS) {
+            lastGreetingAtMs = now
+            beginGesture(SpiritGestureId.GREETING)
+        } else {
+            nextGestureSec = clockSec + pauseBeforeNext() * 0.6f
+        }
         resumeTicker()
     }
 
@@ -239,6 +298,8 @@ class AiMascotView(context: Context) : View(context) {
     /** 松手：回正，过一会儿再开始做小动作。 */
     fun onRelease() {
         mode = Mode.STILL
+        // 被按住时正在做的动作就此作废，否则它会一直挂在身上空算插值。
+        gesture = null
         leanTarget = 0f
         holdAmount = 0f
         trailX = 0f
@@ -250,13 +311,13 @@ class AiMascotView(context: Context) : View(context) {
     /** 点击时先被压扁再弹回来，然后执行动作。 */
     fun playTapBounce(onEnd: () -> Unit) {
         mode = Mode.STILL
+        gesture = null
         holdAmount = 0f
         leanTarget = 0f
         squashAtSec = clockSec
-        postDelayed({
-            if (!running) startIdle()
-            onEnd()
-        }, 260L)
+        tapCallback = onEnd
+        removeCallbacks(tapRunnable)
+        postDelayed(tapRunnable, 260L)
     }
 
     /** 收起贴边时放宽触摸判定，并让它在边上探头探脑。 */
@@ -292,8 +353,11 @@ class AiMascotView(context: Context) : View(context) {
             else -> Unit
         }
 
+        // 先把这一帧的姿势算好（呼吸 + 动作 + 按压），绘制和探头都用它。
+        writeCurrentPose()
+
         // 探头位移：收起时随动作探出屏幕一点点，看着像在偷看外面。
-        val want = if (docked) dockSide * peekReach * currentPose().peek else 0f
+        val want = if (docked) dockSide * peekReach * poseValues[6] else 0f
         peekShift = ease(peekShift, want, 12f, delta)
     }
 
@@ -329,23 +393,26 @@ class AiMascotView(context: Context) : View(context) {
 
     // ------------------------------------------------------------ 姿态
 
-    private fun restingPose(): SpiritPose {
+    /**
+     * 把这一刻的姿势写进 [poseValues]：静态的呼吸打底，动作叠加在上面，
+     * 最后叠按压。全程只写复用数组，不新建对象。
+     */
+    private fun writeCurrentPose() {
         val t = clockSec
-        return SpiritPose(
-            puff = sin(t * 1.05f) * 0.012f,
-            weight = sin(t * 0.42f) * 0.75f,
-            flow = 0.34f + 0.22f * sin(t * 0.63f),
-        )
-    }
+        poseValues[0] = 0f                       // turn
+        poseValues[1] = 0f                       // nod
+        poseValues[2] = 0f                       // bend
+        poseValues[3] = sin(t * 0.42f) * 0.75f   // weight
+        poseValues[4] = 0.34f + 0.22f * sin(t * 0.63f) // flow
+        poseValues[5] = sin(t * 1.05f) * 0.012f  // puff
+        poseValues[6] = 0f                       // peek
+        poseValues[7] = squashNow()              // press
 
-    private fun currentPose(): SpiritPose {
-        val active = gesture
-        val doing = if (active == null) {
-            SpiritPose.REST
-        } else {
-            active.poseAt(((clockSec - gestureStartedSec) * 1000f).toInt())
+        val active = gesture ?: return
+        active.evaluate(((clockSec - gestureStartedSec) * 1000f).toInt(), gestureValues)
+        for (i in 0 until SpiritPose.FIELDS) {
+            poseValues[i] += gestureValues[i]
         }
-        return restingPose() + doing + SpiritPose(press = squashNow())
     }
 
     /** 点击后的挤压：先快速压扁，再回弹拉长，最后归位。 */
@@ -367,12 +434,12 @@ class AiMascotView(context: Context) : View(context) {
     // ------------------------------------------------------------ 绘制
 
     override fun onDraw(canvas: Canvas) {
-        val bitmap = figure ?: return
+        val bitmap = renderFigure ?: figure ?: return
         val w = width.toFloat()
         val h = height.toFloat()
         if (w <= 0f || h <= 0f) return
 
-        val verts = sheet.deform(w, h, currentPose(), hemPhase, trailX, trailY)
+        val verts = sheet.deform(w, h, poseValues, hemPhase, trailX, trailY)
         val axisX = w * SpiritMesh.AXIS_X
 
         canvas.save()
@@ -385,5 +452,19 @@ class AiMascotView(context: Context) : View(context) {
         }
         canvas.drawBitmapMesh(bitmap, sheet.cols, sheet.rows, verts, 0, null, 0, ink)
         canvas.restore()
+    }
+
+    private companion object {
+        /** 绘制用图相对控件宽度的超采样倍数。 */
+        const val RENDER_SUPERSAMPLE = 1.6f
+
+        /** 两次打招呼之间至少隔这么久，避免来回切页面就点头。 */
+        const val GREETING_INTERVAL_MS = 180_000L
+
+        /** 立绘全局只解一次，多个 View 复用同一张。 */
+        var cachedFigure: SoftReference<Bitmap>? = null
+
+        /** 上次打招呼的时间，跨 View 实例保留。 */
+        var lastGreetingAtMs = 0L
     }
 }

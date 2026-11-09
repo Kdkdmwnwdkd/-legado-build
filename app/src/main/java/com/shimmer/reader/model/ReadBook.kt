@@ -177,14 +177,26 @@ object ReadBook : CoroutineScope by MainScope() {
     }
 
     /**
-     * 恢复跟随，并跳到当前朗读位置。
+     * 恢复跟随。
+     *
+     * [jumpToPosition] 为 true 时把页面挪到当前朗读位置（面板上点「跟随」走这条）；
+     * 朗读控制类操作（上一段、下一章、选章）只清除暂停标记，不要先跳一次旧位置，
+     * 否则会看到页面先闪回去再跳到目标章。
      */
-    fun resumeReadAloudFollow() {
+    fun resumeReadAloudFollow(jumpToPosition: Boolean = true) {
         if (!readAloudFollowPaused) return
         readAloudFollowPaused = false
         postEvent(EventBus.READ_ALOUD_FOLLOW_CHANGED, true)
+        if (!jumpToPosition) return
         val position = BaseReadAloudService.currentChapterPosition
-        if (position >= 0 && durChapterPos != position) {
+        if (position < 0) return
+        val chapterIndex = BaseReadAloudService.currentChapterIndex
+        if (chapterIndex >= 0 && chapterIndex != durChapterIndex) {
+            // 朗读已经读到别的章了，跟着换章；只改章内位置会落在旧的章里。
+            openChapter(chapterIndex, position, upContent = true)
+            return
+        }
+        if (durChapterPos != position) {
             durChapterPos = position
             callBack?.upContent()
         }

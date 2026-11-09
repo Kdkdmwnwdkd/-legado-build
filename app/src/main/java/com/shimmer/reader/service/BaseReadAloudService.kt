@@ -120,6 +120,14 @@ abstract class BaseReadAloudService : BaseService(),
         var currentChapterPosition: Int = -1
             private set
 
+        /**
+         * 当前朗读到的章节序号。
+         * 「回到朗读位置」时如果朗读已经跨章，单靠章内位置会落到旧章里，必须配合这个。
+         */
+        @JvmStatic
+        var currentChapterIndex: Int = -1
+            private set
+
         internal fun upCurrentChapterPosition(position: Int) {
             currentChapterPosition = position.coerceAtLeast(0)
         }
@@ -214,6 +222,7 @@ abstract class BaseReadAloudService : BaseService(),
         activeSessionId = sessionId
         playbackBookUrl = bookUrl.orEmpty()
         playbackChapterIndex = chapter?.chapter?.index ?: -1
+        currentChapterIndex = playbackChapterIndex
         playbackChapterUrl = chapter?.chapter?.url.orEmpty()
         return sessionId
     }

@@ -1040,7 +1040,9 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             .coerceAtLeast(safeMargin)
         val targetY = (availableHeight * yPercent / 100f)
             .coerceIn(safeMargin.toFloat(), maxY.toFloat())
-        if (animate) {
+        // 位置没变就别启动动画，省掉每 3 秒一次的空转重绘。
+        val moved = abs(ball.x - targetX) > 0.5f || abs(ball.y - targetY) > 0.5f
+        if (animate && moved) {
             ball.animate()
                 .x(targetX)
                 .y(targetY)
@@ -1076,7 +1078,11 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
         val ball = aiFloatingBall ?: return
         if (!ball.isVisible || aiFloatingBallDragged) return
         aiFloatingBallOutPercent = 100
-        (ball as? AiMascotView)?.setEdgePeek(true)
+        // 探头方向跟着缩在哪一侧走，否则收在左边时它会朝屏幕外探，看着像没了。
+        (ball as? AiMascotView)?.setEdgePeek(
+            true,
+            getPrefInt(PreferKey.aiFloatingBallSide, 1)
+        )
         if (!placeAiFloatingBall(ball, animate = true, attached = false)) {
             // 还没量好尺寸，过一会儿再试。
             ball.postDelayed(aiFloatingBallIdleRunnable, 1500L)

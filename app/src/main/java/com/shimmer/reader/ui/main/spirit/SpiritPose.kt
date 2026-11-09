@@ -58,6 +58,18 @@ data class SpiritPose(
     internal fun toArray(): FloatArray =
         floatArrayOf(turn, nod, bend, weight, flow, puff, peek, press)
 
+    /** 写进调用方的缓冲，避免每帧新建数组。 */
+    internal fun writeTo(dst: FloatArray, offset: Int = 0) {
+        dst[offset] = turn
+        dst[offset + 1] = nod
+        dst[offset + 2] = bend
+        dst[offset + 3] = weight
+        dst[offset + 4] = flow
+        dst[offset + 5] = puff
+        dst[offset + 6] = peek
+        dst[offset + 7] = press
+    }
+
     companion object {
         /** 站着不动的基准姿势。 */
         val REST = SpiritPose()
