@@ -6224,7 +6224,9 @@ class ReadBookActivity : BaseReadBookActivity(),
             }
         }
         observeEvent<Boolean>(EventBus.READ_ALOUD_FOLLOW_CHANGED) {
-            readAloudPlayerPanel.refresh()
+            // 事件常在翻页手势里发出，直接重建面板会占住翻页帧，
+            // 因此挪到下一个消息循环执行。
+            readAloudPlayerPanel.post { readAloudPlayerPanel.refresh() }
         }
         observeEvent<Int>(EventBus.READ_ALOUD_DS) {
             readAloudPlayerPanel.onTimerChanged(it)

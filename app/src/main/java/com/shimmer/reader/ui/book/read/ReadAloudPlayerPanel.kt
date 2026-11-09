@@ -3,6 +3,7 @@ package com.shimmer.reader.ui.book.read
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.RectF
+import android.os.SystemClock
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -176,6 +177,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 import splitties.init.appCtx
+
+/** 同一章内朗读面板模型的复用窗口，避免播放进度回调反复触发整章解析。 */
+private const val CHAPTER_MODEL_REUSE_MS = 2_000L
+
+/** 朗读进度刷新面板的最小间隔，兼顾进度条跟手与重组开销。 */
+private const val PROGRESS_REFRESH_INTERVAL_MS = 250L
 
 class ReadAloudPlayerPanel @JvmOverloads constructor(
     context: Context,
@@ -382,6 +389,8 @@ class ReadAloudPlayerPanel @JvmOverloads constructor(
     private var switchingTtsEngine = false
     private var pendingTtsEngineSwitch: PendingTtsEngineSwitch? = null
     private var chapterModelCache: PlayerChapterModel? = null
+    private var chapterModelBuiltAt = 0L
+    private var lastProgressRefreshAt = 0L
     private var ttsEngineOptionsCacheKey = ""
     private var ttsEngineOptionsCache: List<TtsEngineUi> = emptyList()
 
@@ -535,6 +544,12 @@ class ReadAloudPlayerPanel @JvmOverloads constructor(
             return
         }
         lastChapterStart = normalizedStart
+        // 面板收起时不重建界面，等展开时 showPanel() 会刷新一次。
+        // 折叠成小条时仍然更新，但按 250 毫秒节流，避免进度回调把重组刷满。
+        if (panelPhase == PanelPhase.Hidden) return
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastProgressRefreshAt < PROGRESS_REFRESH_INTERVAL_MS) return
+        lastProgressRefreshAt = now
         refresh()
     }
 
@@ -1124,6 +1139,19 @@ class ReadAloudPlayerPanel @JvmOverloads constructor(
         val book = ReadBook.book ?: return null
         val chapter = ReadBook.curTextChapter ?: return null
         val chapterSequence = chapter.chapter.index
+        // 播放进度在 HTTP 朗读下每 100 毫秒上报一次。整章分段、角色缓存查询、
+        // 音频信息查询都在本方法里，如果每次都重算，播放时每秒要做十次全章解析，
+        // 主线程会被拖住。同一本书同一章在短周期内直接复用上一次的结果，
+        // 章节内容或朗读配置变化时由 onChapterContentChanged/onReadAloudConfigChanged 清空缓存。
+        val now = SystemClock.elapsedRealtime()
+        chapterModelCache?.let { cached ->
+            if (cached.chapterSequence == chapterSequence &&
+                cached.chapterKey == "${book.bookUrl}:$chapterSequence" &&
+                now - chapterModelBuiltAt < CHAPTER_MODEL_REUSE_MS
+            ) {
+                return cached
+            }
+        }
         val readAloudByPage = context.getPrefBoolean(PreferKey.readAloudByPage)
         val paragraphs = chapter.getParagraphs(false)
         val baseCues = chapter.buildReadAloudCues(readAloudByPage)
@@ -1234,6 +1262,7 @@ class ReadAloudPlayerPanel @JvmOverloads constructor(
             audioInfo = audioInfo
         ).also {
             chapterModelCache = it
+            chapterModelBuiltAt = SystemClock.elapsedRealtime()
         }
     }
 
