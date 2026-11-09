@@ -53,8 +53,7 @@ android {
         }
     }
     defaultConfig {
-        // 独立产品标识：与「阅读 Archive」（com.shimmer.reader.Archive）和
-        // 原版（com.shimmer.reader）互不覆盖，可共存安装。
+        // 独立产品标识：与上游各分支互不覆盖，可共存安装。
         applicationId "com.shimmer.reader"
         minSdk 24
         targetSdk 36

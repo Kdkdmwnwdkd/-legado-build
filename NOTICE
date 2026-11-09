@@ -13,25 +13,12 @@ Xwite 等，完整名单见 https://github.com/gedoor/legado/graphs/contributors
 
 本仓库与上述项目无从属关系，不代表它们的官方发布，也不跟随其更新。
 
-关于包名
---------
-安装包名是 com.shimmer.reader，代码命名空间与安装身份统一，与阅读 Archive
-（io.legado.app.Archive）、阅读 Sigma（io.legado.app.release）、原版
-（io.legado.app）互不覆盖。
-
-本项目早期版本使用 io.legado.app.shimmer，与上游共用命名空间；从 2026-11-09
-起命名空间与安装包名一起迁到 com.shimmer.reader，不再依赖上游包路径。
-
-兼容性说明：书源 JavaScript 中若写死了 Packages.io.legado.app.*，需要改为
-Packages.com.shimmer.reader.*；只使用全局函数（java.ajax、base64Decode、
-source、book 等）的书源不受影响。
-
 本仓库的改动
 ------------
 本仓库自 2026 年 11 月起独立维护，主要在以下方面改动：
 
-- 应用身份：独立包名 com.shimmer.reader、独立应用名「阅读Shimmer」、
-  自制水墨风格图标，可与 Legado、阅读 Archive 同时安装。
+- 应用身份：独立应用名「阅读Shimmer」与自制水墨风格图标，与上游各分支
+  互不覆盖，可同时安装。
 - 更新机制：只读取本仓库的 GitHub Release；资产名携带版本号与 versionCode，
   按点分段比较版本；默认走加速镜像。
 - AI 模块：设置页按「一条对话主线」重做，聊天首页给出可点建议；
@@ -39,7 +26,7 @@ source、book 等）的书源不受影响。
   一次性文本补全接口 completeText。
 - 阅读增强：段评全链路（规则解析、摘要缓存、评论栏）、听书跟随翻页、
   书源查重按分组选择、备份本地与云端分离。
-- 构建：版本号改为时间戳（3.26.MMDDHHmm），签名密钥移出仓库由 CI 提供，
+- 构建：版本号改为时间戳（3.26.MMDDHHmm），签名密钥不入库，
   Gradle 与 Maven 依赖带镜像回退。
 
 第三方组件
