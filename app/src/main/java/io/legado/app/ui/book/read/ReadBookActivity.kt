@@ -1671,6 +1671,10 @@ class ReadBookActivity : BaseReadBookActivity(),
                 askAiBySelection()
                 return true
             }
+            R.id.menu_ai_purify -> {
+                purifySelection()
+                return true
+            }
             R.id.menu_generate_image -> {
                 generateImageBySelection()
                 return true
@@ -1716,6 +1720,18 @@ class ReadBookActivity : BaseReadBookActivity(),
         val prompt = selectedText.trim()
         if (prompt.isEmpty()) return
         openReadAiPanel(prompt)
+    }
+
+    private fun purifySelection() {
+        val text = selectedText.trim()
+        if (text.isEmpty()) return
+        if (AppConfig.aiCurrentModelConfig == null) {
+            toastOnUi(R.string.ai_purify_no_model)
+            return
+        }
+        showDialogFragment(
+            AiPurifyDialog.newInstance(text, ReadBook.book?.name.orEmpty())
+        )
     }
 
     private fun generateImageBySelection() {

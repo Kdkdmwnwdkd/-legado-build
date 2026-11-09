@@ -97,6 +97,79 @@ object AiChatService {
         return chatStream(messages, onPartial = {})
     }
 
+    /**
+     * 一次性纯文本补全。
+     *
+     * 与 [chat] 不同，这里不注入人设、记忆、世界书、工具与工作区策略，
+     * 只发送 system + user 两条消息，适合正文净化、标题整理这类
+     * 「一段输入换一段输出」的场景，避免模型被助手设定带偏。
+     */
+    suspend fun completeText(
+        systemPrompt: String,
+        userText: String,
+        modelConfigOverride: AiModelConfig? = null
+    ): String {
+        val modelConfig = modelConfigOverride ?: AppConfig.aiCurrentModelConfig
+            ?: throw AiChatException(
+                message = "请先在「设置 - AI 设置」里添加模型",
+                debugLog = "completeText: no model configured"
+            )
+        val provider = AppConfig.aiProviderForModel(modelConfig) ?: AppConfig.aiCurrentProvider
+            ?: throw AiChatException(
+                message = "请先在「设置 - AI 设置」里添加服务商",
+                debugLog = "completeText: no provider configured"
+            )
+        val baseUrl = provider.baseUrl.trim()
+        val model = modelConfig.modelId.trim()
+        require(baseUrl.isNotBlank()) { "Base URL is empty" }
+        require(model.isNotBlank()) { "Model is empty" }
+        val apiMode = normalizeApiMode(provider.apiMode)
+        val chatUrl = resolveChatUrl(baseUrl, apiMode)
+        val messages = mutableListOf(
+            JSONObject().apply {
+                put("role", "system")
+                put("content", systemPrompt)
+            },
+            JSONObject().apply {
+                put("role", "user")
+                put("content", userText)
+            }
+        )
+        val requestLog = StringBuilder().apply {
+            append("url=").append(chatUrl).append('\n')
+            append("model=").append(model).append('\n')
+            append("task=completeText").append('\n')
+        }
+        val turn = requestCompletionStream(
+            chatUrl = chatUrl,
+            apiMode = apiMode,
+            model = model,
+            providerApiKey = provider.apiKey,
+            providerHeaders = provider.headers.orEmpty(),
+            messages = messages,
+            tools = emptyList(),
+            promptCacheKey = null,
+            requestLog = requestLog,
+            round = 1,
+            onPartial = {},
+            onThinking = {},
+            onUsage = {}
+        )
+        val content = turn.content.trim()
+        if (content.isBlank()) {
+            val reasoning = turn.reasoningContent.trim()
+            throw AiChatException(
+                message = if (reasoning.isNotBlank()) {
+                    "模型只返回了思考过程，没有返回正文，请更换模型或关闭思考模式"
+                } else {
+                    "模型返回为空，请稍后重试"
+                },
+                debugLog = requestLog.toString()
+            )
+        }
+        return content
+    }
+
     suspend fun requestSingleToolCall(
         messages: List<AiChatMessage>,
         tool: AiResolvedTool,

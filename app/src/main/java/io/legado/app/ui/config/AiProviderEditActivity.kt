@@ -58,6 +58,7 @@ class AiProviderEditActivity : BaseActivity<ViewBinding>() {
 
     private val waitDialog by lazy { WaitDialog(this) }
     private var providerId: String? = null
+    private var pendingModelId: String? = null
 
     // Minimal ViewBinding shim: BaseActivity requires a ViewBinding.
     // We supply a plain LinearLayout that hosts the ComposeView.
@@ -95,6 +96,40 @@ class AiProviderEditActivity : BaseActivity<ViewBinding>() {
         apiMode = normalizeApiMode(provider?.apiMode)
         bindProvider(provider)
         reloadModels()
+        if (providerId == null) {
+            binding.root.post {
+                if (!isFinishing && !isDestroyed && providerId == null) {
+                    showPresetPicker()
+                }
+            }
+        }
+    }
+
+    /**
+     * 新建服务商时先给一份常用清单，点一下就把名称和地址填好，
+     * 用户只需要再补 API Key。
+     */
+    private fun showPresetPicker() {
+        val presets = AiProviderPresets.all
+        val labels = presets.map {
+            if (it.modelId.isBlank()) it.name else "${it.name} · ${it.modelId}"
+        }
+        showDialogFragment(
+            ComposeActionListDialog.create(
+                title = getString(R.string.ai_preset_title),
+                labels = labels,
+                negativeText = getString(R.string.cancel),
+                onSelected = { index ->
+                    val preset = presets.getOrNull(index)
+                    if (preset != null) {
+                        providerName = preset.name
+                        providerBaseUrl = preset.baseUrl
+                        pendingModelId = preset.modelId.takeIf { it.isNotBlank() }
+                        toastOnUi(R.string.ai_preset_filled)
+                    }
+                }
+            )
+        )
     }
 
     override fun onDestroy() {
@@ -257,6 +292,17 @@ class AiProviderEditActivity : BaseActivity<ViewBinding>() {
         if (index >= 0) providers[index] = updated else providers.add(updated)
         AppConfig.aiProviderList = providers
         providerId = updated.id
+        // 预设带来的模型：新建的服务商还没有模型时自动补上并设为当前
+        if (AppConfig.aiModelConfigList.none { it.providerId == updated.id }) {
+            pendingModelId?.takeIf { it.isNotBlank() }?.let { modelId ->
+                saveModel(updated.id, null, modelId)
+                pendingModelId = null
+            }
+        }
+        // 填了 Key 就默认把 AI 打开，省得用户还要回设置里找开关
+        if (apiKey.isNotBlank() && AppConfig.aiCurrentModelConfig != null) {
+            AppConfig.aiAssistantEnabled = true
+        }
         notifyAiConfigChanged()
         if (showToast) toastOnUi(R.string.ai_provider_saved)
         reloadModels()

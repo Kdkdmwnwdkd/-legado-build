@@ -201,6 +201,17 @@
     <string name="rule_summary">Rules description</string>
     <string name="share">Share</string>
     <string name="ask_ai">Ask AI</string>
+    <string name="ai_text_purify">AI Clean</string>
+    <string name="ai_purify_title">AI clean text</string>
+    <string name="ai_purify_running">Cleaning…</string>
+    <string name="ai_purify_result">Cleaned text</string>
+    <string name="ai_purify_copy">Copy result</string>
+    <string name="ai_purify_save_rule">Save as replacement rule</string>
+    <string name="ai_purify_rule_saved">Replacement rule saved</string>
+    <string name="ai_purify_rule_name">AI clean · %1$s</string>
+    <string name="ai_purify_failed">Clean failed: %1$s</string>
+    <string name="ai_purify_no_model">Add an AI model in Settings → AI first</string>
+    <string name="ai_purify_identical">Nothing needed cleaning</string>
     <string name="content_select_menu_config">Long-press Menu Editor</string>
     <string name="content_select_menu_config_summary">Configure long-press actions and default open action</string>
     <string name="content_select_actions">Long-press actions</string>
@@ -640,6 +651,8 @@
     <string name="ai_current_provider_summary_empty">Add a provider first</string>
     <string name="ai_add_provider">Add provider</string>
     <string name="ai_add_provider_summary">Add an OpenAI-compatible API provider</string>
+    <string name="ai_preset_title">Choose a provider</string>
+    <string name="ai_preset_filled">Address filled in — just add your API key</string>
     <string name="ai_manage_providers">Manage providers</string>
     <string name="ai_manage_providers_summary">%1$d providers added</string>
     <string name="ai_provider_name">Provider name</string>

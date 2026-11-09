@@ -202,6 +202,17 @@
     <string name="rule_summary">规则说明</string>
     <string name="share">分享</string>
     <string name="ask_ai">问AI</string>
+    <string name="ai_text_purify">AI 净化</string>
+    <string name="ai_purify_title">AI 净化正文</string>
+    <string name="ai_purify_running">正在净化…</string>
+    <string name="ai_purify_result">净化结果</string>
+    <string name="ai_purify_copy">复制结果</string>
+    <string name="ai_purify_save_rule">保存为净化规则</string>
+    <string name="ai_purify_rule_saved">已保存为净化规则</string>
+    <string name="ai_purify_rule_name">AI 净化 · %1$s</string>
+    <string name="ai_purify_failed">净化失败：%1$s</string>
+    <string name="ai_purify_no_model">请先在「设置 - AI 设置」里添加模型</string>
+    <string name="ai_purify_identical">没有需要清洗的内容</string>
     <string name="content_select_menu_config">正文长按条编辑</string>
     <string name="content_select_menu_config_summary">配置长按菜单动作与默认打开项</string>
     <string name="content_select_actions">长按动作</string>
@@ -1504,6 +1515,8 @@
     <string name="ai_current_provider_summary_empty">请先添加提供商</string>
     <string name="ai_add_provider">添加提供商</string>
     <string name="ai_add_provider_summary">新增一个兼容 OpenAI 的接口提供商</string>
+    <string name="ai_preset_title">选择常用服务商</string>
+    <string name="ai_preset_filled">地址已填好，补上 API Key 就能用</string>
     <string name="ai_manage_providers">管理提供商</string>
     <string name="ai_manage_providers_summary">已添加 %1$d 个提供商</string>
     <string name="ai_provider_name">提供商名称</string>
