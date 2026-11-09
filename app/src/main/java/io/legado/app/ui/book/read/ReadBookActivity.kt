@@ -62,6 +62,7 @@ import io.legado.app.data.entities.BookChapter
 import io.legado.app.data.entities.BookParagraphRule
 import io.legado.app.data.entities.BookProgress
 import io.legado.app.data.entities.BookSource
+import io.legado.app.model.jsSource.JsSourceConfig
 import io.legado.app.exception.NoStackTraceException
 import io.legado.app.help.AppCloudStorage
 import io.legado.app.help.AppWebDav
@@ -1015,6 +1016,19 @@ class ReadBookActivity : BaseReadBookActivity(),
         return super.onCompatCreateOptionsMenu(menu)
     }
 
+    /**
+     * 当前书源是否具备段评能力：
+     * 普通源看段评规则是否齐全，JS 源看是否声明了 getReviewSummary/getReviewDetail。
+     */
+    private fun isOnlineReviewAvailable(source: BookSource?): Boolean {
+        source ?: return false
+        return if (source.isJsSource()) {
+            JsSourceConfig.declaresReviewFunctions(source.mainJs.orEmpty())
+        } else {
+            source.ruleReview?.hasSummaryRule() == true
+        }
+    }
+
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         this.menu = menu
         upMenu()
@@ -1073,10 +1087,11 @@ class ReadBookActivity : BaseReadBookActivity(),
                         item.isVisible = !isEpubCoreMode()
                         item.isChecked = book.getReSegment()
                     }
-//                    R.id.menu_enable_review -> {
-//                        item.isVisible = BuildConfig.DEBUG
-//                        item.isChecked = AppConfig.enableReview
-//                    }
+                    R.id.menu_enable_review -> {
+                        val source = ReadBook.bookSource
+                        item.isVisible = isOnlineReviewAvailable(source)
+                        item.isChecked = AppConfig.enableReview
+                    }
 
                     R.id.menu_reverse_content -> item.isVisible = onLine && !isEpubCoreMode()
                     R.id.menu_paragraph_rule_manage -> item.isVisible = !book.isEpub && !isEpubCoreMode()
@@ -1174,11 +1189,11 @@ class ReadBookActivity : BaseReadBookActivity(),
                 ReadBook.reloadCurrentContent("re-segment")
             }
 
-//            R.id.menu_enable_review -> {
-//                AppConfig.enableReview = !AppConfig.enableReview
-//                item.isChecked = AppConfig.enableReview
-//                ReadBook.loadContent(false)
-//            }
+            R.id.menu_enable_review -> {
+                AppConfig.enableReview = !AppConfig.enableReview
+                item.isChecked = AppConfig.enableReview
+                ReadBook.reloadCurrentContent("enable-review")
+            }
 
             R.id.menu_del_ruby_tag -> ReadBook.book?.let {
                 item.isChecked = !item.isChecked
@@ -1656,6 +1671,10 @@ class ReadBookActivity : BaseReadBookActivity(),
                 askAiBySelection()
                 return true
             }
+            R.id.menu_ai_purify -> {
+                purifySelection()
+                return true
+            }
             R.id.menu_generate_image -> {
                 generateImageBySelection()
                 return true
@@ -1701,6 +1720,18 @@ class ReadBookActivity : BaseReadBookActivity(),
         val prompt = selectedText.trim()
         if (prompt.isEmpty()) return
         openReadAiPanel(prompt)
+    }
+
+    private fun purifySelection() {
+        val text = selectedText.trim()
+        if (text.isEmpty()) return
+        if (AppConfig.aiCurrentModelConfig == null) {
+            toastOnUi(R.string.ai_purify_no_model)
+            return
+        }
+        showDialogFragment(
+            AiPurifyDialog.newInstance(text, ReadBook.book?.name.orEmpty())
+        )
     }
 
     private fun generateImageBySelection() {

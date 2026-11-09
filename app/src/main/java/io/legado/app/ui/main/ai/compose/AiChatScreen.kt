@@ -81,6 +81,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
@@ -498,7 +499,7 @@ fun AiChatScreen(
                     .imePadding()
             ) {
                 if (uiItems.isEmpty()) {
-                    AiEmptyState(style = style)
+                    AiEmptyState(style = style, onSend = actions.onSend)
                 } else {
                     LazyColumn(
                         state = listState,
@@ -1283,34 +1284,55 @@ private fun displayBookKeyLabel(bookKey: String): String {
 }
 
 @Composable
-private fun AiEmptyState(style: AiComposeStyle) {
-    Box(
+private fun AiEmptyState(style: AiComposeStyle, onSend: (String) -> Boolean) {
+    val prompts = listOf(
+        R.string.ai_quick_1,
+        R.string.ai_quick_2,
+        R.string.ai_quick_3,
+        R.string.ai_quick_4
+    )
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp),
-        contentAlignment = Alignment.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Surface(
-            shape = RoundedCornerShape(style.metrics.cardRadius),
-            color = style.colors.cardSurface,
-            tonalElevation = 0.dp,
-            shadowElevation = 2.dp
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(horizontal = 28.dp, vertical = 24.dp)
+        Icon(
+            painter = painterResource(R.drawable.ic_bottom_ai_e),
+            contentDescription = stringResource(R.string.ai),
+            tint = style.colors.secondaryText,
+            modifier = Modifier.size(28.dp)
+        )
+        Text(
+            text = stringResource(R.string.ai_chat_empty),
+            color = style.colors.primaryText,
+            fontSize = 15.sp,
+            modifier = Modifier.padding(top = 10.dp)
+        )
+        Text(
+            text = stringResource(R.string.ai_quick_prompt_hint),
+            color = style.colors.secondaryText,
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 6.dp)
+        )
+        Spacer(Modifier.height(18.dp))
+        prompts.forEach { res ->
+            val text = stringResource(res)
+            Surface(
+                onClick = { onSend(text) },
+                shape = RoundedCornerShape(style.metrics.cardRadius),
+                color = style.colors.cardSurface,
+                tonalElevation = 0.dp,
+                shadowElevation = 1.dp,
+                modifier = Modifier.padding(vertical = 5.dp)
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_bottom_ai_e),
-                    contentDescription = stringResource(R.string.ai),
-                    tint = style.colors.secondaryText,
-                    modifier = Modifier.size(24.dp)
-                )
                 Text(
-                    text = stringResource(R.string.ai_chat_empty),
-                    color = style.colors.secondaryText,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(top = 12.dp)
+                    text = text,
+                    color = style.colors.primaryText,
+                    fontSize = 13.sp,
+                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 11.dp)
                 )
             }
         }

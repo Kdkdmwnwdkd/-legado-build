@@ -68,7 +68,7 @@
         <io.legado.app.lib.prefs.Preference
             android:key="ai_setting"
             android:summary="@string/ai_setting_summary"
-            android:title="@string/ai_setting"
+            android:title="@string/ai_settings_title"
             app:iconSpaceReserved="false" />
 
     </io.legado.app.lib.prefs.PreferenceCategory>

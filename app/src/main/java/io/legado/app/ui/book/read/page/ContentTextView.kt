@@ -29,6 +29,7 @@ import io.legado.app.ui.book.read.page.entities.column.BaseColumn
 import io.legado.app.ui.book.read.page.entities.column.ButtonColumn
 import io.legado.app.ui.book.read.page.entities.column.TextHtmlColumn
 import io.legado.app.ui.book.read.page.entities.column.ImageColumn
+import io.legado.app.ui.book.read.ReviewDetailDialog
 import io.legado.app.ui.book.read.page.entities.column.ReviewColumn
 import io.legado.app.ui.book.read.page.entities.column.TextBaseColumn
 import io.legado.app.ui.book.read.page.entities.column.TextColumn
@@ -514,7 +515,15 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
                 }
 
                 is ReviewColumn -> {
-                    context.toastOnUi(R.string.epub_button_pressed)
+                    activity?.let {
+                        ReviewDetailDialog.show(
+                            fragmentManager = it.supportFragmentManager,
+                            chapterIndex = ReadBook.durChapterIndex,
+                            paragraphNum = textLine.paragraphNum,
+                            paragraphData = column.dataKey,
+                            totalCount = column.count,
+                        )
+                    }
                     handled = true
                 }
 

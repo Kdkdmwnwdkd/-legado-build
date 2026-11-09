@@ -1,9 +1,20 @@
-name: Nightly Debug
+name: Nightly Build
 
 # 只发布到固定的 nightly 标签，绝不按「最新 release」定位，
 # 避免把正式版的 APK 和说明覆盖掉。
+#
+# 默认出 release 包：debug 包带 debuggable=true 且内置 Compose tooling，
+# 装到手机上明显发涩，不适合日常读。
 on:
   workflow_dispatch:
+    inputs:
+      build_type:
+        description: "构建类型（release 流畅，debug 方便抓日志）"
+        type: choice
+        options:
+          - release
+          - debug
+        default: release
 
 permissions:
   contents: write
@@ -51,8 +62,12 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           if [ -z "$KEYSTORE_B64" ]; then
-            echo "未配置 KEYSTORE_B64，本次使用默认 debug 签名。"
-            exit 0
+            if [ "${{ inputs.build_type || 'release' }}" = "debug" ]; then
+              echo "未配置 KEYSTORE_B64，本次使用默认 debug 签名。"
+              exit 0
+            fi
+            echo "::error::release 包必须有签名，请配置 secrets.KEYSTORE_B64（或把 build_type 选成 debug）。"
+            exit 1
           fi
           KEYSTORE="$RUNNER_TEMP/release.jks"
           printf '%s' "$KEYSTORE_B64" | base64 -d > "$KEYSTORE"
@@ -64,12 +79,72 @@ jobs:
             echo "RELEASE_KEY_PASSWORD=$KEY_PASSWORD"
           } >> gradle.properties
 
-      - name: Build arm64 debug APK
+      - name: Prepare Gradle distribution
+        # GitHub 的 gradle-distributions release 资产偶发 504，
+        # 官方源探测失败就切国内镜像，避免整条流水线卡在 wrapper 下载。
+        run: |
+          OFFICIAL="https://services.gradle.org/distributions/gradle-9.6.0-bin.zip"
+          MIRRORS=(
+            "https://mirrors.cloud.tencent.com/gradle/gradle-9.6.0-bin.zip"
+            "https://repo.huaweicloud.com/gradle/gradle-9.6.0-bin.zip"
+          )
+          probe() { curl -fsL -r 0-65535 --max-time 25 -o /dev/null "$1"; }
+          if probe "$OFFICIAL"; then
+            echo "官方源可用"
+            exit 0
+          fi
+          for M in "${MIRRORS[@]}"; do
+            if probe "$M"; then
+              echo "切换镜像: $M"
+              sed -i "s#^distributionUrl=.*#distributionUrl=${M}#" gradle/wrapper/gradle-wrapper.properties
+              exit 0
+            fi
+          done
+          echo "所有源均不可用，交给 wrapper 自行重试"
+
+      - name: Use Maven mirror
+        # 配合上一步：Maven Central 的 JetBrains 构件会 302 到 GitHub，
+        # 同样受 504 影响，这里换成国内镜像（仓库数量与 content 过滤不变）。
+        run: |
+          GUH="${GRADLE_USER_HOME:-$HOME/.gradle}"
+          mkdir -p "$GUH/init.d"
+          cp .github/ci/mirrors.gradle "$GUH/init.d/99-mirrors.gradle"
+          echo "Maven 镜像兜底已启用: $GUH/init.d/99-mirrors.gradle"
+
+
+      - name: Sync changelog into assets
+        # 应用内「更新日志」读的是 assets/updateLog.md，
+        # 这里从仓库根目录的 CHANGELOG.md 生成，避免两边各写一遍、越走越旧。
+        run: |
+          test -f CHANGELOG.md
+          {
+            echo "# 更新日志"
+            echo
+            echo "版本号是时间戳：\`3.26.MMDDHHmm\`，应用内更新直接比较大小。"
+            echo
+            awk '/^## /{c++} c>=1' CHANGELOG.md
+          } > app/src/main/assets/updateLog.md
+          echo "已同步更新日志，共 $(wc -l < app/src/main/assets/updateLog.md) 行"
+
+      - name: Build arm64 APK
+        env:
+          BUILD_TYPE: ${{ inputs.build_type || 'release' }}
         run: |
           VERSION_CODE=$(( $(date -u +%s) / 60 ))
-          ./gradlew :app:assembleAppDebug \
+          if [ "$BUILD_TYPE" = "debug" ]; then
+            TASK=assembleAppDebug
+          else
+            TASK=assembleAppRelease
+          fi
+          # 版本名不要带 -nightly 之类的非数字后缀，应用内更新按点分段比较版本，
+          # 带后缀会让「3.26.110817-nightly」这种值难以正确排序。
+          VERSION_NAME="3.$(TZ=Asia/Shanghai date +%y.%m%d%H%M)"
+          echo "构建类型: $BUILD_TYPE ($TASK) 版本: $VERSION_NAME ($VERSION_CODE)"
+          echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
+          echo "VERSION_CODE=$VERSION_CODE" >> "$GITHUB_ENV"
+          ./gradlew ":app:${TASK}" \
             -Pabi=arm64-v8a \
-            -PVERSION_NAME="3.$(TZ=Asia/Shanghai date +%y.%m%d%H%M)-nightly" \
+            -PVERSION_NAME="$VERSION_NAME" \
             -PVERSION_CODE="$VERSION_CODE" \
             --max-workers=2 \
             --stacktrace
@@ -79,25 +154,46 @@ jobs:
         run: |
           APK_PATH=$(find app/build/outputs/apk -type f -name '*.apk' | head -n 1)
           test -n "$APK_PATH"
-          APK_NAME=$(basename "$APK_PATH")
-          echo "path=$APK_PATH" >> "$GITHUB_OUTPUT"
+          # 资产名必须带版本名与 versionCode：应用内「检查更新」就是靠这个解析的，
+          # 默认的 app-app-release.apk 里没有任何版本信息，只能永远显示「已是最新」。
+          APK_NAME="shimmer_${VERSION_NAME}_${VERSION_CODE}.apk"
+          mkdir -p dist
+          cp "$APK_PATH" "dist/$APK_NAME"
+          echo "path=dist/$APK_NAME" >> "$GITHUB_OUTPUT"
           echo "name=$APK_NAME" >> "$GITHUB_OUTPUT"
+          echo "重命名产物: $APK_NAME"
 
       - name: Publish to nightly tag
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="nightly"
-          cat > notes.md <<EOF
-          阅读Shimmer 每日构建（调试版）
-
-          - Commit: ${{ github.sha }}
-          - 分支: ${{ github.ref_name }}
-          - APK: ${{ steps.apk.outputs.name }}
-          - 构建时间: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
-          调试版与正式版签名不同，安装前请先卸载另一个版本。
-          EOF
+          # 更新说明取自 CHANGELOG 最新一段（去掉它自己的版本标题，
+          # 避免和本次构建的时间戳版本号打架），构建信息接在后面。
+          LATEST_CHANGES=$(awk '/^## /{c++} c==1' CHANGELOG.md | tail -n +2 | awk 'NF{p=1} p' | head -n 40)
+          {
+            echo "## 更新内容"
+            echo
+            if [ -n "$LATEST_CHANGES" ]; then
+              echo "$LATEST_CHANGES"
+            else
+              echo "- 本次为常规构建，功能变更见 CHANGELOG.md"
+            fi
+            echo
+            echo "## 构建信息"
+            echo
+            echo "- 版本: ${VERSION_NAME} (${VERSION_CODE})"
+            echo "- 类型: ${{ inputs.build_type || 'release' }}"
+            echo "- Commit: ${{ github.sha }}"
+            echo "- 分支: ${{ github.ref_name }}"
+            echo "- APK: ${{ steps.apk.outputs.name }}"
+            echo "- 构建时间: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+            echo
+            echo "包名 io.legado.app.shimmer。与已安装的正式版同签名时可直接覆盖升级；"
+            echo "若提示签名冲突，先卸载旧包再装（数据请提前备份）。"
+          } > notes.md
+          echo "更新说明预览："
+          head -n 12 notes.md
 
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh api "repos/${{ github.repository }}/releases/tags/$TAG" \

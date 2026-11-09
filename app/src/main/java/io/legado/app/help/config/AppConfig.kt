@@ -633,6 +633,13 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
     val aiAskModelConfig: AiModelConfig?
         get() = aiModelConfigList.firstOrNull { it.id == aiAskModelId }
 
+    var aiPurifyModelId: String?
+        get() = sceneAiModelId(PreferKey.aiPurifyModelId)
+        set(value) = setSceneAiModelId(PreferKey.aiPurifyModelId, value)
+
+    val aiPurifyModelConfig: AiModelConfig?
+        get() = aiModelConfigList.firstOrNull { it.id == aiPurifyModelId }
+
     var aiSummaryModelId: String?
         get() = sceneAiModelId(PreferKey.aiSummaryModelId)
         set(value) = setSceneAiModelId(PreferKey.aiSummaryModelId, value)
@@ -1954,6 +1961,7 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
     ) {
         val sceneModelKeys = arrayOf(
             PreferKey.aiAskModelId,
+            PreferKey.aiPurifyModelId,
             PreferKey.aiSummaryModelId,
             PreferKey.aiReadAloudRoleModelId,
             PreferKey.aiReadAloudRoleBackupModelId,
@@ -2052,7 +2060,7 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
         get() = appCtx.getPrefBoolean(PreferKey.onlyUpdateRead)
 
     var enableReview: Boolean
-        get() = BuildConfig.DEBUG && appCtx.getPrefBoolean(PreferKey.enableReview, false)
+        get() = appCtx.getPrefBoolean(PreferKey.enableReview, false)
         set(value) {
             appCtx.putPrefBoolean(PreferKey.enableReview, value)
         }

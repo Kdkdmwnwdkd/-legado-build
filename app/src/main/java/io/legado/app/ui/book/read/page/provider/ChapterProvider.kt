@@ -1,5 +1,6 @@
 package io.legado.app.ui.book.read.page.provider
 
+import android.graphics.Paint
 import android.graphics.Paint.FontMetrics
 import android.graphics.RectF
 import android.graphics.Typeface
@@ -44,6 +45,9 @@ object ChapterProvider {
     //用于评论按钮的替换
     const val reviewStr = "꧁"
     const val reviewChar = '꧁'
+    //用于段评气泡的替换（与图片占位符 reviewChar 区分，避免与内嵌图片的 srcList 抢位）
+    const val reviewCountStr = "꧂"
+    const val reviewCountChar = '꧂'
     const val indentChar = "　"
 
     @JvmStatic
@@ -209,9 +213,10 @@ object ChapterProvider {
         getPaints(typeface).let {
             titlePaint = it.first
             contentPaint = it.second
-//            reviewPaint.color = contentPaint.color
-//            reviewPaint.textSize = contentPaint.textSize * 0.45f
-//            reviewPaint.textAlign = Paint.Align.CENTER
+            reviewPaint.color = contentPaint.color
+            reviewPaint.textSize = contentPaint.textSize * 0.45f
+            reviewPaint.textAlign = Paint.Align.CENTER
+            reviewPaint.isAntiAlias = true
         }
         //间距
         lineSpacingExtra = ReadBookConfig.lineSpacingExtra / 10f

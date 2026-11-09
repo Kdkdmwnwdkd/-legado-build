@@ -4,6 +4,7 @@ import androidx.collection.LruCache
 import com.google.gson.reflect.TypeToken
 import com.script.ScriptBindings
 import com.script.rhino.RhinoScriptEngine
+import io.legado.app.constant.AppLog
 import io.legado.app.exception.NoStackTraceException
 import io.legado.app.help.http.newCallStrResponse
 import io.legado.app.help.http.getHttpClient
@@ -78,6 +79,58 @@ object SharedJsScope {
             scopeMap.put(key, WeakReference(scope))
         }
         return scope
+    }
+
+    // ---------------- CryptoJS 作用域（JS 单文件源依赖全局 CryptoJS） ----------------
+
+    private const val CRYPTO_JS_ASSET = "scripts/cryptojs.min.js"
+
+    @Volatile
+    private var cryptoJsScript: com.script.CompiledScript? = null
+    private val cryptoCompileLock = Any()
+
+    private val cryptoScopeMap = LruCache<String, WeakReference<Scriptable>>(16)
+    private val cryptoScopeLock = Any()
+
+    private fun getCompiledCryptoJs(): com.script.CompiledScript? {
+        cryptoJsScript?.let { return it }
+        synchronized(cryptoCompileLock) {
+            cryptoJsScript?.let { return it }
+            val text = try {
+                appCtx.assets.open(CRYPTO_JS_ASSET).bufferedReader().use { it.readText() }
+            } catch (e: Exception) {
+                AppLog.putDebug("加载CryptoJS失败: ${e.message}", e)
+                return null
+            }
+            return RhinoScriptEngine.compile(text).also { cryptoJsScript = it }
+        }
+    }
+
+    /**
+     * 为 owner 分配一个带 CryptoJS 的共享作用域，同一 owner 同一线程复用
+     */
+    fun getCryptoScope(owner: Any, coroutineContext: CoroutineContext?): Scriptable? {
+        val script = getCompiledCryptoJs() ?: return null
+        val key = "${System.identityHashCode(owner)}-${Thread.currentThread().id}"
+        synchronized(cryptoScopeLock) {
+            cryptoScopeMap[key]?.get()?.let { return it }
+            val scope = RhinoScriptEngine.getRuntimeScope(ScriptBindings())
+            script.eval(scope, coroutineContext)
+            if (scope is ScriptableObject) {
+                scope.preventExtensions()
+            }
+            cryptoScopeMap.put(key, WeakReference(scope))
+            return scope
+        }
+    }
+
+    /**
+     * 往已有作用域里注入 CryptoJS，用于解析 JS 源配置时提前拿到 config 对象
+     */
+    internal fun installCryptoJs(scope: Scriptable, coroutineContext: CoroutineContext?): Boolean {
+        val script = getCompiledCryptoJs() ?: return false
+        script.eval(scope, coroutineContext)
+        return true
     }
 
     fun remove(jsLib: String?) {

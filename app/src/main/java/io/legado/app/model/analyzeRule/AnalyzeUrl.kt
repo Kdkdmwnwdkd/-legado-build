@@ -104,9 +104,16 @@ class AnalyzeUrl(
     headerMapF: Map<String, String>? = null,
     hasLoginHeader: Boolean = true,
     private val infoMap: MutableMap<String, String>? = null,
+    private val extraParams: Map<String, String>? = null,
     private val webViewPoolScope: WebViewPool.Scope = WebViewPool.Scope.GLOBAL,
     private val dnsScope: DnsScope = source?.getNetworkDnsScope() ?: DnsScope.READING
 ) : JsExtensions {
+
+    // URL 选项里的超时与重定向控制（书源可对单个请求单独设置）
+    private var urlReadTimeoutMs: Long? = null
+    private var urlCallTimeoutMs: Long? = null
+    private var followRedirectsOption: Boolean? = null
+
     constructor(mUrl: String) : this(mUrl, null)
 
     var ruleUrl = ""
@@ -270,6 +277,12 @@ class AnalyzeUrl(
                 webJs = option.getWebJs()
                 bodyJs = option.getBodyJs()
                 dnsIp = option.getDnsIp()
+                option.getTimeout()?.let {
+                    urlReadTimeoutMs = it
+                }
+                option.getFollowRedirects()?.let {
+                    followRedirectsOption = it
+                }
                 option.getJs()?.let { jsStr ->
                     evalJS(jsStr, url)?.toString()?.let {
                         url = it
@@ -391,6 +404,9 @@ class AnalyzeUrl(
             bindings["book"] = ruleData as? Book
             bindings["source"] = source
             bindings["result"] = result
+            extraParams?.forEach { (name, value) ->
+                bindings[name] = if (name == "page") value.toIntOrNull() ?: value else value
+            }
             bindings["infoMap"] = infoMap
         }
         val sharedScope = source?.getShareScope(coroutineContext, dnsScope)
@@ -414,6 +430,7 @@ class AnalyzeUrl(
     }
 
     fun get(key: String): String {
+        extraParams?.get(key)?.let { return it }
         when (key) {
             "bookName" -> (ruleData as? Book)?.let {
                 return it.name
@@ -471,16 +488,21 @@ class AnalyzeUrl(
                                 postJson(body)
                             }
                         }
-                        BackstageWebView(
-                            url = res.url,
-                            html = res.body,
-                            tag = source?.getKey(),
-                            javaScript = webJs ?: jsStr,
-                            sourceRegex = sourceRegex,
-                            headerMap = headerMap,
-                            delayTime = webViewDelayTime,
-                            poolScope = webViewPoolScope
-                        ).getStrResponse()
+                        if (shouldReturnRedirectBeforeWebView(followRedirectsOption, res.raw.code)) {
+                            // 书源显式关闭重定向，3xx 直接返回，不再交给 WebView 加载
+                            res
+                        } else {
+                            BackstageWebView(
+                                url = res.url,
+                                html = res.body,
+                                tag = source?.getKey(),
+                                javaScript = webJs ?: jsStr,
+                                sourceRegex = sourceRegex,
+                                headerMap = headerMap,
+                                delayTime = webViewDelayTime,
+                                poolScope = webViewPoolScope
+                            ).getStrResponse()
+                        }
                     }
 
                     else -> BackstageWebView(
@@ -615,16 +637,26 @@ class AnalyzeUrl(
 
     private fun getClient(): OkHttpClient {
         val client = getProxyClient(proxy, dnsScope)
-        if (readTimeout == null && callTimeout == null && dnsIp == null) {
+        val readTimeoutMs = urlReadTimeoutMs ?: readTimeout
+        val callTimeoutMs = urlCallTimeoutMs ?: callTimeout
+        if (readTimeoutMs == null && callTimeoutMs == null &&
+            followRedirectsOption == null && dnsIp == null
+        ) {
             return client
         }
         return client.newBuilder().run {
-            if (readTimeout != null) {
-                readTimeout(readTimeout, TimeUnit.MILLISECONDS)
-                callTimeout(max(60 * 1000L, readTimeout * 2), TimeUnit.MILLISECONDS)
+            followRedirectsOption?.let {
+                followRedirects(it)
+                followSslRedirects(it)
             }
-            if (callTimeout != null) {
-                callTimeout(callTimeout, TimeUnit.MILLISECONDS)
+            if (readTimeoutMs != null) {
+                readTimeout(readTimeoutMs, TimeUnit.MILLISECONDS)
+                if (callTimeoutMs == null) {
+                    callTimeout(derivedCallTimeoutMillis(readTimeoutMs), TimeUnit.MILLISECONDS)
+                }
+            }
+            if (callTimeoutMs != null) {
+                callTimeout(callTimeoutMs, TimeUnit.MILLISECONDS)
             }
             if (dnsIp != null && proxy.isNullOrBlank()) {
                 withoutCronet()
@@ -797,6 +829,14 @@ class AnalyzeUrl(
          **/
         private var retry: Int? = null,
         /**
+         * 单次请求超时（毫秒），可覆盖书源默认值
+         **/
+        private var timeout: Any? = null,
+        /**
+         * 是否跟随重定向，false 时 3xx 直接返回
+         **/
+        private var followRedirects: Any? = null,
+        /**
          * 类型
          **/
         private var type: String? = null,
@@ -861,6 +901,14 @@ class AnalyzeUrl(
 
         fun getRetry(): Int {
             return retry ?: 0
+        }
+
+        fun getTimeout(): Long? {
+            return parseRequestTimeoutMillis(timeout)
+        }
+
+        fun getFollowRedirects(): Boolean? {
+            return parseBooleanOption(followRedirects)
         }
 
         fun setType(value: String?) {

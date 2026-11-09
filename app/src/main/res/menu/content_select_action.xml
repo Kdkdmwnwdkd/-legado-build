@@ -31,6 +31,10 @@
         android:title="@string/ask_ai" />
 
     <item
+        android:id="@+id/menu_ai_purify"
+        android:title="@string/ai_text_purify" />
+
+    <item
         android:id="@+id/menu_generate_image"
         android:title="@string/ai_image_generate" />
 

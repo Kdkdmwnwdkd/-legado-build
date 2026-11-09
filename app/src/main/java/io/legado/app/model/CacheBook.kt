@@ -201,6 +201,8 @@ object CacheBook {
         private var isStopped = false
         private var waitingRetry = false
         private var isLoading = false
+        // 批量正文在途，同一本书同时只跑一批
+        private var batchRunning = false
 
         val waitCount get() = waitDownloadSet.size
         val onDownloadCount get() = onDownloadSet.size
@@ -343,6 +345,14 @@ object CacheBook {
                 waitDownloadSet.remove(chapterIndex)
                 return
             }
+            // 书源支持批量正文时，把多章交给书源自己的 contentBatch 规则
+            if (bookSource.supportContentBatch() && !batchRunning) {
+                val batchChapters = takeBatchChapters(bookSource.contentBatchSize())
+                if (batchChapters.size > 1) {
+                    startBatch(scope, context, batchChapters)
+                    return
+                }
+            }
             waitDownloadSet.remove(chapterIndex)
             onDownloadSet.add(chapterIndex)
             if (BookHelp.hasContent(book, chapter)) {
@@ -387,6 +397,75 @@ object CacheBook {
                 onCancel(chapterIndex)
                 downloadFinish(chapter, "download canceled", canceled = true)
             }.onFinally {
+                onFinally()
+            }.apply {
+                tasks.add(this)
+            }.start()
+        }
+
+        /**
+         * 从待下载列表取一批可批量的章节，取的过程中把这些章节从等待队列移出。
+         * 卷、已下载、仅有图片的章节留给单章流程处理。
+         */
+        @Synchronized
+        private fun takeBatchChapters(maxSize: Int): List<BookChapter> {
+            if (maxSize <= 1) return emptyList()
+            val chapters = mutableListOf<BookChapter>()
+            val iterator = waitDownloadSet.iterator()
+            while (iterator.hasNext() && chapters.size < maxSize) {
+                val index = iterator.next()
+                if (onDownloadSet.contains(index)) {
+                    iterator.remove()
+                    continue
+                }
+                val chapter = appDb.bookChapterDao.getChapter(book.bookUrl, index) ?: continue
+                if (chapter.isVolume || BookHelp.hasImageContent(book, chapter)) continue
+                chapters.add(chapter)
+            }
+            if (chapters.size <= 1) return emptyList()
+            chapters.forEach { waitDownloadSet.remove(it.index) }
+            batchRunning = true
+            return chapters
+        }
+
+        /**
+         * 执行一批批量正文。整批异常或书源没有回存的章节，全部退回单章流程，不影响下载进度。
+         */
+        private fun startBatch(
+            scope: CoroutineScope,
+            context: CoroutineContext,
+            chapters: List<BookChapter>
+        ) {
+            synchronized(this) {
+                onDownloadSet.addAll(chapters.map { it.index })
+            }
+            Coroutine.async(scope, context, executeContext = context) {
+                val missing = kotlin.runCatching {
+                    WebBook.getContentBatchAwait(bookSource, book, chapters)
+                }.getOrElse {
+                    AppLog.put("批量下载正文失败 ${book.name}，回退单章\n${it.localizedMessage}", it)
+                    chapters
+                }
+                val missingIndexes = missing.map { it.index }.toHashSet()
+                chapters.forEach { chapter ->
+                    if (missingIndexes.contains(chapter.index)) {
+                        onCancel(chapter.index)
+                    } else {
+                        onSuccess(chapter)
+                        // 正文已由批量上下文写入缓存，这里只负责通知阅读界面刷新
+                        BookHelp.getContent(book, chapter)?.let { content ->
+                            downloadFinish(chapter, content)
+                        }
+                    }
+                }
+            }.onError {
+                chapters.forEach { chapter -> onCancel(chapter.index) }
+            }.onCancel {
+                chapters.forEach { chapter -> onCancel(chapter.index) }
+            }.onFinally {
+                synchronized(this@CacheBookModel) {
+                    batchRunning = false
+                }
                 onFinally()
             }.apply {
                 tasks.add(this)

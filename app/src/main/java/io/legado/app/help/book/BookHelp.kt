@@ -177,6 +177,18 @@ object BookHelp {
         bookChapter: BookChapter,
         content: String
     ) {
+        saveContentBlocking(bookSource, book, bookChapter, content)
+    }
+
+    /**
+     * 同步保存正文，供批量下载（JS 回调）等无法挂起的位置调用
+     */
+    fun saveContentBlocking(
+        bookSource: BookSource,
+        book: Book,
+        bookChapter: BookChapter,
+        content: String
+    ) {
         try {
             saveText(book, bookChapter, content)
             LibraryCloudSync.enqueueUpload(book, bookChapter, content)

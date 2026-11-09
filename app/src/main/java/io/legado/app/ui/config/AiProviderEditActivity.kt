@@ -58,6 +58,7 @@ class AiProviderEditActivity : BaseActivity<ViewBinding>() {
 
     private val waitDialog by lazy { WaitDialog(this) }
     private var providerId: String? = null
+    private var pendingModelId: String? = null
 
     // Minimal ViewBinding shim: BaseActivity requires a ViewBinding.
     // We supply a plain LinearLayout that hosts the ComposeView.
@@ -91,10 +92,52 @@ class AiProviderEditActivity : BaseActivity<ViewBinding>() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         providerId = intent.getStringExtra(EXTRA_PROVIDER_ID)
+        val presetName = intent.getStringExtra(EXTRA_PRESET_NAME)
+        val presetBaseUrl = intent.getStringExtra(EXTRA_PRESET_BASE_URL)
+        val presetModel = intent.getStringExtra(EXTRA_PRESET_MODEL)
         val provider = currentProvider()
         apiMode = normalizeApiMode(provider?.apiMode)
         bindProvider(provider)
+        if (provider == null && !presetName.isNullOrBlank()) {
+            providerName = presetName
+            providerBaseUrl = presetBaseUrl.orEmpty()
+            pendingModelId = presetModel?.takeIf { it.isNotBlank() }
+        }
         reloadModels()
+        if (providerId == null && presetName.isNullOrBlank()) {
+            binding.root.post {
+                if (!isFinishing && !isDestroyed && providerId == null) {
+                    showPresetPicker()
+                }
+            }
+        }
+    }
+
+    /**
+     * 新建服务商时先给一份常用清单，点一下就把名称和地址填好，
+     * 用户只需要再补 API Key。
+     */
+    private fun showPresetPicker() {
+        val presets = AiProviderPresets.all
+        val labels = presets.map {
+            if (it.modelId.isBlank()) it.name else "${it.name} · ${it.modelId}"
+        }
+        showDialogFragment(
+            ComposeActionListDialog.create(
+                title = getString(R.string.ai_preset_title),
+                labels = labels,
+                negativeText = getString(R.string.cancel),
+                onSelected = { index ->
+                    val preset = presets.getOrNull(index)
+                    if (preset != null) {
+                        providerName = preset.name
+                        providerBaseUrl = preset.baseUrl
+                        pendingModelId = preset.modelId.takeIf { it.isNotBlank() }
+                        toastOnUi(R.string.ai_preset_filled)
+                    }
+                }
+            )
+        )
     }
 
     override fun onDestroy() {
@@ -257,6 +300,17 @@ class AiProviderEditActivity : BaseActivity<ViewBinding>() {
         if (index >= 0) providers[index] = updated else providers.add(updated)
         AppConfig.aiProviderList = providers
         providerId = updated.id
+        // 预设带来的模型：新建的服务商还没有模型时自动补上并设为当前
+        if (AppConfig.aiModelConfigList.none { it.providerId == updated.id }) {
+            pendingModelId?.takeIf { it.isNotBlank() }?.let { modelId ->
+                saveModel(updated.id, null, modelId)
+                pendingModelId = null
+            }
+        }
+        // 填了 Key 就默认把 AI 打开，省得用户还要回设置里找开关
+        if (apiKey.isNotBlank() && AppConfig.aiCurrentModelConfig != null) {
+            AppConfig.aiAssistantEnabled = true
+        }
         notifyAiConfigChanged()
         if (showToast) toastOnUi(R.string.ai_provider_saved)
         reloadModels()
@@ -454,6 +508,9 @@ class AiProviderEditActivity : BaseActivity<ViewBinding>() {
 
     companion object {
         const val EXTRA_PROVIDER_ID = "providerId"
+        const val EXTRA_PRESET_NAME = "presetName"
+        const val EXTRA_PRESET_BASE_URL = "presetBaseUrl"
+        const val EXTRA_PRESET_MODEL = "presetModel"
         private const val TAB_CONFIG = "config"
         private const val TAB_MODEL = "model"
     }

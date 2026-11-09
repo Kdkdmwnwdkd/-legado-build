@@ -17,6 +17,7 @@ object ContentSelectConfig {
     const val ACTION_ALOUD = "aloud"
     const val ACTION_DICT = "dict"
     const val ACTION_ASK_AI = "ask_ai"
+    const val ACTION_AI_PURIFY = "ai_purify"
     const val ACTION_GENERATE_IMAGE = "generate_image"
     const val ACTION_SHARE_IMAGE = "share_image"
 
@@ -42,6 +43,20 @@ object ContentSelectConfig {
     )
 
     val defaultActions = setOf(
+        ACTION_WEB_SEARCH,
+        ACTION_REPLACE,
+        ACTION_COPY,
+        ACTION_BOOKMARK,
+        ACTION_ALOUD,
+        ACTION_DICT,
+        ACTION_ASK_AI,
+        ACTION_AI_PURIFY,
+        ACTION_GENERATE_IMAGE,
+        ACTION_SHARE_IMAGE
+    )
+
+    /** 加入 AI 净化之前的默认集合，用于把老用户迁移到新默认值。 */
+    private val defaultActionsBeforePurify = setOf(
         ACTION_WEB_SEARCH,
         ACTION_REPLACE,
         ACTION_COPY,
@@ -137,7 +152,10 @@ object ContentSelectConfig {
             ?.filterNot { it in removedActionIds }
             ?.toSet()
             ?: return defaultActions
-        return if (saved == legacyDefaultActions || saved == defaultActionsBeforeShare) {
+        return if (saved == legacyDefaultActions ||
+            saved == defaultActionsBeforeShare ||
+            saved == defaultActionsBeforePurify
+        ) {
             defaultActions
         } else {
             saved

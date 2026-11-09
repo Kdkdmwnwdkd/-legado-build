@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--App-->
-    <string name="app_name">阅读Shimmer</string>
-    <string name="app_launcher_name">Shimmer</string>
+    <string name="app_name">阅读</string>
+    <string name="app_launcher_name">阅读</string>
     <string name="app_name_a">阅读Shimmer·A</string>
     <string name="app_name_s" translatable="false">阅读ShimmerPlus</string>
     <string name="receiving_shared_label">阅读Shimmer Search</string>
@@ -201,6 +201,17 @@
     <string name="rule_summary">Rules description</string>
     <string name="share">Share</string>
     <string name="ask_ai">Ask AI</string>
+    <string name="ai_text_purify">AI Clean</string>
+    <string name="ai_purify_title">AI clean text</string>
+    <string name="ai_purify_running">Cleaning…</string>
+    <string name="ai_purify_result">Cleaned text</string>
+    <string name="ai_purify_copy">Copy result</string>
+    <string name="ai_purify_save_rule">Save as replacement rule</string>
+    <string name="ai_purify_rule_saved">Replacement rule saved</string>
+    <string name="ai_purify_rule_name">AI clean · %1$s</string>
+    <string name="ai_purify_failed">Clean failed: %1$s</string>
+    <string name="ai_purify_no_model">Add an AI model in Settings → AI first</string>
+    <string name="ai_purify_identical">Nothing needed cleaning</string>
     <string name="content_select_menu_config">Long-press Menu Editor</string>
     <string name="content_select_menu_config_summary">Configure long-press actions and default open action</string>
     <string name="content_select_actions">Long-press actions</string>
@@ -628,7 +639,8 @@
     <string name="side_nav_assistant">Assistant</string>
     <string name="side_nav_stats">Stats</string>
     <string name="ai_setting">AI Settings</string>
-    <string name="ai_setting_summary">Configure providers and models separately</string>
+    <string name="ai_settings_title">AI chat</string>
+    <string name="ai_setting_summary">Set up a provider, then just tell AI what to do</string>
     <string name="ai_enable">Enable AI</string>
     <string name="ai_enable_summary">Enabled: long press Search to open AI</string>
     <string name="ai_enable_summary_disabled">Available after adding a model to the current provider</string>
@@ -640,6 +652,50 @@
     <string name="ai_current_provider_summary_empty">Add a provider first</string>
     <string name="ai_add_provider">Add provider</string>
     <string name="ai_add_provider_summary">Add an OpenAI-compatible API provider</string>
+    <string name="ai_preset_title">Choose a provider</string>
+    <string name="ai_preset_filled">Address filled in — just add your API key</string>
+    <string name="ai_features">AI features</string>
+    <string name="ai_chat_group">Chat</string>
+    <string name="ai_more_group">More</string>
+    <string name="ai_entry_row">Chat entry</string>
+    <string name="ai_entry_summary_on">Floating button on the bookshelf</string>
+    <string name="ai_entry_summary_off">Off — long-press text still works</string>
+    <string name="ai_ability_entry">What AI can do</string>
+    <string name="ai_ability_summary">%1$d capabilities on — it browses your shelf, reads chapters and changes settings by itself</string>
+    <string name="ai_features_summary">Audiobook voices · Web search · Image · World book</string>
+    <string name="ai_prefs">Chat preferences</string>
+    <string name="ai_prefs_summary">Tool rounds %1$d · Context compression %2$s</string>
+    <string name="ai_enable_summary_off">Off — AI will not appear while reading or on the shelf</string>
+    <string name="ai_switch_state">%1$s: %2$s</string>
+    <string name="ai_state_on">on</string>
+    <string name="ai_state_off">off</string>
+    <string name="ai_quick_prompt_hint">Or just say what you want — AI does it inside the app</string>
+    <string name="ai_quick_1">What is on my bookshelf?</string>
+    <string name="ai_quick_2">Sort my bookshelf into groups</string>
+    <string name="ai_quick_3">Find a book source that works</string>
+    <string name="ai_quick_4">Summarize what I am reading</string>
+    <string name="ai_assistant_group">AI assistant</string>
+    <string name="ai_skills_entry">Skills</string>
+    <string name="ai_skills_entry_summary">%1$d built-in · %2$d on</string>
+    <string name="ai_home_entry">Home chat entry</string>
+    <string name="ai_home_entry_summary">Show a floating button on the bookshelf to open chat</string>
+    <string name="ai_purify">AI clean-up</string>
+    <string name="ai_purify_summary">Clean ads and typos in selected text</string>
+    <string name="ai_assistant_summary">Chat about the current book, summaries and tools</string>
+    <string name="ai_listen">AI audiobook</string>
+    <string name="ai_listen_summary">Multi-role voices and audiobook playback</string>
+    <string name="ai_provider_none_hint">No provider yet, pick one to start</string>
+    <string name="ai_provider_count">%1$d providers</string>
+    <string name="ai_skills_title">Skills</string>
+    <string name="ai_skills_intro">Ready-to-use abilities. APP skills run on device; Agent skills are called by AI during chat.</string>
+    <string name="ai_skill_purify">Paragraph clean-up</string>
+    <string name="ai_skill_purify_desc">Adds AI clean-up to the text selection menu.</string>
+    <string name="ai_skill_bookshelf">Bookshelf butler</string>
+    <string name="ai_skill_bookshelf_desc">Query books, groups, tags and reading progress.</string>
+    <string name="ai_skill_characters">Character cards</string>
+    <string name="ai_skill_characters_desc">Extract and maintain characters and their relations.</string>
+    <string name="ai_skill_reading">Reading lookup</string>
+    <string name="ai_skill_reading_desc">Read chapters, search content and reading records.</string>
     <string name="ai_manage_providers">Manage providers</string>
     <string name="ai_manage_providers_summary">%1$d providers added</string>
     <string name="ai_provider_name">Provider name</string>
@@ -1061,7 +1117,7 @@
     <string name="alipay_red_envelope_qr_code">AliPay red envelope QR code</string>
     <string name="alipay_payment_qr_code">AliPay QR code</string>
     <string name="qq_collection_qr_code">QQ Collection QR code</string>
-    <string name="contributors_summary">gedoor,Invinciblelee,Xwite etc. Checking in github for details</string>
+    <string name="contributors_summary">Upstream Legado project: gedoor, Invinciblelee, Xwite and others. Changes in this repository are listed in its commit history.</string>
     <string name="clear_cache_summary">Clear the cache of the downloaded books and fonts</string>
     <string name="default_cover">Default cover</string>
     <string name="restore_ignore">Bypass list</string>
@@ -1720,7 +1776,7 @@ Note: custom buttons are meant for reading and helper actions; do not modify the
     <string name="record_heap_dump_t">Capture heap dump</string>
     <string name="font_weight_text">N/B/L</string>
     <string name="enable_optimize_render">Enable rendering optimization</string>
-    <string name="ignore_battery_permission_rationale">Legado needs background permission to keep its service running</string>
+    <string name="ignore_battery_permission_rationale">The app needs background permission to keep its service running</string>
     <string name="simulated_reading">Simulated Reading</string>
     <string name="switch_on">Switch</string>
     <string name="start_from">Start from</string>
@@ -1737,7 +1793,7 @@ Note: custom buttons are meant for reading and helper actions; do not modify the
     <string name="stream_read_aloud_audio_summary">Play while downloading. Playback stutters on poor networks. TTS sources only.</string>
     <string name="pause_read_aloud_while_phone_calls_title">Pause reading aloud during calls</string>
     <string name="pause_read_aloud_while_phone_calls_summary">Pause reading aloud during a call. Requires phone state permission.</string>
-    <string name="read_aloud_read_phone_state_permission_rationale">Legado needs phone state access to pause reading aloud during calls</string>
+    <string name="read_aloud_read_phone_state_permission_rationale">The app needs phone state access to pause reading aloud during calls</string>
     <string name="read_aloud_by_media_button_title">Start reading aloud with the headset button</string>
     <string name="read_aloud_by_media_button_summary">Use the headset button to start reading aloud</string>
     <string name="group_sources_by_domain">Group by domain</string>
@@ -1828,7 +1884,7 @@ Note: custom buttons are meant for reading and helper actions; do not modify the
     <string name="font_size">Font size %d</string>
     <string name="view_code">View code</string>
     <string name="show_bookname">Show book title</string>
-    <string name="float_permission_rationale">Legado needs overlay permission to show the playback window</string>
+    <string name="float_permission_rationale">The app needs overlay permission to show the playback window</string>
     <string name="video">Video</string>
     <string name="float_window">Floating window</string>
     <string name="video_play">Video playback</string>
@@ -1856,7 +1912,7 @@ Note: custom buttons are meant for reading and helper actions; do not modify the
     <string name="video_setting">Video settings</string>
     <string name="video_setting_summary">Autoplay, fullscreen playback, and more</string>
     <string name="history">History</string>
-    <string name="app_name_sigma">阅读Shimmer</string>
+    <string name="app_name_sigma">阅读</string>
     <string name="about_description_sigma">阅读Shimmer is an independent Android reader focused on the reading experience, book source tools, and AI assistance.</string>
     <string name="contributors_summary_sigma">Maintained at Kdkdmwnwdkd/-legado-build; see GitHub for details</string>
     <string name="app_share_description_sigma">阅读Shimmer download link:\nhttps://github.com/Kdkdmwnwdkd/-legado-build/releases</string>
@@ -2454,7 +2510,7 @@ Selected text or question:
     <string name="paragraph_import_conflict_overwrite_description">Keep the existing ID, order, and book bindings</string>
     <string name="paragraph_import_result">Added: %1$d\nOverwritten: %2$d\nSkipped: %3$d\nRenamed: %4$d</string>
     <string name="public_web_relay">Public web access</string>
-    <string name="public_web_relay_summary">Access this device\'s Legado Web securely through a Cloudflare Worker</string>
+    <string name="public_web_relay_summary">Access this device\'s built-in web service securely through a Cloudflare Worker</string>
     <string name="public_web_relay_connection">Connection</string>
     <string name="public_web_relay_enable">Enable public access</string>
     <string name="public_web_relay_worker_url">Worker URL</string>
@@ -2995,4 +3051,16 @@ Type &quot;%2$s&quot; to confirm.</string>
     <string name="ra_prev_chapter">Previous chapter</string>
     <string name="ra_next_chapter_short">Next chapter</string>
     <string name="ra_select_voice">Select voice</string>
+    <string name="login_ui_v2_render_error">Login UI failed to load. loginUi(state) must return {rows:[...]}. See logs.</string>
+    <string name="login_ui_v2_action_error">Login action failed: %1$s</string>
+    <string name="login_ui_v2_invalid_action">loginAction returned an invalid command object</string>
+    <string name="login_ui_v2_save_error">Failed to save login info</string>
+    <string name="login_ui_v2_use_button">This login page is driven by the source script, please use its buttons</string>
+    <string name="js_source_edit">JS Source</string>
+    <string name="js_syntax_error">JavaScript syntax error</string>
+    <string name="continue_save">Save anyway</string>
+    <string name="review_detail_title">Paragraph comments</string>
+    <string name="review_reply_count">%1$d replies</string>
+    <string name="review_reply_empty">No replies</string>
+    <string name="anonymous">Anonymous</string>
 </resources>

@@ -21,6 +21,7 @@ import io.legado.app.help.http.BackstageWebView
 import io.legado.app.help.http.CookieStore
 import io.legado.app.help.source.getShareScope
 import io.legado.app.help.http.dns.DnsScope
+import io.legado.app.model.BatchContentContext
 import io.legado.app.model.Debug
 import io.legado.app.model.webBook.WebBook
 import io.legado.app.utils.GSON
@@ -84,6 +85,10 @@ class AnalyzeRule(
     private var evalJSCallCount = 0
 
     private var coroutineContext: CoroutineContext = EmptyCoroutineContext
+    // 批量正文下载上下文，仅 contentBatch 规则执行期间非空
+    private var batchContext: BatchContentContext? = null
+    // 规则内部临时变量，供 setLocal/get 存取
+    private val localBindings = hashMapOf<String, String>()
 
     private var loggedNonStandardJSON = false
     private var ruleName: String? = null
@@ -804,9 +809,18 @@ class AnalyzeRule(
     }
 
     /**
+     * 保存数据，供同一规则内的 @get 读取
+     */
+    fun setLocal(key: String, value: String): AnalyzeRule {
+        localBindings[key] = value
+        return this
+    }
+
+    /**
      * 获取保存的数据
      */
     fun get(key: String): String {
+        localBindings[key]?.let { return it }
         when (key) {
             "bookName" -> book?.let {
                 return it.name
@@ -841,6 +855,7 @@ class AnalyzeRule(
             bindings["nextChapterUrl"] = nextChapterUrl
             bindings["rssArticle"] = rssArticle
             bindings["fromBookInfo"] = isFromBookInfo
+            bindings["chapters"] = batchContext?.chapters
         }
         val topScope = source?.getShareScope(coroutineContext) ?: topScopeRef?.get()
         val scope = if (topScope == null) {
@@ -867,6 +882,10 @@ class AnalyzeRule(
 
     override fun getSource(): BaseSource? {
         return source
+    }
+
+    override fun getBatchContext(): BatchContentContext? {
+        return batchContext
     }
 
     override fun getNetworkDnsScope(): DnsScope = source?.getNetworkDnsScope() ?: DnsScope.READING
@@ -968,6 +987,11 @@ class AnalyzeRule(
 
         fun AnalyzeRule.setNextChapterUrl(nextChapterUrl: String?): AnalyzeRule {
             this.nextChapterUrl = nextChapterUrl
+            return this
+        }
+
+        fun AnalyzeRule.setBatchContext(batchContext: BatchContentContext?): AnalyzeRule {
+            this.batchContext = batchContext
             return this
         }
 

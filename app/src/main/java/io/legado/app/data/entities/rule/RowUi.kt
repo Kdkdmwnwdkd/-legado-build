@@ -7,7 +7,18 @@ data class RowUi(
     val chars: Array<String?>? = null,
     val default: String? = null,
     var viewName: String? = null,
-    val style: FlexChildStyle? = null
+    val style: FlexChildStyle? = null,
+    // ---- 登录界面 v2 字段 ----
+    /** 取值用的键名，text/password/select/toggle 必填且需唯一 */
+    val key: String? = null,
+    /** 输入提示（placeholder） */
+    val hint: String? = null,
+    /** 渲染时预设的值，优于已保存的登录信息 */
+    val value: String? = null,
+    /** select 的可选项 */
+    val options: List<String>? = null,
+    /** button 点击后的冷却秒数 */
+    val countdown: Int? = null,
 ) {
 
     @Suppress("ConstPropertyName")
@@ -16,6 +27,7 @@ data class RowUi(
         const val text = "text"
         const val password = "password"
         const val button = "button"
+        const val label = "label"
         const val toggle = "toggle"
         const val select = "select"
 

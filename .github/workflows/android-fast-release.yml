@@ -82,6 +82,53 @@ jobs:
           echo "code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
           echo "版本: $VERSION_NAME ($VERSION_CODE)"
 
+      - name: Prepare Gradle distribution
+        # GitHub 的 gradle-distributions release 资产偶发 504，
+        # 官方源探测失败就切国内镜像，避免整条流水线卡在 wrapper 下载。
+        run: |
+          OFFICIAL="https://services.gradle.org/distributions/gradle-9.6.0-bin.zip"
+          MIRRORS=(
+            "https://mirrors.cloud.tencent.com/gradle/gradle-9.6.0-bin.zip"
+            "https://repo.huaweicloud.com/gradle/gradle-9.6.0-bin.zip"
+          )
+          probe() { curl -fsL -r 0-65535 --max-time 25 -o /dev/null "$1"; }
+          if probe "$OFFICIAL"; then
+            echo "官方源可用"
+            exit 0
+          fi
+          for M in "${MIRRORS[@]}"; do
+            if probe "$M"; then
+              echo "切换镜像: $M"
+              sed -i "s#^distributionUrl=.*#distributionUrl=${M}#" gradle/wrapper/gradle-wrapper.properties
+              exit 0
+            fi
+          done
+          echo "所有源均不可用，交给 wrapper 自行重试"
+
+      - name: Use Maven mirror
+        # 配合上一步：Maven Central 的 JetBrains 构件会 302 到 GitHub，
+        # 同样受 504 影响，这里换成国内镜像（仓库数量与 content 过滤不变）。
+        run: |
+          GUH="${GRADLE_USER_HOME:-$HOME/.gradle}"
+          mkdir -p "$GUH/init.d"
+          cp .github/ci/mirrors.gradle "$GUH/init.d/99-mirrors.gradle"
+          echo "Maven 镜像兜底已启用: $GUH/init.d/99-mirrors.gradle"
+
+
+      - name: Sync changelog into assets
+        # 应用内「更新日志」读 assets/updateLog.md，统一从 CHANGELOG.md 生成，
+        # 不再手工维护第二份，避免两边不一致。
+        run: |
+          test -f CHANGELOG.md
+          {
+            echo "# 更新日志"
+            echo
+            echo "版本号是时间戳：\`3.26.MMDDHHmm\`，应用内更新直接比较大小。"
+            echo
+            awk '/^## /{c++} c>=1' CHANGELOG.md
+          } > app/src/main/assets/updateLog.md
+          echo "已同步更新日志，共 $(wc -l < app/src/main/assets/updateLog.md) 行"
+
       - name: Build arm64-v8a
         run: |
           chmod +x gradlew
@@ -133,14 +180,14 @@ jobs:
           parts = re.split(r'(?m)^##\s+', text)
           body = ''
           for part in parts[1:]:
-              candidate = '## ' + part.strip()
-              if candidate.strip() == '##':
-                  continue
-              body = candidate
+              candidate = part.strip()
+              # 去掉段落自带的版本标题，避免与本次构建的时间戳版本号冲突
+              lines = candidate.splitlines()[1:]
+              body = '\n'.join(lines).strip()
               break
           if len(body) < 40:
               raise SystemExit('CHANGELOG.md 中未找到可用的版本段落，请先补充更新日志')
-          open('release-notes.md', 'w', encoding='utf-8').write(body + '\n')
+          open('release-notes.md', 'w', encoding='utf-8').write('## 本次更新\n\n' + body + '\n')
           PY
           head -n 20 release-notes.md
 

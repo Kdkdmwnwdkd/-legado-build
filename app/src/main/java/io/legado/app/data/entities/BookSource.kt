@@ -96,6 +96,9 @@ data class BookSource(
     var ruleContent: ContentRule? = null,
     // 段评规则
     var ruleReview: ReviewRule? = null,
+    // 纯 JavaScript 单文件书源主脚本。非空时为 JS 源，
+    // 本分支暂不执行脚本抓取流程，仅保证导入导出与上游一致、不丢字段
+    var mainJs: String? = null,
     @ColumnInfo(defaultValue = "0")
     var eventListener: Boolean = false, // 是否监听事件来执行回调规则
     @ColumnInfo(defaultValue = "0")
@@ -233,6 +236,29 @@ data class BookSource(
         }
     }
 
+    /**
+     * 是否为 JS 单文件书源（mainJs 非空）
+     */
+    fun isJsSource(): Boolean = !mainJs.isNullOrBlank()
+
+    /**
+     * 是否支持批量下载正文。
+     * 常规源需要配置批量规则且最大批量数量大于 1。
+     */
+    fun supportContentBatch(): Boolean {
+        val rule = ruleContent ?: return false
+        if ((rule.maxBatchSize ?: 0) <= 1) return false
+        return isJsSource() || !rule.contentBatch.isNullOrBlank()
+    }
+
+    /**
+     * 单次批量下载正文的章节数，未开启批量时为 1
+     */
+    fun contentBatchSize(): Int {
+        if (!supportContentBatch()) return 1
+        return (ruleContent?.maxBatchSize ?: 1).coerceIn(1, MAX_CONTENT_BATCH_SIZE)
+    }
+
     fun equal(source: BookSource): Boolean {
         return equal(bookSourceName, source.bookSourceName)
                 && equal(bookSourceUrl, source.bookSourceUrl)
@@ -247,6 +273,7 @@ data class BookSource(
                 && equal(variableComment, source.variableComment)
                 && equal(concurrentRate, source.concurrentRate)
                 && equal(jsLib, source.jsLib)
+                && equal(mainJs, source.mainJs)
                 && equal(header, source.header)
                 && equal(loginUrl, source.loginUrl)
                 && equal(loginUi, source.loginUi)
@@ -259,6 +286,11 @@ data class BookSource(
                 && getBookInfoRule() == source.getBookInfoRule()
                 && getTocRule() == source.getTocRule()
                 && getContentRule() == source.getContentRule()
+                && ruleReview == source.ruleReview
+    }
+
+    companion object {
+        const val MAX_CONTENT_BATCH_SIZE = 50
     }
 
     private fun equal(a: String?, b: String?) = a == b || (a.isNullOrEmpty() && b.isNullOrEmpty())
@@ -306,10 +338,12 @@ data class BookSource(
             GSON.fromJsonObject<ContentRule>(json).getOrNull()
 
         @TypeConverter
-        fun stringToReviewRule(json: String?): ReviewRule? = null
+        fun stringToReviewRule(json: String?): ReviewRule? =
+            GSON.fromJsonObject<ReviewRule>(json).getOrNull()
 
         @TypeConverter
-        fun reviewRuleToString(reviewRule: ReviewRule?): String = "null"
+        fun reviewRuleToString(reviewRule: ReviewRule?): String =
+            GSON.toJson(reviewRule)
 
     }
 }

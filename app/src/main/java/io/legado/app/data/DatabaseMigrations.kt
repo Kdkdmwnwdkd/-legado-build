@@ -25,8 +25,30 @@ object DatabaseMigrations {
             migration_99_100, migration_100_101, migration_101_102, migration_102_103,
             migration_103_104, migration_104_105, migration_105_106,
             migration_106_107, migration_107_108, migration_108_109, migration_109_110,
-            migration_110_111, migration_111_112, MIGRATION_112_113,
+            migration_110_111, migration_111_112, MIGRATION_112_113, MIGRATION_113_114,
         )
+    }
+
+    /**
+     * 书源表新增 mainJs 列（纯 JS 单文件书源主脚本）。
+     * 上游在 113 版就带了该列，因此这里先探测再添加，避免与上游同版本号的数据文件冲突。
+     */
+    val MIGRATION_113_114 = object : Migration(113, 114) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            if (!hasColumn(db, "book_sources", "mainJs")) {
+                db.execSQL("ALTER TABLE `book_sources` ADD COLUMN `mainJs` TEXT")
+            }
+        }
+    }
+
+    private fun hasColumn(db: SupportSQLiteDatabase, table: String, column: String): Boolean {
+        db.query("PRAGMA table_info(`$table`)").use { cursor ->
+            val nameIndex = cursor.getColumnIndex("name")
+            while (cursor.moveToNext()) {
+                if (nameIndex >= 0 && cursor.getString(nameIndex) == column) return true
+            }
+        }
+        return false
     }
 
     val MIGRATION_112_113 = object : Migration(112, 113) {
