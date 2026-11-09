@@ -26,7 +26,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/tv_title"
             app:layout_constraintLeft_toLeftOf="parent" />
 
-        <io.legado.app.ui.widget.text.AccentTextView
+        <com.shimmer.reader.ui.widget.text.AccentTextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="HardcodedText,RtlHardcoded" />
 
-        <io.legado.app.ui.widget.text.AccentTextView
+        <com.shimmer.reader.ui.widget.text.AccentTextView
             android:id="@+id/tv_sub_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
-    <io.legado.app.ui.widget.text.AccentTextView
+    <com.shimmer.reader.ui.widget.text.AccentTextView
         android:id="@+id/tv_gzh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

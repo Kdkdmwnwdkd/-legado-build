@@ -15,19 +15,22 @@ Xwite 等，完整名单见 https://github.com/gedoor/legado/graphs/contributors
 
 关于包名
 --------
-安装包名是 io.legado.app.shimmer，后缀 .shimmer 为本项目独有，与阅读 Archive
+安装包名是 com.shimmer.reader，代码命名空间与安装身份统一，与阅读 Archive
 （io.legado.app.Archive）、阅读 Sigma（io.legado.app.release）、原版
 （io.legado.app）互不覆盖。
 
-代码命名空间仍为 io.legado.app，与阅读 Archive 保持一致。原因是书源 JavaScript
-可以通过 Packages.io.legado.app.* 引用内部类，改动包路径会使这类书源失效，
-混淆规则也需同步重写。安装身份已由 applicationId 后缀区分。
+本项目早期版本使用 io.legado.app.shimmer，与上游共用命名空间；从 2026-11-09
+起命名空间与安装包名一起迁到 com.shimmer.reader，不再依赖上游包路径。
+
+兼容性说明：书源 JavaScript 中若写死了 Packages.io.legado.app.*，需要改为
+Packages.com.shimmer.reader.*；只使用全局函数（java.ajax、base64Decode、
+source、book 等）的书源不受影响。
 
 本仓库的改动
 ------------
 本仓库自 2026 年 11 月起独立维护，主要在以下方面改动：
 
-- 应用身份：独立包名 io.legado.app.shimmer、独立应用名「阅读Shimmer」、
+- 应用身份：独立包名 com.shimmer.reader、独立应用名「阅读Shimmer」、
   自制水墨风格图标，可与 Legado、阅读 Archive 同时安装。
 - 更新机制：只读取本仓库的 GitHub Release；资产名携带版本号与 versionCode，
   按点分段比较版本；默认走加速镜像。

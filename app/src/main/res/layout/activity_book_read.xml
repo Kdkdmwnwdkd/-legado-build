@@ -4,12 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <io.legado.app.ui.book.read.page.ReadView
+    <com.shimmer.reader.ui.book.read.page.ReadView
         android:id="@+id/read_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <io.legado.app.ui.book.read.epub.EpubReadView
+    <com.shimmer.reader.ui.book.read.epub.EpubReadView
         android:id="@+id/epub_read_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -37,25 +37,25 @@
         android:src="@drawable/ic_cursor_right"
         android:visibility="invisible" />
 
-    <io.legado.app.ui.book.read.ReadMenu
+    <com.shimmer.reader.ui.book.read.ReadMenu
         android:id="@+id/read_menu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
 
-    <io.legado.app.ui.book.read.SearchMenu
+    <com.shimmer.reader.ui.book.read.SearchMenu
         android:id="@+id/search_menu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
 
-    <io.legado.app.ui.book.read.ReadAiFloatingPanel
+    <com.shimmer.reader.ui.book.read.ReadAiFloatingPanel
         android:id="@+id/read_ai_panel"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:visibility="gone" />
 
-    <io.legado.app.ui.book.read.ReadAiSummaryPanel
+    <com.shimmer.reader.ui.book.read.ReadAiSummaryPanel
         android:id="@+id/read_ai_summary_panel"
         android:layout_width="340dp"
         android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
         android:background="@color/background_menu"
         android:layout_gravity="bottom" />
 
-    <io.legado.app.ui.book.read.ReadAloudPlayerPanel
+    <com.shimmer.reader.ui.book.read.ReadAloudPlayerPanel
         android:id="@+id/read_aloud_player_panel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

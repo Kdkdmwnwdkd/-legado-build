@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <io.legado.app.ui.widget.TitleBar
+    <com.shimmer.reader.ui.widget.TitleBar
         android:id="@+id/tool_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <io.legado.app.ui.widget.recycler.scroller.FastScrollRecyclerView
+        <com.shimmer.reader.ui.widget.recycler.scroller.FastScrollRecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -91,7 +91,7 @@
             android:scrollbars="none"
             tools:ignore="SpeakableTextPresentCheck" />
 
-        <io.legado.app.ui.widget.anima.RotateLoading
+        <com.shimmer.reader.ui.widget.anima.RotateLoading
             android:id="@+id/rotate_loading"
             android:layout_width="36dp"
             android:layout_height="36dp"

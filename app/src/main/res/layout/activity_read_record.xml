@@ -6,13 +6,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <io.legado.app.ui.widget.TitleBar
+    <com.shimmer.reader.ui.widget.TitleBar
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="@string/read_record" />
 
-    <io.legado.app.ui.widget.MainTopBarView
+    <com.shimmer.reader.ui.widget.MainTopBarView
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -156,7 +156,7 @@
 
                     </LinearLayout>
 
-                    <io.legado.app.ui.about.ReadHeatmapView
+                    <com.shimmer.reader.ui.about.ReadHeatmapView
                         android:id="@+id/heatmap_view"
                         android:layout_width="match_parent"
                         android:layout_height="120dp"

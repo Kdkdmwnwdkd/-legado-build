@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <io.legado.app.ui.widget.TitleBar
+    <com.shimmer.reader.ui.widget.TitleBar
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
                 android:layout_marginEnd="@dimen/bookshelf_tag_bar_margin_horizontal"
                 android:clipToPadding="false">
 
-                <io.legado.app.ui.widget.recycler.RecyclerViewAtPager2
+                <com.shimmer.reader.ui.widget.recycler.RecyclerViewAtPager2
                     android:id="@+id/recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -79,7 +79,7 @@
 
             </FrameLayout>
 
-            <io.legado.app.ui.widget.MainTopBarView
+            <com.shimmer.reader.ui.widget.MainTopBarView
                 android:id="@+id/top_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

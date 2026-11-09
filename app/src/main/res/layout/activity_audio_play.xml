@@ -21,7 +21,7 @@
         android:layout_height="match_parent"
         android:background="#90000000" />
 
-    <io.legado.app.ui.widget.TitleBar
+    <com.shimmer.reader.ui.widget.TitleBar
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title_bar" />
 
-    <io.legado.app.ui.widget.image.CircleImageView
+    <com.shimmer.reader.ui.widget.image.CircleImageView
         android:id="@+id/iv_cover"
         android:layout_width="260dp"
         android:layout_height="260dp"
@@ -112,7 +112,7 @@
             android:textColor="@color/md_white_1000"
             tools:ignore="HardcodedText,RtlSymmetry,TextContrastCheck" />
 
-        <io.legado.app.lib.theme.view.ThemeSeekBar
+        <com.shimmer.reader.lib.theme.view.ThemeSeekBar
             android:id="@+id/player_progress"
             android:layout_width="0dp"
             android:layout_height="25dp"
@@ -139,7 +139,7 @@
         android:paddingHorizontal="6dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <io.legado.app.ui.widget.image.ImageButton
+        <com.shimmer.reader.ui.widget.image.ImageButton
             android:id="@+id/iv_timer"
             android:layout_width="46dp"
             android:layout_height="46dp"
@@ -155,7 +155,7 @@
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <io.legado.app.ui.widget.image.ImageButton
+        <com.shimmer.reader.ui.widget.image.ImageButton
             android:id="@+id/iv_speed_control"
             android:layout_width="46dp"
             android:layout_height="46dp"
@@ -171,7 +171,7 @@
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <io.legado.app.ui.widget.image.ImageButton
+        <com.shimmer.reader.ui.widget.image.ImageButton
             android:id="@+id/iv_skip_previous"
             android:layout_width="46dp"
             android:layout_height="46dp"
@@ -204,7 +204,7 @@
                 app:pressedTranslationZ="2dp"
                 tools:ignore="ImageContrastCheck" />
 
-            <io.legado.app.lib.theme.view.ThemeProgressBar
+            <com.shimmer.reader.lib.theme.view.ThemeProgressBar
                 android:id="@+id/progress_loading"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -218,7 +218,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <io.legado.app.ui.widget.image.ImageButton
+        <com.shimmer.reader.ui.widget.image.ImageButton
             android:id="@+id/iv_skip_next"
             android:layout_width="46dp"
             android:layout_height="46dp"
@@ -234,7 +234,7 @@
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <io.legado.app.ui.widget.image.ImageButton
+        <com.shimmer.reader.ui.widget.image.ImageButton
             android:id="@+id/iv_cache"
             android:layout_width="46dp"
             android:layout_height="46dp"
@@ -250,7 +250,7 @@
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <io.legado.app.ui.widget.image.ImageButton
+        <com.shimmer.reader.ui.widget.image.ImageButton
             android:id="@+id/iv_chapter"
             android:layout_width="46dp"
             android:layout_height="46dp"

@@ -24,7 +24,7 @@
         android:clipChildren="false"
         android:clipToPadding="false">
 
-        <io.legado.app.ui.widget.TitleBar
+        <com.shimmer.reader.ui.widget.TitleBar
             android:id="@+id/title_bar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title_bar">
 
-            <io.legado.app.ui.widget.NoChildScrollNestedScrollView
+            <com.shimmer.reader.ui.widget.NoChildScrollNestedScrollView
                 android:id="@+id/scroll_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -64,7 +64,7 @@
                     android:paddingEnd="0dp"
                     android:paddingBottom="0dp">
 
-                    <io.legado.app.ui.widget.image.ArcView
+                    <com.shimmer.reader.ui.widget.image.ArcView
                         android:id="@+id/arc_view"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
@@ -94,7 +94,7 @@
                             app:cardElevation="0dp"
                             app:cardMaxElevation="0dp">
 
-                            <io.legado.app.ui.widget.image.CoverImageView
+                            <com.shimmer.reader.ui.widget.image.CoverImageView
                                 android:id="@+id/iv_cover"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
@@ -200,7 +200,7 @@
                                 android:layout_marginTop="10dp"
                                 android:scrollbars="none">
 
-                                <io.legado.app.ui.widget.LabelsBar
+                                <com.shimmer.reader.ui.widget.LabelsBar
                                     android:id="@+id/lb_kind"
                                     android:layout_width="wrap_content"
                                     android:layout_height="28dp"
@@ -249,7 +249,7 @@
                                 android:textSize="13.5sp"
                                 tools:text="@string/group_s" />
 
-                            <io.legado.app.ui.widget.text.AccentBgTextView
+                            <com.shimmer.reader.ui.widget.text.AccentBgTextView
                                 android:id="@+id/tv_change_group"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -297,7 +297,7 @@
                                 android:textSize="13.5sp"
                                 tools:text="@string/origin_format" />
 
-                            <io.legado.app.ui.widget.text.AccentBgTextView
+                            <com.shimmer.reader.ui.widget.text.AccentBgTextView
                                 android:id="@+id/tv_change_source"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -349,7 +349,7 @@
                                 android:textSize="13.5sp"
                                 tools:text="@string/toc_s" />
 
-                            <io.legado.app.ui.widget.text.AccentBgTextView
+                            <com.shimmer.reader.ui.widget.text.AccentBgTextView
                                 android:id="@+id/tv_toc_view"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -568,7 +568,7 @@
                     </LinearLayout>
                 </LinearLayout>
 
-            </io.legado.app.ui.widget.NoChildScrollNestedScrollView>
+            </com.shimmer.reader.ui.widget.NoChildScrollNestedScrollView>
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -608,7 +608,7 @@
                 android:textColor="@color/primaryText"
                 android:textSize="15sp" />
 
-            <io.legado.app.ui.widget.text.AccentBgTextView
+            <com.shimmer.reader.ui.widget.text.AccentBgTextView
                 android:id="@+id/tv_read"
                 android:layout_width="0dp"
                 android:layout_height="48dp"

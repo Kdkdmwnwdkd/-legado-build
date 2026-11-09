@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <io.legado.app.ui.widget.TitleBar
+    <com.shimmer.reader.ui.widget.TitleBar
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
             android:paddingHorizontal="8dp"
             tools:ignore="VisualLintBounds">
 
-            <io.legado.app.lib.theme.view.ThemeCheckBox
+            <com.shimmer.reader.lib.theme.view.ThemeCheckBox
                 android:id="@+id/cb_is_enable"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
                 android:text="@string/is_enable"
                 tools:ignore="TouchTargetSizeCheck" />
 
-            <io.legado.app.lib.theme.view.ThemeCheckBox
+            <com.shimmer.reader.lib.theme.view.ThemeCheckBox
                 android:id="@+id/cb_single_url"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
                 android:text="@string/single_url"
                 tools:ignore="TouchTargetSizeCheck" />
 
-            <io.legado.app.lib.theme.view.ThemeCheckBox
+            <com.shimmer.reader.lib.theme.view.ThemeCheckBox
                 android:id="@+id/cb_is_enable_cookie"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
                 android:text="@string/auto_save_cookie"
                 tools:ignore="TouchTargetSizeCheck" />
 
-            <io.legado.app.lib.theme.view.ThemeCheckBox
+            <com.shimmer.reader.lib.theme.view.ThemeCheckBox
                 android:id="@+id/cb_is_enable_preload"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

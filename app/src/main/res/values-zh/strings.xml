@@ -12,7 +12,7 @@
     <string name="menu_restore">恢复</string>
     <string name="menu_import_old">导入阅读数据</string>
     <string name="webdav_cache_backup">离线缓存书籍备份</string>
-    <string name="webdav_cache_backup_s">导出本地同时备份到 legado 文件夹下的 exports 目录</string>
+    <string name="webdav_cache_backup_s">导出本地同时备份到 shimmer 文件夹下的 exports 目录</string>
     <string name="backup_path">备份路径</string>
     <string name="select_backup_path">请选择备份路径</string>
     <string name="menu_import_old_version">导入旧版数据</string>
@@ -1721,8 +1721,6 @@
     <string name="discover_group_other">其他</string>
     <string name="ai_view_log">查看日志</string>
     <string name="change_book_source_action">更换书源</string>
-    <string name="ai_import_default_skill">安装默认 阅读Shimmer Skill</string>
-    <string name="ai_import_default_skill_summary">从 DandanLLab/legadoSkill 下载真实 SKILL.md</string>
     <string name="ai_skill_prompt">管理 Skill</string>
     <string name="ai_skill_prompt_hint">粘贴 SKILL.md 内容</string>
     <string name="ai_skill_prompt_summary_empty">未安装 Skill</string>
@@ -2989,6 +2987,7 @@ bookUrl：%7$s
     <string name="ra_chapter_label">章节</string>
     <string name="ra_prev_chapter">上一章</string>
     <string name="ra_next_chapter_short">下一章</string>
+    <string name="ra_follow_reading">跟随</string>
     <string name="ra_select_voice">选择发言人</string>
     <string name="login_ui_v2_render_error">登录界面加载失败，loginUi(state) 必须返回 {rows:[...]}，详情见日志</string>
     <string name="login_ui_v2_action_error">登录操作失败：%1$s</string>

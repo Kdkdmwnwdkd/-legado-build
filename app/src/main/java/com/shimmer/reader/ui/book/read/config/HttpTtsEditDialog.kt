@@ -1,0 +1,472 @@
+package com.shimmer.reader.ui.book.read.config
+
+import android.app.Activity.RESULT_OK
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.annotation.StringRes
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.fragment.app.viewModels
+import com.shimmer.reader.R
+import com.shimmer.reader.base.BaseDialogFragment
+import com.shimmer.reader.data.entities.HttpTTS
+import com.shimmer.reader.help.config.AppConfig
+import com.shimmer.reader.lib.theme.accentColor
+import com.shimmer.reader.lib.theme.composeActionRadius
+import com.shimmer.reader.lib.theme.composePanelRadius
+import com.shimmer.reader.lib.theme.primaryTextColor
+import com.shimmer.reader.lib.theme.secondaryTextColor
+import com.shimmer.reader.lib.theme.uiTypeface
+import com.shimmer.reader.ui.about.AppLogDialog
+import com.shimmer.reader.ui.code.CodeEditActivity
+import com.shimmer.reader.ui.login.SourceLoginActivity
+import com.shimmer.reader.ui.widget.compose.showComposeConfirmDialog
+import com.shimmer.reader.utils.GSON
+import com.shimmer.reader.utils.ColorUtils
+import com.shimmer.reader.utils.dpToPx
+import com.shimmer.reader.utils.isJsonArray
+import com.shimmer.reader.utils.isJsonObject
+import com.shimmer.reader.utils.sendToClip
+import com.shimmer.reader.utils.setLayout
+import com.shimmer.reader.utils.showDialogFragment
+import com.shimmer.reader.utils.showHelp
+import com.shimmer.reader.utils.startActivity
+import com.shimmer.reader.utils.toastOnUi
+
+class HttpTtsEditDialog() : BaseDialogFragment(0) {
+
+    constructor(id: Long) : this() {
+        arguments = Bundle().apply {
+            putLong("id", id)
+        }
+    }
+
+    private val viewModel by viewModels<HttpTtsEditViewModel>()
+    private var draft by mutableStateOf(HttpTtsEditDraft())
+    private var focusedField by mutableStateOf(HttpTtsField.Url)
+
+    private val textEditLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            result.data?.getStringExtra("text")?.let { text ->
+                draft = draft.withField(focusedField, text)
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                HttpTtsEditScreen(
+                    draft = draft,
+                    onDraftChange = { draft = it },
+                    onFocus = { focusedField = it },
+                    onSave = ::save,
+                    onLogin = ::saveAndLogin,
+                    onFullEdit = ::openFullEdit,
+                    onCopy = { context?.sendToClip(GSON.toJson(draft.toHttpTts(viewModel.id))) },
+                    onPaste = { viewModel.importFromClip { draft = it.toDraft() } },
+                    onShowLoginHeader = ::showLoginHeader,
+                    onClearLoginHeader = {
+                        val tts = draft.toHttpTts(viewModel.id)
+                        tts.removeLoginHeader()
+                        draft = tts.toDraft()
+                    },
+                    onLog = { showDialogFragment<AppLogDialog>() },
+                    onHelp = { showHelp("httpTTSHelp") },
+                    onClose = { dismiss() }
+                )
+            }
+        }
+    }
+
+    override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.initData(arguments) {
+            draft = it.toDraft()
+        }
+    }
+
+    private fun save() {
+        val tts = draft.toHttpTts(viewModel.id)
+        if (!validate(tts)) return
+        viewModel.save(tts) {
+            dismissAllowingStateLoss()
+            toastOnUi(R.string.toast_save_success)
+        }
+    }
+
+    private fun saveAndLogin() {
+        val tts = draft.toHttpTts(viewModel.id)
+        if (!validate(tts)) return
+        if (tts.loginUrl.isNullOrBlank()) {
+            toastOnUi(R.string.toast_login_url_empty)
+            return
+        }
+        viewModel.save(tts) {
+            startActivity<SourceLoginActivity> {
+                putExtra("type", "httpTts")
+                putExtra("key", tts.id.toString())
+            }
+        }
+    }
+
+    private fun validate(httpTTS: HttpTTS): Boolean {
+        if (httpTTS.name.isBlank()) {
+            toastOnUi(R.string.toast_name_empty)
+            return false
+        }
+        fun validJsonCatalog(value: String): Boolean {
+            val text = value.trim()
+            return text.isBlank() || text.isJsonArray() || text.isJsonObject()
+        }
+        if (!validJsonCatalog(httpTTS.speakersJson)) {
+            toastOnUi(R.string.toast_speaker_json_invalid)
+            return false
+        }
+        if (!validJsonCatalog(httpTTS.emotionsJson)) {
+            toastOnUi(R.string.toast_emotion_json_invalid)
+            return false
+        }
+        return true
+    }
+
+    private fun openFullEdit() {
+        val currentText = draft.field(focusedField)
+        val intent = Intent(requireActivity(), CodeEditActivity::class.java).apply {
+            putExtra("text", currentText)
+            putExtra("title", getString(focusedField.labelRes))
+            putExtra("cursorPosition", currentText.length)
+        }
+        textEditLauncher.launch(intent)
+    }
+
+    private fun showLoginHeader() {
+        showComposeConfirmDialog(
+            title = getString(R.string.login_header),
+            message = draft.toHttpTts(viewModel.id).getLoginHeader(),
+            showNegative = false,
+            messageInContent = true,
+            onPositive = {}
+        )
+    }
+
+    private fun isSame(): Boolean {
+        val old = viewModel.httpTTS ?: return draft.name.isBlank() && draft.url.isBlank()
+        return draft.toHttpTts(viewModel.id).equal(old)
+    }
+
+    override fun dismiss() {
+        if (!isSame()) {
+            showComposeConfirmDialog(
+                title = getString(R.string.exit),
+                message = getString(R.string.exit_no_save),
+                positiveText = getString(R.string.yes),
+                negativeText = getString(R.string.no),
+                onPositive = {},
+                onNegative = { dismissWithoutConfirm() }
+            )
+        } else {
+            super.dismiss()
+        }
+    }
+
+    private fun dismissWithoutConfirm() {
+        super.dismiss()
+    }
+}
+
+private enum class HttpTtsField(@StringRes val labelRes: Int) {
+    Name(R.string.http_tts_field_name),
+    Speakers(R.string.http_tts_field_speakers),
+    Emotions(R.string.http_tts_field_emotions),
+    Url(R.string.http_tts_field_url),
+    ContentType(R.string.http_tts_field_content_type),
+    ConcurrentRate(R.string.http_tts_field_concurrent_rate),
+    SynthesisThreadCount(R.string.http_tts_field_thread_count),
+    LoginUrl(R.string.http_tts_field_login_url),
+    LoginUi(R.string.http_tts_field_login_ui),
+    LoginCheckJs(R.string.http_tts_field_login_js),
+    Header(R.string.http_tts_field_header),
+    JsLib(R.string.http_tts_field_js_lib)
+}
+
+private data class HttpTtsEditDraft(
+    val name: String = "",
+    val speakersJson: String = "",
+    val emotionsJson: String = "",
+    val url: String = "",
+    val contentType: String = "",
+    val concurrentRate: String = "0",
+    val synthesisThreadCount: String = "1",
+    val loginUrl: String = "",
+    val loginUi: String = "",
+    val loginCheckJs: String = "",
+    val header: String = "",
+    val jsLib: String = ""
+) {
+    fun field(field: HttpTtsField): String = when (field) {
+        HttpTtsField.Name -> name
+        HttpTtsField.Speakers -> speakersJson
+        HttpTtsField.Emotions -> emotionsJson
+        HttpTtsField.Url -> url
+        HttpTtsField.ContentType -> contentType
+        HttpTtsField.ConcurrentRate -> concurrentRate
+        HttpTtsField.SynthesisThreadCount -> synthesisThreadCount
+        HttpTtsField.LoginUrl -> loginUrl
+        HttpTtsField.LoginUi -> loginUi
+        HttpTtsField.LoginCheckJs -> loginCheckJs
+        HttpTtsField.Header -> header
+        HttpTtsField.JsLib -> jsLib
+    }
+
+    fun withField(field: HttpTtsField, value: String): HttpTtsEditDraft = when (field) {
+        HttpTtsField.Name -> copy(name = value)
+        HttpTtsField.Speakers -> copy(speakersJson = value)
+        HttpTtsField.Emotions -> copy(emotionsJson = value)
+        HttpTtsField.Url -> copy(url = value)
+        HttpTtsField.ContentType -> copy(contentType = value)
+        HttpTtsField.ConcurrentRate -> copy(concurrentRate = value)
+        HttpTtsField.SynthesisThreadCount -> copy(synthesisThreadCount = value)
+        HttpTtsField.LoginUrl -> copy(loginUrl = value)
+        HttpTtsField.LoginUi -> copy(loginUi = value)
+        HttpTtsField.LoginCheckJs -> copy(loginCheckJs = value)
+        HttpTtsField.Header -> copy(header = value)
+        HttpTtsField.JsLib -> copy(jsLib = value)
+    }
+
+    fun toHttpTts(id: Long?): HttpTTS {
+        return HttpTTS(
+            id = id ?: System.currentTimeMillis(),
+            name = name,
+            url = url,
+            contentType = contentType,
+            concurrentRate = concurrentRate,
+            synthesisThreadCount = synthesisThreadCount.toIntOrNull()?.coerceIn(1, 8) ?: 1,
+            loginUrl = loginUrl,
+            loginUi = loginUi,
+            loginCheckJs = loginCheckJs,
+            header = header,
+            jsLib = jsLib,
+            speakersJson = speakersJson,
+            emotionsJson = emotionsJson
+        )
+    }
+}
+
+private fun HttpTTS.toDraft(): HttpTtsEditDraft {
+    return HttpTtsEditDraft(
+        name = name,
+        speakersJson = speakersJson,
+        emotionsJson = emotionsJson,
+        url = url,
+        contentType = contentType.orEmpty(),
+        concurrentRate = concurrentRate.orEmpty(),
+        synthesisThreadCount = synthesisThreadCount.coerceIn(1, 8).toString(),
+        loginUrl = loginUrl.orEmpty(),
+        loginUi = loginUi.orEmpty(),
+        loginCheckJs = loginCheckJs.orEmpty(),
+        header = header.orEmpty(),
+        jsLib = jsLib.orEmpty()
+    )
+}
+
+@Composable
+private fun HttpTtsEditScreen(
+    draft: HttpTtsEditDraft,
+    onDraftChange: (HttpTtsEditDraft) -> Unit,
+    onFocus: (HttpTtsField) -> Unit,
+    onSave: () -> Unit,
+    onLogin: () -> Unit,
+    onFullEdit: () -> Unit,
+    onCopy: () -> Unit,
+    onPaste: () -> Unit,
+    onShowLoginHeader: () -> Unit,
+    onClearLoginHeader: () -> Unit,
+    onLog: () -> Unit,
+    onHelp: () -> Unit,
+    onClose: () -> Unit
+) {
+    val colors = rememberHttpTtsEditColors()
+    val context = LocalContext.current
+    CompositionLocalProvider(
+        LocalTextStyle provides LocalTextStyle.current.copy(fontFamily = FontFamily(context.uiTypeface()))
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = colors.page,
+            shape = RoundedCornerShape(context.composePanelRadius())
+        ) {
+            Column(modifier = Modifier.fillMaxSize().padding(16.dp).imePadding()) {
+            Row {
+                Text(
+                    text = stringResource(R.string.http_tts_title),
+                    color = colors.text,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.weight(1f)
+                )
+                TextButton(onClick = onFullEdit) { Text(stringResource(R.string.fullscreen), color = colors.accent) }
+                TextButton(onClick = onSave) { Text(stringResource(R.string.action_save), color = colors.accent) }
+                TextButton(onClick = onClose) { Text(stringResource(R.string.close), color = colors.subText) }
+            }
+            Row(
+                modifier = Modifier.horizontalScroll(rememberScrollState()).padding(top = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                HeaderAction(stringResource(R.string.login), colors, onLogin)
+                HeaderAction(stringResource(R.string.http_tts_action_copy), colors, onCopy)
+                HeaderAction(stringResource(R.string.http_tts_action_paste), colors, onPaste)
+                HeaderAction(stringResource(R.string.login_header), colors, onShowLoginHeader)
+                HeaderAction(
+                    stringResource(R.string.http_tts_action_clear_login_header),
+                    colors,
+                    onClearLoginHeader
+                )
+                HeaderAction(stringResource(R.string.log), colors, onLog)
+                HeaderAction(stringResource(R.string.help), colors, onHelp)
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 12.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                EditField(HttpTtsField.Name, draft.name, { onDraftChange(draft.copy(name = it)) }, onFocus, singleLine = true)
+                EditField(HttpTtsField.Speakers, draft.speakersJson, { onDraftChange(draft.copy(speakersJson = it)) }, onFocus, minLines = 4)
+                EditField(HttpTtsField.Emotions, draft.emotionsJson, { onDraftChange(draft.copy(emotionsJson = it)) }, onFocus, minLines = 3)
+                SelectionContainer {
+                    Text(
+                        text = stringResource(R.string.http_tts_speakers_hint),
+                        color = colors.subText,
+                        fontSize = 12.sp,
+                        lineHeight = 18.sp
+                    )
+                }
+                EditField(HttpTtsField.Url, draft.url, { onDraftChange(draft.copy(url = it)) }, onFocus, minLines = 4)
+                EditField(HttpTtsField.ContentType, draft.contentType, { onDraftChange(draft.copy(contentType = it)) }, onFocus, singleLine = true)
+                EditField(HttpTtsField.ConcurrentRate, draft.concurrentRate, { onDraftChange(draft.copy(concurrentRate = it)) }, onFocus, singleLine = true)
+                EditField(HttpTtsField.SynthesisThreadCount, draft.synthesisThreadCount, { onDraftChange(draft.copy(synthesisThreadCount = it)) }, onFocus, singleLine = true)
+                EditField(HttpTtsField.LoginUrl, draft.loginUrl, { onDraftChange(draft.copy(loginUrl = it)) }, onFocus, minLines = 2)
+                EditField(HttpTtsField.LoginUi, draft.loginUi, { onDraftChange(draft.copy(loginUi = it)) }, onFocus, minLines = 3)
+                EditField(HttpTtsField.LoginCheckJs, draft.loginCheckJs, { onDraftChange(draft.copy(loginCheckJs = it)) }, onFocus, minLines = 3)
+                EditField(HttpTtsField.Header, draft.header, { onDraftChange(draft.copy(header = it)) }, onFocus, minLines = 3)
+                EditField(HttpTtsField.JsLib, draft.jsLib, { onDraftChange(draft.copy(jsLib = it)) }, onFocus, minLines = 4)
+                Spacer(modifier = Modifier.height(18.dp))
+            }
+            }
+        }
+    }
+}
+
+@Composable
+private fun HeaderAction(text: String, colors: HttpTtsEditColors, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        color = colors.card,
+        shape = RoundedCornerShape(LocalContext.current.composeActionRadius()),
+        border = BorderStroke(1.dp, colors.stroke)
+    ) {
+        Text(text, color = colors.text, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp))
+    }
+}
+
+@Composable
+private fun EditField(
+    field: HttpTtsField,
+    value: String,
+    onValueChange: (String) -> Unit,
+    onFocus: (HttpTtsField) -> Unit,
+    singleLine: Boolean = false,
+    minLines: Int = 2
+) {
+    val colors = rememberHttpTtsEditColors()
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(stringResource(field.labelRes)) },
+        singleLine = singleLine,
+        minLines = if (singleLine) 1 else minLines,
+        modifier = Modifier
+            .fillMaxWidth()
+            .onFocusChanged {
+                if (it.isFocused) onFocus(field)
+            },
+        shape = RoundedCornerShape(LocalContext.current.composeActionRadius()),
+        supportingText = when (field) {
+            HttpTtsField.Speakers -> ({ Text(stringResource(R.string.http_tts_tone_hint), color = colors.subText) })
+            HttpTtsField.Emotions -> ({ Text(stringResource(R.string.http_tts_emotion_hint), color = colors.subText) })
+            else -> null
+        }
+    )
+}
+
+private data class HttpTtsEditColors(
+    val page: Color,
+    val card: Color,
+    val text: Color,
+    val subText: Color,
+    val stroke: Color,
+    val accent: Color
+)
+
+@Composable
+private fun rememberHttpTtsEditColors(): HttpTtsEditColors {
+    val context = LocalContext.current
+    val night = AppConfig.isNightTheme
+    return HttpTtsEditColors(
+        page = Color(if (night) 0xff15171b.toInt() else 0xffffffff.toInt()),
+        card = Color(if (night) 0xff20242a.toInt() else 0xfff6f7fa.toInt()),
+        text = Color(context.primaryTextColor),
+        subText = Color(context.secondaryTextColor),
+        stroke = Color(if (night) 0x26ffffff else 0x18000000),
+        accent = Color(ColorUtils.blendColors(context.accentColor, if (night) 0xffffffff.toInt() else 0xff000000.toInt(), 0.04f))
+    )
+}

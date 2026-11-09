@@ -14,7 +14,7 @@
     android:paddingEnd="10dp"
     android:paddingBottom="10dp">
 
-    <io.legado.app.ui.widget.image.CoverImageView
+    <com.shimmer.reader.ui.widget.image.CoverImageView
         android:id="@+id/iv_cover"
         android:layout_width="74dp"
         android:layout_height="102dp"

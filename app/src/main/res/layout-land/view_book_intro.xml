@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<io.legado.app.ui.widget.text.ScrollTextView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.shimmer.reader.ui.widget.text.ScrollTextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tv_intro"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

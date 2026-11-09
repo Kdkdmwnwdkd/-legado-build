@@ -24,12 +24,12 @@
 |java|当前类|
 |baseUrl|当前url,String  |
 |result|上一步的结果|
-|book|[书籍类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/data/entities/Book.kt)|
-|rssArticle|[Article类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/data/entities/RssArticle.kt)|
-|chapter|[章节类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/data/entities/BookChapter.kt)|
-|source|[基础书源类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/data/entities/BaseSource.kt)|
-|cookie|[cookie操作类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/help/http/CookieStore.kt)| 
-|cache|[缓存操作类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/help/CacheManager.kt)|
+|book|[书籍类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/data/entities/Book.kt)|
+|rssArticle|[Article类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/data/entities/RssArticle.kt)|
+|chapter|[章节类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/data/entities/BookChapter.kt)|
+|source|[基础书源类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/data/entities/BaseSource.kt)|
+|cookie|[cookie操作类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/help/http/CookieStore.kt)| 
+|cache|[缓存操作类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/help/CacheManager.kt)|
 |title|章节当前标题 String|
 |src| 请求返回的源码|
 |nextChapterUrl|下一章节url|
@@ -38,7 +38,7 @@
 ## 当前类对象的可使用的部分方法
 函数带有默认值的函数会自动重载，可以不填。  
 
-### [RssJsExtensions](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/ui/rss/read/RssJsExtensions.kt)独有函数
+### [RssJsExtensions](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/ui/rss/read/RssJsExtensions.kt)独有函数
 > 在订阅源`shouldOverrideUrlLoading`规则中使用  
 > 被下方`SourceLoginJsExtensions`类包含，也能使用这些函数  
 > 订阅添加跳转url拦截, js, 返回true拦截,js变量url,可以通过js打开url  
@@ -73,7 +73,7 @@ java.open(name: String, url: String? = null, title: String? = null, origin: Stri
 java.showPhoto(src: String)
 ```
 
-### [SourceLoginJsExtensions](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/ui/login/SourceLoginJsExtensions.kt)独有函数
+### [SourceLoginJsExtensions](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/ui/login/SourceLoginJsExtensions.kt)独有函数
 > 只在`登录界面按钮`被触发、`界面按钮的回调`事件、`发现按钮`函数、`图片链接click键`、`购买规则`中有效
 ```js
 //用内置浏览器打开本地html
@@ -101,7 +101,7 @@ java.refreshExplore()
 ```
 [showBrowser](https://github.com/Luoyacheng/legado/wiki/java.showBrowser%E5%87%BD%E6%95%B0%E4%BB%8B%E7%BB%8D)函数介绍
 
-### [AnalyzeUrl](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/model/analyzeRule/AnalyzeUrl.kt) 部分函数
+### [AnalyzeUrl](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/model/analyzeRule/AnalyzeUrl.kt) 部分函数
 > js中通过java.调用,只在`登录检查JS`规则中有效
 ```js
 initUrl() //重新解析url,可以用于登录检测js登录后重新解析url重新访问
@@ -110,7 +110,7 @@ getStrResponse( jsStr: String? = null, sourceRegex: String? = null) //返回访�
 getResponse(): Response //返回访问结果,网络朗读引擎采用的是这个,调用登录后在调用这方法可以重新访问,参考阿里云登录检测
 ```
 
-### [AnalyzeRule](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/model/analyzeRule/AnalyzeRule.kt) 部分函数
+### [AnalyzeRule](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/model/analyzeRule/AnalyzeRule.kt) 部分函数
 * 获取文本/文本列表
 > `mContent` 待解析源代码，默认为当前页面  
 > `isUrl` 链接标识，默认为`false`
@@ -148,9 +148,9 @@ java.get(key)
 java.put(key, value)
 ```
 
-### [js扩展类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/help/JsExtensions.kt) 部分函数
+### [js扩展类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/help/JsExtensions.kt) 部分函数
 
-* 链接解析[JsURL](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/utils/JsURL.kt)　
+* 链接解析[JsURL](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/utils/JsURL.kt)　
 ```js
 java.toURL(url: String, baseUrl: String? = null): JsURL
 ```
@@ -330,7 +330,7 @@ readTxtFile(path: String): String
 deleteFile(path: String) 
 ```
 
-### [js加解密类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/help/JsEncodeUtils.kt) 部分函数
+### [js加解密类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/help/JsEncodeUtils.kt) 部分函数
 
 > 提供在JavaScript环境中快捷调用crypto算法的函数，由[hutool-crypto](https://www.hutool.cn/docs/#/crypto/概述)实现  
 > 由于兼容性问题，hutool-crypto当前版本为5.8.22  

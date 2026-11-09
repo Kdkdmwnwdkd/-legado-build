@@ -17,7 +17,7 @@
             android:layout_marginTop="12dp"
             android:orientation="horizontal">
 
-            <io.legado.app.ui.widget.checkbox.SmoothCheckBox
+            <com.shimmer.reader.ui.widget.checkbox.SmoothCheckBox
                 android:id="@+id/cb_all_export"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
@@ -40,7 +40,7 @@
             android:layout_marginTop="12dp"
             android:orientation="horizontal">
 
-            <io.legado.app.ui.widget.checkbox.SmoothCheckBox
+            <com.shimmer.reader.ui.widget.checkbox.SmoothCheckBox
                 android:id="@+id/cb_select_export"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
@@ -57,7 +57,7 @@
 
         </LinearLayout>
 
-        <io.legado.app.ui.widget.text.TextInputLayout
+        <com.shimmer.reader.ui.widget.text.TextInputLayout
             android:id="@+id/ly_et_epub_filename"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -69,7 +69,7 @@
             app:endIconMode="custom"
             app:helperText="Variable: name, author, epubIndex">
 
-            <io.legado.app.lib.theme.view.ThemeEditText
+            <com.shimmer.reader.lib.theme.view.ThemeEditText
                 android:id="@+id/et_epub_filename"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -77,16 +77,16 @@
                 android:inputType="text"
                 tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
-        </io.legado.app.ui.widget.text.TextInputLayout>
+        </com.shimmer.reader.ui.widget.text.TextInputLayout>
 
 
-        <io.legado.app.ui.widget.text.TextInputLayout
+        <com.shimmer.reader.ui.widget.text.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="@string/file_contains_number">
 
-            <io.legado.app.lib.theme.view.ThemeEditText
+            <com.shimmer.reader.lib.theme.view.ThemeEditText
                 android:id="@+id/et_epub_size"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -94,21 +94,21 @@
                 android:maxLength="6"
                 tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
-        </io.legado.app.ui.widget.text.TextInputLayout>
+        </com.shimmer.reader.ui.widget.text.TextInputLayout>
 
-        <io.legado.app.ui.widget.text.TextInputLayout
+        <com.shimmer.reader.ui.widget.text.TextInputLayout
             android:id="@+id/ly_et_input_scope"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/export_chapter_index">
 
-            <io.legado.app.lib.theme.view.ThemeEditText
+            <com.shimmer.reader.lib.theme.view.ThemeEditText
                 android:id="@+id/et_input_scope"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
-        </io.legado.app.ui.widget.text.TextInputLayout>
+        </com.shimmer.reader.ui.widget.text.TextInputLayout>
 
     </LinearLayout>
 

@@ -1,0 +1,142 @@
+package com.shimmer.reader.ui.book.character
+
+import android.app.Activity
+import android.os.Bundle
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.lifecycle.lifecycleScope
+import androidx.viewbinding.ViewBinding
+import com.shimmer.reader.R
+import com.shimmer.reader.base.BaseActivity
+import com.shimmer.reader.data.appDb
+import com.shimmer.reader.data.entities.Book
+import com.shimmer.reader.data.entities.BookCharacter
+import com.shimmer.reader.help.character.BookCharacterIdentityMigrator
+import com.shimmer.reader.help.readaloud.ReadAloudConfigChangeNotifier
+import com.shimmer.reader.lib.dialogs.alert
+import com.shimmer.reader.model.ReadBook
+import com.shimmer.reader.ui.book.character.compose.CharacterManageScreen
+import com.shimmer.reader.utils.startActivity
+import com.shimmer.reader.utils.toastOnUi
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class BookCharacterManageActivity : BaseActivity<ViewBinding>(
+    fullScreen = false,
+    imageBg = false
+) {
+
+    private lateinit var composeView: ComposeView
+    override val binding: ViewBinding by lazy {
+        composeView = ComposeView(this)
+        SimpleViewBinding(composeView)
+    }
+
+    private var bookUrl: String = ""
+    private var characterBookKey: String = ""
+    private var book: Book? = null
+    private var characters by mutableStateOf<List<BookCharacter>>(emptyList())
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        bookUrl = intent.getStringExtra(EXTRA_BOOK_URL)
+            ?: ReadBook.book?.bookUrl
+            ?: ""
+        book = appDb.bookDao.getBook(bookUrl)
+        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        composeView.setContent {
+            CharacterManageScreen(
+                bookName = book?.name.orEmpty(),
+                characters = characters,
+                onBack = ::finish,
+                onAdd = { openEdit() },
+                onOpenCard = { openCard(it.id) },
+                onEdit = { openEdit(it.id) },
+                onDelete = ::delete,
+                onOpenRelations = ::openRelations
+            )
+        }
+        load()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        load()
+    }
+
+    private fun load() {
+        if (bookUrl.isBlank()) {
+            characters = emptyList()
+            return
+        }
+        lifecycleScope.launch {
+            val data = withContext(IO) {
+                val key = BookCharacterIdentityMigrator.migrate(book)
+                key to appDb.bookCharacterDao.characters(key)
+            }
+            characterBookKey = data.first
+            characters = data.second
+        }
+    }
+
+    private fun openCard(id: Long) {
+        if (bookUrl.isBlank() || id <= 0L) {
+            toastOnUi(R.string.toast_character_not_exist)
+            return
+        }
+        startActivity<BookCharacterCardActivity> {
+            putExtra(EXTRA_BOOK_URL, bookUrl)
+            putExtra(EXTRA_CHARACTER_BOOK_KEY, characterBookKey)
+            putExtra(EXTRA_CHARACTER_ID, id)
+        }
+    }
+
+    private fun openEdit(id: Long = 0L) {
+        if (bookUrl.isBlank()) {
+            toastOnUi(R.string.toast_book_not_exist)
+            return
+        }
+        startActivity<BookCharacterEditActivity> {
+            putExtra(EXTRA_BOOK_URL, bookUrl)
+            putExtra(EXTRA_CHARACTER_BOOK_KEY, characterBookKey)
+            if (id > 0) putExtra(EXTRA_CHARACTER_ID, id)
+        }
+    }
+
+    private fun openRelations() {
+        if (characters.size < 2) {
+            toastOnUi(R.string.toast_need_two_characters_relation)
+            return
+        }
+        startActivity<BookCharacterRelationActivity> {
+            putExtra(EXTRA_BOOK_URL, bookUrl)
+            putExtra(EXTRA_CHARACTER_BOOK_KEY, characterBookKey)
+        }
+    }
+
+    private fun delete(character: BookCharacter) {
+        alert("删除角色") {
+            setMessage("确定删除「${character.displayName()}」？相关关系也会删除。")
+            yesButton {
+                lifecycleScope.launch {
+                    withContext(IO) {
+                        appDb.bookCharacterDao.deleteCharacterWithRelations(character)
+                    }
+                    ReadAloudConfigChangeNotifier.notifySpeech()
+                    load()
+                    setResult(Activity.RESULT_OK)
+                }
+            }
+            noButton()
+        }
+    }
+
+    companion object {
+        const val EXTRA_BOOK_URL = "bookUrl"
+        const val EXTRA_CHARACTER_BOOK_KEY = "characterBookKey"
+        const val EXTRA_CHARACTER_ID = "characterId"
+    }
+}

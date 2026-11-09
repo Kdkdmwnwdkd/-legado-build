@@ -1,4 +1,4 @@
-/** https://github.com/Kdkdmwnwdkd/-legado-build/tree/main/app/src/main/java/io/legado/app/data/entities */
+/** https://github.com/Kdkdmwnwdkd/-legado-build/tree/main/app/src/main/java/com/shimmer/reader/data/entities */
 type BaseSource = {
   /**
    * 并发率

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.book.search.SearchActivity">
 
-    <io.legado.app.ui.widget.SearchView
+    <com.shimmer.reader.ui.widget.SearchView
         android:id="@+id/search_view"
         android:layout_width="0dp"
         android:layout_height="42dp"
@@ -44,13 +44,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <io.legado.app.ui.widget.anima.RefreshProgressBar
+    <com.shimmer.reader.ui.widget.anima.RefreshProgressBar
         android:id="@+id/refresh_progress_bar"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         app:layout_constraintTop_toBottomOf="@id/search_view" />
 
-    <io.legado.app.ui.widget.dynamiclayout.DynamicFrameLayout
+    <com.shimmer.reader.ui.widget.dynamiclayout.DynamicFrameLayout
         android:id="@+id/content_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -63,7 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </io.legado.app.ui.widget.dynamiclayout.DynamicFrameLayout>
+    </com.shimmer.reader.ui.widget.dynamiclayout.DynamicFrameLayout>
 
     <FrameLayout
         android:id="@+id/ll_input_help"

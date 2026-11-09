@@ -187,7 +187,7 @@ Method = POST
 
 
 * 需声明`io.legado.READ_WRITE`权限
-* `providerHost`为`包名.readerProvider`, 如`io.legado.app.release.readerProvider`,不同包的地址不同,防止冲突安装失败
+* `providerHost`为`包名.readerProvider`, 如`com.shimmer.reader.release.readerProvider`,不同包的地址不同,防止冲突安装失败
 * 以下出现的`providerHost`请自行替换
 
 #### 插入单个书源or订阅源

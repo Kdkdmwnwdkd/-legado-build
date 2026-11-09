@@ -15,7 +15,7 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleTextAppearance="@style/ToolbarTitle" />
 
-    <io.legado.app.ui.widget.code.CodeView
+    <com.shimmer.reader.ui.widget.code.CodeView
         android:id="@+id/code_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

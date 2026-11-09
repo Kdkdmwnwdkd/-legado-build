@@ -13,7 +13,7 @@
     <string name="menu_restore">Restore</string>
     <string name="menu_import_old">Import 阅读Shimmer data</string>
     <string name="webdav_cache_backup">Offline cache book backup</string>
-    <string name="webdav_cache_backup_s">Export to local and back up to the exports directory under the legado folder</string>
+    <string name="webdav_cache_backup_s">Export to local and back up to the exports directory under the shimmer folder</string>
     <string name="backup_path">Backup to</string>
     <string name="select_backup_path">Please select a backup path.</string>
     <string name="menu_import_old_version">Import legacy data</string>
@@ -1952,8 +1952,6 @@ Note: custom buttons are meant for reading and helper actions; do not modify the
     <string name="is_system_tts_no_export">The system TTS engine cannot be exported</string>
     <string name="click_image_way">Image tap action</string>
     <string name="auto_update_summary">Check for app updates daily</string>
-    <string name="ai_import_default_skill">Install default 阅读Shimmer skill</string>
-    <string name="ai_import_default_skill_summary">Download a real SKILL.md from DandanLLab/legadoSkill</string>
     <string name="ai_skill_prompt">Manage skills</string>
     <string name="ai_skill_prompt_hint">Paste SKILL.md content</string>
     <string name="ai_skill_prompt_summary_empty">No skill installed</string>
@@ -3050,6 +3048,7 @@ Type &quot;%2$s&quot; to confirm.</string>
     <string name="ra_chapter_label">Chapter</string>
     <string name="ra_prev_chapter">Previous chapter</string>
     <string name="ra_next_chapter_short">Next chapter</string>
+    <string name="ra_follow_reading">Follow</string>
     <string name="ra_select_voice">Select voice</string>
     <string name="login_ui_v2_render_error">Login UI failed to load. loginUi(state) must return {rows:[...]}. See logs.</string>
     <string name="login_ui_v2_action_error">Login action failed: %1$s</string>

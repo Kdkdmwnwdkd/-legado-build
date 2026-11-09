@@ -43,7 +43,7 @@
 
     </FrameLayout>
 
-    <io.legado.app.ui.widget.text.AccentBgTextView
+    <com.shimmer.reader.ui.widget.text.AccentBgTextView
         android:id="@+id/tv_ok"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

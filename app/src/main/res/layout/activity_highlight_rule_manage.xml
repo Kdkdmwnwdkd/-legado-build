@@ -7,13 +7,13 @@
     android:focusableInTouchMode="true"
     android:orientation="vertical">
 
-    <io.legado.app.ui.widget.TitleBar
+    <com.shimmer.reader.ui.widget.TitleBar
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="@string/highlight_rule_manage" />
 
-    <io.legado.app.ui.widget.SearchView
+    <com.shimmer.reader.ui.widget.SearchView
         android:id="@+id/search_view"
         android:layout_width="match_parent"
         android:layout_height="48dp"

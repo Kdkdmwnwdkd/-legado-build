@@ -1002,12 +1002,12 @@ $env:GRADLE_OPTS='-Dorg.gradle.jvmargs=-Xmx6g'
   'ORG_GRADLE_PROJECT_kotlin.daemon.jvmargs', '-Xmx6g', 'Process'
 )
 .\gradlew.bat :app:testAppReleaseUnitTest `
-  --tests 'io.legado.app.constant.PageAnimationSpeedTest' `
-  --tests 'io.legado.app.help.book.EpubContentCachePolicyTest' `
-  --tests 'io.legado.app.help.config.EpubReadEnginePolicyTest' `
-  --tests 'io.legado.app.model.localBook.epubcore.*' `
-  --tests 'io.legado.app.ui.book.read.ReadBookStartupPolicyTest' `
-  --tests 'io.legado.app.ui.book.read.epub.*' `
+  --tests 'com.shimmer.reader.constant.PageAnimationSpeedTest' `
+  --tests 'com.shimmer.reader.help.book.EpubContentCachePolicyTest' `
+  --tests 'com.shimmer.reader.help.config.EpubReadEnginePolicyTest' `
+  --tests 'com.shimmer.reader.model.localBook.epubcore.*' `
+  --tests 'com.shimmer.reader.ui.book.read.ReadBookStartupPolicyTest' `
+  --tests 'com.shimmer.reader.ui.book.read.epub.*' `
   --no-daemon --no-parallel --max-workers=1
 .\gradlew.bat :app:compileAppReleaseKotlin `
   --no-daemon --no-parallel --max-workers=1
@@ -1025,7 +1025,7 @@ powershell -ExecutionPolicy Bypass -File `
 powershell -ExecutionPolicy Bypass -File `
   output/playwright/run-epub-annotation-probe.ps1
 .\gradlew.bat :app:connectedAppDebugAndroidTest `
-  -Pandroid.testInstrumentationRunnerArguments.class=io.legado.app.ui.book.read.epub.EpubDirectWebResourceRenderTest `
+  -Pandroid.testInstrumentationRunnerArguments.class=com.shimmer.reader.ui.book.read.epub.EpubDirectWebResourceRenderTest `
   --no-daemon --no-parallel --max-workers=1
 ```
 
@@ -1131,7 +1131,7 @@ Gradle 相关测试、全量 Lint 和签名构建成功，用时 `41m 52s`。JVM
 | 交付项 | 验证结果 |
 | --- | --- |
 | 版本 | `3.26.09090108`（`29814788`） |
-| 应用 / ABI | `io.legado.app.Archive`，仅 `arm64-v8a` |
+| 应用 / ABI | `com.shimmer.reader.Archive`，仅 `arm64-v8a` |
 | APK 大小 | 40,611,825 字节 |
 | APK SHA-256 | `8bfd883dfc6d1cd6bd08f64ed2d1de17b9a21d3069ba180992161fea925f4343` |
 | 签名证书 SHA-256 | `d6441f18d3413a81c0e82e51f550c558c5d79213e921b02dec30bd3473d4f2b6` |

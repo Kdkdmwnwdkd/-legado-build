@@ -5,19 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <io.legado.app.ui.book.manga.recyclerview.WebtoonFrame
+    <com.shimmer.reader.ui.book.manga.recyclerview.WebtoonFrame
         android:id="@+id/webtoon_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <io.legado.app.ui.book.manga.recyclerview.WebtoonRecyclerView
+        <com.shimmer.reader.ui.book.manga.recyclerview.WebtoonRecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </io.legado.app.ui.book.manga.recyclerview.WebtoonFrame>
+    </com.shimmer.reader.ui.book.manga.recyclerview.WebtoonFrame>
 
-    <io.legado.app.ui.widget.ReaderInfoBarView
+    <com.shimmer.reader.ui.widget.ReaderInfoBarView
         android:id="@+id/infobar"
         android:layout_width="match_parent"
         android:layout_height="20dp"
@@ -28,7 +28,7 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <io.legado.app.ui.book.read.MangaMenu
+    <com.shimmer.reader.ui.book.read.MangaMenu
         android:id="@+id/manga_menu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -83,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/primaryText" />
 
-            <io.legado.app.ui.widget.text.AccentTextView
+            <com.shimmer.reader.ui.widget.text.AccentTextView
                 android:id="@+id/tv_retry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -1,0 +1,69 @@
+package com.shimmer.reader.lib.prefs
+
+import android.app.Dialog
+import android.os.Bundle
+import android.view.Gravity
+import android.view.WindowManager
+import androidx.appcompat.app.AlertDialog
+import androidx.preference.EditTextPreferenceDialogFragmentCompat
+import androidx.preference.PreferenceDialogFragmentCompat
+import com.shimmer.reader.R
+import com.shimmer.reader.help.config.AppConfig
+import com.shimmer.reader.lib.theme.accentColor
+import com.shimmer.reader.lib.theme.applyUiBodyTypefaceDeep
+import com.shimmer.reader.lib.theme.dialogSurfaceBackground
+import com.shimmer.reader.lib.theme.uiTypeface
+import com.shimmer.reader.utils.dpToPx
+
+class EditTextPreferenceDialog : EditTextPreferenceDialogFragmentCompat() {
+
+    companion object {
+
+        fun newInstance(key: String): EditTextPreferenceDialog {
+            val fragment = EditTextPreferenceDialog()
+            val b = Bundle(1)
+            b.putString(PreferenceDialogFragmentCompat.ARG_KEY, key)
+            fragment.arguments = b
+            return fragment
+        }
+
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState)
+        dialog.window?.setBackgroundDrawable(requireContext().dialogSurfaceBackground)
+        dialog.window?.decorView?.post {
+            (dialog as AlertDialog).run {
+                getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(accentColor)
+                getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(accentColor)
+                getButton(AlertDialog.BUTTON_NEUTRAL)?.setTextColor(accentColor)
+                window?.decorView?.applyUiBodyTypefaceDeep(requireContext().uiTypeface())
+            }
+        }
+        return dialog
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (AppConfig.isEInkMode) {
+            dialog?.window?.let {
+                it.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+                val attr = it.attributes
+                attr.dimAmount = 0.0f
+                attr.windowAnimations = 0
+                it.attributes = attr
+                it.setBackgroundDrawableResource(R.color.transparent)
+                when (attr.gravity) {
+                    Gravity.TOP -> it.decorView.setBackgroundResource(R.drawable.bg_eink_border_bottom)
+                    Gravity.BOTTOM -> it.decorView.setBackgroundResource(R.drawable.bg_eink_border_top)
+                    else -> {
+                        val padding = 2.dpToPx();
+                        it.decorView.setPadding(padding, padding, padding, padding)
+                        it.decorView.setBackgroundResource(R.drawable.bg_eink_border_dialog)
+                    }
+                }
+            }
+        }
+    }
+
+}

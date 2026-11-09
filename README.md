@@ -14,18 +14,18 @@
 
 - [GitHub Releases](https://github.com/Kdkdmwnwdkd/-legado-build/releases)：唯一发布渠道，应用内更新同样读取这里。
 
-安装包名是 `io.legado.app.shimmer`。前缀 `io.legado.app` 沿用自上游，几个分支都这样：
+安装包名是 `com.shimmer.reader`，代码命名空间与安装身份统一，不再使用上游的 `io.legado.app` 前缀：
 
 | 项目 | 包名 |
 | --- | --- |
 | 原版 Legado | `io.legado.app` |
 | 阅读 Sigma | `io.legado.app.release` |
 | 阅读 Archive | `io.legado.app.Archive` |
-| 本项目 | `io.legado.app.shimmer` |
+| 本项目 | `com.shimmer.reader` |
 
-本项目建立在阅读 Archive 之上，所以和它共用同一段命名空间，只用后缀区分安装身份。三者互不覆盖，可同时安装。
+本项目建立在阅读 Archive 之上。早期版本用 `io.legado.app.shimmer`，与上游共用命名空间；从 2026-11-09 起命名空间和包名一起迁到 `com.shimmer.reader`，安装后与前面三个项目互不覆盖，可同时安装。
 
-代码里的 `namespace` 仍是 `io.legado.app`，与 Archive 一致。这不是笔误：书源 JavaScript 可以通过 `Packages.io.legado.app.*` 直接引用内部类，改掉包路径会让这类书源失效，混淆规则也要跟着重写。安装身份的区分已经由 `applicationId` 的后缀完成。
+迁移带来一个兼容性变化：书源 JavaScript 里如果写死了 `Packages.io.legado.app.*`，需要改成 `Packages.com.shimmer.reader.*`。只调用全局函数（`java.ajax`、`base64Decode`、`source`、`book` 等）的书源不受影响，绝大多数字源属于这一类。
 
 最低系统要求 **Android 7.0（API 24）**。旧版本曾声明支持 Android 5.0，但主界面依赖的渲染组件从 2025 年起就要求 API 24，低版本实际无法运行，故不再声明。
 
@@ -41,7 +41,7 @@
 
 ## 主要改动
 
-- 独立包名 `io.legado.app.shimmer`，可与 Legado、阅读 Archive 共存。
+- 独立包名 `com.shimmer.reader`，代码命名空间同步独立，可与 Legado、阅读 Archive 共存。
 - 更新只读本仓库的 GitHub Release。
 - 版本号统一为时间戳（epoch 分钟），本地构建与 CI 产物可直接比较新旧。
 - 签名密钥移出仓库，由 CI Secrets 提供。

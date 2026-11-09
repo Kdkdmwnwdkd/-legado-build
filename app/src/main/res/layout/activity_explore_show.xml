@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.book.explore.ExploreShowActivity">
 
-    <io.legado.app.ui.widget.TitleBar
+    <com.shimmer.reader.ui.widget.TitleBar
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:title="@string/discovery" />
 
-    <io.legado.app.ui.widget.dynamiclayout.DynamicFrameLayout
+    <com.shimmer.reader.ui.widget.dynamiclayout.DynamicFrameLayout
         android:id="@+id/content_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -27,6 +27,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </io.legado.app.ui.widget.dynamiclayout.DynamicFrameLayout>
+    </com.shimmer.reader.ui.widget.dynamiclayout.DynamicFrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

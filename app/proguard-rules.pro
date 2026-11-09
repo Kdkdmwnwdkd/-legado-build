@@ -58,7 +58,7 @@
 }
 
 # 保持js引擎调用的java类
--keep class * extends io.legado.app.help.JsExtensions{*;}
+-keep class * extends com.shimmer.reader.help.JsExtensions{*;}
 # 数据类
 -keep class **.data.entities.**{*;}
 # hutool-core hutool-crypto
@@ -129,7 +129,7 @@ cn.hutool.core.util.**{*;}
 # -keep class com.google.android.exoplayer2.** {*;}
 
 ## 对外提供api
--keep class io.legado.app.api.ReturnData{*;}
+-keep class com.shimmer.reader.api.ReturnData{*;}
 
 # Cronet
 -keepclassmembers class org.chromium.net.X509Util {
