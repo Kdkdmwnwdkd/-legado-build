@@ -25,6 +25,7 @@ class AiMascotView(context: Context) : FrameLayout(context) {
     private var alphaMask: ByteArray? = null
     private var maskWidth = 0
     private var maskHeight = 0
+    private var edgePeek = false
 
     private val floatAmplitude = 4f * resources.displayMetrics.density
     private val tiltLimit = 11f
@@ -80,10 +81,17 @@ class AiMascotView(context: Context) : FrameLayout(context) {
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        if (ev.actionMasked == MotionEvent.ACTION_DOWN && !hitSolid(ev.x, ev.y)) {
+        // 缩在屏幕边上的时候只剩窄窄一条，这时整条都算可点，
+        // 不然人物边缘是透明的，会点不到、也抓不回来。
+        if (!edgePeek && ev.actionMasked == MotionEvent.ACTION_DOWN && !hitSolid(ev.x, ev.y)) {
             return false
         }
         return super.dispatchTouchEvent(ev)
+    }
+
+    /** 收起贴边时放宽触摸判定。 */
+    fun setEdgePeek(peeking: Boolean) {
+        edgePeek = peeking
     }
 
     fun startIdle() {

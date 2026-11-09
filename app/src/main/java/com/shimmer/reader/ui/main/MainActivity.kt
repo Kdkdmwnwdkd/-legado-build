@@ -179,9 +179,13 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
     private var aiFloatingBall: FrameLayout? = null
     private var aiFloatingBallIsMascot = false
     private var aiFloatingBallDragged = false
+    /** 收回屏幕外的程度：0 完整可见，100 只露出一小截。 */
+    private var aiFloatingBallOutPercent = 0
+    private var aiFloatingBallWasCollapsed = false
     private val aiFloatingBallAttachRunnable = Runnable {
         aiFloatingBall?.let { placeAiFloatingBall(it, animate = true, attached = true) }
     }
+    private val aiFloatingBallIdleRunnable = Runnable { collapseAiFloatingBall() }
     private var bottomNavigationConfigSignature: String? = null
     private var bottomNavigationInset = 0
     private val sidebarTouchSlop by lazy {
@@ -198,6 +202,12 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
     companion object {
         private const val EXTRA_TARGET_PAGE = "targetPage"
         private const val TARGET_BOOKSHELF = "bookshelf"
+
+        /** 形象在首页闲置多久之后自己躲到屏幕边上去。 */
+        private const val AI_FLOATING_BALL_IDLE_MS = 12_000L
+
+        /** 收起状态下仍然露在屏幕里的宽度占整个形象宽度的比例。 */
+        private const val AI_FLOATING_BALL_PEEK_RATIO = 0.58f
 
         fun openBookshelf(context: Context) {
             context.startActivity(Intent(context, MainActivity::class.java).apply {
@@ -365,7 +375,11 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
         }
         refreshMainThemeBackground()
         refreshBottomNavigationConfig()
-        aiFloatingBall?.takeIf { it.isVisible }?.let { (it as? AiMascotView)?.startIdle() }
+        aiFloatingBall?.takeIf { it.isVisible }?.let { ball ->
+            (ball as? AiMascotView)?.setEdgePeek(aiFloatingBallOutPercent > 0)
+            (ball as? AiMascotView)?.startIdle()
+            scheduleAiFloatingBallIdle()
+        }
         binding.root.post {
             scheduleLiquidGlassWarmup()
         }
@@ -376,8 +390,9 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
 
     override fun onPause() {
         binding.root.removeCallbacks(shibbolethImportRunnable)
-        // 离开首页就停掉待机动画，没有必要在后台空转。
+        // 离开首页就停掉待机动画，也没有必要再计时收起。
         (aiFloatingBall as? AiMascotView)?.stopIdle()
+        cancelAiFloatingBallIdle()
         super.onPause()
     }
 
@@ -898,6 +913,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
         if (!shouldShowAiFloatingBall()) {
             (aiFloatingBall as? AiMascotView)?.stopIdle()
             aiFloatingBall?.removeCallbacks(aiFloatingBallAttachRunnable)
+            cancelAiFloatingBallIdle()
             aiFloatingBall?.isVisible = false
             return
         }
@@ -911,6 +927,8 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
         val ball = aiFloatingBall ?: createAiFloatingBall(mascot).also {
             aiFloatingBall = it
             aiFloatingBallIsMascot = mascot
+            aiFloatingBallOutPercent = getPrefInt(PreferKey.aiFloatingBallOut, 0).coerceIn(0, 100)
+            (it as? AiMascotView)?.setEdgePeek(aiFloatingBallOutPercent > 0)
             it.visibility = View.INVISIBLE
             root.addView(it)
         }
@@ -971,6 +989,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             ball.isVisible = true
             (ball as? AiMascotView)?.startIdle()
             scheduleAiFloatingBallAttach()
+            scheduleAiFloatingBallIdle()
             return
         }
         ball.visibility = View.INVISIBLE
@@ -988,14 +1007,27 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                 resources.getDimensionPixelSize(R.dimen.main_bottom_controls_bottom_padding)
     }
 
-    private fun placeAiFloatingBall(ball: View, animate: Boolean, attached: Boolean): Boolean = binding.run {
+    private fun placeAiFloatingBall(
+        ball: View,
+        animate: Boolean,
+        attached: Boolean,
+        outPercent: Int = aiFloatingBallOutPercent
+    ): Boolean = binding.run {
         val parentWidth = root.width
         val parentHeight = root.height
         if (parentWidth <= 0 || parentHeight <= 0 || ball.width <= 0 || ball.height <= 0) return@run false
         val side = getPrefInt(PreferKey.aiFloatingBallSide, 1).coerceIn(0, 1)
         val yPercent = getPrefInt(PreferKey.aiFloatingBallYPercent, 66).coerceIn(8, 92)
-        val hiddenOffset = 0f
-        val targetX = if (side == 0) -hiddenOffset else parentWidth - ball.width + hiddenOffset
+        val peek = aiFloatingBallPeek(ball)
+        // 完全可见时贴着屏幕边；收起时整个人往外推，屏幕上只留半个小人，
+        // 看着像躲到屏幕边上了，剩下的那一半也还点得到。
+        val shownX = if (side == 0) 0f else (parentWidth - ball.width).toFloat()
+        val hiddenX = if (side == 0) {
+            -(ball.width - peek).toFloat()
+        } else {
+            (parentWidth - peek).toFloat()
+        }
+        val targetX = shownX + (hiddenX - shownX) * (outPercent.coerceIn(0, 100) / 100f)
         val safeMargin = resources.getDimensionPixelSize(R.dimen.main_ai_floating_ball_safe_margin)
         val availableHeight = (parentHeight - bottomNavigationInset - ball.height).coerceAtLeast(1)
         val maxY = (parentHeight - bottomNavigationInset - ball.height - safeMargin)
@@ -1006,7 +1038,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             ball.animate()
                 .x(targetX)
                 .y(targetY)
-                .setDuration(180L)
+                .setDuration(220L)
                 .setInterpolator(bottomGlassPulseInterpolator)
                 .start()
         } else {
@@ -1014,6 +1046,44 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             ball.y = targetY
         }
         true
+    }
+
+    /** 收起时至少露出的宽度，既要看得出是个小人，也要能一把抓回来。 */
+    private fun aiFloatingBallPeek(ball: View): Int {
+        val peek = (ball.width * AI_FLOATING_BALL_PEEK_RATIO).toInt()
+        return peek.coerceIn(1, ball.width)
+    }
+
+    private fun scheduleAiFloatingBallIdle() {
+        val ball = aiFloatingBall ?: return
+        ball.removeCallbacks(aiFloatingBallIdleRunnable)
+        if (!ball.isVisible) return
+        ball.postDelayed(aiFloatingBallIdleRunnable, AI_FLOATING_BALL_IDLE_MS)
+    }
+
+    private fun cancelAiFloatingBallIdle() {
+        aiFloatingBall?.removeCallbacks(aiFloatingBallIdleRunnable)
+    }
+
+    /** 闲置够久就自己缩到屏幕边上，只剩一小截露在外面。 */
+    private fun collapseAiFloatingBall() {
+        val ball = aiFloatingBall ?: return
+        if (!ball.isVisible || aiFloatingBallDragged) return
+        aiFloatingBallOutPercent = 100
+        (ball as? AiMascotView)?.setEdgePeek(true)
+        if (!placeAiFloatingBall(ball, animate = true, attached = false)) {
+            // 还没量好尺寸，过一会儿再试。
+            ball.postDelayed(aiFloatingBallIdleRunnable, 1500L)
+        }
+    }
+
+    /** 点一下缩在边上的小人，先把它拉回来，不直接进对话。 */
+    private fun expandAiFloatingBall() {
+        val ball = aiFloatingBall ?: return
+        aiFloatingBallOutPercent = 0
+        (ball as? AiMascotView)?.setEdgePeek(false)
+        placeAiFloatingBall(ball, animate = true, attached = false)
+        scheduleAiFloatingBallIdle()
     }
 
     private inner class AiFloatingBallTouchListener(private val target: View) : View.OnTouchListener {
@@ -1026,11 +1096,13 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
                     target.removeCallbacks(aiFloatingBallAttachRunnable)
+                    cancelAiFloatingBallIdle()
                     downRawX = event.rawX
                     downRawY = event.rawY
                     downX = target.x
                     downY = target.y
                     aiFloatingBallDragged = false
+                    aiFloatingBallWasCollapsed = aiFloatingBallOutPercent > 0
                     (target as? AiMascotView)?.onPressDown()
                     return true
                 }
@@ -1042,7 +1114,11 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                     }
                     if (aiFloatingBallDragged) {
                         val parent = binding.root
-                        target.x = (downX + dx).coerceIn(0f, (parent.width - target.width).toFloat())
+                        // 允许拖出屏幕，最多推到只剩半个身位，始终还能抓回来。
+                        val peek = aiFloatingBallPeek(target)
+                        val minX = -(target.width - peek).toFloat()
+                        val maxX = (parent.width - peek).toFloat()
+                        target.x = (downX + dx).coerceIn(minX, maxX)
                         val topLimit = 12.dpToPx().toFloat()
                         val bottomLimit = (parent.height - bottomNavigationInset - target.height - 12.dpToPx())
                             .coerceAtLeast(12.dpToPx())
@@ -1055,22 +1131,41 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     val mascot = target as? AiMascotView
                     if (aiFloatingBallDragged) {
-                        val side = if (target.x + target.width / 2f < binding.root.width / 2f) 0 else 1
+                        val parentWidth = binding.root.width
+                        val side = if (target.x + target.width / 2f < parentWidth / 2f) 0 else 1
                         val availableHeight = (binding.root.height - bottomNavigationInset - target.height).coerceAtLeast(1)
                         val yPercent = ((target.y / availableHeight) * 100).toInt()
                             .coerceIn(8, 92)
+                        // 拖出屏幕多少就记住多少，下次进来还是藏在同一个位置。
+                        val peek = aiFloatingBallPeek(target)
+                        val span = (target.width - peek).coerceAtLeast(1).toFloat()
+                        val rawOut = if (side == 0) {
+                            -target.x / span
+                        } else {
+                            (target.x - (parentWidth - target.width)) / span
+                        }
+                        val out = if (rawOut < 0.12f) 0 else (rawOut * 100).toInt().coerceIn(1, 100)
+                        aiFloatingBallOutPercent = out
+                        mascot?.setEdgePeek(out > 0)
                         putPrefInt(PreferKey.aiFloatingBallSide, side)
                         putPrefInt(PreferKey.aiFloatingBallYPercent, yPercent)
+                        putPrefInt(PreferKey.aiFloatingBallOut, out)
                         placeAiFloatingBall(target, animate = true, attached = false)
                         scheduleAiFloatingBallAttach()
+                        scheduleAiFloatingBallIdle()
                         mascot?.onRelease()
                     } else if (event.actionMasked == MotionEvent.ACTION_UP) {
-                        if (mascot != null) {
+                        if (aiFloatingBallWasCollapsed) {
+                            // 收起状态点一下只是把它叫回来。
+                            expandAiFloatingBall()
+                            mascot?.onRelease()
+                        } else if (mascot != null) {
                             mascot.playTapBounce { target.performClick() }
                         } else {
                             target.performClick()
                         }
                     } else {
+                        scheduleAiFloatingBallIdle()
                         mascot?.onRelease()
                     }
                     return true
@@ -2323,6 +2418,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
 
     override fun onDestroy() {
         aiFloatingBall?.removeCallbacks(aiFloatingBallAttachRunnable)
+        cancelAiFloatingBallIdle()
         binding.root.removeCallbacks(appearanceRefreshRunnable)
         clearLiquidGlassCallbacks()
         resetLiquidGlassBindingState()

@@ -229,6 +229,8 @@ object PreferKey {
     const val floatingBottomBarHideSearch = "floatingBottomBarHideSearch"
     const val aiFloatingBallSide = "aiFloatingBallSide"
     const val aiFloatingBallYPercent = "aiFloatingBallYPercent"
+    /** 形象缩进屏幕边缘的程度，0 为完整露出，100 为只留一小截。 */
+    const val aiFloatingBallOut = "aiFloatingBallOut"
     const val aiHomeEntryEnabled = "aiHomeEntryEnabled"
     const val navigationBarPackageDay = "navigationBarPackageDay"
     const val navigationBarPackageNight = "navigationBarPackageNight"
