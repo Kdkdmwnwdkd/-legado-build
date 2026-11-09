@@ -176,7 +176,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
     private var sideNavigationBackgroundLoadingKey: String? = null
     private var sideNavigationBackgroundKey: String? = null
     private var sideNavigationBackgroundBitmap: Bitmap? = null
-    private var aiFloatingBall: FrameLayout? = null
+    private var aiFloatingBall: View? = null
     private var aiFloatingBallIsMascot = false
     private var aiFloatingBallDragged = false
     /** 收回屏幕外的程度：0 完整可见，100 只露出一小截。 */
@@ -376,7 +376,10 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
         refreshMainThemeBackground()
         refreshBottomNavigationConfig()
         aiFloatingBall?.takeIf { it.isVisible }?.let { ball ->
-            (ball as? AiMascotView)?.setEdgePeek(aiFloatingBallOutPercent > 0)
+            (ball as? AiMascotView)?.setEdgePeek(
+                aiFloatingBallOutPercent > 0,
+                getPrefInt(PreferKey.aiFloatingBallSide, 1)
+            )
             (ball as? AiMascotView)?.startIdle()
             scheduleAiFloatingBallIdle()
         }
@@ -928,7 +931,10 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
             aiFloatingBall = it
             aiFloatingBallIsMascot = mascot
             aiFloatingBallOutPercent = getPrefInt(PreferKey.aiFloatingBallOut, 0).coerceIn(0, 100)
-            (it as? AiMascotView)?.setEdgePeek(aiFloatingBallOutPercent > 0)
+            (it as? AiMascotView)?.setEdgePeek(
+                aiFloatingBallOutPercent > 0,
+                getPrefInt(PreferKey.aiFloatingBallSide, 1)
+            )
             it.visibility = View.INVISIBLE
             root.addView(it)
         }
@@ -943,7 +949,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                 !isSidebarMode()
     }
 
-    private fun createAiFloatingBall(mascot: Boolean): FrameLayout {
+    private fun createAiFloatingBall(mascot: Boolean): View {
         val ball = if (mascot) {
             AiMascotView(this).apply {
                 layoutParams = ConstraintLayout.LayoutParams(
@@ -1124,7 +1130,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                             .coerceAtLeast(12.dpToPx())
                             .toFloat()
                         target.y = (downY + dy).coerceIn(topLimit, bottomLimit)
-                        (target as? AiMascotView)?.onDragTilt(dx)
+                        (target as? AiMascotView)?.onDragTilt(dx, dy)
                     }
                     return true
                 }
@@ -1146,7 +1152,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
                         }
                         val out = if (rawOut < 0.12f) 0 else (rawOut * 100).toInt().coerceIn(1, 100)
                         aiFloatingBallOutPercent = out
-                        mascot?.setEdgePeek(out > 0)
+                        mascot?.setEdgePeek(out > 0, side)
                         putPrefInt(PreferKey.aiFloatingBallSide, side)
                         putPrefInt(PreferKey.aiFloatingBallYPercent, yPercent)
                         putPrefInt(PreferKey.aiFloatingBallOut, out)
