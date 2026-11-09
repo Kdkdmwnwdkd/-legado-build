@@ -13,6 +13,16 @@ Xwite 等，完整名单见 https://github.com/gedoor/legado/graphs/contributors
 
 本仓库与上述项目无从属关系，不代表它们的官方发布，也不跟随其更新。
 
+关于包名
+--------
+安装包名是 io.legado.app.shimmer，后缀 .shimmer 为本项目独有，与阅读 Archive
+（io.legado.app.Archive）、阅读 Sigma（io.legado.app.release）、原版
+（io.legado.app）互不覆盖。
+
+代码命名空间仍为 io.legado.app，与阅读 Archive 保持一致。原因是书源 JavaScript
+可以通过 Packages.io.legado.app.* 引用内部类，改动包路径会使这类书源失效，
+混淆规则也需同步重写。安装身份已由 applicationId 后缀区分。
+
 本仓库的改动
 ------------
 本仓库自 2026 年 11 月起独立维护，主要在以下方面改动：
