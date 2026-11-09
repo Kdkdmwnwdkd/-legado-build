@@ -111,6 +111,7 @@ import io.legado.app.utils.clearClip
 import io.legado.app.utils.getClipText
 import io.legado.app.utils.navigationBarHeight
 import io.legado.app.utils.observeEvent
+import io.legado.app.utils.getPrefBoolean
 import io.legado.app.utils.getPrefInt
 import io.legado.app.utils.putPrefInt
 import io.legado.app.utils.setEdgeEffectColor
@@ -907,6 +908,7 @@ class MainActivity : VMBaseActivity<ActivityMainBinding, MainViewModel>(),
     private fun shouldShowAiFloatingBall(): Boolean {
         return (isStandardBottomMode() || isFloatingSearchHidden()) &&
                 AppConfig.aiAssistantEnabled &&
+                getPrefBoolean(PreferKey.aiHomeEntryEnabled, true) &&
                 !isSidebarMode()
     }
 

@@ -1,5 +1,7 @@
 package io.legado.app.help.ai
 
+import io.legado.app.help.config.AppConfig
+
 /**
  * AI 正文净化：把选中段落交给模型，去掉广告、网址、求票等非正文内容，
  * 修正明显的错字与错位标点，再原样返回清洗后的正文。
@@ -35,7 +37,8 @@ object AiTextPurify {
         }
         val raw = AiChatService.completeText(
             systemPrompt = SYSTEM_PROMPT.trimIndent(),
-            userText = source
+            userText = source,
+            modelConfigOverride = AppConfig.aiPurifyModelConfig
         )
         val cleaned = normalizeModelOutput(raw)
         if (cleaned.isBlank()) {

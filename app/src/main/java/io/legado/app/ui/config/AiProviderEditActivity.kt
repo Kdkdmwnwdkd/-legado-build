@@ -92,11 +92,19 @@ class AiProviderEditActivity : BaseActivity<ViewBinding>() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         providerId = intent.getStringExtra(EXTRA_PROVIDER_ID)
+        val presetName = intent.getStringExtra(EXTRA_PRESET_NAME)
+        val presetBaseUrl = intent.getStringExtra(EXTRA_PRESET_BASE_URL)
+        val presetModel = intent.getStringExtra(EXTRA_PRESET_MODEL)
         val provider = currentProvider()
         apiMode = normalizeApiMode(provider?.apiMode)
         bindProvider(provider)
+        if (provider == null && !presetName.isNullOrBlank()) {
+            providerName = presetName
+            providerBaseUrl = presetBaseUrl.orEmpty()
+            pendingModelId = presetModel?.takeIf { it.isNotBlank() }
+        }
         reloadModels()
-        if (providerId == null) {
+        if (providerId == null && presetName.isNullOrBlank()) {
             binding.root.post {
                 if (!isFinishing && !isDestroyed && providerId == null) {
                     showPresetPicker()
@@ -500,6 +508,9 @@ class AiProviderEditActivity : BaseActivity<ViewBinding>() {
 
     companion object {
         const val EXTRA_PROVIDER_ID = "providerId"
+        const val EXTRA_PRESET_NAME = "presetName"
+        const val EXTRA_PRESET_BASE_URL = "presetBaseUrl"
+        const val EXTRA_PRESET_MODEL = "presetModel"
         private const val TAB_CONFIG = "config"
         private const val TAB_MODEL = "model"
     }

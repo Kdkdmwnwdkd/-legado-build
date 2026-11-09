@@ -7,8 +7,6 @@ import io.legado.app.constant.EventBus
 import io.legado.app.constant.PreferKey
 import io.legado.app.help.ai.AiToolRegistry
 import io.legado.app.help.config.AppConfig
-import io.legado.app.help.http.newCallResponse
-import io.legado.app.help.http.importHttpClient as okHttpClient
 import io.legado.app.ui.config.compose.ComposeSettingFragment
 import io.legado.app.ui.config.compose.SettingActionSpec
 import io.legado.app.ui.config.compose.SettingPageSpec
@@ -28,21 +26,12 @@ import io.legado.app.ui.file.FileManageActivity
 import io.legado.app.utils.observeEvent
 import io.legado.app.utils.postEvent
 import io.legado.app.utils.toastOnUi
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 
 class AiConfigFragment : ComposeSettingFragment() {
 
-    private val defaultSkillUrls = listOf(
-        "https://raw.githubusercontent.com/DandanLLab/legadoSkill/main/.trae/skills/legado-book-source-tamer/SKILL.md",
-        "https://raw.githubusercontent.com/DandanLLab/legadoSkill/main/skills/SKILLV0.7.md",
-        "https://raw.githubusercontent.com/DandanLLab/legadoSkill/main/SKILL.md"
-    )
-
     private companion object {
-        const val KEY_IMPORT_DEFAULT_SKILL = "aiImportDefaultSkill"
         const val KEY_MANAGE_NATIVE_TOOLS = "aiManageNativeTools"
         const val KEY_AI_WORKSPACE = "aiWorkspace"
         const val KEY_CONTEXT_COMPRESSION = "aiContextCompression"
@@ -82,7 +71,81 @@ class AiConfigFragment : ComposeSettingFragment() {
             titleRes = titleRes,
             sections = listOf(
                 SettingSectionSpec(
-                    title = getString(R.string.ai_assistant),
+                    title = getString(R.string.ai_features),
+                    items = listOf(
+                        SettingActionSpec(
+                            key = KEY_MANAGE_PROVIDERS,
+                            title = getString(R.string.ai_provider),
+                            summary = providerSummary(),
+                            onClick = {
+                                startActivity(Intent(requireContext(), AiProviderManageActivity::class.java))
+                            }
+                        ),
+                        SettingActionSpec(
+                            key = PreferKey.aiSkillPrompt,
+                            title = getString(R.string.ai_skills_entry),
+                            summary = getString(
+                                R.string.ai_skills_entry_summary,
+                                AiBuiltinSkills.all.size,
+                                AiBuiltinSkills.enabledCount()
+                            ),
+                            onClick = {
+                                startActivity(Intent(requireContext(), AiSkillsActivity::class.java))
+                            }
+                        ),
+                        SettingSwitchSpec(
+                            key = PreferKey.aiHomeEntryEnabled,
+                            title = getString(R.string.ai_home_entry),
+                            summary = getString(R.string.ai_home_entry_summary),
+                            checked = booleanSetting(PreferKey.aiHomeEntryEnabled, true),
+                            onCheckedChange = { updateBooleanSetting(PreferKey.aiHomeEntryEnabled, it) }
+                        ),
+                        SettingActionSpec(
+                            key = PreferKey.aiPurifyModelId,
+                            title = getString(R.string.ai_purify),
+                            summary = sceneSummary(
+                                R.string.ai_purify_summary,
+                                AppConfig.aiPurifyModelConfig
+                            ),
+                            onClick = {
+                                selectDefaultModel(
+                                    getString(R.string.ai_purify),
+                                    AppConfig.aiPurifyModelId
+                                ) { AppConfig.aiPurifyModelId = it }
+                            }
+                        ),
+                        SettingActionSpec(
+                            key = PreferKey.aiAskModelId,
+                            title = getString(R.string.ai_assistant),
+                            summary = sceneSummary(
+                                R.string.ai_assistant_summary,
+                                AppConfig.aiAskModelConfig
+                            ),
+                            onClick = {
+                                selectDefaultModel(
+                                    getString(R.string.ai_assistant),
+                                    AppConfig.aiAskModelId
+                                ) { AppConfig.aiAskModelId = it }
+                            }
+                        ),
+                        SettingActionSpec(
+                            key = PreferKey.aiReadAloudRoleModelId,
+                            title = getString(R.string.ai_listen),
+                            summary = sceneSummary(
+                                R.string.ai_listen_summary,
+                                AppConfig.aiReadAloudRoleModelConfig
+                            ),
+                            onClick = {
+                                selectDefaultModel(
+                                    getString(R.string.ai_listen),
+                                    AppConfig.aiReadAloudRoleModelId
+                                ) { AppConfig.aiReadAloudRoleModelId = it }
+                            }
+                        )
+                    )
+                ),
+                SettingSectionSpec(
+                    title = getString(R.string.ai_assistant_group),
                     items = listOf(
                         SettingSwitchSpec(
                             key = PreferKey.aiAssistantEnabled,
@@ -97,26 +160,6 @@ class AiConfigFragment : ComposeSettingFragment() {
                             checked = AppConfig.aiAssistantEnabled,
                             enabled = canEnable,
                             onCheckedChange = { AppConfig.aiAssistantEnabled = it }
-                        ),
-                        SettingActionSpec(
-                            key = KEY_IMPORT_DEFAULT_SKILL,
-                            title = getString(R.string.ai_import_default_skill),
-                            summary = getString(R.string.ai_import_default_skill_summary),
-                            onClick = ::importDefaultSkill
-                        ),
-                        SettingActionSpec(
-                            key = PreferKey.aiSkillPrompt,
-                            title = getString(R.string.ai_skill_prompt),
-                            summary = if (skills.isEmpty()) {
-                                getString(R.string.ai_skill_prompt_summary_empty)
-                            } else {
-                                getString(
-                                    R.string.ai_skill_prompt_summary,
-                                    enabledSkillCount,
-                                    skills.size
-                                )
-                            },
-                            onClick = ::showManageSkillsDialog
                         ),
                         SettingActionSpec(
                             key = KEY_MANAGE_NATIVE_TOOLS,
@@ -185,18 +228,6 @@ class AiConfigFragment : ComposeSettingFragment() {
                             }
                         ),
                         SettingActionSpec(
-                            key = KEY_DEFAULT_MODEL_SETTINGS,
-                            title = getString(R.string.ai_default_model),
-                            summary = getString(
-                                R.string.ai_default_model_summary,
-                                modelLabel(AppConfig.aiAskModelConfig),
-                                modelLabel(AppConfig.aiSummaryModelConfig),
-                                modelLabel(AppConfig.aiReadAloudRoleModelConfig),
-                                imageProviderLabel()
-                            ),
-                            onClick = ::showDefaultModelSettingsDialog
-                        ),
-                        SettingActionSpec(
                             key = KEY_IMAGE_GALLERY,
                             title = getString(R.string.ai_image_gallery),
                             summary = getString(R.string.ai_image_gallery_summary),
@@ -218,27 +249,6 @@ class AiConfigFragment : ComposeSettingFragment() {
                             },
                             onClick = {
                                 startActivity(Intent(requireContext(), AiImageProviderManageActivity::class.java))
-                            }
-                        )
-                    )
-                ),
-                SettingSectionSpec(
-                    title = getString(R.string.ai_provider),
-                    items = listOf(
-                        SettingActionSpec(
-                            key = KEY_MANAGE_PROVIDERS,
-                            title = getString(R.string.ai_manage_providers),
-                            summary = if (AppConfig.aiProviderList.isEmpty()) {
-                                getString(R.string.ai_no_providers)
-                            } else {
-                                buildString {
-                                    append(currentProvider?.name ?: getString(R.string.ai_current_provider_summary_empty))
-                                    append(" · ")
-                                    append(getString(R.string.ai_manage_providers_summary, AppConfig.aiProviderList.size))
-                                }
-                            },
-                            onClick = {
-                                startActivity(Intent(requireContext(), AiProviderManageActivity::class.java))
                             }
                         )
                     )
@@ -327,7 +337,9 @@ class AiConfigFragment : ComposeSettingFragment() {
     override fun onSettingPreferenceChanged(key: String) {
         when (key) {
             PreferKey.aiAssistantEnabled -> refreshUi(notifyMain = true)
+            PreferKey.aiHomeEntryEnabled -> refreshUi(notifyMain = true)
             PreferKey.aiAskModelId,
+            PreferKey.aiPurifyModelId,
             PreferKey.aiSummaryModelId,
             PreferKey.aiReadAloudRoleModelId,
             PreferKey.aiCurrentImageProviderId -> refreshUi()
@@ -499,6 +511,26 @@ class AiConfigFragment : ComposeSettingFragment() {
             AppConfig.aiCurrentImageProviderId = providers[index].id
             refreshUi()
         }
+    }
+
+    private fun providerSummary(): String {
+        val providers = AppConfig.aiProviderList
+        if (providers.isEmpty()) {
+            return getString(R.string.ai_provider_none_hint)
+        }
+        val current = AppConfig.aiCurrentProvider?.name
+            ?.takeIf { it.isNotBlank() }
+            ?: getString(R.string.ai_current_provider_summary_empty)
+        return "$current · ${getString(R.string.ai_provider_count, providers.size)}"
+    }
+
+    /**
+     * 场景项副标题：保留一句用途说明，后面跟上当前使用的模型。
+     */
+    private fun sceneSummary(summaryRes: Int, model: AiModelConfig?): String {
+        val hint = getString(summaryRes)
+        val current = model ?: return hint
+        return "$hint · ${modelLabel(current)}"
     }
 
     private fun modelLabel(model: AiModelConfig?): String {
@@ -830,42 +862,6 @@ class AiConfigFragment : ComposeSettingFragment() {
                 refreshUi()
             }
         )
-    }
-
-    private fun importDefaultSkill() {
-        toastOnUi(R.string.ai_skill_importing)
-        lifecycleScope.launch {
-            val result = withContext(IO) {
-                runCatching {
-                    var lastError = ""
-                    defaultSkillUrls.forEach { skillUrl ->
-                        okHttpClient.newCallResponse {
-                            url(skillUrl)
-                        }.use { response ->
-                            if (response.isSuccessful) {
-                                return@runCatching skillUrl to response.body.string()
-                            }
-                            lastError = "${response.code} ${response.message}"
-                        }
-                    }
-                    error(lastError.ifBlank { "No available SKILL.md" })
-                }
-            }
-            result.onSuccess { (skillUrl, skill) ->
-                if (skill.isBlank()) {
-                    toastOnUi(R.string.ai_skill_import_empty)
-                    return@onSuccess
-                }
-                val skillConfig = parseSkillConfig(skill, skillUrl)
-                AppConfig.aiSkillList = AppConfig.aiSkillList
-                    .filterNot { it.sourceUrl == skillConfig.sourceUrl || it.name == skillConfig.name }
-                    .plus(skillConfig)
-                refreshUi()
-                toastOnUi(R.string.ai_skill_imported)
-            }.onFailure {
-                toastOnUi(getString(R.string.ai_skill_import_failed, it.localizedMessage ?: "Error"))
-            }
-        }
     }
 
     private fun showManageSkillsDialog() {

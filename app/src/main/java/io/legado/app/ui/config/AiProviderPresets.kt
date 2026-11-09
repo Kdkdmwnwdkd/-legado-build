@@ -49,6 +49,25 @@ object AiProviderPresets {
             name = "OpenRouter",
             baseUrl = "https://openrouter.ai/api/v1",
             modelId = "openai/gpt-4o-mini"
+        ),
+        AiProviderPreset(
+            name = "Gemini",
+            baseUrl = "https://generativelanguage.googleapis.com/v1beta/openai",
+            modelId = "gemini-2.0-flash"
+        ),
+        AiProviderPreset(
+            name = "小米 MiMo",
+            baseUrl = "https://api.xiaomimimo.com/v1",
+            modelId = "mimo-v2.5-pro"
+        ),
+        AiProviderPreset(
+            name = "商汤 SenseNova",
+            baseUrl = "https://token.sensenova.cn/v1",
+            modelId = "sensenova-6.7-flash-lite"
+        ),
+        AiProviderPreset(
+            name = "火山引擎",
+            baseUrl = "https://ark.cn-beijing.volces.com/api/v3"
         )
     )
 }

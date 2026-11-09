@@ -75,6 +75,8 @@ class AiProviderManageActivity : BaseActivity<ActivityAiProviderManageBinding>()
                 onBack = { finish() },
                 onAdd = { openEdit(null) },
                 onOpenProvider = { openEdit(it) },
+                presets = AiProviderPresets.all,
+                onUsePreset = ::openPreset,
                 providerActions = ::providerActions
             )
         }
@@ -96,6 +98,14 @@ class AiProviderManageActivity : BaseActivity<ActivityAiProviderManageBinding>()
     private fun openEdit(provider: AiProviderConfig?) {
         startActivity(Intent(this, AiProviderEditActivity::class.java).apply {
             provider?.id?.let { putExtra(AiProviderEditActivity.EXTRA_PROVIDER_ID, it) }
+        })
+    }
+
+    private fun openPreset(preset: AiProviderPreset) {
+        startActivity(Intent(this, AiProviderEditActivity::class.java).apply {
+            putExtra(AiProviderEditActivity.EXTRA_PRESET_NAME, preset.name)
+            putExtra(AiProviderEditActivity.EXTRA_PRESET_BASE_URL, preset.baseUrl)
+            putExtra(AiProviderEditActivity.EXTRA_PRESET_MODEL, preset.modelId)
         })
     }
 
@@ -152,6 +162,8 @@ private fun AiProviderManageScreen(
     onBack: () -> Unit,
     onAdd: () -> Unit,
     onOpenProvider: (AiProviderConfig) -> Unit,
+    presets: List<AiProviderPreset>,
+    onUsePreset: (AiProviderPreset) -> Unit,
     providerActions: (AiProviderConfig) -> List<AppManagementMenuAction>
 ) {
     val palette = rememberAppManagementPalette()
@@ -199,6 +211,26 @@ private fun AiProviderManageScreen(
                                 onClick = { onOpenProvider(provider) },
                                 moreActions = providerActions(provider)
                             )
+                        }
+                    }
+                    val addedBaseUrls = providers
+                        .map { it.baseUrl.trimEnd('/') }
+                        .toSet()
+                    val suggestions = presets.filter {
+                        it.baseUrl.trimEnd('/') !in addedBaseUrls
+                    }
+                    if (suggestions.isNotEmpty()) {
+                        item(key = "preset-title") {
+                            Text(
+                                text = stringResource(R.string.ai_preset_title),
+                                color = palette.settings.secondaryText,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(start = 6.dp, top = 12.dp, bottom = 2.dp)
+                            )
+                        }
+                        items(suggestions, key = { "preset-${it.name}" }) { preset ->
+                            AiPresetCard(preset = preset, onClick = { onUsePreset(preset) })
                         }
                     }
                 }
@@ -349,6 +381,48 @@ private fun AiProviderCurrentBadge(palette: AppManagementPalette) {
             maxLines = 1,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         )
+    }
+}
+
+@Composable
+private fun AiPresetCard(preset: AiProviderPreset, onClick: () -> Unit) {
+    val palette = rememberAppManagementPalette()
+    AppManagementCard(
+        palette = palette,
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        insidePadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = preset.name,
+                    color = palette.settings.primaryText,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = if (preset.modelId.isBlank()) {
+                        preset.baseUrl
+                    } else {
+                        "${preset.baseUrl} · ${preset.modelId}"
+                    },
+                    color = palette.settings.secondaryText,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.MiddleEllipsis
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "›",
+                color = palette.settings.secondaryText,
+                fontSize = 20.sp
+            )
+        }
     }
 }
 
