@@ -12,6 +12,7 @@ import com.shimmer.reader.ui.config.compose.SettingActionSpec
 import com.shimmer.reader.ui.config.compose.SettingPageSpec
 import com.shimmer.reader.ui.config.compose.SettingSectionSpec
 import com.shimmer.reader.ui.config.compose.SettingSwitchSpec
+import com.shimmer.reader.ui.main.ai.AiChatActivity
 import com.shimmer.reader.ui.main.ai.AiImageGalleryActivity
 import com.shimmer.reader.ui.main.ai.AiMcpServerConfig
 import com.shimmer.reader.ui.widget.compose.showComposeActionListDialog
@@ -37,6 +38,7 @@ class AiConfigFragment : ComposeSettingFragment() {
 
     private companion object {
         const val KEY_AI_ABILITY = "aiAbility"
+        const val KEY_OPEN_CHAT = "aiOpenChat"
         const val KEY_AI_FEATURES = "aiFeatures"
         const val KEY_AI_PREFS = "aiPrefs"
         const val KEY_MANAGE_PROVIDERS = "aiManageProviders"
@@ -67,6 +69,12 @@ class AiConfigFragment : ComposeSettingFragment() {
                 SettingSectionSpec(
                     title = getString(R.string.ai_chat_group),
                     items = listOf(
+                        SettingActionSpec(
+                            key = KEY_OPEN_CHAT,
+                            title = getString(R.string.ai_open_chat),
+                            summary = getString(R.string.ai_open_chat_summary),
+                            onClick = ::openChat
+                        ),
                         SettingSwitchSpec(
                             key = PreferKey.aiAssistantEnabled,
                             title = getString(R.string.ai_enable),
@@ -181,6 +189,10 @@ class AiConfigFragment : ComposeSettingFragment() {
             servers.count { it.enabled },
             servers.size
         )
+    }
+
+    private fun openChat() {
+        startActivity(Intent(requireContext(), AiChatActivity::class.java))
     }
 
     private fun showChatEntryMenu() {

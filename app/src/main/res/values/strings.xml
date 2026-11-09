@@ -639,7 +639,9 @@
     <string name="side_nav_assistant">Assistant</string>
     <string name="side_nav_stats">Stats</string>
     <string name="ai_setting">AI Settings</string>
-    <string name="ai_settings_title">AI chat</string>
+    <string name="ai_settings_title">AI settings</string>
+    <string name="ai_open_chat">Open AI chat</string>
+    <string name="ai_open_chat_summary">Jump straight into the chat, no detour through settings</string>
     <string name="ai_setting_summary">Set up a provider, then just tell AI what to do</string>
     <string name="ai_enable">Enable AI</string>
     <string name="ai_enable_summary">Enabled: long press Search to open AI</string>

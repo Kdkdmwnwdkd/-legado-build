@@ -51,6 +51,11 @@ object AiProviderPresets {
             modelId = "openai/gpt-4o-mini"
         ),
         AiProviderPreset(
+            name = "xAI Grok",
+            baseUrl = "https://api.x.ai/v1",
+            modelId = "grok-4.7"
+        ),
+        AiProviderPreset(
             name = "Gemini",
             baseUrl = "https://generativelanguage.googleapis.com/v1beta/openai",
             modelId = "gemini-2.0-flash"

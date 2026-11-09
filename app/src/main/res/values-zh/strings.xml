@@ -1503,7 +1503,9 @@
     <string name="side_nav_assistant">助手</string>
     <string name="side_nav_stats">统计</string>
     <string name="ai_setting">AI 设置</string>
-    <string name="ai_settings_title">AI 对话</string>
+    <string name="ai_settings_title">AI 设置</string>
+    <string name="ai_open_chat">打开 AI 对话</string>
+    <string name="ai_open_chat_summary">直接进入聊天，不用先在这里绕一圈</string>
     <string name="ai_setting_summary">配好服务商就能用，其他交给 AI 自己做</string>
     <string name="ai_enable">启用 AI</string>
     <string name="ai_enable_summary">启用后长按搜索键进入 AI 页面</string>
