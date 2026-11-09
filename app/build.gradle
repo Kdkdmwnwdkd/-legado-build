@@ -17,7 +17,7 @@ static def releaseTime() {
     return new Date().format("yy.MMddHH", TimeZone.getTimeZone("GMT+8"))
 }
 
-def name = "legado"
+def name = "shimmer"
 def version = project.hasProperty("VERSION_NAME")
         ? project.property("VERSION_NAME").toString()
         : "3." + releaseTime()

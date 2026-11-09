@@ -1117,7 +1117,7 @@
     <string name="alipay_red_envelope_qr_code">AliPay red envelope QR code</string>
     <string name="alipay_payment_qr_code">AliPay QR code</string>
     <string name="qq_collection_qr_code">QQ Collection QR code</string>
-    <string name="contributors_summary">gedoor,Invinciblelee,Xwite etc. Checking in github for details</string>
+    <string name="contributors_summary">Upstream Legado project: gedoor, Invinciblelee, Xwite and others. Changes in this repository are listed in its commit history.</string>
     <string name="clear_cache_summary">Clear the cache of the downloaded books and fonts</string>
     <string name="default_cover">Default cover</string>
     <string name="restore_ignore">Bypass list</string>
@@ -1776,7 +1776,7 @@ Note: custom buttons are meant for reading and helper actions; do not modify the
     <string name="record_heap_dump_t">Capture heap dump</string>
     <string name="font_weight_text">N/B/L</string>
     <string name="enable_optimize_render">Enable rendering optimization</string>
-    <string name="ignore_battery_permission_rationale">Legado needs background permission to keep its service running</string>
+    <string name="ignore_battery_permission_rationale">The app needs background permission to keep its service running</string>
     <string name="simulated_reading">Simulated Reading</string>
     <string name="switch_on">Switch</string>
     <string name="start_from">Start from</string>
@@ -1793,7 +1793,7 @@ Note: custom buttons are meant for reading and helper actions; do not modify the
     <string name="stream_read_aloud_audio_summary">Play while downloading. Playback stutters on poor networks. TTS sources only.</string>
     <string name="pause_read_aloud_while_phone_calls_title">Pause reading aloud during calls</string>
     <string name="pause_read_aloud_while_phone_calls_summary">Pause reading aloud during a call. Requires phone state permission.</string>
-    <string name="read_aloud_read_phone_state_permission_rationale">Legado needs phone state access to pause reading aloud during calls</string>
+    <string name="read_aloud_read_phone_state_permission_rationale">The app needs phone state access to pause reading aloud during calls</string>
     <string name="read_aloud_by_media_button_title">Start reading aloud with the headset button</string>
     <string name="read_aloud_by_media_button_summary">Use the headset button to start reading aloud</string>
     <string name="group_sources_by_domain">Group by domain</string>
@@ -1884,7 +1884,7 @@ Note: custom buttons are meant for reading and helper actions; do not modify the
     <string name="font_size">Font size %d</string>
     <string name="view_code">View code</string>
     <string name="show_bookname">Show book title</string>
-    <string name="float_permission_rationale">Legado needs overlay permission to show the playback window</string>
+    <string name="float_permission_rationale">The app needs overlay permission to show the playback window</string>
     <string name="video">Video</string>
     <string name="float_window">Floating window</string>
     <string name="video_play">Video playback</string>
@@ -2510,7 +2510,7 @@ Selected text or question:
     <string name="paragraph_import_conflict_overwrite_description">Keep the existing ID, order, and book bindings</string>
     <string name="paragraph_import_result">Added: %1$d\nOverwritten: %2$d\nSkipped: %3$d\nRenamed: %4$d</string>
     <string name="public_web_relay">Public web access</string>
-    <string name="public_web_relay_summary">Access this device\'s Legado Web securely through a Cloudflare Worker</string>
+    <string name="public_web_relay_summary">Access this device\'s built-in web service securely through a Cloudflare Worker</string>
     <string name="public_web_relay_connection">Connection</string>
     <string name="public_web_relay_enable">Enable public access</string>
     <string name="public_web_relay_worker_url">Worker URL</string>

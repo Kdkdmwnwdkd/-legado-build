@@ -844,7 +844,7 @@
     <string name="alipay_red_envelope_qr_code">支付宝红包二维码</string>
     <string name="alipay_payment_qr_code">支付宝收款二维码</string>
     <string name="qq_collection_qr_code">QQ 收款二维码</string>
-    <string name="contributors_summary">gedoor、Invinciblelee 和 Xwite 等，详情请在 GitHub 中查看</string>
+    <string name="contributors_summary">上游 Legado 项目：gedoor、Invinciblelee、Xwite 等；本仓库的改动见 GitHub 提交记录</string>
     <string name="clear_cache_summary">清除已下载书籍和字体缓存</string>
     <string name="default_cover">默认封面</string>
     <string name="restore_ignore">恢复忽略列表</string>
@@ -2132,7 +2132,7 @@ bookUrl：%7$s
     <string name="video_setting_summary">&#33258;&#21160;&#25773;&#25918;&#12289;&#20840;&#23631;&#25773;&#25918;&#31561;&#37197;&#32622;</string>
     <string name="history">&#21382;&#21490;&#35760;&#24405;</string>
     <string name="app_name_sigma">阅读</string>
-    <string name="about_description_sigma">\u3000\u3000&#38405;&#35835;Archive &#22522;&#20110; Legado &#25345;&#32493;&#23450;&#21046;&#65292;&#19987;&#27880;&#38405;&#35835;&#20307;&#39564;&#12289;&#20070;&#28304;&#24037;&#20855;&#19982; AI &#36741;&#21161;&#33021;&#21147;&#12290;</string>
+    <string name="about_description_sigma">\u3000\u3000阅读Shimmer 是一个独立维护的 Android 阅读器，专注阅读体验、书源工具与 AI 辅助。代码源自 Legado，按 GPLv3 开源，详见仓库「来源与许可」。</string>
     <string name="contributors_summary_sigma">当前维护仓库：Kdkdmwnwdkd/-legado-build，详情请在 GitHub 中查看</string>
     <string name="app_share_description_sigma">
         阅读Shimmer 下载地址：\nhttps://github.com/Kdkdmwnwdkd/-legado-build/releases
