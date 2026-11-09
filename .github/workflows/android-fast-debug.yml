@@ -112,6 +112,20 @@ jobs:
           echo "Maven 镜像兜底已启用: $GUH/init.d/99-mirrors.gradle"
 
 
+      - name: Sync changelog into assets
+        # 应用内「更新日志」读的是 assets/updateLog.md，
+        # 这里从仓库根目录的 CHANGELOG.md 生成，避免两边各写一遍、越走越旧。
+        run: |
+          test -f CHANGELOG.md
+          {
+            echo "# 更新日志"
+            echo
+            echo "版本号是时间戳：\`3.26.MMDDHHmm\`，应用内更新直接比较大小。"
+            echo
+            awk '/^## /{c++} c>=1' CHANGELOG.md
+          } > app/src/main/assets/updateLog.md
+          echo "已同步更新日志，共 $(wc -l < app/src/main/assets/updateLog.md) 行"
+
       - name: Build arm64 APK
         env:
           BUILD_TYPE: ${{ inputs.build_type || 'release' }}
@@ -154,18 +168,32 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG="nightly"
-          cat > notes.md <<EOF
-          阅读Shimmer 每日构建（${{ inputs.build_type || 'release' }}）
-
-          - Commit: ${{ github.sha }}
-          - 分支: ${{ github.ref_name }}
-          - APK: ${{ steps.apk.outputs.name }}
-          - 版本: ${VERSION_NAME} (${VERSION_CODE})
-          - 构建时间: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
-          包名 io.legado.app.shimmer。与已安装的正式版同签名时可直接覆盖升级；
-          若提示签名冲突，先卸载旧包再装（数据请提前备份）。
-          EOF
+          # 更新说明取自 CHANGELOG 最新一段（去掉它自己的版本标题，
+          # 避免和本次构建的时间戳版本号打架），构建信息接在后面。
+          LATEST_CHANGES=$(awk '/^## /{c++} c==1' CHANGELOG.md | tail -n +2 | awk 'NF{p=1} p' | head -n 40)
+          {
+            echo "## 更新内容"
+            echo
+            if [ -n "$LATEST_CHANGES" ]; then
+              echo "$LATEST_CHANGES"
+            else
+              echo "- 本次为常规构建，功能变更见 CHANGELOG.md"
+            fi
+            echo
+            echo "## 构建信息"
+            echo
+            echo "- 版本: ${VERSION_NAME} (${VERSION_CODE})"
+            echo "- 类型: ${{ inputs.build_type || 'release' }}"
+            echo "- Commit: ${{ github.sha }}"
+            echo "- 分支: ${{ github.ref_name }}"
+            echo "- APK: ${{ steps.apk.outputs.name }}"
+            echo "- 构建时间: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+            echo
+            echo "包名 io.legado.app.shimmer。与已安装的正式版同签名时可直接覆盖升级；"
+            echo "若提示签名冲突，先卸载旧包再装（数据请提前备份）。"
+          } > notes.md
+          echo "更新说明预览："
+          head -n 12 notes.md
 
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh api "repos/${{ github.repository }}/releases/tags/$TAG" \
