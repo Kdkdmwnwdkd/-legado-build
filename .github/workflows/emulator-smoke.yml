@@ -79,6 +79,14 @@ jobs:
             -gpu swiftshader_indirect -camera-back none -camera-front none
           script: bash .github/scripts/emulator-smoke.sh
 
+      - name: Upload x86_64 debug APK
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: debug-apk-x86_64
+          path: app/build/outputs/apk/**/*.apk
+          if-no-files-found: warn
+
       - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v7
