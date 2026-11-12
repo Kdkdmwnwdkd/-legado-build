@@ -845,8 +845,7 @@ class BooksFragment() : BaseFragment(R.layout.fragment_books) {
                         open(book)
                     }
                 }
-            },
-            onOpenRecord = { startActivity<ReadRecordActivity>() }
+            }
         )
     }
 
