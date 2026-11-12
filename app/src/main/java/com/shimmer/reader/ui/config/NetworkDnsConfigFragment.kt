@@ -49,7 +49,7 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (NetworkDnsStore.hasInvalidSettings(requireContext())) lastError = getString(R.string.dns_invalid_saved_settings)
+        if (NetworkDnsStore.hasInvalidSettings(requireContext())) lastError = str(R.string.dns_invalid_saved_settings)
     }
 
     override fun onDestroyView() {
@@ -65,79 +65,79 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
     }
 
     override fun buildPageSpec(): SettingPageSpec {
-        val config = NetworkDnsStore.load(requireContext())
+        val config = NetworkDnsStore.load(settingContext)
         val selected = DohProvider.presets.find { it.url == config.endpoint && it.bootstrap == config.bootstrap }
         val running = benchmarkJob?.isActive == true
         val sections = mutableListOf(
             SettingSectionSpec(items = listOf(
                 SettingSwitchSpec(
                     PreferKey.networkDnsConfig,
-                    getString(R.string.dns_enable_title),
+                    str(R.string.dns_enable_title),
                     config.enabled,
                     { save(config.copy(enabled = it)) },
-                    getString(R.string.dns_enable_summary)
+                    str(R.string.dns_enable_summary)
                 ),
                 action(
                     "dns_provider",
-                    getString(R.string.dns_provider_title),
-                    selected?.name ?: getString(R.string.dns_custom_service),
+                    str(R.string.dns_provider_title),
+                    selected?.name ?: str(R.string.dns_custom_service),
                     ::chooseProvider
                 ),
                 action(
                     "dns_custom",
-                    getString(R.string.dns_endpoint_title),
-                    selected?.url ?: getString(R.string.dns_custom_saved),
+                    str(R.string.dns_endpoint_title),
+                    selected?.url ?: str(R.string.dns_custom_saved),
                     ::editEndpoint
                 ),
                 action(
                     "dns_restart",
-                    getString(R.string.dns_restart_title),
-                    lastError ?: getString(R.string.dns_restart_hint)
+                    str(R.string.dns_restart_title),
+                    lastError ?: str(R.string.dns_restart_hint)
                 ) {
                     showComposeConfirmDialog(
-                        getString(R.string.dns_restart_confirm_title),
-                        getString(R.string.dns_restart_confirm_message),
+                        str(R.string.dns_restart_confirm_title),
+                        str(R.string.dns_restart_confirm_message),
                         onPositive = ::restartWithSavedSettings
                     )
                 }
             )),
-            SettingSectionSpec(title = getString(R.string.dns_by_feature), items = DnsScope.entries.map { scope ->
+            SettingSectionSpec(title = str(R.string.dns_by_feature), items = DnsScope.entries.map { scope ->
                 SettingSwitchSpec(
                     "dns_scope_${scope.key}",
-                    getString(scope.titleRes),
+                    str(scope.titleRes),
                     scope in config.scopes,
                     { checked ->
                         save(config.copy(scopes = if (checked) config.scopes + scope else config.scopes - scope))
                     },
-                    getString(if (scope in config.scopes) R.string.dns_scope_on_summary else R.string.dns_scope_off_summary)
+                    str(if (scope in config.scopes) R.string.dns_scope_on_summary else R.string.dns_scope_off_summary)
                 )
             }),
-            SettingSectionSpec(title = getString(R.string.dns_domain_exceptions), items = listOf(
+            SettingSectionSpec(title = str(R.string.dns_domain_exceptions), items = listOf(
                 action(
                     "dns_rule_add",
-                    getString(R.string.dns_add_rule),
-                    getString(R.string.dns_add_rule_summary)
+                    str(R.string.dns_add_rule),
+                    str(R.string.dns_add_rule_summary)
                 ) { editRule(null) }
             ) + config.rules.map { rule ->
                 action(
                     "dns_rule_${rule.pattern}",
                     rule.pattern,
-                    getString(if (rule.doh) R.string.dns_use_doh else R.string.dns_use_system)
+                    str(if (rule.doh) R.string.dns_use_doh else R.string.dns_use_system)
                 ) { editRule(rule) }
             }),
-            SettingSectionSpec(title = getString(R.string.dns_benchmark_section), items = buildList {
+            SettingSectionSpec(title = str(R.string.dns_benchmark_section), items = buildList {
                 add(
                     action(
                         "dns_test_host",
-                        getString(R.string.dns_test_host_title),
+                        str(R.string.dns_test_host_title),
                         stringSetting(TEST_HOST, "example.com")
                     ) { editTestHost() }
                 )
                 add(
                     action(
                         "dns_benchmark",
-                        getString(if (running) R.string.dns_benchmark_stop else R.string.dns_benchmark_start),
-                        if (running) progress else getString(R.string.dns_benchmark_summary)
+                        str(if (running) R.string.dns_benchmark_stop else R.string.dns_benchmark_start),
+                        if (running) progress else str(R.string.dns_benchmark_summary)
                     ) {
                         if (running) {
                             cancelBenchmark()
@@ -152,7 +152,7 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
                         action(
                             "dns_result_${result.provider?.id ?: "system"}",
                             result.name,
-                            getString(
+                            str(
                                 R.string.dns_result_summary,
                                 result.successCount,
                                 result.samples.size,
@@ -163,45 +163,45 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
                     )
                 }
             }),
-            SettingSectionSpec(title = getString(R.string.dns_advanced), items = listOf(
+            SettingSectionSpec(title = str(R.string.dns_advanced), items = listOf(
                 SettingSwitchSpec(
                     "dns_ipv6",
-                    getString(R.string.dns_ipv6_title),
+                    str(R.string.dns_ipv6_title),
                     config.includeIpv6,
                     { save(config.copy(includeIpv6 = it)) },
-                    getString(R.string.dns_ipv6_summary)
+                    str(R.string.dns_ipv6_summary)
                 ),
                 SettingSwitchSpec(
                     "dns_local",
-                    getString(R.string.dns_local_title),
+                    str(R.string.dns_local_title),
                     config.localNamesUseSystem,
                     { save(config.copy(localNamesUseSystem = it)) },
-                    getString(R.string.dns_local_summary)
+                    str(R.string.dns_local_summary)
                 ),
                 SettingSwitchSpec(
                     "dns_fallback",
-                    getString(R.string.dns_fallback_title),
+                    str(R.string.dns_fallback_title),
                     config.fallbackToSystem,
                     { save(config.copy(fallbackToSystem = it)) },
-                    getString(R.string.dns_fallback_summary)
+                    str(R.string.dns_fallback_summary)
                 ),
                 action(
                     PreferKey.customHosts,
-                    getString(R.string.dns_custom_hosts),
-                    getString(R.string.dns_custom_hosts_summary),
+                    str(R.string.dns_custom_hosts),
+                    str(R.string.dns_custom_hosts_summary),
                     ::editHosts
                 ),
                 SettingSwitchSpec(
                     PreferKey.cronet,
-                    getString(R.string.dns_cronet_title),
+                    str(R.string.dns_cronet_title),
                     booleanSetting(PreferKey.cronet, false),
                     { updateBooleanSetting(PreferKey.cronet, it) },
-                    getString(R.string.dns_cronet_summary)
+                    str(R.string.dns_cronet_summary)
                 ),
                 action(
                     "dns_help",
-                    getString(R.string.dns_help_title),
-                    getString(R.string.dns_help_summary),
+                    str(R.string.dns_help_title),
+                    str(R.string.dns_help_summary),
                     ::showHelp
                 )
             ))
@@ -215,7 +215,7 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
     private fun save(config: NetworkDnsConfig) {
         runCatching { NetworkDnsStore.save(requireContext(), config) }
             .onSuccess { lastError = null }
-            .onFailure { lastError = it.message ?: getString(R.string.dns_config_invalid) }
+            .onFailure { lastError = it.message ?: str(R.string.dns_config_invalid) }
         refreshSettings()
     }
 
@@ -227,7 +227,7 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
             try {
                 val saved = withContext(Dispatchers.IO) { NetworkDnsStore.persistBeforeRestart(context) }
                 if (saved) context.restart() else {
-                    lastError = getString(R.string.dns_save_failed_retry)
+                    lastError = str(R.string.dns_save_failed_retry)
                     refreshSettings()
                 }
             } finally { applyingSettings = false }
@@ -237,8 +237,8 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
     private fun chooseProvider() {
         val config = NetworkDnsStore.load(requireContext())
         showComposeChoiceListDialog(
-            getString(R.string.dns_provider_title),
-            DohProvider.presets.map { it.name } + getString(R.string.dns_custom_service),
+            str(R.string.dns_provider_title),
+            DohProvider.presets.map { it.name } + str(R.string.dns_custom_service),
             selectedIndex = DohProvider.presets.indexOfFirst { it.url == config.endpoint && it.bootstrap == config.bootstrap }
                 .let { if (it < 0) DohProvider.presets.size else it },
             onSelected = { index ->
@@ -253,33 +253,33 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
             bootstrap = values[1].split(Regex("[,，\\s]+")).filter { it.isNotBlank() }
         )
         showComposeTextFormDialog(
-            getString(R.string.dns_provider_title),
+            str(R.string.dns_provider_title),
             labels = listOf(
-                getString(R.string.dns_endpoint_label_url),
-                getString(R.string.dns_endpoint_label_bootstrap)
+                str(R.string.dns_endpoint_label_url),
+                str(R.string.dns_endpoint_label_bootstrap)
             ),
             initialValues = listOf(config.endpoint, config.bootstrap.joinToString(", ")),
-            message = getString(R.string.dns_endpoint_message),
+            message = str(R.string.dns_endpoint_message),
             validateInput = { values -> runCatching { candidate(values).validated() }.isSuccess },
             onPositive = { save(candidate(it)) })
     }
 
     private fun editRule(original: DnsDomainRule?) {
         showComposeTextInputDialog(
-            getString(R.string.dns_rule_title),
+            str(R.string.dns_rule_title),
             hint = "example.com / *.example.com",
             initialValue = original?.pattern.orEmpty(),
-            message = getString(R.string.dns_rule_message),
+            message = str(R.string.dns_rule_message),
             validateInput = { runCatching { DnsDomainRule(it, false).normalized() }.isSuccess },
-            neutralText = if (original == null) null else getString(R.string.dns_rule_delete),
+            neutralText = if (original == null) null else str(R.string.dns_rule_delete),
             onNeutral = if (original == null) null else { {
                 val config = NetworkDnsStore.load(requireContext())
                 save(config.copy(rules = config.rules.filterNot { it.pattern == original.pattern }))
             } },
             onPositive = { pattern ->
                 showComposeChoiceListDialog(
-                    getString(R.string.dns_rule_use_title, pattern.trim()),
-                    listOf("DoH", getString(R.string.dns_use_system)),
+                    str(R.string.dns_rule_use_title, pattern.trim()),
+                    listOf("DoH", str(R.string.dns_use_system)),
                     selectedIndex = if (original?.doh != false) 0 else 1,
                     onSelected = { index ->
                         val rule = DnsDomainRule(pattern, index == 0).normalized()
@@ -291,19 +291,19 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
 
     private fun editHosts() {
         showComposeTextInputDialog(
-            getString(R.string.dns_custom_hosts),
+            str(R.string.dns_custom_hosts),
             initialValue = stringSetting(PreferKey.customHosts, ""),
             hint = "{\"example.com\": [\"192.0.2.1\"]}",
             minLines = 4,
             maxLines = 12,
-            message = getString(R.string.dns_hosts_message),
+            message = str(R.string.dns_hosts_message),
             validateInput = { runCatching { DnsHosts.parse(it, strict = true) }.isSuccess },
             onPositive = { updateStringSetting(PreferKey.customHosts, it.trim()) })
     }
 
     private fun editTestHost() {
         showComposeTextInputDialog(
-            getString(R.string.dns_test_host_title),
+            str(R.string.dns_test_host_title),
             initialValue = stringSetting(TEST_HOST, "example.com"),
             validateInput = { DnsNames.host(it)?.let { host -> DnsNames.literal(host) == null } == true },
             onPositive = {
@@ -323,9 +323,9 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
         benchmarkJob = viewLifecycleOwner.lifecycleScope.launch(start = CoroutineStart.LAZY) {
             try {
                 for (provider in DnsBenchmark.providers(config)) {
-                    progress = getString(
+                    progress = str(
                         R.string.dns_probe_progress,
-                        provider?.name ?: getString(R.string.system_dns),
+                        provider?.name ?: str(R.string.system_dns),
                         host
                     )
                     refreshSettings()
@@ -335,7 +335,7 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (_: Exception) {
-                if (generation == benchmarkGeneration) lastError = getString(R.string.dns_benchmark_failed)
+                if (generation == benchmarkGeneration) lastError = str(R.string.dns_benchmark_failed)
             } finally {
                 if (generation == benchmarkGeneration) {
                     benchmarkJob = null
@@ -349,13 +349,13 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
     }
 
     private fun showResult(result: DnsProbeResult) {
-        val details = getString(R.string.dns_result_message_title, result.hostname) + "\n" +
+        val details = str(R.string.dns_result_message_title, result.hostname) + "\n" +
             result.samples.mapIndexed { index, sample ->
-                getString(
+                str(
                     R.string.dns_result_sample,
                     index + 1,
                     sample.milliseconds?.let {
-                        getString(R.string.dns_result_sample_ok, ms(it), sample.addressCount)
+                        str(R.string.dns_result_sample_ok, ms(it), sample.addressCount)
                     } ?: sample.error.orEmpty()
                 )
             }.joinToString("\n")
@@ -363,9 +363,9 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
         showComposeActionListDialog(
             result.name,
             if (provider == null) {
-                listOf(getString(R.string.dns_close))
+                listOf(str(R.string.dns_close))
             } else {
-                listOf(getString(R.string.dns_result_choose), getString(R.string.dns_close))
+                listOf(str(R.string.dns_result_choose), str(R.string.dns_close))
             },
             message = details,
             onSelected = { index ->
@@ -378,13 +378,13 @@ class NetworkDnsConfigFragment : ComposeSettingFragment() {
 
     private fun showHelp() {
         showComposeConfirmDialog(
-            getString(R.string.dns_help_title),
-            message = getString(R.string.dns_help_body),
+            str(R.string.dns_help_title),
+            message = str(R.string.dns_help_body),
             showNegative = false, onPositive = {})
     }
 
     private fun ms(value: Double?): String =
-        value?.let { String.format(Locale.ROOT, "%.1f ms", it) } ?: getString(R.string.dns_probe_failed)
+        value?.let { String.format(Locale.ROOT, "%.1f ms", it) } ?: str(R.string.dns_probe_failed)
 
     companion object { private const val TEST_HOST = "networkDnsTestHost" }
 }

@@ -23,7 +23,7 @@ class SubscriptionConfigFragment : ComposeSettingFragment() {
                     items = listOf(
                         SettingChoiceSpec(
                             key = KEY_RSS_MODE,
-                            title = getString(R.string.modern_rss_page),
+                            title = str(R.string.modern_rss_page),
                             options = pageModeOptions(
                                 entriesRes = R.array.rss_page_mode_entries,
                                 valuesRes = R.array.page_mode_values
@@ -71,8 +71,8 @@ class SubscriptionConfigFragment : ComposeSettingFragment() {
         entriesRes: Int,
         valuesRes: Int
     ): List<SettingChoiceOption> {
-        val entries = resources.getStringArray(entriesRes)
-        val values = resources.getStringArray(valuesRes)
+        val entries = strings.getStringArray(entriesRes)
+        val values = strings.getStringArray(valuesRes)
         return values.mapIndexed { index, value ->
             SettingChoiceOption(
                 value = value,

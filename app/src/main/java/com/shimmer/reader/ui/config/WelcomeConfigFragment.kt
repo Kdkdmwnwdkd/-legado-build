@@ -64,8 +64,8 @@ class WelcomeConfigFragment : ComposeSettingFragment() {
                     items = listOf(
                         SettingSliderSpec(
                             key = PreferKey.welcomeShowTime,
-                            title = getString(R.string.welcome_show_time),
-                            summary = getString(R.string.welcome_show_time_summary),
+                            title = str(R.string.welcome_show_time),
+                            summary = str(R.string.welcome_show_time_summary),
                             value = intSetting(PreferKey.welcomeShowTime, 0).coerceIn(0, 800),
                             valueRange = 0..800,
                             onValueChange = {
@@ -74,8 +74,8 @@ class WelcomeConfigFragment : ComposeSettingFragment() {
                         ),
                         SettingSwitchSpec(
                             key = PreferKey.customWelcome,
-                            title = getString(R.string.custom_welcome),
-                            summary = getString(R.string.custom_welcome_summary),
+                            title = str(R.string.custom_welcome),
+                            summary = str(R.string.custom_welcome_summary),
                             checked = booleanSetting(PreferKey.customWelcome, false),
                             onCheckedChange = {
                                 updateBooleanSetting(PreferKey.customWelcome, it)
@@ -84,11 +84,11 @@ class WelcomeConfigFragment : ComposeSettingFragment() {
                     )
                 ),
                 SettingSectionSpec(
-                    title = getString(R.string.day),
+                    title = str(R.string.day),
                     items = listOf(
                         SettingActionSpec(
                             key = PreferKey.welcomeImage,
-                            title = getString(R.string.background_image),
+                            title = str(R.string.background_image),
                             summary = imageSummary(AppConfig.welcomeImage),
                             onClick = {
                                 showImageActions(
@@ -99,8 +99,8 @@ class WelcomeConfigFragment : ComposeSettingFragment() {
                         ),
                         SettingSwitchSpec(
                             key = PreferKey.welcomeShowText,
-                            title = getString(R.string.show_welcome_text),
-                            summary = getString(R.string.welcome_text),
+                            title = str(R.string.show_welcome_text),
+                            summary = str(R.string.welcome_text),
                             checked = booleanSetting(PreferKey.welcomeShowText, true),
                             onCheckedChange = {
                                 updateBooleanSetting(PreferKey.welcomeShowText, it)
@@ -108,8 +108,8 @@ class WelcomeConfigFragment : ComposeSettingFragment() {
                         ),
                         SettingSwitchSpec(
                             key = PreferKey.welcomeShowIcon,
-                            title = getString(R.string.show_icon),
-                            summary = getString(R.string.show_default_book_icon),
+                            title = str(R.string.show_icon),
+                            summary = str(R.string.show_default_book_icon),
                             checked = booleanSetting(PreferKey.welcomeShowIcon, true),
                             onCheckedChange = {
                                 updateBooleanSetting(PreferKey.welcomeShowIcon, it)
@@ -118,11 +118,11 @@ class WelcomeConfigFragment : ComposeSettingFragment() {
                     )
                 ),
                 SettingSectionSpec(
-                    title = getString(R.string.night),
+                    title = str(R.string.night),
                     items = listOf(
                         SettingActionSpec(
                             key = PreferKey.welcomeImageDark,
-                            title = getString(R.string.background_image),
+                            title = str(R.string.background_image),
                             summary = imageSummary(AppConfig.welcomeImageDark),
                             onClick = {
                                 showImageActions(
@@ -133,8 +133,8 @@ class WelcomeConfigFragment : ComposeSettingFragment() {
                         ),
                         SettingSwitchSpec(
                             key = PreferKey.welcomeShowTextDark,
-                            title = getString(R.string.show_welcome_text),
-                            summary = getString(R.string.welcome_text),
+                            title = str(R.string.show_welcome_text),
+                            summary = str(R.string.welcome_text),
                             checked = booleanSetting(PreferKey.welcomeShowTextDark, true),
                             onCheckedChange = {
                                 updateBooleanSetting(PreferKey.welcomeShowTextDark, it)
@@ -142,8 +142,8 @@ class WelcomeConfigFragment : ComposeSettingFragment() {
                         ),
                         SettingSwitchSpec(
                             key = PreferKey.welcomeShowIconDark,
-                            title = getString(R.string.show_icon),
-                            summary = getString(R.string.show_default_book_icon),
+                            title = str(R.string.show_icon),
+                            summary = str(R.string.show_default_book_icon),
                             checked = booleanSetting(PreferKey.welcomeShowIconDark, true),
                             onCheckedChange = {
                                 updateBooleanSetting(PreferKey.welcomeShowIconDark, it)
@@ -157,7 +157,7 @@ class WelcomeConfigFragment : ComposeSettingFragment() {
 
     private fun imageSummary(value: String?): String {
         return if (value.isNullOrBlank()) {
-            getString(R.string.select_image)
+            str(R.string.select_image)
         } else {
             value
         }
@@ -172,13 +172,13 @@ class WelcomeConfigFragment : ComposeSettingFragment() {
             return
         }
         showComposeActionListDialog(
-            title = getString(R.string.select_image),
+            title = str(R.string.select_image),
             labels = listOf(
-                getString(R.string.delete),
-                getString(R.string.select_image)
+                str(R.string.delete),
+                str(R.string.select_image)
             ),
             dangerIndices = setOf(0),
-            negativeText = getString(R.string.cancel),
+            negativeText = str(R.string.cancel),
             onSelected = { index ->
                 if (index == 0) {
                     removePref(key)

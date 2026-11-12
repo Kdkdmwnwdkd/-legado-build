@@ -1,6 +1,8 @@
 package com.shimmer.reader.ui.config.compose
 
+import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,8 +40,40 @@ abstract class ComposeSettingFragment : Fragment(),
     private val scrollTargetKey = mutableStateOf<String?>(null)
     private var targetKeyHandled = false
 
+    /**
+     * 设置项搜索需要在不打开页面的情况下拿到各页条目，此时 Fragment 没有宿主。
+     * 构建索引期间用它顶替 [requireContext]，索引结束立即置空，避免持有 Activity。
+     *
+     * 注意：Fragment.getResources()/getString() 是 final 的，覆盖不了，
+     * 所以设置页统一用 [str] 与 [strings] 取资源，才能在无宿主时构建页面描述。
+     */
+    private var indexContext: Context? = null
+
+    /** 设置项读写用的上下文。正常运行时就是所在 Activity，构建搜索索引时是 Application。 */
+    protected val settingContext: Context
+        get() = indexContext ?: requireContext()
+
+    protected val strings: Resources
+        get() = settingContext.resources
+
+    protected fun str(@StringRes resId: Int): String = settingContext.getString(resId)
+
+    protected fun str(@StringRes resId: Int, vararg formatArgs: Any): String =
+        settingContext.getString(resId, *formatArgs)
+
     protected val prefs: SharedPreferences
-        get() = requireContext().defaultSharedPreferences
+        get() = settingContext.defaultSharedPreferences
+
+    // 子类里还有 getPrefXxx(key) 的写法（Fragment 扩展函数会走 requireContext），
+    // 这里用同签名的成员函数遮蔽扩展，索引期间才不会因为拿不到 Activity 而崩。
+    fun getPrefString(key: String, defValue: String? = null): String? =
+        settingContext.getPrefString(key, defValue)
+
+    fun getPrefBoolean(key: String, defValue: Boolean = false): Boolean =
+        settingContext.getPrefBoolean(key, defValue)
+
+    fun getPrefInt(key: String, defValue: Int = 0): Int =
+        settingContext.getPrefInt(key, defValue)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -111,42 +145,70 @@ abstract class ComposeSettingFragment : Fragment(),
         key: String,
         defaultValue: Boolean
     ): Boolean {
-        return requireContext().getPrefBoolean(key, defaultValue)
+        return settingContext.getPrefBoolean(key, defaultValue)
     }
 
     protected fun stringSetting(
         key: String,
         defaultValue: String
     ): String {
-        return requireContext().getPrefString(key, defaultValue) ?: defaultValue
+        return settingContext.getPrefString(key, defaultValue) ?: defaultValue
     }
 
     protected fun intSetting(
         key: String,
         defaultValue: Int
     ): Int {
-        return requireContext().getPrefInt(key, defaultValue)
+        return settingContext.getPrefInt(key, defaultValue)
     }
 
     protected fun updateBooleanSetting(
         key: String,
         value: Boolean
     ) {
-        requireContext().putPrefBoolean(key, value)
+        settingContext.putPrefBoolean(key, value)
     }
 
     protected fun updateStringSetting(
         key: String,
         value: String
     ) {
-        prefs.edit { putString(key, value) }
+        settingContext.defaultSharedPreferences.edit { putString(key, value) }
     }
 
     protected fun updateIntSetting(
         key: String,
         value: Int
     ) {
-        requireContext().putPrefInt(key, value)
+        settingContext.putPrefInt(key, value)
+    }
+
+    /**
+     * 不打开页面直接描述本页条目，供设置项搜索建立索引。
+     * 走的是和界面同一份 [buildPageSpec]，页面改了什么，搜索就能搜到什么。
+     */
+    internal fun describeForSearch(context: Context, pageConfigTag: String): List<SettingSearchEntry> {
+        indexContext = context.applicationContext
+        return try {
+            val page = buildPageSpec()
+            val appContext = context.applicationContext
+            val pageTitle = runCatching { appContext.getString(page.titleRes) }.getOrDefault("")
+            page.sections.flatMap { section ->
+                section.items.filter { it.visible }.map { item ->
+                    SettingSearchEntry(
+                        pageConfigTag = pageConfigTag,
+                        pageTitle = pageTitle,
+                        sectionTitle = section.title?.toString().orEmpty(),
+                        key = item.key,
+                        title = item.title.toString(),
+                        summary = item.summary?.toString().orEmpty(),
+                        keywords = item.searchKeys
+                    )
+                }
+            }
+        } finally {
+            indexContext = null
+        }
     }
 
     private fun consumeTargetKey() {

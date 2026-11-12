@@ -77,7 +77,7 @@ class OtherConfigFragment : ComposeSettingFragment() {
                     items = listOf(
                         choice(
                             key = KEY_LANGUAGE,
-                            title = getString(R.string.language),
+                            title = str(R.string.language),
                             entriesRes = R.array.language,
                             valuesRes = R.array.language_value,
                             defaultValue = "auto"
@@ -85,30 +85,30 @@ class OtherConfigFragment : ComposeSettingFragment() {
                     )
                 ),
                 SettingSectionSpec(
-                    title = getString(R.string.main_activity),
+                    title = str(R.string.main_activity),
                     items = listOf(
                         switch(
                             key = PreferKey.autoRefresh,
-                            title = getString(R.string.pt_auto_refresh),
-                            summary = getString(R.string.ps_auto_refresh),
+                            title = str(R.string.pt_auto_refresh),
+                            summary = str(R.string.ps_auto_refresh),
                             defaultValue = false
                         ),
                         switch(
                             key = PreferKey.onlyUpdateRead,
-                            title = getString(R.string.only_update_read),
-                            summary = getString(R.string.ps_only_update_read),
+                            title = str(R.string.only_update_read),
+                            summary = str(R.string.ps_only_update_read),
                             defaultValue = false,
                             visible = booleanSetting(PreferKey.autoRefresh, false)
                         ),
                         switch(
                             key = PreferKey.defaultToRead,
-                            title = getString(R.string.pt_default_read),
-                            summary = getString(R.string.ps_default_read),
+                            title = str(R.string.pt_default_read),
+                            summary = str(R.string.ps_default_read),
                             defaultValue = false
                         ),
                         choice(
                             key = PreferKey.defaultHomePage,
-                            title = getString(R.string.default_home_page),
+                            title = str(R.string.default_home_page),
                             entriesRes = R.array.default_home_page,
                             valuesRes = R.array.default_home_page_value,
                             defaultValue = "bookshelf"
@@ -116,7 +116,7 @@ class OtherConfigFragment : ComposeSettingFragment() {
                     )
                 ),
                 SettingSectionSpec(
-                    title = getString(R.string.other_setting),
+                    title = str(R.string.other_setting),
                     items = otherSettingItems()
                 )
             )
@@ -167,8 +167,8 @@ class OtherConfigFragment : ComposeSettingFragment() {
         return listOf(
             SettingActionSpec(
                 key = PreferKey.contentSelectMenuConfig,
-                title = getString(R.string.content_select_menu_config),
-                summary = getString(R.string.content_select_menu_config_summary),
+                title = str(R.string.content_select_menu_config),
+                summary = str(R.string.content_select_menu_config_summary),
                 onClick = {
                     ContentSelectMenuConfigDialog()
                         .show(parentFragmentManager, "contentSelectMenuConfig")
@@ -176,14 +176,14 @@ class OtherConfigFragment : ComposeSettingFragment() {
             ),
             intChoice(
                 key = PreferKey.fastScrollerTouchTargetDp,
-                title = getString(R.string.fast_scroller_touch_target),
+                title = str(R.string.fast_scroller_touch_target),
                 entriesRes = R.array.fast_scroller_touch_target_entries,
                 valuesRes = R.array.fast_scroller_touch_target_values,
                 defaultValue = AppConfig.DEFAULT_FAST_SCROLLER_TOUCH_TARGET_DP
             ),
             choice(
                 key = PreferKey.epubReadEngine,
-                title = getString(R.string.epub_read_engine),
+                title = str(R.string.epub_read_engine),
                 summary = epubReadEngineSummary(),
                 entriesRes = R.array.epub_read_engine_entries,
                 valuesRes = R.array.epub_read_engine_values,
@@ -191,28 +191,28 @@ class OtherConfigFragment : ComposeSettingFragment() {
             ),
             choice(
                 key = PreferKey.textReadEngine,
-                title = getString(R.string.text_read_engine),
-                summary = getString(R.string.text_read_engine_summary),
+                title = str(R.string.text_read_engine),
+                summary = str(R.string.text_read_engine_summary),
                 entriesRes = R.array.text_read_engine_entries,
                 valuesRes = R.array.text_read_engine_values,
                 defaultValue = com.shimmer.reader.help.config.TextReadEnginePolicy.DEFAULT
             ),
             SettingActionSpec(
                 key = KEY_LOCAL_PASSWORD,
-                title = getString(R.string.set_local_password),
-                summary = getString(R.string.set_local_password_summary),
+                title = str(R.string.set_local_password),
+                summary = str(R.string.set_local_password_summary),
                 onClick = ::alertLocalPassword
             ),
             SettingActionSpec(
                 key = PreferKey.userAgent,
-                title = getString(R.string.user_agent),
+                title = str(R.string.user_agent),
                 summary = userAgentValue(),
                 onClick = ::showUserAgentDialog
             ),
             SettingActionSpec(
                 key = "networkDns",
-                title = getString(R.string.network_dns_title),
-                summary = getString(R.string.network_dns_summary),
+                title = str(R.string.network_dns_title),
+                summary = str(R.string.network_dns_summary),
                 onClick = {
                     startActivity<ConfigActivity> {
                         putExtra("configTag", ConfigTag.NETWORK_DNS_CONFIG)
@@ -221,25 +221,25 @@ class OtherConfigFragment : ComposeSettingFragment() {
             ),
             switch(
                 key = PreferKey.webServiceWakeLock,
-                title = getString(R.string.web_service_wake_lock),
-                summary = getString(R.string.web_service_wake_lock_summary),
+                title = str(R.string.web_service_wake_lock),
+                summary = str(R.string.web_service_wake_lock_summary),
                 defaultValue = false
             ),
             SettingActionSpec(
                 key = PreferKey.defaultBookTreeUri,
-                title = getString(R.string.book_tree_uri_t),
-                summary = AppConfig.defaultBookTreeUri ?: getString(R.string.book_tree_uri_s),
+                title = str(R.string.book_tree_uri_t),
+                summary = AppConfig.defaultBookTreeUri ?: str(R.string.book_tree_uri_s),
                 onClick = {
                     localBookTreeSelect.launch {
-                        title = getString(R.string.select_book_folder)
+                        title = str(R.string.select_book_folder)
                         mode = HandleFileContract.DIR_SYS
                     }
                 }
             ),
             numberAction(
                 key = PreferKey.sourceEditMaxLine,
-                title = getString(R.string.source_edit_text_max_line),
-                summary = getString(
+                title = str(R.string.source_edit_text_max_line),
+                summary = str(
                     R.string.source_edit_max_line_summary,
                     AppConfig.sourceEditMaxLine.toString()
                 ),
@@ -250,32 +250,32 @@ class OtherConfigFragment : ComposeSettingFragment() {
             ),
             SettingActionSpec(
                 key = PreferKey.checkSource,
-                title = getString(R.string.check_source_config),
+                title = str(R.string.check_source_config),
                 summary = CheckSource.summary,
                 onClick = { showDialogFragment<CheckSourceConfig>() }
             ),
             SettingActionSpec(
                 key = PreferKey.uploadRule,
-                title = getString(R.string.direct_link_upload_rule),
-                summary = getString(R.string.direct_link_upload_rule_summary),
+                title = str(R.string.direct_link_upload_rule),
+                summary = str(R.string.direct_link_upload_rule_summary),
                 onClick = { showDialogFragment<ComposeDirectLinkUploadDialog>() }
             ),
             switch(
                 key = PreferKey.antiAlias,
-                title = getString(R.string.anti_alias),
-                summary = getString(R.string.pref_anti_alias_summary),
+                title = str(R.string.anti_alias),
+                summary = str(R.string.pref_anti_alias_summary),
                 defaultValue = false
             ),
             switch(
                 key = PreferKey.highBrush,
-                title = getString(R.string.high_brush_title),
-                summary = getString(R.string.high_brush_summary),
+                title = str(R.string.high_brush_title),
+                summary = str(R.string.high_brush_summary),
                 defaultValue = true
             ),
             numberAction(
                 key = PreferKey.bitmapCacheSize,
-                title = getString(R.string.bitmap_cache_size),
-                summary = getString(R.string.bitmap_cache_size_summary, AppConfig.bitmapCacheSize.toString()),
+                title = str(R.string.bitmap_cache_size),
+                summary = str(R.string.bitmap_cache_size_summary, AppConfig.bitmapCacheSize.toString()),
                 min = 1,
                 max = 1024,
                 value = AppConfig.bitmapCacheSize,
@@ -286,8 +286,8 @@ class OtherConfigFragment : ComposeSettingFragment() {
             ),
             numberAction(
                 key = PreferKey.imageRetainNum,
-                title = getString(R.string.image_retain_number),
-                summary = getString(R.string.image_retain_number_summary, AppConfig.imageRetainNum.toString()),
+                title = str(R.string.image_retain_number),
+                summary = str(R.string.image_retain_number_summary, AppConfig.imageRetainNum.toString()),
                 min = 0,
                 max = 999,
                 value = AppConfig.imageRetainNum,
@@ -295,8 +295,8 @@ class OtherConfigFragment : ComposeSettingFragment() {
             ),
             numberAction(
                 key = PreferKey.preDownloadNum,
-                title = getString(R.string.pre_download),
-                summary = getString(R.string.pre_download_s, AppConfig.preDownloadNum.toString()),
+                title = str(R.string.pre_download),
+                summary = str(R.string.pre_download_s, AppConfig.preDownloadNum.toString()),
                 min = 0,
                 max = 9999,
                 value = AppConfig.preDownloadNum,
@@ -304,67 +304,67 @@ class OtherConfigFragment : ComposeSettingFragment() {
             ),
             switch(
                 key = PreferKey.replaceEnableDefault,
-                title = getString(R.string.replace_enable_default_t),
-                summary = getString(R.string.replace_enable_default_s),
+                title = str(R.string.replace_enable_default_t),
+                summary = str(R.string.replace_enable_default_s),
                 defaultValue = true
             ),
             switch(
                 key = KEY_MEDIA_BUTTON_ON_EXIT,
-                title = getString(R.string.media_button_on_exit_title),
-                summary = getString(R.string.media_button_on_exit_summary),
+                title = str(R.string.media_button_on_exit_title),
+                summary = str(R.string.media_button_on_exit_summary),
                 defaultValue = true
             ),
             switch(
                 key = PreferKey.readAloudByMediaButton,
-                title = getString(R.string.read_aloud_by_media_button_title),
-                summary = getString(R.string.read_aloud_by_media_button_summary),
+                title = str(R.string.read_aloud_by_media_button_title),
+                summary = str(R.string.read_aloud_by_media_button_summary),
                 defaultValue = false
             ),
             switch(
                 key = PreferKey.ignoreAudioFocus,
-                title = getString(R.string.ignore_audio_focus_title),
-                summary = getString(R.string.ignore_audio_focus_summary),
+                title = str(R.string.ignore_audio_focus_title),
+                summary = str(R.string.ignore_audio_focus_summary),
                 defaultValue = false
             ),
             switch(
                 key = PreferKey.autoClearExpired,
-                title = getString(R.string.auto_clear_expired),
-                summary = getString(R.string.auto_clear_expired_summary),
+                title = str(R.string.auto_clear_expired),
+                summary = str(R.string.auto_clear_expired_summary),
                 defaultValue = true
             ),
             switch(
                 key = PreferKey.showAddToShelfAlert,
-                title = getString(R.string.show_add_to_shelf_alert_title),
-                summary = getString(R.string.show_add_to_shelf_alert_summary),
+                title = str(R.string.show_add_to_shelf_alert_title),
+                summary = str(R.string.show_add_to_shelf_alert_summary),
                 defaultValue = true
             ),
             switch(
                 key = KEY_AUTO_UPDATE_VARIANT,
-                title = getString(R.string.auto_update),
-                summary = getString(R.string.auto_update_summary),
+                title = str(R.string.auto_update),
+                summary = str(R.string.auto_update_summary),
                 defaultValue = true
             ),
             switch(
                 key = PreferKey.showMangaUi,
-                title = getString(R.string.show_manga_ui),
+                title = str(R.string.show_manga_ui),
                 defaultValue = true
             ),
             SettingActionSpec(
                 key = PreferKey.videoSetting,
-                title = getString(R.string.video_setting),
-                summary = getString(R.string.video_setting_summary),
+                title = str(R.string.video_setting),
+                summary = str(R.string.video_setting_summary),
                 onClick = { showDialogFragment(SettingsDialog(requireActivity())) }
             ),
             switch(
                 key = PreferKey.autoRefreshMediaToc,
-                title = getString(R.string.auto_refresh_media_toc),
-                summary = getString(R.string.auto_refresh_media_toc_summary),
+                title = str(R.string.auto_refresh_media_toc),
+                summary = str(R.string.auto_refresh_media_toc_summary),
                 defaultValue = true
             ),
             numberAction(
                 key = PreferKey.webPort,
-                title = getString(R.string.web_port_title),
-                summary = getString(R.string.web_port_summary, AppConfig.webPort.toString()),
+                title = str(R.string.web_port_title),
+                summary = str(R.string.web_port_summary, AppConfig.webPort.toString()),
                 min = 1024,
                 max = 60000,
                 value = AppConfig.webPort,
@@ -372,26 +372,26 @@ class OtherConfigFragment : ComposeSettingFragment() {
             ),
             SettingActionSpec(
                 key = PreferKey.cleanCache,
-                title = getString(R.string.clear_cache),
-                summary = getString(R.string.clear_cache_summary),
+                title = str(R.string.clear_cache),
+                summary = str(R.string.clear_cache_summary),
                 onClick = ::clearCache
             ),
             SettingActionSpec(
                 key = PreferKey.clearWebViewData,
-                title = getString(R.string.clear_webview_data),
-                summary = getString(R.string.clear_webview_data_summary),
+                title = str(R.string.clear_webview_data),
+                summary = str(R.string.clear_webview_data_summary),
                 onClick = ::clearWebViewData
             ),
             SettingActionSpec(
                 key = PreferKey.shrinkDatabase,
-                title = getString(R.string.shrink_database),
-                summary = getString(R.string.shrink_database_summary),
+                title = str(R.string.shrink_database),
+                summary = str(R.string.shrink_database_summary),
                 onClick = ::shrinkDatabase
             ),
             numberAction(
                 key = PreferKey.threadCount,
-                title = getString(R.string.threads_num_title),
-                summary = getString(R.string.threads_num, AppConfig.threadCount.toString()),
+                title = str(R.string.threads_num_title),
+                summary = str(R.string.threads_num, AppConfig.threadCount.toString()),
                 min = 1,
                 max = 999,
                 value = AppConfig.threadCount,
@@ -399,20 +399,20 @@ class OtherConfigFragment : ComposeSettingFragment() {
             ),
             switch(
                 key = PreferKey.processText,
-                title = getString(R.string.add_to_text_context_menu_t),
-                summary = getString(R.string.add_to_text_context_menu_s),
+                title = str(R.string.add_to_text_context_menu_t),
+                summary = str(R.string.add_to_text_context_menu_s),
                 defaultValue = true
             ),
             switch(
                 key = PreferKey.recordLog,
-                title = getString(R.string.record_log),
-                summary = getString(R.string.record_debug_log),
+                title = str(R.string.record_log),
+                summary = str(R.string.record_debug_log),
                 defaultValue = false
             ),
             switch(
                 key = PreferKey.recordHeapDump,
-                title = getString(R.string.record_heap_dump_t),
-                summary = getString(R.string.record_heap_dump_s),
+                title = str(R.string.record_heap_dump_t),
+                summary = str(R.string.record_heap_dump_s),
                 defaultValue = false
             )
         )
@@ -479,8 +479,8 @@ class OtherConfigFragment : ComposeSettingFragment() {
         entriesRes: Int,
         valuesRes: Int
     ): List<SettingChoiceOption> {
-        val entries = resources.getStringArray(entriesRes)
-        val values = resources.getStringArray(valuesRes)
+        val entries = strings.getStringArray(entriesRes)
+        val values = strings.getStringArray(valuesRes)
         return values.mapIndexed { index, value ->
             SettingChoiceOption(
                 value = value,
@@ -526,16 +526,16 @@ class OtherConfigFragment : ComposeSettingFragment() {
 
     private fun epubReadEngineSummary(): String {
         val current = when (AppConfig.epubReadEngine) {
-            "core" -> getString(R.string.epub_read_engine_core)
-            else -> getString(R.string.epub_read_engine_text)
+            "core" -> str(R.string.epub_read_engine_core)
+            else -> str(R.string.epub_read_engine_text)
         }
-        return "${getString(R.string.epub_read_engine_summary)}\n$current"
+        return "${str(R.string.epub_read_engine_summary)}\n$current"
     }
 
     private fun showUserAgentDialog() {
         showComposeTextInputDialog(
-            title = getString(R.string.user_agent),
-            hint = getString(R.string.user_agent),
+            title = str(R.string.user_agent),
+            hint = str(R.string.user_agent),
             initialValue = userAgentValue(),
             onPositive = { userAgent ->
                 if (userAgent.isNullOrBlank()) {
@@ -554,30 +554,30 @@ class OtherConfigFragment : ComposeSettingFragment() {
 
     private fun clearCache() {
         showComposeConfirmDialog(
-            title = getString(R.string.clear_cache),
-            message = getString(R.string.sure_del),
-            positiveText = getString(android.R.string.ok),
-            negativeText = getString(R.string.no),
+            title = str(R.string.clear_cache),
+            message = str(R.string.sure_del),
+            positiveText = str(android.R.string.ok),
+            negativeText = str(R.string.no),
             onPositive = { viewModel.clearCache() }
         )
     }
 
     private fun shrinkDatabase() {
         showComposeConfirmDialog(
-            title = getString(R.string.sure),
-            message = getString(R.string.shrink_database),
-            positiveText = getString(android.R.string.ok),
-            negativeText = getString(R.string.no),
+            title = str(R.string.sure),
+            message = str(R.string.shrink_database),
+            positiveText = str(android.R.string.ok),
+            negativeText = str(R.string.no),
             onPositive = { viewModel.shrinkDatabase() }
         )
     }
 
     private fun clearWebViewData() {
         showComposeConfirmDialog(
-            title = getString(R.string.clear_webview_data),
-            message = getString(R.string.sure_del),
-            positiveText = getString(android.R.string.ok),
-            negativeText = getString(R.string.no),
+            title = str(R.string.clear_webview_data),
+            message = str(R.string.sure_del),
+            positiveText = str(android.R.string.ok),
+            negativeText = str(R.string.no),
             onPositive = { viewModel.clearWebViewData() }
         )
     }
@@ -605,9 +605,9 @@ class OtherConfigFragment : ComposeSettingFragment() {
 
     private fun alertLocalPassword() {
         showComposeTextInputDialog(
-            title = getString(R.string.set_local_password),
+            title = str(R.string.set_local_password),
             hint = "password",
-            message = getString(R.string.set_local_password_summary),
+            message = str(R.string.set_local_password_summary),
             onPositive = { LocalConfig.password = it }
         )
     }

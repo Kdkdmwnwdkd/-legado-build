@@ -163,52 +163,52 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
             titleRes = titleRes,
             sections = listOf(
                 SettingSectionSpec(
-                    title = getString(R.string.web_dav_set),
+                    title = str(R.string.web_dav_set),
                     items = listOf(
                         choice(
                             key = PreferKey.cloudStorageType,
-                            title = getString(R.string.cloud_storage),
+                            title = str(R.string.cloud_storage),
                             entriesRes = R.array.cloud_storage_types,
                             valuesRes = R.array.cloud_storage_type_values,
                             defaultValue = CloudStorageType.WEBDAV.name
                         ),
                         SettingActionSpec(
                             key = KEY_WEB_DAV_ACCOUNT_MANAGE,
-                            title = getString(R.string.webdav_account_manage),
+                            title = str(R.string.webdav_account_manage),
                             summary = webDavAccountSummary(),
                             visible = webDavVisible,
                             onClick = ::showWebDavAccountDialog
                         ),
                         SettingActionSpec(
                             key = PreferKey.webDavDir,
-                            title = getString(R.string.sub_dir),
+                            title = str(R.string.sub_dir),
                             summary = AppConfig.webDavDir ?: "shimmer",
                             visible = webDavVisible,
                             onClick = {
                                 showTextSettingDialog(
                                     key = PreferKey.webDavDir,
-                                    title = getString(R.string.sub_dir),
+                                    title = str(R.string.sub_dir),
                                     initialValue = AppConfig.webDavDir ?: "shimmer"
                                 )
                             }
                         ),
                         SettingActionSpec(
                             key = PreferKey.webDavDeviceName,
-                            title = getString(R.string.webdav_device_name),
+                            title = str(R.string.webdav_device_name),
                             summary = getPrefString(PreferKey.webDavDeviceName),
                             visible = webDavVisible,
                             onClick = {
                                 showTextSettingDialog(
                                     key = PreferKey.webDavDeviceName,
-                                    title = getString(R.string.webdav_device_name),
+                                    title = str(R.string.webdav_device_name),
                                     initialValue = AppConfig.webDavDeviceName ?: ""
                                 )
                             }
                         ),
                         SettingActionSpec(
                             key = KEY_S3_CONTAINER_MANAGE,
-                            title = getString(R.string.s3_container_manage),
-                            summary = getString(R.string.s3_container_manage_summary),
+                            title = str(R.string.s3_container_manage),
+                            summary = str(R.string.s3_container_manage_summary),
                             visible = s3Visible,
                             onClick = {
                                 requireContext().startActivity<S3ContainerManageActivity>()
@@ -216,16 +216,16 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
                         ),
                         SettingActionSpec(
                             key = KEY_LIBRARY_CONTAINER_MANAGE,
-                            title = getString(R.string.library_container_title),
-                            summary = getString(R.string.library_container_summary),
+                            title = str(R.string.library_container_title),
+                            summary = str(R.string.library_container_summary),
                             onClick = {
                                 requireContext().startActivity<LibraryContainerManageActivity>()
                             }
                         ),
                         SettingSwitchSpec(
                             key = PreferKey.autoSwitchS3Container,
-                            title = getString(R.string.s3_auto_switch_container),
-                            summary = getString(R.string.s3_auto_switch_container_summary),
+                            title = str(R.string.s3_auto_switch_container),
+                            summary = str(R.string.s3_auto_switch_container_summary),
                             checked = booleanSetting(PreferKey.autoSwitchS3Container, true),
                             visible = s3Visible,
                             onCheckedChange = {
@@ -234,8 +234,8 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
                         ),
                         SettingSwitchSpec(
                             key = PreferKey.syncThemePackages,
-                            title = getString(R.string.sync_theme_packages),
-                            summary = getString(R.string.sync_theme_packages_summary),
+                            title = str(R.string.sync_theme_packages),
+                            summary = str(R.string.sync_theme_packages_summary),
                             checked = booleanSetting(PreferKey.syncThemePackages, false),
                             onCheckedChange = { checked ->
                                 if (checked && !hasCloudStorageAccount()) {
@@ -247,14 +247,14 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
                         ),
                         switch(
                             key = PreferKey.syncBookProgress,
-                            title = getString(R.string.sync_book_progress_t),
-                            summary = getString(R.string.sync_book_progress_s),
+                            title = str(R.string.sync_book_progress_t),
+                            summary = str(R.string.sync_book_progress_s),
                             defaultValue = true
                         ),
                         SettingSwitchSpec(
                             key = PreferKey.syncBookProgressPlus,
-                            title = getString(R.string.sync_book_progress_plus_t),
-                            summary = getString(R.string.sync_book_progress_plus_s),
+                            title = str(R.string.sync_book_progress_plus_t),
+                            summary = str(R.string.sync_book_progress_plus_s),
                             checked = booleanSetting(PreferKey.syncBookProgressPlus, false),
                             enabled = syncBookProgress,
                             onCheckedChange = {
@@ -264,49 +264,49 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
                     )
                 ),
                 SettingSectionSpec(
-                    title = getString(R.string.backup_restore),
+                    title = str(R.string.backup_restore),
                     items = listOf(
                         SettingActionSpec(
                             key = PreferKey.backupPath,
-                            title = getString(R.string.backup_path),
-                            summary = AppConfig.backupPath ?: getString(R.string.select_backup_path),
+                            title = str(R.string.backup_path),
+                            summary = AppConfig.backupPath ?: str(R.string.select_backup_path),
                             onClick = { selectBackupPath.launch() }
                         ),
                         SettingActionSpec(
                             key = KEY_WEB_DAV_BACKUP,
-                            title = getString(R.string.backup),
-                            summary = getString(R.string.backup_summary),
+                            title = str(R.string.backup),
+                            summary = str(R.string.backup_summary),
                             onClick = { backup() }
                         ),
                         SettingActionSpec(
                             key = KEY_WEB_DAV_RESTORE,
-                            title = getString(R.string.restore),
-                            summary = getString(R.string.restore_summary),
+                            title = str(R.string.restore),
+                            summary = str(R.string.restore_summary),
                             onClick = { restore() },
                             onLongClick = { restoreFromLocal() }
                         ),
                         SettingActionSpec(
                             key = PreferKey.restoreIgnore,
-                            title = getString(R.string.restore_ignore),
-                            summary = getString(R.string.restore_ignore_summary),
+                            title = str(R.string.restore_ignore),
+                            summary = str(R.string.restore_ignore_summary),
                             onClick = ::backupIgnore
                         ),
                         SettingActionSpec(
                             key = KEY_IMPORT_OLD,
-                            title = getString(R.string.menu_import_old_version),
-                            summary = getString(R.string.import_old_summary),
+                            title = str(R.string.menu_import_old_version),
+                            summary = str(R.string.import_old_summary),
                             onClick = { restoreOld.launch() }
                         ),
                         switch(
                             key = PreferKey.onlyLatestBackup,
-                            title = getString(R.string.only_latest_backup_t),
-                            summary = getString(R.string.only_latest_backup_s),
+                            title = str(R.string.only_latest_backup_t),
+                            summary = str(R.string.only_latest_backup_s),
                             defaultValue = true
                         ),
                         switch(
                             key = PreferKey.autoCheckNewBackup,
-                            title = getString(R.string.auto_check_new_backup_t),
-                            summary = getString(R.string.auto_check_new_backup_s),
+                            title = str(R.string.auto_check_new_backup_t),
+                            summary = str(R.string.auto_check_new_backup_s),
                             defaultValue = true
                         )
                     )
@@ -395,8 +395,8 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
         entriesRes: Int,
         valuesRes: Int
     ): List<SettingChoiceOption> {
-        val entries = resources.getStringArray(entriesRes)
-        val values = resources.getStringArray(valuesRes)
+        val entries = strings.getStringArray(entriesRes)
+        val values = strings.getStringArray(valuesRes)
         return values.mapIndexed { index, value ->
             SettingChoiceOption(
                 value = value,
@@ -457,9 +457,9 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
         val password = getPrefString(PreferKey.webDavPassword).orEmpty()
         return when {
             url.isBlank() && account.isBlank() && password.isBlank() ->
-                getString(R.string.webdav_account_manage_summary)
+                str(R.string.webdav_account_manage_summary)
             account.isBlank() ->
-                url.ifBlank { getString(R.string.webdav_account_manage_summary) }
+                url.ifBlank { str(R.string.webdav_account_manage_summary) }
             url.isBlank() ->
                 account
             else ->
@@ -475,10 +475,10 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
             .filter { BackupConfig.ignoreConfig[BackupConfig.ignoreKeys[it]] ?: false }
             .toSet()
         showComposeMultiChoiceDialog(
-            title = getString(R.string.restore_ignore),
+            title = str(R.string.restore_ignore),
             labels = BackupConfig.ignoreTitle.toList(),
             checkedIndices = checkedIndices,
-            negativeText = getString(android.R.string.ok),
+            negativeText = str(android.R.string.ok),
             onItemCheckedChange = { which, isChecked ->
                 BackupConfig.ignoreKeys.getOrNull(which)?.let { key ->
                     BackupConfig.ignoreConfig[key] = isChecked
@@ -490,11 +490,11 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
 
     private fun showWebDavAccountDialog() {
         showComposeTextFormDialog(
-            title = getString(R.string.webdav_account_manage),
+            title = str(R.string.webdav_account_manage),
             labels = listOf(
-                getString(R.string.web_dav_url),
-                getString(R.string.web_dav_account),
-                getString(R.string.web_dav_pw)
+                str(R.string.web_dav_url),
+                str(R.string.web_dav_account),
+                str(R.string.web_dav_pw)
             ),
             initialValues = listOf(
                 getPrefString(PreferKey.webDavUrl).orEmpty(),
@@ -632,11 +632,11 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
         }
         if (hasWebDav) {
             showComposeConfirmDialog(
-                title = getString(R.string.s3_full_webdav_fallback_title),
-                message = getString(messageRes),
-                positiveText = getString(R.string.s3_full_webdav_fallback_upload),
-                negativeText = getString(R.string.s3_full_webdav_fallback_ignore),
-                neutralText = getString(R.string.s3_full_webdav_fallback_never),
+                title = str(R.string.s3_full_webdav_fallback_title),
+                message = str(messageRes),
+                positiveText = str(R.string.s3_full_webdav_fallback_upload),
+                negativeText = str(R.string.s3_full_webdav_fallback_ignore),
+                neutralText = str(R.string.s3_full_webdav_fallback_never),
                 onPositive = {
                     retryActiveBackup(uploadCloud = true, uploadWebDavFallback = true)
                 },
@@ -647,10 +647,10 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
             )
         } else {
             showComposeConfirmDialog(
-                title = getString(R.string.s3_full_webdav_fallback_title),
-                message = getString(messageRes),
-                positiveText = getString(R.string.s3_full_webdav_fallback_ignore),
-                neutralText = getString(R.string.s3_full_webdav_fallback_never),
+                title = str(R.string.s3_full_webdav_fallback_title),
+                message = str(messageRes),
+                positiveText = str(R.string.s3_full_webdav_fallback_ignore),
+                neutralText = str(R.string.s3_full_webdav_fallback_never),
                 showNegative = false,
                 onPositive = {
                     retryActiveBackup(uploadCloud = false, uploadWebDavFallback = false)
@@ -699,7 +699,7 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
                 return@onError
             }
             showComposeConfirmDialog(
-                title = getString(R.string.restore),
+                title = str(R.string.restore),
                 message = "Cloud storage error\n${it.localizedMessage}\nRestore from local backup?",
                 onPositive = {
                     restoreFromLocal()
@@ -779,7 +779,7 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
 
     private fun restoreFromLocal() {
         restoreDoc.launch {
-            title = getString(R.string.select_restore_file)
+            title = str(R.string.select_restore_file)
             mode = HandleFileContract.FILE
             allowExtensions = arrayOf("zip")
         }
