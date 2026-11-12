@@ -221,7 +221,11 @@ class BookshelfFragment2() : BaseBookshelfFragment(R.layout.fragment_bookshelf2)
         }
         Box(modifier = Modifier.fillMaxSize()) {
             LazyVerticalGrid(
-                columns = GridCells.Fixed(bookshelfLayout),
+                columns = if (bookshelfLayout == AppConfig.BOOKSHELF_LAYOUT_GRID_AUTO) {
+                    GridCells.Adaptive(AppConfig.bookshelfCoverWidthDp.dp)
+                } else {
+                    GridCells.Fixed(bookshelfLayout)
+                },
                 state = gridState,
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(
@@ -619,7 +623,7 @@ class BookshelfFragment2() : BaseBookshelfFragment(R.layout.fragment_bookshelf2)
         if (!isAdded) return
         val targetGroupId = groupId
         dismissBookshelfTransientUi()
-        bookshelfLayout = AppConfig.bookshelfLayout.coerceIn(0, 6)
+        bookshelfLayout = AppConfig.bookshelfLayout.coerceIn(0, AppConfig.BOOKSHELF_LAYOUT_GRID_AUTO)
         bookshelfMargin = AppConfig.bookshelfMargin
         composeListItemStyle = AppConfig.bookshelfListItemStyle
         composeListIntroLines = AppConfig.bookshelfListIntroLines

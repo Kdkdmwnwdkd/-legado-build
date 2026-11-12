@@ -242,7 +242,8 @@ class BookshelfConfigDialog : ComposeDialogFragment() {
                 getString(R.string.layout_grid3),
                 getString(R.string.layout_grid4),
                 getString(R.string.layout_grid5),
-                getString(R.string.layout_grid6)
+                getString(R.string.layout_grid6),
+                getString(R.string.layout_grid_auto)
             ).mapIndexed { index, label -> BookshelfConfigOption(label, index) },
             sorts = listOf(
                 getString(R.string.bookshelf_px_0),
