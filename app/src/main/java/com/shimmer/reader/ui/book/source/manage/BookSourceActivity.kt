@@ -970,12 +970,16 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
                     }.apply { show() }
             }
         }
-        observeEvent<Int>(EventBus.CHECK_SOURCE_DONE) {
+        observeEvent<String>(EventBus.CHECK_SOURCE_DONE) { result ->
             keepScreenOn(false)
             snackBar?.dismiss()
             snackBar = null
             updateCheckingState(false)
             refreshDebugMessages(force = true)
+            // 校验跑完会带一句汇总；中途取消时为空串，什么都不提示
+            if (result.isNotBlank()) {
+                Snackbar.make(binding.root, result, Snackbar.LENGTH_LONG).show()
+            }
             groups.forEach { group ->
                 if (group.contains("失效") && searchQueryState.value.isEmpty()) {
                     updateSearchQuery("失效")
