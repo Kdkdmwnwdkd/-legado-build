@@ -52,12 +52,17 @@ import kotlinx.coroutines.withTimeout
 import org.mozilla.javascript.WrappedException
 import splitties.init.appCtx
 import splitties.systemservices.notificationManager
+import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.InetSocketAddress
 import java.net.Socket
+import java.net.SocketException
+import java.net.SocketTimeoutException
 import java.net.URI
 import java.net.URL
+import java.net.UnknownHostException
 import java.util.concurrent.Executors
+import javax.net.ssl.SSLException
 
 /**
  * 校验书源
@@ -230,16 +235,41 @@ class CheckSourceService : BaseService() {
     /**
      * 给用户看的一句失败原因。
      *
-     * 超时、脚本报错这类异常本身没有 message，直接取会得到一句空话，
-     * 这里退回到刚打上的失效分组名（「校验超时」「js失效」），比类名好懂。
+     * 校验的失败信息有三种来源：我们自己打的分组名（「搜索失效」）、没有 message 的
+     * 超时与脚本异常、以及从 HTTP 客户端冒出来的英文网络错误。第三种直接摆出来会是
+     * 一整行 IP 和端口，对用户没有意义，这里换成一句人话；实在归不了类的才原样保留。
      */
     private fun Throwable.failureReason(): String {
-        localizedMessage?.takeIf { it.isNotBlank() }?.let { return it }
-        return when (this) {
-            is TimeoutCancellationException -> "校验超时"
-            is ScriptException, is WrappedException -> "js失效"
-            else -> javaClass.simpleName
+        // 分组名本身已经是结论，优先用它
+        if (this is NoStackTraceException) {
+            localizedMessage?.takeIf { it.isNotBlank() }?.let {
+                return it.replace(", ", "、")
+            }
         }
+        when (this) {
+            is TimeoutCancellationException -> return "校验超时"
+            is ScriptException, is WrappedException -> return "js失效"
+        }
+        networkReason()?.let { return it }
+        val message = localizedMessage?.takeIf { it.isNotBlank() } ?: javaClass.simpleName
+        return message.take(80)
+    }
+
+    /** 顺着 cause 链找网络异常，取最具体的那一个。 */
+    private fun Throwable.networkReason(): String? {
+        var current: Throwable? = this
+        val visited = HashSet<Throwable>()
+        while (current != null && visited.add(current)) {
+            when (current) {
+                is UnknownHostException -> return "域名无法解析"
+                is SocketTimeoutException -> return "连接源站超时"
+                is SSLException -> return "证书校验失败"
+                is ConnectException -> return "无法连接源站"
+                is SocketException -> return "网络连接中断"
+            }
+            current = current.cause ?: (current as? WrappedException)?.wrappedException
+        }
+        return null
     }
 
     private suspend fun isDomainReachable(domain: String): Boolean {
