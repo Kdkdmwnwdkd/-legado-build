@@ -4,8 +4,10 @@
     <string name="highlight_style_background">背景上色</string>
     <string name="highlight_style_underline">下划线</string>
     <string name="highlight_style_double_line">双下划线</string>
+    <string name="highlight_style_dotted_line">点线</string>
     <string name="highlight_style_wavy_line">波浪线</string>
     <string name="highlight_style_strikethrough">删除线</string>
+    <string name="highlight_style_outline">描边</string>
 
     <string name="highlight_color_accent">阅读强调色</string>
     <string name="highlight_color_red">红色</string>

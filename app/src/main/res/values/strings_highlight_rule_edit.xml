@@ -4,8 +4,10 @@
     <string name="highlight_style_background">Background color</string>
     <string name="highlight_style_underline">Underline</string>
     <string name="highlight_style_double_line">Double underline</string>
+    <string name="highlight_style_dotted_line">Dotted underline</string>
     <string name="highlight_style_wavy_line">Wavy underline</string>
     <string name="highlight_style_strikethrough">Strikethrough</string>
+    <string name="highlight_style_outline">Outline</string>
 
     <string name="highlight_color_accent">Reading accent</string>
     <string name="highlight_color_red">Red</string>
