@@ -1898,6 +1898,11 @@
     <string name="cache_manage_books">书籍</string>
     <string name="cache_manage_audio">音频</string>
     <string name="cache_manage_manga">漫画</string>
+    <string name="cache_fill_word_count">补全书目字数</string>
+    <string name="cache_fill_word_count_confirm">用已缓存的正文重新统计每本书的字数，只处理已缓存八成的书，其余跳过。书源自己给的字数会被覆盖。</string>
+    <string name="cache_fill_word_count_starting">正在统计…</string>
+    <string name="cache_fill_word_count_progress">正在统计 %1$d/%2$d：%3$s</string>
+    <string name="cache_fill_word_count_result">已补全 %1$d 本，缓存不全跳过 %2$d 本，统计失败 %3$d 本</string>
     <string name="cache_manage_search_book">搜索缓存</string>
     <string name="cache_manage_sort_title">缓存排序</string>
     <string name="cache_manage_sort_current">排序：%1$s</string>

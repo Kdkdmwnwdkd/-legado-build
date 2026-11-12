@@ -18,6 +18,7 @@ import com.shimmer.reader.help.book.CacheCloudIndexItem
 import com.shimmer.reader.help.book.CacheCloudIndexStore
 import com.shimmer.reader.help.exoplayer.ExoPlayerHelper
 import com.shimmer.reader.help.book.BookHelp
+import com.shimmer.reader.help.book.BookWordCountStat
 import com.shimmer.reader.help.book.CacheBookManifest
 import com.shimmer.reader.help.book.CacheManifestHelper
 import com.shimmer.reader.help.book.cacheGroupKey
@@ -989,6 +990,17 @@ class CacheManageViewModel(application: Application) : BaseViewModel(application
             CacheManageMode.AUDIO -> appDb.bookDao.getByTypeOnLine(BookType.audio)
             CacheManageMode.MANGA -> appDb.bookDao.getByTypeOnLine(BookType.image)
         }
+    }
+
+    /**
+     * 用已缓存的正文重新统计书架里的书目字数。
+     * 只处理在线文本，本地书与音频/漫画不在范围内。
+     */
+    suspend fun fillWordCounts(
+        onProgress: suspend (done: Int, total: Int, bookName: String) -> Unit = { _, _, _ -> }
+    ): BookWordCountStat.Summary = withContext(Dispatchers.IO) {
+        val books = getBooks(CacheManageMode.BOOK).filter { !it.isLocal }
+        BookWordCountStat.fill(books, onProgress = onProgress)
     }
 
     private fun deleteAudioMediaCache(book: Book) {

@@ -2135,6 +2135,11 @@ Note: custom buttons are meant for reading and helper actions; do not modify the
     <string name="cache_manage_books">Books</string>
     <string name="cache_manage_audio">Audio</string>
     <string name="cache_manage_manga">Manga</string>
+    <string name="cache_fill_word_count">Fill book word count</string>
+    <string name="cache_fill_word_count_confirm">Recount each book from the cached text. Only books with at least 80% of chapters cached are updated; the rest are skipped. The word count reported by the source will be overwritten.</string>
+    <string name="cache_fill_word_count_starting">Counting…</string>
+    <string name="cache_fill_word_count_progress">Counting %1$d/%2$d: %3$s</string>
+    <string name="cache_fill_word_count_result">Updated %1$d, skipped %2$d (cache incomplete), failed %3$d</string>
     <string name="cache_manage_search_book">Search cache</string>
     <string name="cache_manage_sort_title">Sort cache</string>
     <string name="cache_manage_sort_current">Sort: %1$s</string>

@@ -21,6 +21,7 @@ import com.shimmer.reader.help.AppCloudStorage
 import com.shimmer.reader.lib.cloud.CloudStorageType
 import com.shimmer.reader.lib.cloud.S3ContainerScope
 import com.shimmer.reader.lib.dialogs.AndroidAlertBuilder
+import com.shimmer.reader.lib.dialogs.indeterminateProgressDialog
 import com.shimmer.reader.lib.dialogs.selector
 import com.shimmer.reader.lib.theme.UiCorner
 import com.shimmer.reader.lib.theme.accentColor
@@ -128,6 +129,9 @@ class CacheManageActivity :
             setIcon(R.drawable.ic_outline_cloud_24)
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
+        menu.add(0, MENU_WORD_COUNT, 3, R.string.cache_fill_word_count).apply {
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+        }
         updateSortButton()
         updateContainerMenu()
         return true
@@ -142,7 +146,61 @@ class CacheManageActivity :
             showContainerSelector()
             return true
         }
+        if (item.itemId == MENU_WORD_COUNT) {
+            confirmFillWordCount()
+            return true
+        }
         return super.onCompatOptionsItemSelected(item)
+    }
+
+    private fun confirmFillWordCount() {
+        AndroidAlertBuilder(this).apply {
+            setTitle(R.string.cache_fill_word_count)
+            setMessage(R.string.cache_fill_word_count_confirm)
+            yesButton { startFillWordCount() }
+            noButton()
+            show()
+        }
+    }
+
+    private fun startFillWordCount() {
+        val dialog = indeterminateProgressDialog(
+            title = getString(R.string.cache_fill_word_count),
+            message = getString(R.string.cache_fill_word_count_starting)
+        )
+        lifecycleScope.launch {
+            val result = runCatching {
+                viewModel.fillWordCounts { done, total, bookName ->
+                    withContext(Dispatchers.Main) {
+                        dialog.setMessage(
+                            getString(
+                                R.string.cache_fill_word_count_progress,
+                                done + 1,
+                                total,
+                                bookName
+                            )
+                        )
+                    }
+                }
+            }
+            dialog.dismiss()
+            val summary = result.getOrNull()
+            if (summary == null) {
+                toastOnUi(R.string.error)
+                return@launch
+            }
+            toastOnUi(
+                getString(
+                    R.string.cache_fill_word_count_result,
+                    summary.writtenCount,
+                    summary.incompleteCount,
+                    summary.failedCount
+                )
+            )
+            if (summary.writtenCount > 0) {
+                viewModel.load(CacheManageMode.BOOK)
+            }
+        }
     }
 
     private fun setupSearchView(view: SearchView) {
@@ -592,6 +650,7 @@ private const val TERMINAL_TASK_RELOAD_DELAY_MS = 600L
 private const val MENU_SEARCH = 0x53ff
 private const val MENU_SORT = 0x5400
 private const val MENU_CONTAINER = 0x5401
+private const val MENU_WORD_COUNT = 0x5402
 
 enum class CacheManageSortMode(val titleRes: Int) {
     RECENT(R.string.cache_manage_sort_time),
