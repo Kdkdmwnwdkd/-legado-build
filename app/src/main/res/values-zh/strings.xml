@@ -1173,6 +1173,8 @@
     <string name="check_source_progress_finished">校验完成</string>
     <string name="check_source_progress_cancelled">已取消</string>
     <string name="check_source_progress_preparing">正在准备…</string>
+    <string name="check_source_progress_idle">暂无校验记录</string>
+    <string name="check_source_progress_idle_hint">在书源管理里选中书源，点「校验所选」后，这里会逐条显示进度。</string>
     <string name="check_source_progress_count">%1$d / %2$d</string>
     <string name="check_source_progress_elapsed">用时 %1$s</string>
     <string name="check_source_progress_empty">没有可显示的条目</string>
