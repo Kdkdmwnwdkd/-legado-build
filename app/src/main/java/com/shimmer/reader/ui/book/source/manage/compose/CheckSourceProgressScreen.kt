@@ -180,7 +180,11 @@ fun CheckSourceProgressScreen(
                 if (shown.isEmpty()) {
                     item {
                         Text(
-                            text = stringResource(R.string.check_source_progress_empty),
+                            text = if (run.status == CheckRunStatus.IDLE) {
+                                stringResource(R.string.check_source_progress_idle_hint)
+                            } else {
+                                stringResource(R.string.check_source_progress_empty)
+                            },
                             color = palette.settings.secondaryText,
                             fontSize = 14.sp,
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 24.dp)
@@ -245,7 +249,7 @@ private fun ProgressCard(
                 CheckRunStatus.RUNNING -> stringResource(R.string.check_source_progress_running)
                 CheckRunStatus.FINISHED -> stringResource(R.string.check_source_progress_finished)
                 CheckRunStatus.CANCELLED -> stringResource(R.string.check_source_progress_cancelled)
-                CheckRunStatus.IDLE -> stringResource(R.string.check_source_progress_preparing)
+                CheckRunStatus.IDLE -> stringResource(R.string.check_source_progress_idle)
             },
             color = palette.miuix.primaryText,
             fontSize = 16.sp,
