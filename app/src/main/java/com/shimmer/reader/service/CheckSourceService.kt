@@ -7,6 +7,7 @@ import com.script.ScriptException
 import com.shimmer.reader.R
 import com.shimmer.reader.base.BaseService
 import com.shimmer.reader.constant.AppConst
+import com.shimmer.reader.constant.AppPattern
 import com.shimmer.reader.constant.BookSourceType
 import com.shimmer.reader.constant.EventBus
 import com.shimmer.reader.constant.IntentAction
@@ -20,6 +21,7 @@ import com.shimmer.reader.exception.TocEmptyException
 import com.shimmer.reader.help.IntentData
 import com.shimmer.reader.help.source.exploreKinds
 import com.shimmer.reader.model.CheckSource
+import com.shimmer.reader.model.CheckSourceSummary
 import com.shimmer.reader.model.Debug
 import com.shimmer.reader.model.webBook.WebBook
 import com.shimmer.reader.ui.book.source.manage.BookSourceActivity
@@ -27,6 +29,7 @@ import com.shimmer.reader.utils.activityPendingIntent
 import com.shimmer.reader.utils.onEachParallel
 import com.shimmer.reader.utils.postEvent
 import com.shimmer.reader.utils.servicePendingIntent
+import com.shimmer.reader.utils.splitNotBlank
 import com.shimmer.reader.utils.toastOnUi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.TimeoutCancellationException
@@ -65,6 +68,15 @@ class CheckSourceService : BaseService() {
     private var originSize = 0
     private var finishCount = 0
 
+    /** 本轮校验的收尾统计，只用于结束后的提示，不参与判定。 */
+    private val summary = CheckSourceSummary()
+
+    /** 校验前每个源的开关状态，用来判断这一轮有没有把源关掉。 */
+    private val enabledBefore = HashMap<String, Boolean>()
+
+    /** 是否跑完了全程。用户中途取消时为 false，结束时不该报「完成」。 */
+    private var finished = false
+
     private val notificationBuilder by lazy {
         NotificationCompat.Builder(this, AppConst.channelIdReadAloud)
             .setSmallIcon(R.drawable.ic_network_check)
@@ -98,8 +110,12 @@ class CheckSourceService : BaseService() {
         super.onDestroy()
         Debug.finishChecking()
         searchCoroutine.close()
-        postEvent(EventBus.CHECK_SOURCE_DONE, 0)
-        notificationManager.cancel(NotificationId.CheckSourceService)
+        if (finished) {
+            notifyFinished()
+        } else {
+            notificationManager.cancel(NotificationId.CheckSourceService)
+        }
+        postEvent(EventBus.CHECK_SOURCE_DONE, resultText())
     }
 
     private fun check(ids: List<String>) {
@@ -112,18 +128,28 @@ class CheckSourceService : BaseService() {
             flow {
                 for (origin in ids) {
                     appDb.bookSourceDao.getBookSource(origin)?.let {
+                        // 校验会按结果改 enabled，先记下原状态，才能算出「本轮被停用」
+                        enabledBefore[it.bookSourceUrl] = it.enabled
                         emit(it)
                     }
                 }
             }.onStart {
                 originSize = ids.size
                 finishCount = 0
+                summary.reset()
+                enabledBefore.clear()
+                finished = false
                 notificationMsg = getString(R.string.progress_show, "", 0, originSize)
                 upNotification()
             }.onEachParallel(threadCount) {
                 checkSource(it)
             }.onEach {
                 finishCount++
+                summary.record(
+                    invalidGroups = it.invalidGroupList(),
+                    wasEnabled = enabledBefore[it.bookSourceUrl] ?: true,
+                    enabledNow = it.enabled
+                )
                 notificationMsg = getString(
                     R.string.progress_show,
                     it.bookSourceName,
@@ -133,6 +159,8 @@ class CheckSourceService : BaseService() {
                 upNotification()
                 appDb.bookSourceDao.update(it)
             }.onCompletion {
+                // 被取消时 onCompletion 收到 CancellationException，此时不算跑完
+                if (it == null) finished = true
                 stopSelf()
             }.collect()
         }
@@ -349,6 +377,79 @@ class CheckSourceService : BaseService() {
         updateGroups {
             removeGroup(group)
         }
+    }
+
+    /**
+     * 本次校验的收尾文案。没跑完、或一个源都没校验到的时候返回空串，
+     * 调用方据此决定要不要提示，避免把「取消」说成「完成」。
+     */
+    private fun resultText(): String {
+        if (!finished || summary.checked == 0) return ""
+        val detail = summary.failureText(
+            itemFormat = { tag, count ->
+                getString(R.string.check_source_done_item, tag, count)
+            },
+            separator = getString(R.string.check_source_done_separator),
+            restFormat = { count -> getString(R.string.check_source_done_more, count) }
+        )
+        val brief = getString(
+            R.string.check_source_done_summary,
+            summary.checked,
+            summary.usable,
+            summary.failedSources
+        )
+        val failedPart = if (detail.isEmpty()) {
+            ""
+        } else {
+            getString(R.string.check_source_done_detail, detail)
+        }
+        // 校验失败会自动关掉源开关，这件事必须说，否则用户会以为源还在用
+        val disabledPart = if (summary.disabledSources > 0) {
+            getString(R.string.check_source_done_disabled, summary.disabledSources)
+        } else {
+            ""
+        }
+        return brief + failedPart + disabledPart
+    }
+
+    /**
+     * 结束后的常驻通知：收起进度条，留一条可点开的结果摘要。
+     *
+     * 改动前这里是在 onDestroy 里直接 cancel，用户等十几分钟只看到通知消失，
+     * 至于哪些源坏了、坏在哪一段，只能自己去分组里翻。
+     */
+    private fun notifyFinished() {
+        val text = resultText()
+        if (text.isEmpty()) {
+            notificationManager.cancel(NotificationId.CheckSourceService)
+            return
+        }
+        val notification = NotificationCompat.Builder(this, AppConst.channelIdReadAloud)
+            .setSmallIcon(R.drawable.ic_network_check)
+            .setContentTitle(getString(R.string.check_source_done_title))
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setOngoing(false)
+            .setAutoCancel(true)
+            .setOnlyAlertOnce(true)
+            .setContentIntent(activityPendingIntent<BookSourceActivity>("activity"))
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .build()
+        notificationManager.notify(NotificationId.CheckSourceService, notification)
+    }
+
+    /**
+     * 本轮结束时仍留在源上的失效分组。
+     *
+     * 校验开始时 [BookSource.removeInvalidGroups] 会清空失效分组，所以这里读到的
+     * 必然是这一轮加上去的，不会把上一轮的结果算进来。
+     */
+    private fun BookSource.invalidGroupList(): List<String> {
+        return bookSourceGroup
+            ?.splitNotBlank(AppPattern.splitGroupRegex)
+            ?.filter { "失效" in it || it == "校验超时" }
+            ?.distinct()
+            ?: emptyList()
     }
 
     private fun upNotification() {
