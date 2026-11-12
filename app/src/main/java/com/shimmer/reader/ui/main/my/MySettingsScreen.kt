@@ -91,7 +91,8 @@ private data class VisibleSection(
 private data class VisibleRow(
     val row: MySettingsRowModel,
     val summary: String,
-    val searchTarget: MySettingsSubSearchItem?
+    /** 搜索时该页命中的全部条目，一条一项，不再只留第一个。 */
+    val subResults: List<MySettingsSubSearchItem> = emptyList()
 )
 
 private val SettingsHorizontalPadding = 12.dp
@@ -198,9 +199,12 @@ private fun SettingsSectionCard(
             )
     ) {
         AppSettingSectionTitle(title = section.title, palette = colors)
-        section.rows.forEachIndexed { index, item ->
-            val isLastRowInSection = index == section.rows.lastIndex
+        val cellCount = section.rows.sumOf { 1 + it.subResults.size }
+        var cellIndex = 0
+        section.rows.forEach { item ->
+            val isLastRowInSection = cellIndex == cellCount - 1
             val showDivider = !isLastRowInSection
+            cellIndex++
             when (item.row.kind) {
                 MySettingsRowKind.ThemeMode -> SettingsActionRow(
                     item = item.copy(summary = themeModeLabel),
@@ -243,7 +247,76 @@ private fun SettingsSectionCard(
                     isFirst = false,
                     isLast = isLastRowInSection,
                     showDivider = showDivider,
-                    onClick = { onRowClick(item.row.key, item.searchTarget) }
+                    onClick = { onRowClick(item.row.key, null) }
+                )
+            }
+            item.subResults.forEach { subResult ->
+                SettingsSubResultRow(
+                    item = subResult,
+                    colors = colors,
+                    panelRadiusPx = panelRadiusPx,
+                    isLast = cellIndex == cellCount - 1,
+                    showDivider = cellIndex != cellCount - 1,
+                    onClick = { onRowClick(item.row.key, subResult) }
+                )
+                cellIndex++
+            }
+        }
+    }
+}
+
+/**
+ * 搜索命中的具体设置项。挂在所属入口行的下方，一行一项，
+ * 点哪一项就直接跳到那一项，而不是笼统地打开页面顶部。
+ */
+@Composable
+private fun SettingsSubResultRow(
+    item: MySettingsSubSearchItem,
+    colors: AppSettingPalette,
+    panelRadiusPx: Float,
+    isLast: Boolean,
+    showDivider: Boolean,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 52.dp)
+            .appSettingRowDecoration(
+                pressed = pressed,
+                pressedColor = colors.rowPressed,
+                dividerColor = colors.divider,
+                showDivider = showDivider,
+                radiusPx = panelRadiusPx,
+                isFirst = false,
+                isLast = isLast
+            )
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            )
+            .padding(start = 32.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = item.title,
+                color = colors.secondaryText,
+                fontSize = 15.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            if (item.summary.isNotBlank()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = item.summary,
+                    color = colors.secondaryText.copy(alpha = 0.72f),
+                    fontSize = 13.sp,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
@@ -437,8 +510,8 @@ private fun buildVisibleSections(
             if (visible) {
                 VisibleRow(
                     row = row,
-                    summary = matchedSubItems.firstOrNull()?.title ?: summary,
-                    searchTarget = matchedSubItems.firstOrNull()
+                    summary = summary,
+                    subResults = matchedSubItems
                 )
             } else {
                 null

@@ -24,11 +24,11 @@ class DiscoverySubscriptionConfigFragment : ComposeSettingFragment() {
             titleRes = titleRes,
             sections = listOf(
                 SettingSectionSpec(
-                    title = getString(R.string.discovery_settings_title),
+                    title = str(R.string.discovery_settings_title),
                     items = listOf(
                         SettingChoiceSpec(
                             key = KEY_DISCOVERY_MODE,
-                            title = getString(R.string.modern_discovery_page),
+                            title = str(R.string.modern_discovery_page),
                             options = pageModeOptions(
                                 entriesRes = R.array.discovery_page_mode_entries,
                                 valuesRes = R.array.discovery_page_mode_values
@@ -50,7 +50,7 @@ class DiscoverySubscriptionConfigFragment : ComposeSettingFragment() {
                         ),
                         SettingActionSpec(
                             key = PreferKey.discoveryPageLayout,
-                            title = getString(R.string.discovery_page_layout),
+                            title = str(R.string.discovery_page_layout),
                             summary = discoveryLayoutSummary(),
                             visible = discoveryMode == AppConfig.DISCOVERY_PAGE_MODE_MODERN,
                             onClick = ::showDiscoveryLayoutDialog
@@ -58,11 +58,11 @@ class DiscoverySubscriptionConfigFragment : ComposeSettingFragment() {
                     )
                 ),
                 SettingSectionSpec(
-                    title = getString(R.string.subscription_settings_title),
+                    title = str(R.string.subscription_settings_title),
                     items = listOf(
                         SettingChoiceSpec(
                             key = KEY_RSS_MODE,
-                            title = getString(R.string.modern_rss_page),
+                            title = str(R.string.modern_rss_page),
                             options = pageModeOptions(
                                 entriesRes = R.array.rss_page_mode_entries,
                                 valuesRes = R.array.page_mode_values
@@ -122,10 +122,10 @@ class DiscoverySubscriptionConfigFragment : ComposeSettingFragment() {
 
     private fun showDiscoveryLayoutDialog() {
         showComposeChoiceListDialog(
-            title = getString(R.string.discovery_page_layout),
+            title = str(R.string.discovery_page_layout),
             labels = DISCOVERY_LAYOUT_VALUES.map(::discoveryLayoutLabel),
             selectedIndex = DISCOVERY_LAYOUT_VALUES.indexOf(AppConfig.discoveryPageLayout),
-            negativeText = getString(R.string.cancel),
+            negativeText = str(R.string.cancel),
             onSelected = { index ->
                 val value = DISCOVERY_LAYOUT_VALUES.getOrNull(index) ?: return@showComposeChoiceListDialog
                 AppConfig.discoveryPageLayout = value
@@ -135,7 +135,7 @@ class DiscoverySubscriptionConfigFragment : ComposeSettingFragment() {
     }
 
     private fun discoveryLayoutSummary(): String {
-        return getString(
+        return str(
             R.string.discovery_page_layout_summary,
             discoveryLayoutLabel(AppConfig.discoveryPageLayout)
         )
@@ -143,9 +143,9 @@ class DiscoverySubscriptionConfigFragment : ComposeSettingFragment() {
 
     private fun discoveryLayoutLabel(value: Int): String {
         return when (value) {
-            2 -> getString(R.string.discovery_page_layout_waterfall)
-            3 -> getString(R.string.discovery_page_layout_grid)
-            else -> getString(R.string.discovery_page_layout_list)
+            2 -> str(R.string.discovery_page_layout_waterfall)
+            3 -> str(R.string.discovery_page_layout_grid)
+            else -> str(R.string.discovery_page_layout_list)
         }
     }
 
@@ -153,8 +153,8 @@ class DiscoverySubscriptionConfigFragment : ComposeSettingFragment() {
         entriesRes: Int,
         valuesRes: Int
     ): List<SettingChoiceOption> {
-        val entries = resources.getStringArray(entriesRes)
-        val values = resources.getStringArray(valuesRes)
+        val entries = strings.getStringArray(entriesRes)
+        val values = strings.getStringArray(valuesRes)
         return values.mapIndexed { index, value ->
             SettingChoiceOption(
                 value = value,

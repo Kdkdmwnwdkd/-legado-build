@@ -133,20 +133,12 @@ class ConfigActivity : VMBaseActivity<ViewBinding, ConfigViewModel>() {
                 onBack = ::supportFinishAfterTransition
             )
         }
-        when (val configTag = intent.getStringExtra("configTag")) {
-            ConfigTag.OTHER_CONFIG -> replaceFragment(configTag, OtherConfigFragment::class.java)
-            ConfigTag.NETWORK_DNS_CONFIG -> replaceFragment(configTag, NetworkDnsConfigFragment::class.java)
-            ConfigTag.THEME_CONFIG -> replaceFragment(configTag, ThemeConfigFragment::class.java)
-            ConfigTag.BACKUP_CONFIG -> replaceFragment(configTag, BackupConfigFragment::class.java)
-            ConfigTag.AI_CONFIG -> replaceFragment(configTag, AiConfigFragment::class.java)
-            ConfigTag.COVER_CONFIG -> replaceFragment(configTag, CoverConfigFragment::class.java)
-            ConfigTag.WELCOME_CONFIG -> replaceFragment(configTag, WelcomeConfigFragment::class.java)
-            ConfigTag.DISCOVERY_SUBSCRIPTION_CONFIG ->
-                replaceFragment(configTag, DiscoverySubscriptionConfigFragment::class.java)
-            ConfigTag.DISCOVERY_CONFIG -> replaceFragment(configTag, DiscoveryConfigFragment::class.java)
-            ConfigTag.SUBSCRIPTION_CONFIG -> replaceFragment(configTag, SubscriptionConfigFragment::class.java)
-            else -> finish()
+        val page = intent.getStringExtra("configTag")?.let(ConfigPageRegistry::find)
+        if (page == null) {
+            finish()
+            return
         }
+        replaceFragment(page.tag, page.fragmentClass)
     }
 
     override fun setTitle(resId: Int) {
@@ -159,10 +151,10 @@ class ConfigActivity : VMBaseActivity<ViewBinding, ConfigViewModel>() {
         titleText = title?.toString().orEmpty()
     }
 
-    fun <T : Fragment> replaceFragment(configTag: String, fragmentClass: Class<T>) {
+    fun replaceFragment(configTag: String, fragmentClass: Class<out Fragment>) {
         intent.putExtra("configTag", configTag)
         val configFragment = supportFragmentManager.findFragmentByTag(configTag)
-            ?: fragmentClass.newInstance()
+            ?: fragmentClass.getDeclaredConstructor().newInstance()
         supportFragmentManager.beginTransaction()
             .replace(R.id.configFrameLayout, configFragment, configTag)
             .commit()

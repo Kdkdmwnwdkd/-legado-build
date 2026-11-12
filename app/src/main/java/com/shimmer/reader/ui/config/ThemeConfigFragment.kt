@@ -41,8 +41,8 @@ class ThemeConfigFragment : ComposeSettingFragment(), MenuProvider {
                     items = listOf(
                         SettingChoiceSpec(
                             key = PreferKey.launcherIcon,
-                            title = getString(R.string.change_icon),
-                            summary = getString(R.string.change_icon_summary),
+                            title = str(R.string.change_icon),
+                            summary = str(R.string.change_icon_summary),
                             options = iconOptions(),
                             selectedValue = stringSetting(PreferKey.launcherIcon, DEFAULT_LAUNCHER_ICON),
                             visible = Build.VERSION.SDK_INT >= 26,
@@ -50,8 +50,8 @@ class ThemeConfigFragment : ComposeSettingFragment(), MenuProvider {
                         ),
                         SettingSwitchSpec(
                             key = PreferKey.mainTransparentStatusBar,
-                            title = getString(R.string.main_immersion_status_bar),
-                            summary = getString(R.string.main_status_bar_immersion),
+                            title = str(R.string.main_immersion_status_bar),
+                            summary = str(R.string.main_status_bar_immersion),
                             checked = booleanSetting(PreferKey.mainTransparentStatusBar, false),
                             onCheckedChange = {
                                 updateBooleanSetting(PreferKey.mainTransparentStatusBar, it)
@@ -59,8 +59,8 @@ class ThemeConfigFragment : ComposeSettingFragment(), MenuProvider {
                         ),
                         SettingSwitchSpec(
                             key = PreferKey.immersiveManageBar,
-                            title = getString(R.string.manage_bar_immersion),
-                            summary = getString(R.string.manage_bar_immersion_summary),
+                            title = str(R.string.manage_bar_immersion),
+                            summary = str(R.string.manage_bar_immersion_summary),
                             checked = booleanSetting(PreferKey.immersiveManageBar, true),
                             onCheckedChange = {
                                 updateBooleanSetting(PreferKey.immersiveManageBar, it)
@@ -68,20 +68,20 @@ class ThemeConfigFragment : ComposeSettingFragment(), MenuProvider {
                         ),
                         SettingActionSpec(
                             key = KEY_THEME_MANAGE,
-                            title = getString(R.string.theme_list),
-                            summary = getString(R.string.theme_list_summary),
+                            title = str(R.string.theme_list),
+                            summary = str(R.string.theme_list_summary),
                             onClick = { startActivity<ThemeManageActivity>() }
                         ),
                         SettingActionSpec(
                             key = KEY_NAVIGATION_BAR_MANAGE,
-                            title = getString(R.string.navigation_bar_manage),
-                            summary = getString(R.string.navigation_bar_manage_summary),
+                            title = str(R.string.navigation_bar_manage),
+                            summary = str(R.string.navigation_bar_manage_summary),
                             onClick = { startActivity<NavigationBarManageActivity>() }
                         ),
                         SettingActionSpec(
                             key = KEY_DISCOVERY_SUBSCRIPTION_SETTINGS,
-                            title = getString(R.string.discovery_subscription_settings_title),
-                            summary = getString(R.string.discovery_subscription_settings_summary),
+                            title = str(R.string.discovery_subscription_settings_title),
+                            summary = str(R.string.discovery_subscription_settings_summary),
                             onClick = {
                                 startActivity<ConfigActivity> {
                                     putExtra("configTag", ConfigTag.DISCOVERY_SUBSCRIPTION_CONFIG)
@@ -90,35 +90,35 @@ class ThemeConfigFragment : ComposeSettingFragment(), MenuProvider {
                         ),
                         SettingActionSpec(
                             key = KEY_TOP_BAR_MANAGE,
-                            title = getString(R.string.top_bar_manage),
-                            summary = getString(R.string.top_bar_manage_summary),
+                            title = str(R.string.top_bar_manage),
+                            summary = str(R.string.top_bar_manage_summary),
                             onClick = { startActivity<TopBarManageActivity>() }
                         ),
                         SettingActionSpec(
                             key = KEY_BOOK_INFO_MANAGE,
-                            title = getString(R.string.book_info_manage),
-                            summary = getString(R.string.book_info_manage_summary),
+                            title = str(R.string.book_info_manage),
+                            summary = str(R.string.book_info_manage_summary),
                             onClick = { startActivity<BookInfoManageActivity>() }
                         ),
                         SettingActionSpec(
                             key = KEY_BUBBLE_MANAGE,
-                            title = getString(R.string.bubble_manage),
-                            summary = getString(R.string.bubble_manage_summary),
+                            title = str(R.string.bubble_manage),
+                            summary = str(R.string.bubble_manage_summary),
                             onClick = { startActivity<BubbleManageActivity>() }
                         ),
                         SettingActionSpec(
                             key = KEY_SHARE_NOTE_TEMPLATE_MANAGE,
-                            title = getString(R.string.theme_share_note_template),
-                            summary = getString(R.string.theme_share_note_template_summary),
-                            searchKeys = resources.getStringArray(
+                            title = str(R.string.theme_share_note_template),
+                            summary = str(R.string.theme_share_note_template_summary),
+                            searchKeys = strings.getStringArray(
                                 R.array.theme_share_note_template_search_keys
                             ).toList(),
                             onClick = { startActivity<ShareNoteTemplateManageActivity>() }
                         ),
                         SettingActionSpec(
                             key = ConfigTag.COVER_CONFIG,
-                            title = getString(R.string.cover_config),
-                            summary = getString(R.string.cover_config_summary),
+                            title = str(R.string.cover_config),
+                            summary = str(R.string.cover_config_summary),
                             onClick = {
                                 startActivity<ConfigActivity> {
                                     putExtra("configTag", ConfigTag.COVER_CONFIG)
@@ -175,8 +175,8 @@ class ThemeConfigFragment : ComposeSettingFragment(), MenuProvider {
     }
 
     private fun iconOptions(): List<SettingChoiceOption> {
-        val entries = resources.getStringArray(R.array.icon_names)
-        val values = resources.getStringArray(R.array.icons)
+        val entries = strings.getStringArray(R.array.icon_names)
+        val values = strings.getStringArray(R.array.icons)
         return values.mapIndexed { index, value ->
             SettingChoiceOption(
                 value = value,

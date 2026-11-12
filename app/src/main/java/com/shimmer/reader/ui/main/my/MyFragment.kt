@@ -1,7 +1,6 @@
 package com.shimmer.reader.ui.main.my
 
 import android.content.SharedPreferences
-import android.content.res.XmlResourceParser
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -30,6 +29,7 @@ import com.shimmer.reader.ui.book.source.manage.BookSourceActivity
 import com.shimmer.reader.ui.book.toc.rule.TxtTocRuleActivity
 import com.shimmer.reader.ui.config.ConfigActivity
 import com.shimmer.reader.ui.config.ConfigTag
+import com.shimmer.reader.ui.config.compose.SettingSearchIndex
 import com.shimmer.reader.ui.config.AppearanceKitActivity
 import com.shimmer.reader.ui.config.RelaySettingsActivity
 import com.shimmer.reader.ui.dict.rule.DictRuleActivity
@@ -52,7 +52,6 @@ import com.shimmer.reader.utils.showHelp
 import com.shimmer.reader.utils.startActivity
 import com.shimmer.reader.utils.viewbindingdelegate.viewBinding
 import com.shimmer.reader.utils.LogUtils
-import org.xmlpull.v1.XmlPullParser
 
 class MyFragment() : BaseFragment(R.layout.fragment_my_config),
     MainFragmentInterface,
@@ -458,76 +457,25 @@ class MyFragment() : BaseFragment(R.layout.fragment_my_config),
     }
 
     private fun buildSubSearchItems(): List<MySettingsSubSearchItem> {
-        return listOf(
-            Triple("theme_setting", R.xml.pref_config_theme, ConfigTag.THEME_CONFIG),
-            Triple("theme_setting", R.xml.pref_config_cover, ConfigTag.COVER_CONFIG),
-            Triple("theme_setting", R.xml.pref_config_welcome, ConfigTag.WELCOME_CONFIG),
-            Triple("web_dav_setting", R.xml.pref_config_backup, ConfigTag.BACKUP_CONFIG),
-            Triple("ai_setting", R.xml.pref_config_ai, ConfigTag.AI_CONFIG),
-            Triple("setting", R.xml.pref_config_other, ConfigTag.OTHER_CONFIG),
-            Triple("setting", R.xml.pref_config_network_dns, ConfigTag.NETWORK_DNS_CONFIG),
-            Triple(
-                "theme_setting",
-                R.xml.pref_config_discovery_subscription,
-                ConfigTag.DISCOVERY_SUBSCRIPTION_CONFIG
-            )
-        ).flatMap { (ownerKey, xmlRes, ownerConfigTag) ->
-            buildPreferenceXmlSearchItems(ownerKey, xmlRes, ownerConfigTag)
-        } + listOf(
-            MySettingsSubSearchItem(
-                ownerKey = "theme_setting",
-                title = getString(R.string.welcome_style),
-                summary = getString(R.string.welcome_style_summary),
-                key = PreferKey.welcomeShowTime,
-                ownerConfigTag = ConfigTag.WELCOME_CONFIG
-            )
+        val ownerKeys = mapOf(
+            ConfigTag.THEME_CONFIG to "theme_setting",
+            ConfigTag.COVER_CONFIG to "theme_setting",
+            ConfigTag.WELCOME_CONFIG to "theme_setting",
+            ConfigTag.DISCOVERY_SUBSCRIPTION_CONFIG to "theme_setting",
+            ConfigTag.BACKUP_CONFIG to "web_dav_setting",
+            ConfigTag.AI_CONFIG to "ai_setting",
+            ConfigTag.OTHER_CONFIG to "setting",
+            ConfigTag.NETWORK_DNS_CONFIG to "setting"
         )
-    }
-
-    private fun buildPreferenceXmlSearchItems(
-        ownerKey: String,
-        xmlRes: Int,
-        ownerConfigTag: String
-    ): List<MySettingsSubSearchItem> {
-        val items = ArrayList<MySettingsSubSearchItem>()
-        val parser: XmlResourceParser = resources.getXml(xmlRes)
-        try {
-            var eventType = parser.eventType
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    val title = collectPreferenceAttr(parser, "title").orEmpty()
-                    val key = collectPreferenceAttr(parser, "key").orEmpty()
-                    if (title.isNotBlank() && key.isNotBlank()) {
-                        items.add(
-                            MySettingsSubSearchItem(
-                                ownerKey = ownerKey,
-                                title = title,
-                                summary = collectPreferenceAttr(parser, "summary").orEmpty(),
-                                key = key.removePrefix("search_jump_"),
-                                ownerConfigTag = ownerConfigTag
-                            )
-                        )
-                    }
-                }
-                eventType = parser.next()
-            }
-        } finally {
-            parser.close()
-        }
-        return items
-    }
-
-    private fun collectPreferenceAttr(parser: XmlResourceParser, attrName: String): String? {
-        val namespace = "http://schemas.android.com/apk/res/android"
-        val attrValue = parser.getAttributeValue(namespace, attrName)?.trim().orEmpty()
-        if (attrValue.isBlank()) return null
-        val attrRes = parser.getAttributeResourceValue(namespace, attrName, 0)
-        return if (attrRes != 0) {
-            runCatching {
-                getString(attrRes)
-            }.getOrNull()?.trim().orEmpty().takeIf { it.isNotBlank() }
-        } else {
-            attrValue.removePrefix("@").takeIf { it.isNotBlank() }
+        return SettingSearchIndex.build(requireContext()).mapNotNull { entry ->
+            val ownerKey = ownerKeys[entry.pageConfigTag] ?: return@mapNotNull null
+            MySettingsSubSearchItem(
+                ownerKey = ownerKey,
+                title = entry.title,
+                summary = entry.summary,
+                key = entry.key,
+                ownerConfigTag = entry.pageConfigTag
+            )
         }
     }
 }
