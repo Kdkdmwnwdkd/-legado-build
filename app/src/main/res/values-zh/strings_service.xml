@@ -29,4 +29,5 @@
     <string name="ra_retry_audio">重试当前音频</string>
     <string name="ra_tts_error_code">TTS错误 %1$d</string>
     <string name="ra_tts_error">TTS错误</string>
+    <string name="ra_engine_no_response">朗读引擎没有响应，已暂停</string>
 </resources>

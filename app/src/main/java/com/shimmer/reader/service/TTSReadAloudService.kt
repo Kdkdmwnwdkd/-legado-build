@@ -2,6 +2,7 @@ package com.shimmer.reader.service
 
 import android.app.PendingIntent
 import android.os.Bundle
+import android.os.SystemClock
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import androidx.lifecycle.lifecycleScope
@@ -19,8 +20,10 @@ import com.shimmer.reader.model.ReadBook
 import com.shimmer.reader.utils.LogUtils
 import com.shimmer.reader.utils.servicePendingIntent
 import com.shimmer.reader.utils.toastOnUi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicLong
@@ -68,6 +71,9 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
     private val queueStateLock = Any()
     private val queueWindow = TtsQueueWindow(TTS_QUEUE_WINDOW_SIZE)
     private var queueContext: QueueContext? = null
+    private val silenceGuard = ReadAloudSilenceGuard()
+    private var silenceWatchJob: Job? = null
+    private var consecutiveSilenceGiveUps = 0
     private val TAG = "TTSReadAloudService"
 
     override fun onCreate() {
@@ -77,11 +83,64 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
         }.onFailure {
             AppLog.put("${getString(R.string.tts_init_failed)}\n$it", it, true)
         }
+        startSilenceWatchdog()
     }
 
     override fun onDestroy() {
+        silenceWatchJob?.cancel()
+        silenceWatchJob = null
         super.onDestroy()
         clearTTS()
+    }
+
+    /**
+     * 每隔几秒看一眼：本段是不是交出去之后一直没有动静。
+     * 卡住就重播本段，连续卡住就跳过，免得整章停在那里。
+     */
+    private fun startSilenceWatchdog() {
+        if (silenceWatchJob?.isActive == true) return
+        silenceWatchJob = lifecycleScope.launch {
+            while (isActive) {
+                delay(SILENCE_CHECK_INTERVAL_MILLIS)
+                checkSilence()
+            }
+        }
+    }
+
+    private fun checkSilence() {
+        val hasPending = synchronized(queueStateLock) {
+            queueWindow.queuedCount > 0
+        }
+        val decision = silenceGuard.check(
+            now = SystemClock.elapsedRealtime(),
+            playing = !pause,
+            hasPendingUtterance = hasPending
+        )
+        when (decision) {
+            ReadAloudSilenceGuard.Decision.RETRY -> {
+                AppLog.put("朗读长时间没有声音，重试本段")
+                play()
+            }
+
+            ReadAloudSilenceGuard.Decision.GIVE_UP -> {
+                AppLog.put("朗读连续没有声音，跳过本段")
+                consecutiveSilenceGiveUps++
+                if (consecutiveSilenceGiveUps >= MAX_CONSECUTIVE_SILENCE_GIVE_UPS) {
+                    // 引擎整体不可用了，再往下跳也只是空转，停下等人处理
+                    AppLog.put("朗读引擎持续无响应，已暂停")
+                    toastOnUi(R.string.ra_engine_no_response)
+                    pauseReadAloud()
+                    return
+                }
+                if (moveToNextCue()) {
+                    play()
+                } else {
+                    nextChapter()
+                }
+            }
+
+            ReadAloudSilenceGuard.Decision.NONE -> Unit
+        }
     }
 
     @Synchronized
@@ -157,6 +216,11 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
         }
         super.play()
         MediaHelp.playSilentSound(this@TTSReadAloudService)
+        silenceGuard.onUtterance(
+            cueIndex = nowSpeak,
+            text = contentList.getOrNull(nowSpeak),
+            now = SystemClock.elapsedRealtime()
+        )
         speakJob?.cancel()
         val sessionId = currentReadAloudSessionId
         val queueRef = synchronized(queueStateLock) {
@@ -275,6 +339,11 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
             nextChapter()
             return
         }
+        silenceGuard.onUtterance(
+            cueIndex = nowSpeak,
+            text = contentList.getOrNull(nowSpeak),
+            now = SystemClock.elapsedRealtime()
+        )
         val fillResult = fillTtsQueue(ref)
         if (fillResult.flushFailed) {
             recoverFromFlushFailure(ref)
@@ -397,6 +466,9 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
         override fun onStart(s: String) {
             val cueIndex = utteranceRef(s)?.cueIndex ?: return
             if (pause) return
+            val now = SystemClock.elapsedRealtime()
+            silenceGuard.onUtterance(cueIndex, contentList.getOrNull(cueIndex), now)
+            silenceGuard.onStarted(now)
             if (cueIndex != nowSpeak) {
                 syncToCueIndex(cueIndex)
             }
@@ -425,6 +497,8 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
         override fun onDone(s: String) {
             LogUtils.d(TAG, "onDone utteranceId:$s")
             val ref = utteranceRef(s) ?: return
+            consecutiveSilenceGiveUps = 0
+            silenceGuard.onCompleted(SystemClock.elapsedRealtime())
             finishUtteranceAndRefill(ref)
         }
 
@@ -432,6 +506,7 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
             super.onRangeStart(utteranceId, start, end, frame)
             val cueIndex = utteranceRef(utteranceId)?.cueIndex ?: return
             if (pause) return
+            silenceGuard.onActivity(SystemClock.elapsedRealtime())
             if (cueIndex != nowSpeak) {
                 syncToCueIndex(cueIndex)
             }
@@ -495,6 +570,8 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
 
     private companion object {
         const val TTS_QUEUE_WINDOW_SIZE = 4
+        const val SILENCE_CHECK_INTERVAL_MILLIS = 3_000L
+        const val MAX_CONSECUTIVE_SILENCE_GIVE_UPS = 3
     }
 
 }
