@@ -873,6 +873,8 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
                 }
                 val selectItems = getSelectedSources()
                 CheckSource.start(this@BookSourceActivity, selectItems)
+                // 校验要跑很久，光靠底部一条提示看不出跑没跑、哪个源坏了
+                startActivity<CheckSourceProgressActivity>()
                 val currentItems = sourcesState
                 val firstItem = currentItems.indexOf(selectItems.firstOrNull())
                 val lastItem = currentItems.indexOf(selectItems.lastOrNull())
