@@ -110,6 +110,16 @@ class BooksFragment() : BaseFragment(R.layout.fragment_books) {
     private val binding by viewBinding(FragmentBooksBinding::bind)
     private val activityViewModel by activityViewModels<MainViewModel>()
     private val bookshelfLayout by lazy { AppConfig.bookshelfLayout }
+
+    /**
+     * 书架网格列数：布局值 7 表示按封面宽度自适应，其余按固定列数
+     */
+    private fun bookshelfGridColumns(): GridCells {
+        if (bookshelfLayout == AppConfig.BOOKSHELF_LAYOUT_GRID_AUTO) {
+            return GridCells.Adaptive(AppConfig.bookshelfCoverWidthDp.dp)
+        }
+        return GridCells.Fixed(bookshelfLayout.coerceAtLeast(2))
+    }
     private var booksFlowJob: Job? = null
     var position = 0
         private set
@@ -337,7 +347,7 @@ class BooksFragment() : BaseFragment(R.layout.fragment_books) {
         }
         Box(modifier = Modifier.fillMaxSize()) {
             LazyVerticalGrid(
-                columns = GridCells.Fixed(bookshelfLayout.coerceAtLeast(2)),
+                columns = bookshelfGridColumns(),
                 state = gridState,
                 modifier = lazyModifier,
                 contentPadding = PaddingValues(

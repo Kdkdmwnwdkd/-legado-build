@@ -53,6 +53,13 @@ import java.net.URI
 
 @Suppress("MemberVisibilityCanBePrivate", "ConstPropertyName")
 object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
+
+    /** 书架封面自适应宽度的可调范围（dp） */
+    const val MIN_COVER_WIDTH_DP = 72
+    const val MAX_COVER_WIDTH_DP = 180
+
+    /** 书架布局值：网格按封面宽度自适应（布局选项的最后一项） */
+    const val BOOKSHELF_LAYOUT_GRID_AUTO = 7
     const val DISCOVERY_PAGE_MODE_LEGACY = "legacy"
     const val DISCOVERY_PAGE_MODE_MODERN = "modern"
     const val DISCOVERY_PAGE_MODE_SUITE = "suite"
@@ -341,6 +348,19 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
         get() = appCtx.getPrefInt(PreferKey.bookshelfLayout, 0)
         set(value) {
             appCtx.putPrefInt(PreferKey.bookshelfLayout, value)
+        }
+
+    /**
+     * 书架网格自适应模式下的封面最小宽度（dp），列数由屏幕宽度自动摊出
+     */
+    var bookshelfCoverWidthDp: Int
+        get() = appCtx.getPrefInt(PreferKey.bookshelfCoverWidthDp, 108)
+            .coerceIn(MIN_COVER_WIDTH_DP, MAX_COVER_WIDTH_DP)
+        set(value) {
+            appCtx.putPrefInt(
+                PreferKey.bookshelfCoverWidthDp,
+                value.coerceIn(MIN_COVER_WIDTH_DP, MAX_COVER_WIDTH_DP)
+            )
         }
 
     var saveTabPosition: Int
