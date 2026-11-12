@@ -160,7 +160,6 @@ import com.shimmer.reader.ui.about.AppLogDialog
 import com.shimmer.reader.ui.book.bookmark.BookmarkDialog
 import com.shimmer.reader.ui.book.changesource.ChangeBookSourceDialog
 import com.shimmer.reader.ui.book.changesource.ChangeChapterSourceDialog
-import com.shimmer.reader.ui.book.character.BookCharacterManageActivity
 import com.shimmer.reader.ui.book.info.BookInfoStartActivityContract
 import com.shimmer.reader.ui.book.ShelfExitRequestGate
 import com.shimmer.reader.ui.book.read.config.AutoReadDialog
@@ -4338,16 +4337,6 @@ class ReadBookActivity : BaseReadBookActivity(),
         ReadBook.invalidateParagraphRuleLayout()
         ReadBook.callBack?.upContent(resetPageOffset = false)
         ReadBook.loadContent(resetPageOffset = false)
-    }
-
-    override fun openBookCharacters() {
-        val book = ReadBook.book ?: run {
-            toastOnUi(R.string.toast_book_not_exist)
-            return
-        }
-        startActivity<BookCharacterManageActivity> {
-            putExtra(BookCharacterManageActivity.EXTRA_BOOK_URL, book.bookUrl)
-        }
     }
 
     override fun showSearchSetting() {

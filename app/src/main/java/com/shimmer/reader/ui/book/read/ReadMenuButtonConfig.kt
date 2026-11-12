@@ -23,7 +23,6 @@ object ReadMenuButtonConfig {
         const val READ_ASSISTANT = "readAssistant"
         const val AI_SUMMARY = "aiSummary"
         const val PARAGRAPH_RULES = "paragraphRules"
-        const val CHARACTERS = "characters"
         const val BUBBLE = "bubble"
 
         val ids = setOf(
@@ -38,7 +37,6 @@ object ReadMenuButtonConfig {
             READ_ASSISTANT,
             AI_SUMMARY,
             PARAGRAPH_RULES,
-            CHARACTERS,
             BUBBLE
         )
     }
@@ -84,7 +82,6 @@ object ReadMenuButtonConfig {
             builtin(Builtin.AUTO_PAGE),
             builtin(Builtin.REPLACE_RULE),
             builtin(Builtin.NIGHT_THEME),
-            builtin(Builtin.CHARACTERS),
             builtin(Builtin.PARAGRAPH_RULES),
             builtin(Builtin.BUBBLE),
             builtin(Builtin.READ_ASSISTANT),
@@ -153,7 +150,6 @@ object ReadMenuButtonConfig {
 
     private fun defaultAiShortcutRow(): List<ButtonRef> {
         return listOf(
-            builtin(Builtin.CHARACTERS),
             builtin(Builtin.PARAGRAPH_RULES),
             builtin(Builtin.READ_ASSISTANT),
             builtin(Builtin.AI_SUMMARY)
@@ -166,7 +162,6 @@ object ReadMenuButtonConfig {
             builtin(Builtin.AUTO_PAGE),
             builtin(Builtin.REPLACE_RULE),
             builtin(Builtin.NIGHT_THEME),
-            builtin(Builtin.CHARACTERS),
             builtin(Builtin.PARAGRAPH_RULES),
             builtin(Builtin.READ_ASSISTANT),
             builtin(Builtin.AI_SUMMARY)
@@ -185,7 +180,6 @@ object ReadMenuButtonConfig {
             builtin(Builtin.AUTO_PAGE),
             builtin(Builtin.REPLACE_RULE),
             builtin(Builtin.NIGHT_THEME),
-            builtin(Builtin.CHARACTERS),
             builtin(Builtin.PARAGRAPH_RULES),
             builtin(Builtin.READ_ASSISTANT),
             builtin(Builtin.AI_SUMMARY)

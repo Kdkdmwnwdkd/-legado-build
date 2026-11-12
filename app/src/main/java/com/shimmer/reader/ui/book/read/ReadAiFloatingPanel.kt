@@ -184,7 +184,6 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
                 onOpenAbilities = ::showWindowAbilityDialog,
                 onOpenSkills = ::showWindowSkillDialog,
                 onOpenMcp = ::showWindowMcpDialog,
-                onOpenWorldBooks = ::showReadAiWorldBookDialog,
                 onNewChat = ::startNewChat,
                 onToggleHistory = ::toggleHistory,
                 onClose = ::close,
@@ -817,7 +816,6 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
                 context.getString(R.string.ai_chat_history),
                 context.getString(R.string.ai_chat_skill_count, activeWindowSkills().size),
                 context.getString(R.string.ai_chat_mcp_count, windowMcpServerIds.size),
-                context.getString(R.string.ai_chat_world_book_count, activeReadAiWorldBookCount()),
                 context.getString(R.string.ai_chat_clear_skill_mcp)
             )
         ) { _, _, index ->
@@ -826,8 +824,7 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
                 1 -> toggleHistory()
                 2 -> showWindowSkillDialog()
                 3 -> showWindowMcpDialog()
-                4 -> showReadAiWorldBookDialog()
-                5 -> {
+                4 -> {
                     windowSkillIds = emptySet()
                     windowMcpServerIds = emptySet()
                 }
@@ -1284,7 +1281,6 @@ private fun ReadAiPanelContent(
     onOpenAbilities: () -> Unit,
     onOpenSkills: () -> Unit,
     onOpenMcp: () -> Unit,
-    onOpenWorldBooks: () -> Unit,
     onNewChat: () -> Unit,
     onToggleHistory: () -> Unit,
     onClose: () -> Unit,
@@ -1396,7 +1392,6 @@ private fun ReadAiPanelContent(
                                 add(ReadAiMenuAction(stringResource(R.string.ai_chat_history), onToggleHistory))
                                 add(ReadAiMenuAction("Skill", onOpenSkills))
                                 add(ReadAiMenuAction("MCP", onOpenMcp))
-                                add(ReadAiMenuAction(stringResource(R.string.ai_chat_world_book), onOpenWorldBooks))
                                 add(ReadAiMenuAction(stringResource(R.string.ai_chat_window_abilities), onOpenAbilities))
                                 add(ReadAiMenuAction(stringResource(R.string.ai_current_model), onSelectModel))
                             },

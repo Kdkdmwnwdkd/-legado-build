@@ -773,7 +773,6 @@ private fun readMenuButtonTitle(
             ReadMenuButtonConfig.Builtin.AI_SUMMARY -> "AI"
             ReadMenuButtonConfig.Builtin.PARAGRAPH_RULES -> appCtx.getString(R.string.read_menu_btn_paragraph)
             ReadMenuButtonConfig.Builtin.BUBBLE -> appCtx.getString(R.string.read_menu_btn_bubble)
-            ReadMenuButtonConfig.Builtin.CHARACTERS -> appCtx.getString(R.string.read_menu_btn_characters)
             else -> ref.id
         }
     }
@@ -802,7 +801,6 @@ private fun readMenuButtonIconRes(
         ReadMenuButtonConfig.Builtin.AI_SUMMARY -> R.drawable.ic_bottom_ai
         ReadMenuButtonConfig.Builtin.PARAGRAPH_RULES -> R.drawable.ic_code
         ReadMenuButtonConfig.Builtin.BUBBLE -> R.drawable.ic_bubble_chart
-        ReadMenuButtonConfig.Builtin.CHARACTERS -> R.drawable.ic_bottom_person
         else -> R.drawable.ic_custom
     }
 }

@@ -194,7 +194,6 @@ class ReadAloudPlayerPanel @JvmOverloads constructor(
         fun openChapterList()
         fun onClickReadAloud()
         fun finish()
-        fun openBookCharacters()
         fun onReadAloudPlayerVisibilityChanged(visible: Boolean)
     }
 
@@ -426,7 +425,7 @@ class ReadAloudPlayerPanel @JvmOverloads constructor(
                 capsulePosition = capsulePosition,
                 onCapsulePositionChange = ::updateCapsulePosition,
                 onCapsuleBounds = ::updateCapsuleBounds,
-                onOpenCharacters = { callBack?.openBookCharacters() },
+                onOpenCharacters = {},
                 onHideRoleDetail = ::hideRoleDetail,
                 onOpenRoleDetail = ::openRoleDetail,
                 onDismissRoleStatus = ::dismissRoleStatus,
@@ -5301,19 +5300,6 @@ private fun CharactersSheet(
                     CharacterPreviewRow(character, colors, actionShape)
                 }
             }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp)
-        ) {
-            SheetActionButton(
-                text = "\u5b8c\u6574\u89d2\u8272\u9875",
-                colors = colors,
-                shape = actionShape,
-                modifier = Modifier.weight(1f),
-                onClick = onOpenCharacters
-            )
         }
     }
 }

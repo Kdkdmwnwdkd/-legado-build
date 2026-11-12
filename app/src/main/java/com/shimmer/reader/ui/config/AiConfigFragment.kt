@@ -216,29 +216,9 @@ class AiConfigFragment : ComposeSettingFragment() {
     private fun showFeatureMenu() {
         showComposeActionListDialog(
             title = str(R.string.ai_features),
-            labels = listOf(
-                str(R.string.ai_listen),
-                str(R.string.ai_tavily_enable),
-                str(R.string.ai_image_provider_manage),
-                str(R.string.ai_image_gallery),
-                str(R.string.ai_world_book_manage),
-                str(R.string.ai_workspace)
-            )
+            labels = listOf(str(R.string.ai_tavily_enable))
         ) { index ->
-            when (index) {
-                0 -> selectDefaultModel(str(R.string.ai_listen), AppConfig.aiReadAloudRoleModelId) {
-                    AppConfig.aiReadAloudRoleModelId = it
-                }
-
-                1 -> showTavilyMenu()
-                2 -> startActivity(
-                    Intent(requireContext(), AiImageProviderManageActivity::class.java)
-                )
-
-                3 -> startActivity(Intent(requireContext(), AiImageGalleryActivity::class.java))
-                4 -> startActivity(Intent(requireContext(), AiWorldBookManageActivity::class.java))
-                5 -> openAiWorkspace()
-            }
+            if (index == 0) showTavilyMenu()
         }
     }
 
