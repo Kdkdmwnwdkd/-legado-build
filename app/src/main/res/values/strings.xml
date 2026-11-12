@@ -1453,6 +1453,8 @@
     <string name="check_source_progress_finished">Check finished</string>
     <string name="check_source_progress_cancelled">Cancelled</string>
     <string name="check_source_progress_preparing">Preparing…</string>
+    <string name="check_source_progress_idle">No check yet</string>
+    <string name="check_source_progress_idle_hint">Select sources in source management and run a check; progress will show up here.</string>
     <string name="check_source_progress_count">%1$d / %2$d</string>
     <string name="check_source_progress_elapsed">Elapsed %1$s</string>
     <string name="check_source_progress_empty">Nothing to show</string>
