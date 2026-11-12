@@ -1,6 +1,7 @@
 package com.shimmer.reader.service
 
 import android.content.Intent
+import android.os.SystemClock
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.lifecycleScope
 import com.script.ScriptException
@@ -21,10 +22,12 @@ import com.shimmer.reader.exception.TocEmptyException
 import com.shimmer.reader.help.IntentData
 import com.shimmer.reader.help.source.exploreKinds
 import com.shimmer.reader.model.CheckSource
+import com.shimmer.reader.model.CheckSourceRunStore
 import com.shimmer.reader.model.CheckSourceSummary
+import com.shimmer.reader.model.CheckStage
 import com.shimmer.reader.model.Debug
 import com.shimmer.reader.model.webBook.WebBook
-import com.shimmer.reader.ui.book.source.manage.BookSourceActivity
+import com.shimmer.reader.ui.book.source.manage.CheckSourceProgressActivity
 import com.shimmer.reader.utils.activityPendingIntent
 import com.shimmer.reader.utils.onEachParallel
 import com.shimmer.reader.utils.postEvent
@@ -84,7 +87,7 @@ class CheckSourceService : BaseService() {
             .setOnlyAlertOnce(true)
             .setContentTitle(getString(R.string.check_book_source))
             .setContentIntent(
-                activityPendingIntent<BookSourceActivity>("activity")
+                activityPendingIntent<CheckSourceProgressActivity>("activity")
             )
             .addAction(
                 R.drawable.ic_stop_black_24dp,
@@ -109,6 +112,9 @@ class CheckSourceService : BaseService() {
     override fun onDestroy() {
         super.onDestroy()
         Debug.finishChecking()
+        // 服务被系统回收等异常路径可能没走到 onCompletion，这里兜一次，
+        // 否则进度页会永远停在「正在校验」
+        CheckSourceRunStore.finish(cancelled = true, autoDisabled = summary.disabledSources)
         searchCoroutine.close()
         if (finished) {
             notifyFinished()
@@ -125,6 +131,10 @@ class CheckSourceService : BaseService() {
         }
         Debug.clearCheckingCache()
         checkJob = lifecycleScope.launch(searchCoroutine) {
+            // 进度页要在第一个源开跑之前就把整批列出来，所以先取一遍轻量的
+            // BookSourcePart；真正的 BookSource 仍然逐个查，避免一次把几千个源读进内存
+            val parts = ids.mapNotNull { appDb.bookSourceDao.getBookSourcePart(it) }
+            CheckSourceRunStore.begin(parts)
             flow {
                 for (origin in ids) {
                     appDb.bookSourceDao.getBookSource(origin)?.let {
@@ -161,12 +171,22 @@ class CheckSourceService : BaseService() {
             }.onCompletion {
                 // 被取消时 onCompletion 收到 CancellationException，此时不算跑完
                 if (it == null) finished = true
+                CheckSourceRunStore.finish(
+                    cancelled = it != null,
+                    autoDisabled = summary.disabledSources
+                )
                 stopSelf()
             }.collect()
         }
     }
 
     private suspend fun checkSource(source: BookSource) {
+        val startedAt = SystemClock.elapsedRealtime()
+        CheckSourceRunStore.markRunning(
+            origin = source.bookSourceUrl,
+            name = source.bookSourceName,
+            type = source.bookSourceType
+        )
         kotlin.runCatching {
             withTimeout(CheckSource.timeout) {
                 doCheckSource(source)
@@ -176,6 +196,10 @@ class CheckSourceService : BaseService() {
                 source.bookSourceUrl,
                 getString(R.string.dbg_check_success),
                 success = true
+            )
+            CheckSourceRunStore.markPassed(
+                origin = source.bookSourceUrl,
+                durationMs = SystemClock.elapsedRealtime() - startedAt
             )
         }.onFailure {
             currentCoroutineContext().ensureActive()
@@ -194,8 +218,28 @@ class CheckSourceService : BaseService() {
                 getString(R.string.dbg_check_failed, it.localizedMessage),
                 success = false
             )
+            CheckSourceRunStore.markFailed(
+                origin = source.bookSourceUrl,
+                reason = it.failureReason(),
+                durationMs = SystemClock.elapsedRealtime() - startedAt
+            )
         }
         source.respondTime = Debug.getRespondTime(source.bookSourceUrl)
+    }
+
+    /**
+     * 给用户看的一句失败原因。
+     *
+     * 超时、脚本报错这类异常本身没有 message，直接取会得到一句空话，
+     * 这里退回到刚打上的失效分组名（「校验超时」「js失效」），比类名好懂。
+     */
+    private fun Throwable.failureReason(): String {
+        localizedMessage?.takeIf { it.isNotBlank() }?.let { return it }
+        return when (this) {
+            is TimeoutCancellationException -> "校验超时"
+            is ScriptException, is WrappedException -> "js失效"
+            else -> javaClass.simpleName
+        }
     }
 
     private suspend fun isDomainReachable(domain: String): Boolean {
@@ -235,6 +279,7 @@ class CheckSourceService : BaseService() {
         }
         //检测源地址可访问性
         if (CheckSource.checkDomain) {
+            CheckSourceRunStore.markStage(source.bookSourceUrl, CheckStage.DOMAIN)
             val domain = source.bookSourceUrl
             if (!domain.startsWith("http", ignoreCase = true)) {
                 throw NoStackTraceException("源地址不是http链接")
@@ -270,6 +315,7 @@ class CheckSourceService : BaseService() {
     private suspend fun checkSearchBranch(source: BookSource) {
         //校验搜索书籍
         if (CheckSource.checkSearch) {
+            CheckSourceRunStore.markStage(source.bookSourceUrl, CheckStage.SEARCH)
             val searchWord = source.getCheckKeyword(CheckSource.keyword)
             if (!source.searchUrl.isNullOrBlank()) {
                 source.removeGroupSafe("搜索链接规则为空")
@@ -293,6 +339,7 @@ class CheckSourceService : BaseService() {
     private suspend fun checkDiscoveryBranch(source: BookSource) {
         //校验发现书籍
         if (CheckSource.checkDiscovery && !source.exploreUrl.isNullOrBlank()) {
+            CheckSourceRunStore.markStage(source.bookSourceUrl, CheckStage.DISCOVERY)
             val url = source.exploreKinds().firstOrNull {
                 !it.url.isNullOrBlank()
             }?.url
@@ -325,12 +372,14 @@ class CheckSourceService : BaseService() {
             }
             //校验详情
             if (book.tocUrl.isBlank()) {
+                CheckSourceRunStore.markStage(source.bookSourceUrl, CheckStage.INFO)
                 WebBook.getBookInfoAwait(source, book)
             }
             if (!CheckSource.shouldCheckCategory() || source.bookSourceType == BookSourceType.file) {
                 return
             }
             //校验目录
+            CheckSourceRunStore.markStage(source.bookSourceUrl, CheckStage.TOC)
             val toc = WebBook.getChapterListAwait(source, book).getOrThrow().asSequence()
                 .filter { !(it.isVolume && it.url.startsWith(it.title)) }
                 .take(2)
@@ -340,6 +389,7 @@ class CheckSourceService : BaseService() {
                 return
             }
             //校验正文
+            CheckSourceRunStore.markStage(source.bookSourceUrl, CheckStage.CONTENT)
             WebBook.getContentAwait(
                 bookSource = source,
                 book = book,
@@ -432,7 +482,7 @@ class CheckSourceService : BaseService() {
             .setOngoing(false)
             .setAutoCancel(true)
             .setOnlyAlertOnce(true)
-            .setContentIntent(activityPendingIntent<BookSourceActivity>("activity"))
+            .setContentIntent(activityPendingIntent<CheckSourceProgressActivity>("activity"))
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .build()
         notificationManager.notify(NotificationId.CheckSourceService, notification)
