@@ -55,8 +55,8 @@
     <string name="ai_chat_auto_speak_option">自动播放语音：%1$s</string>
     <string name="ai_chat_switch_on">开</string>
     <string name="ai_chat_switch_off">关</string>
-    <string name="ai_tavern">AI 酒馆</string>
-    <string name="ai_chat_character_and_sessions">角色与会话</string>
+    <string name="ai_tavern">AI 助手</string>
+    <string name="ai_chat_character_and_sessions">会话记录</string>
     <string name="ai_chat_sessions">会话</string>
     <string name="ai_chat_no_history_sessions">还没有历史会话</string>
     <string name="ai_chat_more_sessions">还有 %1$d 个会话</string>

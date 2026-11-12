@@ -307,7 +307,6 @@ class ReadMenuButtonManageActivity : BaseActivity<ActivityThemeManageBinding>(),
             add(ReadMenuButtonConfig.builtin(ReadMenuButtonConfig.Builtin.AI_SUMMARY))
             add(ReadMenuButtonConfig.builtin(ReadMenuButtonConfig.Builtin.PARAGRAPH_RULES))
             add(ReadMenuButtonConfig.builtin(ReadMenuButtonConfig.Builtin.BUBBLE))
-            add(ReadMenuButtonConfig.builtin(ReadMenuButtonConfig.Builtin.CHARACTERS))
         }
     }
 
@@ -591,7 +590,6 @@ class ReadMenuButtonManageActivity : BaseActivity<ActivityThemeManageBinding>(),
             ReadMenuButtonConfig.Builtin.AI_SUMMARY -> getString(R.string.read_menu_btn_ai_summary)
             ReadMenuButtonConfig.Builtin.PARAGRAPH_RULES -> getString(R.string.paragraph_rule)
             ReadMenuButtonConfig.Builtin.BUBBLE -> getString(R.string.read_menu_btn_bubble)
-            ReadMenuButtonConfig.Builtin.CHARACTERS -> getString(R.string.read_menu_btn_characters)
             else -> ref.id
         }
     }
@@ -611,7 +609,6 @@ class ReadMenuButtonManageActivity : BaseActivity<ActivityThemeManageBinding>(),
             ReadMenuButtonConfig.Builtin.AI_SUMMARY -> R.drawable.ic_bottom_ai
             ReadMenuButtonConfig.Builtin.PARAGRAPH_RULES -> R.drawable.ic_code
             ReadMenuButtonConfig.Builtin.BUBBLE -> R.drawable.ic_bubble_chart
-            ReadMenuButtonConfig.Builtin.CHARACTERS -> R.drawable.ic_bottom_person
             else -> R.drawable.ic_custom
         }
     }

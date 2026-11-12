@@ -55,8 +55,8 @@
     <string name="ai_chat_auto_speak_option">Auto-play voice: %1$s</string>
     <string name="ai_chat_switch_on">On</string>
     <string name="ai_chat_switch_off">Off</string>
-    <string name="ai_tavern">AI Tavern</string>
-    <string name="ai_chat_character_and_sessions">Characters &amp; sessions</string>
+    <string name="ai_tavern">AI Assistant</string>
+    <string name="ai_chat_character_and_sessions">Sessions</string>
     <string name="ai_chat_sessions">Sessions</string>
     <string name="ai_chat_no_history_sessions">No conversation history yet</string>
     <string name="ai_chat_more_sessions">%1$d more sessions</string>
