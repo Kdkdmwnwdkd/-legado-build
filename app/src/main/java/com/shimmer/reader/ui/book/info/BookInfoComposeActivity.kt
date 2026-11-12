@@ -335,6 +335,11 @@ class BookInfoComposeActivity :
                     )
                 }
             },
+            onTagClick = { tag ->
+                if (tag.isNotBlank()) {
+                    SearchActivity.start(this, tag)
+                }
+            },
             onEditBookInfo = {
                 viewModel.getBook()?.let { book ->
                     infoEditResult.launch {

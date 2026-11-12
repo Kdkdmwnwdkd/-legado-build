@@ -196,6 +196,7 @@ data class BookInfoActions(
     val onAuthorLongClick: () -> Unit = {},
     val onNameClick: () -> Unit = {},
     val onNameLongClick: () -> Unit = {},
+    val onTagClick: (String) -> Unit = {},
     val onEditBookInfo: () -> Unit = {},
     val onChangeSource: () -> Unit = {},
     val onEditSource: () -> Unit = {},
@@ -1789,7 +1790,7 @@ private fun BookInfoPosterHero(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     tags.forEach { tag ->
-                        BookInfoPosterChip(tag, style)
+                        BookInfoPosterChip(tag, style, onClick = { actions.onTagClick(tag) })
                     }
                 }
             }
@@ -1800,7 +1801,8 @@ private fun BookInfoPosterHero(
 @Composable
 private fun BookInfoPosterChip(
     text: String,
-    style: BookInfoComposeStyle
+    style: BookInfoComposeStyle,
+    onClick: () -> Unit
 ) {
     Text(
         text = text,
@@ -1810,6 +1812,7 @@ private fun BookInfoPosterChip(
         modifier = Modifier
             .clip(RoundedCornerShape(style.metrics.actionRadius))
             .background(style.colors.scrim.copy(alpha = 0.64f))
+            .clickable(onClick = onClick)
             .padding(horizontal = 10.dp, vertical = 5.dp)
     )
 }

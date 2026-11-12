@@ -661,6 +661,11 @@ class BookInfoActivity :
                     )
                 }
             },
+            onTagClick = { tag ->
+                if (tag.isNotBlank()) {
+                    SearchActivity.start(this@BookInfoActivity, tag)
+                }
+            },
             onChangeSource = {
                 viewModel.getBook()?.let { book ->
                     showDialogFragment(ChangeBookSourceDialog(book.name, book.author))
