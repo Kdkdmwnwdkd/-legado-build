@@ -53,6 +53,12 @@ object HighlightStyle {
                     values["color"] = "#ffffff"
                 }
                 "textColor" -> values["color"] = color
+                "outline" -> {
+                    // 描边：细边框 + 轻微内边距，避免框线贴着字形
+                    values["border"] = "1px solid $color"
+                    values["border-radius"] = "4px"
+                    values["padding"] = "0 2px"
+                }
                 else -> {
                     values["text-decoration-line"] = if (rule.styleType == "strikethrough") "line-through" else "underline"
                     values["text-decoration-style"] = when (rule.styleType) {

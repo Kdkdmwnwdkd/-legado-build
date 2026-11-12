@@ -63,14 +63,19 @@ class HighlightRuleEditActivity : BaseActivity<ActivityHighlightRuleEditBinding>
         }
     }
     private val editingId get() = intent.getStringExtra("id")
-    private val types = listOf("textColor", "background", "underline", "doubleLine", "wavyLine", "strikethrough")
+    private val types = listOf(
+        "textColor", "background", "underline", "doubleLine", "dottedLine", "wavyLine",
+        "strikethrough", "outline"
+    )
     private val typeLabels get() = listOf(
         getString(R.string.highlight_style_text_color),
         getString(R.string.highlight_style_background),
         getString(R.string.highlight_style_underline),
         getString(R.string.highlight_style_double_line),
+        getString(R.string.highlight_style_dotted_line),
         getString(R.string.highlight_style_wavy_line),
-        getString(R.string.highlight_style_strikethrough)
+        getString(R.string.highlight_style_strikethrough),
+        getString(R.string.highlight_style_outline)
     )
     private val colors = listOf("accent", "red", "orange", "yellow", "green", "teal", "blue", "purple", "pink", "brown", "gray")
     private val colorLabels get() = listOf(
