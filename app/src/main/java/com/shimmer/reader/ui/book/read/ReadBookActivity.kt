@@ -6220,6 +6220,9 @@ class ReadBookActivity : BaseReadBookActivity(),
         observeEvent<Int>(EventBus.READ_ALOUD_DS) {
             readAloudPlayerPanel.onTimerChanged(it)
         }
+        observeEvent<Int>(EventBus.READ_ALOUD_CHAPTER_QUOTA) {
+            readAloudPlayerPanel.onChapterQuotaChanged(it)
+        }
         observeEvent<ReadAloudPlaybackState>(EventBus.READ_ALOUD_PLAYBACK_STATE) {
             readAloudPlayerPanel.onPlaybackState(it)
         }

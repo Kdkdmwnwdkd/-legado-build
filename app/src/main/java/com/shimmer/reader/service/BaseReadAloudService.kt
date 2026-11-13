@@ -113,6 +113,13 @@ abstract class BaseReadAloudService : BaseService(),
             private set
 
         /**
+         * 「再读 N 章」定时的剩余章数。0 表示未启用。
+         */
+        @JvmStatic
+        var chapterQuota: Int = 0
+            private set
+
+        /**
          * 当前朗读到的章节内字符位置。
          * 阅读页在「回到朗读位置」时用它定位，不依赖阅读视图的当前页。
          */
@@ -445,6 +452,7 @@ abstract class BaseReadAloudService : BaseService(),
         }
         isRun = false
         pause = true
+        chapterQuota = ReadAloudChapterQuota.OFF
         abandonFocus()
         unregisterReceiver(broadcastReceiver)
         postReadAloudPlaybackPhase(ReadAloudPlaybackState.PHASE_STOPPED)
@@ -516,6 +524,8 @@ abstract class BaseReadAloudService : BaseService(),
             )
             IntentAction.addTimer -> addTimer()
             IntentAction.setTimer -> setTimer(intent.getIntExtra("minute", 0))
+            IntentAction.setChapterQuota ->
+                setChapterQuota(intent.getIntExtra("chapters", 0))
             IntentAction.stop -> {
                 skipDestroyProgressUpload =
                     intent.getStringExtra(IntentAction.stopReason) == IntentAction.stopReasonBookSwitch
@@ -1244,17 +1254,34 @@ abstract class BaseReadAloudService : BaseService(),
 
     private fun setTimer(minute: Int) {
         timeMinute = minute
+        chapterQuota = ReadAloudChapterQuota.OFF
+        postEvent(EventBus.READ_ALOUD_CHAPTER_QUOTA, ReadAloudChapterQuota.OFF)
         doDs()
     }
 
-    private fun addTimer() {
-        if (timeMinute == 180) {
+    private fun setChapterQuota(chapters: Int) {
+        val quota = ReadAloudChapterQuota.clamp(chapters)
+        chapterQuota = quota
+        if (quota > 0) {
+            // 两种定时互斥，避免「时间到了」和「章数到了」同时触发
             timeMinute = 0
+            dsJob?.cancel()
+            toastOnUi(
+                if (quota == 1) getString(R.string.ra_chapter_quota_this_chapter)
+                else getString(R.string.ra_chapter_quota_set, quota)
+            )
         } else {
-            timeMinute += 10
-            if (timeMinute > 180) timeMinute = 180
+            toastOnUi(getString(R.string.ra_chapter_quota_off))
         }
-        doDs()
+        postEvent(EventBus.READ_ALOUD_DS, ReadAloudChapterQuota.OFF)
+        postEvent(EventBus.READ_ALOUD_CHAPTER_QUOTA, quota)
+        upReadAloudNotification()
+    }
+
+    private fun addTimer() {
+        val next = if (timeMinute == 180) 0 else (timeMinute + 10).coerceAtMost(180)
+        // 走 setTimer，顺带清掉可能还挂着的章节额度，避免两套定时并存
+        setTimer(next)
     }
 
     /**
@@ -1382,6 +1409,10 @@ abstract class BaseReadAloudService : BaseService(),
     private fun upMediaMetadata() {
         var nTitle: String = when {
             pause -> getString(R.string.read_aloud_pause)
+            chapterQuota > 0 -> getString(
+                R.string.read_aloud_chapter_quota,
+                chapterQuota
+            )
             timeMinute > 0 -> getString(
                 R.string.read_aloud_timer,
                 timeMinute
@@ -1563,8 +1594,22 @@ abstract class BaseReadAloudService : BaseService(),
     open fun nextChapter(continuePlayback: Boolean = true) {
         ReadBook.upReadTime()
         AppLog.putDebug("${ReadBook.curTextChapter?.chapter?.title} 朗读结束跳转下一章并朗读")
+        // 章节额度只在「本章真的读完、准备进入下一章」时结算一次
+        val quotaBefore = chapterQuota
+        val step = ReadAloudChapterQuota.step(quotaBefore)
+        if (step.stopNow) {
+            chapterQuota = step.remaining
+            postEvent(EventBus.READ_ALOUD_DS, ReadAloudChapterQuota.OFF)
+            postEvent(EventBus.READ_ALOUD_CHAPTER_QUOTA, ReadAloudChapterQuota.OFF)
+            toastOnUi(getString(R.string.ra_chapter_quota_done))
+            ReadAloud.stop(this)
+            return
+        }
+        chapterQuota = step.remaining
         prepareChapterTransition(continuePlayback)
         if (!ReadBook.moveToNextChapter(true, fromReadAloud = true)) {
+            // 没有下一章或切章失败，把额度还回去，避免白扣
+            chapterQuota = ReadAloudChapterQuota.rollback(quotaBefore)
             stopSelf()
         }
     }

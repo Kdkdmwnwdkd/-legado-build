@@ -12,6 +12,7 @@ object IntentAction {
     const val pause = "pause"
     const val addTimer = "addTimer"
     const val setTimer = "setTimer"
+    const val setChapterQuota = "setChapterQuota"
     const val prevParagraph = "prevParagraph"
     const val nextParagraph = "nextParagraph"
     const val upTtsSpeechRate = "upTtsSpeechRate"
