@@ -120,7 +120,7 @@ object ReadingBreakReminder {
                 activity.getString(R.string.reading_break_title),
                 activity.getString(R.string.reading_break_message, minutes)
             ) {
-                setCancelable(false)
+                // 点外面或者返回键都等同于「接着读」，不强行拦着
                 positiveButton(R.string.reading_break_continue)
                 neutralButton(R.string.reading_break_skip_today) { skipToday() }
             }
