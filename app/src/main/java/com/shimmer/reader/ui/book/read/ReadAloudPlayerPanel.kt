@@ -306,6 +306,7 @@ class ReadAloudPlayerPanel @JvmOverloads constructor(
         val playbackBusy: Boolean = false,
         val serviceRunning: Boolean = false,
         val timerMinute: Int = 0,
+        val chapterQuota: Int = 0,
         val progress: Float = 0f,
         val progressText: String = "0%",
         val paragraphText: String = "",
@@ -418,6 +419,7 @@ class ReadAloudPlayerPanel @JvmOverloads constructor(
                 onChapterSelect = ::selectChapterFromPanel,
                 onOpenSettings = ::openReadAloudSetting,
                 onTimerChange = ::setTimer,
+                onChapterQuotaChange = ::setChapterQuota,
                 onEngineSelect = ::selectTtsEngine,
                 onEngineSheetOpen = ::refreshTtsEngineOptions,
                 onProgressSeek = ::seekToParagraphProgress,
@@ -1044,7 +1046,16 @@ class ReadAloudPlayerPanel @JvmOverloads constructor(
     private fun setTimer(minute: Int) {
         AppConfig.ttsTimer = minute
         ReadAloud.setTimer(context, minute)
-        uiState = uiState.copy(timerMinute = minute)
+        uiState = uiState.copy(timerMinute = minute, chapterQuota = 0)
+    }
+
+    private fun setChapterQuota(chapters: Int) {
+        ReadAloud.setChapterQuota(context, chapters)
+        uiState = uiState.copy(chapterQuota = chapters.coerceAtLeast(0), timerMinute = 0)
+    }
+
+    fun onChapterQuotaChanged(chapters: Int) {
+        uiState = uiState.copy(chapterQuota = chapters)
     }
 
     private fun selectTtsEngine(value: String) {
@@ -1371,6 +1382,7 @@ class ReadAloudPlayerPanel @JvmOverloads constructor(
             currentSpeechItem?.route ?: speechRoute
         )
         val timerMinute = BaseReadAloudService.timeMinute
+        val chapterQuota = BaseReadAloudService.chapterQuota
         val servicePlaying = playbackActualPlaying ?: BaseReadAloudService.isPlay()
         val roleEventVisible = multiRoleEnabled &&
                 roleStatusText.isNotBlank() &&
@@ -1392,6 +1404,7 @@ class ReadAloudPlayerPanel @JvmOverloads constructor(
                     playbackPhase == ReadAloudPlaybackState.PHASE_BUFFERING,
             serviceRunning = BaseReadAloudService.isRun,
             timerMinute = timerMinute,
+            chapterQuota = chapterQuota,
             progress = paragraphProgress,
             progressText = paragraphProgressText,
             paragraphText = paragraphText,
@@ -1768,6 +1781,7 @@ private fun ReadAloudPlayerContent(
     onChapterSelect: (Int) -> Unit,
     onOpenSettings: () -> Unit,
     onTimerChange: (Int) -> Unit,
+    onChapterQuotaChange: (Int) -> Unit,
     onEngineSelect: (String) -> Unit,
     onEngineSheetOpen: () -> Unit,
     onProgressSeek: (Float) -> Unit,
@@ -4756,8 +4770,15 @@ private fun PlayerControlDock(
             }
             FeaturePill(
                 icon = R.drawable.ic_time_add_24dp,
-                text = if (state.timerMinute > 0) context.getString(R.string.timer_m, state.timerMinute)
-                else context.getString(R.string.set_timer),
+                text = when {
+                    state.chapterQuota > 0 -> if (state.chapterQuota == 1) {
+                        context.getString(R.string.ra_timer_this_chapter)
+                    } else {
+                        context.getString(R.string.ra_timer_more_chapters, state.chapterQuota)
+                    }
+                    state.timerMinute > 0 -> context.getString(R.string.timer_m, state.timerMinute)
+                    else -> context.getString(R.string.set_timer)
+                },
                 selected = activeSheet == PlayerSheet.Timer,
                 colors = colors,
                 modifier = Modifier.weight(1f)
@@ -4921,7 +4942,8 @@ private fun PlayerSheetPanel(
                         onNextChapter = onNextChapter,
                         onChapterSelect = onChapterSelect
                     )
-                    PlayerSheet.Timer -> TimerSheet(state, colors, onTimerChange)
+                    PlayerSheet.Timer ->
+                        TimerSheet(state, colors, onTimerChange, onChapterQuotaChange)
                     PlayerSheet.Engine -> EngineSheet(state, colors, onEngineSelect)
                     PlayerSheet.Characters -> CharactersSheet(state, colors, onOpenCharacters)
                     PlayerSheet.None -> Unit
@@ -5103,11 +5125,13 @@ private fun SheetActionButton(
 private fun TimerSheet(
     state: ReadAloudPlayerPanel.PlayerUiState,
     colors: PlayerColors,
-    onTimerChange: (Int) -> Unit
+    onTimerChange: (Int) -> Unit,
+    onChapterQuotaChange: (Int) -> Unit
 ) {
     val context = LocalContext.current
     val actionShape = context.composeActionShape()
     val times = listOf(0, 5, 10, 15, 30, 60, 90, 180)
+    val chapterOptions = listOf(1, 3, 5)
     Column(
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -5124,7 +5148,8 @@ private fun TimerSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 row.forEach { minute ->
-                    val selected = state.timerMinute == minute || (state.timerMinute <= 0 && minute == 0)
+                    val selected = state.chapterQuota <= 0 &&
+                            (state.timerMinute == minute || (state.timerMinute <= 0 && minute == 0))
                     Surface(
                         modifier = Modifier
                             .weight(1f)
@@ -5142,6 +5167,42 @@ private fun TimerSheet(
                                 maxLines = 1
                             )
                         }
+                    }
+                }
+            }
+        }
+        Text(
+            text = context.getString(R.string.ra_timer_by_chapter),
+            color = colors.primaryText,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            chapterOptions.forEach { chapters ->
+                val selected = state.chapterQuota == chapters
+                Surface(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(38.dp)
+                        .clickable { onChapterQuotaChange(chapters) },
+                    shape = actionShape,
+                    color = if (selected) colors.accent else colors.panel
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = if (chapters == 1) {
+                                context.getString(R.string.ra_timer_this_chapter)
+                            } else {
+                                context.getString(R.string.ra_timer_more_chapters, chapters)
+                            },
+                            color = if (selected) colors.accentText else colors.primaryText,
+                            fontSize = 12.sp,
+                            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+                            maxLines = 1
+                        )
                     }
                 }
             }

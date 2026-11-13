@@ -241,4 +241,16 @@ object ReadAloud {
         }
     }
 
+    /**
+     * 按章节设定停止点。[chapters] 为 1 表示读完本章就停，0 表示关闭。
+     */
+    fun setChapterQuota(context: Context, chapters: Int) {
+        if (BaseReadAloudService.isRun) {
+            val intent = Intent(context, aloudClass)
+            intent.action = IntentAction.setChapterQuota
+            intent.putExtra("chapters", chapters)
+            context.startForegroundServiceCompat(intent)
+        }
+    }
+
 }
