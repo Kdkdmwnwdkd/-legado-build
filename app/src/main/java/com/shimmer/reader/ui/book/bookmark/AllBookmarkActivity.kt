@@ -50,7 +50,7 @@ class AllBookmarkActivity : VMBaseActivity<ActivityAllBookmarkBinding, AllBookma
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         initComposeContent()
         binding.searchView.maxWidth = Int.MAX_VALUE
-        binding.searchView.setOnQueryTextListener(object : android.widget.SearchView.OnQueryTextListener {
+        binding.searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 binding.searchView.clearFocus()
                 return true
