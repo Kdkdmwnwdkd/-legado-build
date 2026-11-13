@@ -381,6 +381,7 @@ object PreferKey {
     const val fastScrollerTouchTargetDp = "fastScrollerTouchTargetDp"
     const val readingBreakMinutes = "readingBreakMinutes"
     const val readingBreakSkipDate = "readingBreakSkipDate"
+    const val bookRemarks = "bookRemarks"
     const val importKeepEnable = "importKeepEnable"
     const val importShowComment = "importShowComment"
     const val clickImgWay = "clickImgWay"

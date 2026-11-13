@@ -1550,6 +1550,14 @@
     <string name="bookmark_share_excerpt">分享摘录</string>
     <string name="bookmark_edit">编辑书签</string>
     <string name="bookmark_empty_excerpt">这条书签没有正文可拷贝</string>
+    <string name="book_remark_title">备注</string>
+    <string name="book_remark_empty">点一下写点备注</string>
+    <string name="book_remark_edit_title">编辑备注</string>
+    <string name="book_remark_hint">例如「等完结」「朋友推荐」</string>
+    <string name="book_remark_save">保存</string>
+    <string name="book_remark_clear">清除备注</string>
+    <string name="book_remark_saved">备注已保存</string>
+    <string name="book_remark_cleared">备注已清除</string>
     <string name="reading_break_title">阅读休息提醒</string>
     <string name="reading_break_summary">连续阅读到设定时长后提醒活动一下；听书和锁屏时间不计入</string>
     <string name="reading_break_message">已经连续看了 %1$d 分钟。起身走两步、看看远处，眼睛和脖子会舒服些。</string>

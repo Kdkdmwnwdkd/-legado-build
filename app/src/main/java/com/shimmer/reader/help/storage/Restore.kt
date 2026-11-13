@@ -40,6 +40,8 @@ import com.shimmer.reader.data.entities.Server
 import com.shimmer.reader.data.entities.TxtTocRule
 import com.shimmer.reader.help.AppCloudStorage
 import com.shimmer.reader.help.DirectLinkUpload
+import com.shimmer.reader.help.book.BookRemarkEntry
+import com.shimmer.reader.help.book.BookRemarkStore
 import com.shimmer.reader.lib.cloud.S3ContainerManager
 import com.shimmer.reader.help.LauncherIconHelp
 import com.shimmer.reader.help.book.isLocal
@@ -225,6 +227,7 @@ object Restore {
         restoreReadRecordDaily(path)
         restoreRecentBooks(path)
         restoreReadMenuCustomButtons(path)
+        restoreBookRemarks(path)
         File(path, "servers.json").takeIf {
             it.exists()
         }?.runCatching {
@@ -440,6 +443,15 @@ object Restore {
      * 恢复朗读音色组：先按名字把「备份里的组」对到「本机的组」，再按旧 id → 新 id 写成员。
      * 组名相同就并入本机组（成员去重后追加），否则新建一组挂在末尾。
      */
+    /**
+     * 书籍备注：按 bookUrl 合并，备份里的非空备注覆盖本机同名条目。
+     */
+    private fun restoreBookRemarks(path: String) {
+        val entries = fileToListT<BookRemarkEntry>(path, Backup.bookRemarksFileName) ?: return
+        if (entries.isEmpty()) return
+        BookRemarkStore.restoreFromBackup(entries)
+    }
+
     private fun restoreSpeakerGroups(path: String) {
         val groups = fileToListT<ReadAloudSpeakerGroup>(path, Backup.speakerGroupsFileName) ?: return
         if (groups.isEmpty()) return
