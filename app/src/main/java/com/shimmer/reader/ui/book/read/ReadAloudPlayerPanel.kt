@@ -2011,6 +2011,7 @@ private fun ReadAloudPlayerContent(
                         onNextChapter = onNextChapter,
                         onChapterSelect = onChapterSelect,
                         onTimerChange = onTimerChange,
+                        onChapterQuotaChange = onChapterQuotaChange,
                         onEngineSelect = onEngineSelect,
                         onOpenCharacters = onOpenCharacters
                     )
@@ -4898,6 +4899,7 @@ private fun PlayerSheetPanel(
     onNextChapter: () -> Unit,
     onChapterSelect: (Int) -> Unit,
     onTimerChange: (Int) -> Unit,
+    onChapterQuotaChange: (Int) -> Unit,
     onEngineSelect: (String) -> Unit,
     onOpenCharacters: () -> Unit,
     modifier: Modifier = Modifier
