@@ -53,7 +53,10 @@ object WebBook {
         key: String,
         page: Int? = 1,
         filter: ((name: String, author: String, kind: String?) -> Boolean)? = null,
-        shouldBreak: ((size: Int) -> Boolean)? = null
+        shouldBreak: ((size: Int) -> Boolean)? = null,
+        // 搜索场景允许调用方收紧超时：坏源更早让位，不拖住整批并发名额
+        connectTimeoutMs: Long? = null,
+        callTimeoutMs: Long? = null
     ): ArrayList<SearchBook> {
         if (bookSource.isJsSource()) {
             return JsSourceBook.searchAwait(bookSource, key, page, filter)
@@ -70,6 +73,8 @@ object WebBook {
             baseUrl = bookSource.bookSourceUrl,
             source = bookSource,
             ruleData = ruleData,
+            callTimeout = callTimeoutMs,
+            connectTimeoutMs = connectTimeoutMs,
             coroutineContext = currentCoroutineContext()
         )
         val checkJs = bookSource.loginCheckJs
