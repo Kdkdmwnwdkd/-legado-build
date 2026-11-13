@@ -30,10 +30,15 @@ import com.shimmer.reader.utils.invisible
 import com.shimmer.reader.utils.observeEvent
 import com.shimmer.reader.utils.postEvent
 import com.shimmer.reader.utils.showSoftInput
+import com.shimmer.reader.utils.toastOnUi
 import com.shimmer.reader.utils.viewbindingdelegate.viewBinding
 import com.shimmer.reader.utils.visible
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -191,50 +196,161 @@ class SearchContentActivity :
         if (query.isBlank()) return
         searchJob?.cancel()
         adapter.clearItems()
-        viewModel.searchResultList.clear()
-        viewModel.searchResultCounts = 0
+        viewModel.resetSearchState()
         viewModel.lastQuery = query
-        binding.refreshProgressBar.isAutoLoading = true
-        binding.fbStop.visible()
+        setSearchLoading(true)
         searchJob = lifecycleScope.launch(IO) {
-            initJob?.join()
-            kotlin.runCatching {
-                appDb.bookChapterDao.getChapterList(viewModel.bookUrl).forEach { bookChapter ->
+            try {
+                initJob?.join()
+                val chapters = appDb.bookChapterDao.getChapterList(viewModel.bookUrl)
+                viewModel.totalChapters = chapters.size
+                chapters.forEach { bookChapter ->
                     ensureActive()
-                    val searchResults = if (isLocalBook
-                        || BookHelp.getChapterCacheFileNames(
-                            viewModel.book ?: return@forEach,
-                            bookChapter
-                        ).any(viewModel.cacheChapterNames::contains)
-                    ) {
-                        viewModel.searchChapter(query, bookChapter)
+                    if (isChapterSearchable(bookChapter)) {
+                        val searchResults = viewModel.searchChapter(query, bookChapter)
+                        viewModel.searchedChapters++
+                        publishResults(searchResults)
                     } else {
-                        return@forEach
+                        viewModel.pendingChapters.add(bookChapter)
                     }
+                    if (viewModel.searchedChapters % 5 == 0) postSearchInfo()
+                }
+                finishSearchPass()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                AppLog.put("全文搜索出错\n${e.localizedMessage}", e)
+            } finally {
+                withContext(NonCancellable + Dispatchers.Main) {
+                    setSearchLoading(false)
+                }
+            }
+        }
+    }
+
+    /**
+     * 联网补搜没缓存的章节。一次最多 [SearchContentViewModel.MAX_NETWORK_BATCH] 章，
+     * 搜完还有剩余就在列表底部再给一次入口，不做无限请求。
+     */
+    private fun startNetworkSearch() {
+        val query = viewModel.lastQuery
+        if (query.isBlank() || viewModel.pendingChapters.isEmpty()) return
+        searchJob?.cancel()
+        setSearchLoading(true)
+        searchJob = lifecycleScope.launch(IO) {
+            val batch = viewModel.pendingChapters.take(SearchContentViewModel.MAX_NETWORK_BATCH)
+            val done = mutableListOf<BookChapter>()
+            var failStreak = 0
+            var stoppedBySource = false
+            try {
+                for ((index, chapter) in batch.withIndex()) {
                     ensureActive()
-                    if (searchResults.isNotEmpty()) {
-                        viewModel.searchResultList.addAll(searchResults)
-                        binding.tvCurrentSearchInfo.post {
-                            binding.tvCurrentSearchInfo.text =
-                                this@SearchContentActivity.getString(R.string.search_content_size) + ": ${viewModel.searchResultCounts}"
-                            adapter.addItems(searchResults)
+                    val content = viewModel.fetchChapterContent(chapter)
+                    if (content == null) {
+                        failStreak++
+                        viewModel.networkFailedChapters++
+                        if (failStreak >= SearchContentViewModel.MAX_FAIL_STREAK) {
+                            stoppedBySource = true
+                            break
                         }
+                    } else {
+                        failStreak = 0
+                        done.add(chapter)
+                        val results = viewModel.searchChapter(query, chapter, content)
+                        viewModel.searchedChapters++
+                        publishResults(results)
+                    }
+                    if (index % 3 == 0) postSearchInfo()
+                    // 章节之间留点间隔，别把书源打成压测
+                    delay(NETWORK_INTERVAL_MS)
+                }
+                viewModel.pendingChapters.removeAll(done)
+                withContext(Dispatchers.Main) {
+                    setSearchLoading(false)
+                    adapter.setItems(viewModel.searchResultList)
+                    appendTrailingItem()
+                    postSearchInfo()
+                    if (stoppedBySource) {
+                        toastOnUi(R.string.search_content_net_stopped)
+                    } else if (viewModel.networkFailedChapters > 0) {
+                        toastOnUi(
+                            getString(
+                                R.string.search_content_net_failed,
+                                viewModel.networkFailedChapters
+                            )
+                        )
                     }
                 }
-                if (viewModel.searchResultCounts == 0) {
-                    val noSearchResult =
-                        SearchResult(resultText = getString(R.string.search_content_empty))
-                    binding.tvCurrentSearchInfo.post {
-                        adapter.addItem(noSearchResult)
-                    }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                AppLog.put("全文搜索联网补搜出错\n${e.localizedMessage}", e)
+            } finally {
+                withContext(NonCancellable + Dispatchers.Main) {
+                    setSearchLoading(false)
                 }
-            }.onFailure {
-                AppLog.put("全文搜索出错\n${it.localizedMessage}", it)
             }
-            binding.tvCurrentSearchInfo.post {
-                binding.fbStop.invisible()
-                binding.refreshProgressBar.isAutoLoading = false
+        }
+    }
+
+    private fun isChapterSearchable(chapter: BookChapter): Boolean {
+        if (isLocalBook) return true
+        val book = viewModel.book ?: return false
+        return BookHelp.getChapterCacheFileNames(book, chapter)
+            .any(viewModel.cacheChapterNames::contains)
+    }
+
+    private suspend fun publishResults(results: List<SearchResult>) {
+        if (results.isEmpty()) return
+        viewModel.searchResultList.addAll(results)
+        withContext(Dispatchers.Main) {
+            adapter.addItems(results)
+            postSearchInfo()
+        }
+    }
+
+    private suspend fun finishSearchPass() {
+        withContext(Dispatchers.Main) {
+            setSearchLoading(false)
+            appendTrailingItem()
+            postSearchInfo()
+        }
+    }
+
+    /** 列表末尾那一行：还能不能补搜、或者是不是真的一条都没有 */
+    private fun appendTrailingItem() {
+        val pending = viewModel.pendingChapters.size
+        if (pending > 0) {
+            val stringId = if (viewModel.searchResultList.isEmpty()) {
+                R.string.search_content_uncached_empty
+            } else {
+                R.string.search_content_uncached_hint
             }
+            adapter.addItem(
+                SearchResult(
+                    resultText = getString(stringId, pending),
+                    isAction = true
+                )
+            )
+        } else if (viewModel.searchResultList.isEmpty()) {
+            adapter.addItem(SearchResult(resultText = getString(R.string.search_content_empty)))
+        }
+    }
+
+    private fun setSearchLoading(loading: Boolean) {
+        binding.refreshProgressBar.isAutoLoading = loading
+        if (loading) binding.fbStop.visible() else binding.fbStop.invisible()
+    }
+
+    private fun postSearchInfo() {
+        val text = getString(
+            R.string.search_content_scope,
+            viewModel.searchResultCounts,
+            viewModel.searchedChapters,
+            viewModel.totalChapters
+        )
+        binding.tvCurrentSearchInfo.post {
+            binding.tvCurrentSearchInfo.text = text
         }
     }
 
@@ -242,6 +358,10 @@ class SearchContentActivity :
         get() = viewModel.book?.isLocal == true
 
     override fun openSearchResult(searchResult: SearchResult, index: Int) {
+        if (searchResult.isAction) {
+            startNetworkSearch()
+            return
+        }
         searchJob?.cancel()
         postEvent(EventBus.SEARCH_RESULT, viewModel.searchResultList as List<SearchResult>)
         val searchData = Intent()
@@ -259,3 +379,6 @@ class SearchContentActivity :
     }
 
 }
+
+/** 联网补搜时两章之间的间隔，别把书源当压测工具用 */
+private const val NETWORK_INTERVAL_MS = 250L
