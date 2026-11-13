@@ -20,6 +20,10 @@
     <string name="ra_cfg_model_option_timeout">首响超时：%1$d 秒</string>
     <string name="ra_cfg_model_option_audio">智能音频模型：%1$s</string>
     <string name="ra_cfg_model_option_audio_backup">智能音频备用：%1$s</string>
+    <string name="ra_cfg_character_manage">角色卡</string>
+    <string name="ra_cfg_character_manage_summary">本书已建 %1$d 个角色，可改名字、绑配音、调关系</string>
+    <string name="ra_cfg_character_manage_empty">本书还没有角色卡，多角色朗读遇到新角色时会自动建卡</string>
+    <string name="ra_cfg_character_manage_no_book">先打开一本书</string>
     <string name="ra_cfg_speaker_manage">发言人管理</string>
     <string name="ra_cfg_speaker_manage_summary">管理多角色可用发言人；未绑定或失效时朗读会自动回退到默认配音，不在正文里反复提示</string>
     <string name="ra_cfg_follow_sys_rate_summary">开启后使用系统语速，语速滑条仅展示当前保存值</string>

@@ -20,6 +20,10 @@
     <string name="ra_cfg_model_option_timeout">First response timeout: %1$d s</string>
     <string name="ra_cfg_model_option_audio">AI audio model: %1$s</string>
     <string name="ra_cfg_model_option_audio_backup">AI audio backup: %1$s</string>
+    <string name="ra_cfg_character_manage">Character cards</string>
+    <string name="ra_cfg_character_manage_summary">%1$d characters in this book · names, voices and relations can be edited</string>
+    <string name="ra_cfg_character_manage_empty">No characters yet; they are created when multi-role reading meets them</string>
+    <string name="ra_cfg_character_manage_no_book">Open a book first</string>
     <string name="ra_cfg_speaker_manage">Speaker management</string>
     <string name="ra_cfg_speaker_manage_summary">Manage the speakers available for multi-role reading. Unbound or missing voices fall back to the default quietly instead of prompting in the text</string>
     <string name="ra_cfg_follow_sys_rate_summary">Uses the system speech rate; the slider only shows the saved value</string>
