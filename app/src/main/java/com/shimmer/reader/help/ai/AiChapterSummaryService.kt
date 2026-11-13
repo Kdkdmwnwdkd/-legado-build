@@ -4,8 +4,6 @@ import com.shimmer.reader.data.appDb
 import com.shimmer.reader.data.entities.Book
 import com.shimmer.reader.data.entities.BookAiChapterSummary
 import com.shimmer.reader.data.entities.BookChapter
-import com.shimmer.reader.help.book.characterBookKey
-import com.shimmer.reader.help.character.BookCharacterIdentityMigrator
 import com.shimmer.reader.help.config.AppConfig
 import com.shimmer.reader.ui.main.ai.AiChatMessage
 import com.shimmer.reader.utils.MD5Utils
@@ -17,14 +15,6 @@ object AiChapterSummaryService {
 
     private const val CHUNK_LIMIT = 12_000
     private const val DIRECT_LIMIT = 18_000
-    private val SUMMARY_TOOL_NAMES = setOf(
-        "list_book_characters",
-        "upsert_book_character",
-        "list_speech_catalogs",
-        "assign_character_speech_route",
-        "batch_assign_character_speech_routes"
-    )
-
     data class SummaryInput(
         val book: Book,
         val chapter: BookChapter,
@@ -107,7 +97,7 @@ object AiChapterSummaryService {
             onPartial = onPartial,
             onStatus = onStatus,
             includeStructuredBlocks = false,
-            toolOverride = AiToolRegistry.resolveNativeTools(SUMMARY_TOOL_NAMES),
+            toolOverride = emptyList(),
             modelConfigOverride = AppConfig.aiSummaryModelConfig
         )
     }
@@ -155,35 +145,21 @@ object AiChapterSummaryService {
         chunkIndex: Int,
         chunkCount: Int
     ): String {
-        val existingCharacters = appDb.bookCharacterDao.characters(
-            BookCharacterIdentityMigrator.migrate(input.book).ifBlank { input.book.characterBookKey() }
-        )
-            .take(80)
-            .joinToString("\n") { character ->
-                "- ${character.name}: ${listOf(character.identity, character.skills, character.attributes, character.biography).filter { it.isNotBlank() }.joinToString("；").take(500)}"
-            }
-            .ifBlank { "暂无角色卡" }
         return """
-            你是阅读页的 AI 章节总结助手，同时负责维护本书角色卡。
+            你是阅读页的 AI 章节总结助手。
 
             你必须遵守：
-            1. 先结合已有角色卡阅读本段正文。
-            2. 如果正文中出现新的明确角色，请调用 upsert_book_character 新增角色卡。
-            3. 如果正文明确说明已有角色的新技能、新属性、身份变化或生平变化，请调用 upsert_book_character 更新对应字段。
-            4. 不要删除角色，不要根据猜测覆盖旧信息；不确定的信息写入总结即可，不写入角色卡。
-            5. 如果角色没有配音且用户配置了发言人目录，可以读取配音目录并为角色分配发言人。
-            6. 最终回答只输出当前${if (chunkCount > 1) "分段" else "章节"}摘要，不要解释工具调用。
+            1. 只依据给出的正文总结，不要补充正文里没有的情节。
+            2. 人物名、地名沿用正文写法，拿不准的宁可不写。
+            3. 不要调用任何工具，不要解释过程。
+            4. 最终只输出当前${if (chunkCount > 1) "分段" else "章节"}摘要。
 
             书籍：
-            - bookUrl: ${input.bookUrl}
             - 书名: ${input.book.name}
             - 作者: ${input.book.author}
             - 章节序号: ${input.chapterIndex + 1}
             - 章节标题: ${input.chapterTitle}
             - 分段: $chunkIndex / $chunkCount
-
-            已有角色卡：
-            $existingCharacters
 
             输出格式：
             ## 剧情概述
