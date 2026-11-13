@@ -214,6 +214,8 @@ class HttpReadAloudService : BaseReadAloudService(),
     }
 
     private fun updateNextPos() {
+        // 定时到点时，这一段已经完整播完，不再往后推
+        if (consumeStopAfterCue()) return
         if (!moveToNextCue()) {
             nextChapter()
         }

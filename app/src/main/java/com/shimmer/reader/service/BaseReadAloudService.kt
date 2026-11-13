@@ -216,6 +216,13 @@ abstract class BaseReadAloudService : BaseService(),
     private var floatingTextCueKey = ""
     private var floatingTextCues = emptyList<ReadAloudPlayerPanel.TextCueUi>()
     private var skipDestroyProgressUpload = false
+
+    /**
+     * 分钟定时到点后不立刻掐断语音，先记下「读完这一段就停」。
+     * 真正停止发生在下一次「这一段播完、本该进下一段」的位置。
+     */
+    @Volatile
+    private var stopAfterCuePending = false
     private var cover: Bitmap =
         BitmapFactory.decodeResource(appCtx.resources, R.drawable.icon_read_book)
     var pageChanged = false
@@ -812,6 +819,8 @@ abstract class BaseReadAloudService : BaseService(),
 
     @SuppressLint("WakelockTimeout")
     open fun play() {
+        // 用户重新开始播放，之前挂起的「读完就停」作废
+        stopAfterCuePending = false
         if (useWakeLock) {
             if (!wakeLock.isHeld) wakeLock.acquire()
             wifiLock?.let { if (!it.isHeld) it.acquire() }
@@ -1254,9 +1263,25 @@ abstract class BaseReadAloudService : BaseService(),
 
     private fun setTimer(minute: Int) {
         timeMinute = minute
+        // 重新设定定时，撤销「读完这一段就停」的挂起状态
+        stopAfterCuePending = false
         chapterQuota = ReadAloudChapterQuota.OFF
         postEvent(EventBus.READ_ALOUD_CHAPTER_QUOTA, ReadAloudChapterQuota.OFF)
         doDs()
+    }
+
+    /**
+     * 一个段落播完、原本要接着播下一段时调用。
+     * 定时已经到点的话在这里收尾，避免停在句子中间。
+     *
+     * @return true 表示已经停止，调用方不要再推进播放
+     */
+    protected fun consumeStopAfterCue(): Boolean {
+        if (!stopAfterCuePending) return false
+        stopAfterCuePending = false
+        toastOnUi(getString(R.string.ra_timer_stopped))
+        stopSelf()
+        return true
     }
 
     private fun setChapterQuota(chapters: Int) {
@@ -1300,8 +1325,12 @@ abstract class BaseReadAloudService : BaseService(),
                         timeMinute--
                     }
                     if (timeMinute == 0) {
-                        ReadAloud.stop(this@BaseReadAloudService)
+                        // 不在这里直接 stop：停在句子中间听感很突然，
+                        // 先挂个标记，等当前这段播完、准备进下一段时再停。
+                        stopAfterCuePending = true
                         postEvent(EventBus.READ_ALOUD_DS, timeMinute)
+                        toastOnUi(getString(R.string.ra_timer_finishing_cue))
+                        upReadAloudNotification()
                         break
                     }
                 }
@@ -1409,6 +1438,7 @@ abstract class BaseReadAloudService : BaseService(),
     private fun upMediaMetadata() {
         var nTitle: String = when {
             pause -> getString(R.string.read_aloud_pause)
+            stopAfterCuePending -> getString(R.string.ra_timer_finishing)
             chapterQuota > 0 -> getString(
                 R.string.read_aloud_chapter_quota,
                 chapterQuota
