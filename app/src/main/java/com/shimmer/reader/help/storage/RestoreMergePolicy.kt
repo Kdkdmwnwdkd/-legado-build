@@ -16,6 +16,7 @@ object RestoreMergePolicy {
      */
     fun dailyReadTimeShouldReplace(local: ReadRecordDaily?, incoming: ReadRecordDaily): Boolean {
         if (local == null) return true
+        if (local.date != incoming.date) return true
         return incoming.readTime > local.readTime
     }
 
@@ -24,6 +25,7 @@ object RestoreMergePolicy {
      */
     fun recentBookShouldReplace(local: ReadRecentBook?, incoming: ReadRecentBook): Boolean {
         if (local == null) return true
+        if (local.bookUrl != incoming.bookUrl) return true
         return incoming.lastRead > local.lastRead
     }
 }
