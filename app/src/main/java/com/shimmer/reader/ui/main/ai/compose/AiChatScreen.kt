@@ -126,7 +126,6 @@ data class AiChatScreenActions(
     val onNewChat: () -> Unit,
     val onOpenHistory: () -> Unit,
     val onSelectModel: () -> Unit,
-    val onOpenImageGallery: (() -> Unit)? = null,
     val onOpenWindowAbilities: (() -> Unit)? = null,
     val onToggleAutoSpeak: (() -> Unit)? = null,
     val onSpeakMessage: ((String, AiChatCompanionConfig, String) -> Unit)? = null,
@@ -749,9 +748,6 @@ private fun AiChatTopBar(
                             )
                         }
                         add(AiTopMenuAction(stringResource(R.string.ai_setting)) { actions.onOpenSettings() })
-                        actions.onOpenImageGallery?.let { openGallery ->
-                            add(AiTopMenuAction(stringResource(R.string.ai_image_gallery), openGallery))
-                        }
                     },
                     onDismiss = { menuExpanded = false }
                 )

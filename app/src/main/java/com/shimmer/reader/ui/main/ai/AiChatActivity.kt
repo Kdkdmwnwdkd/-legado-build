@@ -1,76 +1,23 @@
 package com.shimmer.reader.ui.main.ai
 
-import android.content.Intent
 import android.os.Bundle
-import android.text.InputType
 import androidx.activity.viewModels
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items as gridItems
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.lifecycleScope
 import com.shimmer.reader.R
 import com.shimmer.reader.base.BaseActivity
 import com.shimmer.reader.data.appDb
-import com.shimmer.reader.data.entities.BookCharacter
 import com.shimmer.reader.databinding.ActivityAiChatBinding
-import com.shimmer.reader.databinding.DialogEditTextBinding
 import com.shimmer.reader.help.ai.AiImageGalleryManager
-import com.shimmer.reader.help.book.characterBookKey
-import com.shimmer.reader.help.character.BookCharacterProfileMeta
 import com.shimmer.reader.help.config.AppConfig
 import com.shimmer.reader.lib.dialogs.alert
 import com.shimmer.reader.lib.dialogs.selector
 import com.shimmer.reader.ui.config.ConfigActivity
 import com.shimmer.reader.ui.config.ConfigTag
-import com.shimmer.reader.ui.book.character.BookCharacterEditActivity
-import com.shimmer.reader.ui.book.character.BookCharacterManageActivity
 import com.shimmer.reader.ui.main.ai.compose.AiChatRoute
 import com.shimmer.reader.ui.main.ai.compose.AiChatScreenActions
-import com.shimmer.reader.ui.main.ai.compose.aiComposeStyle
-import com.shimmer.reader.ui.book.character.compose.CharacterAvatar
-import com.shimmer.reader.ui.widget.compose.BookCoverImage
-import com.shimmer.reader.ui.widget.image.CoverImageView
 import com.shimmer.reader.utils.toastOnUi
 import com.shimmer.reader.utils.viewbindingdelegate.viewBinding
 import kotlinx.coroutines.Dispatchers
@@ -90,8 +37,6 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
     private val viewModel by viewModels<AiChatViewModel>()
     private val historyTimeFormat by lazy { SimpleDateFormat("MM-dd HH:mm", Locale.getDefault()) }
     private val refreshToken = mutableIntStateOf(0)
-    private var characterPickerGroups by mutableStateOf<List<CharacterPickGroup>>(emptyList())
-    private var characterPickerVisible by mutableStateOf(false)
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         binding.composeRoot.setViewCompositionStrategy(
@@ -110,7 +55,6 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
                     onNewChat = ::startNewChatFromMenu,
                     onOpenHistory = ::openHistoryFromMenu,
                     onSelectModel = ::showModelSelectorDialog,
-                    onOpenImageGallery = null,
                     onOpenWindowAbilities = ::showWindowAbilityDialog,
                     onToggleAutoSpeak = ::toggleAutoSpeak,
                     onSpeakMessage = { text, companion, playbackKey ->
@@ -122,23 +66,13 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
                     onSelectCompanionSession = ::loadCompanionSessionFromDrawer,
                     onNewCompanionChat = ::startNewChatFromDrawer,
                     onDeleteSession = ::confirmDeleteHistorySession,
-                    onCompanionLongPress = null,
+                    onCompanionLongPress = ::showCompanionActions,
                     onDeleteMessage = ::confirmDeleteMessageFromHere,
                     onRetryMessage = ::dispatchRetryMessage,
                     onSelectAssistantVariant = ::selectAssistantVariant,
                     onAssistantAvatarLongPress = ::showAgentModeDialog
                 )
             )
-            if (characterPickerVisible) {
-                AiCharacterCompanionPickerDialogV2(
-                    groups = characterPickerGroups,
-                    onDismiss = { characterPickerVisible = false },
-                    onCharacterSelected = { group, character ->
-                        characterPickerVisible = false
-                        addCharacterCompanion(group, character)
-                    }
-                )
-            }
         }
         lifecycleScope.launch(Dispatchers.IO) {
             AiImageGalleryManager.cleanupExpiredTemporary()
@@ -282,9 +216,6 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
         }.also(::startActivity)
     }
 
-    private fun openImageGallery() {
-        startActivity(android.content.Intent(this, AiImageGalleryActivity::class.java))
-    }
 
     private fun selectCompanion(companionId: String) {
         if (!viewModel.switchCompanion(companionId)) {
@@ -357,99 +288,23 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
         return character.speechRouteJson.ifBlank { companion.ttsRouteJson }
     }
 
-    private fun showAddCompanionDialog() {
-        if (viewModel.isRequesting) {
-            toastOnUi(R.string.ai_chat_wait_current)
-            return
-        }
-        lifecycleScope.launch {
-            val groups = withContext(Dispatchers.IO) {
-                val books = appDb.bookDao.all
-                val booksByKey = books.associateBy { it.characterBookKey() }
-                appDb.bookCharacterDao.allCharacters()
-                    .filter { it.name.isNotBlank() }
-                    .groupBy { character -> character.bookUrl }
-                    .mapNotNull { (bookKey, characters) ->
-                        val book = booksByKey[bookKey] ?: return@mapNotNull null
-                        CharacterPickGroup(
-                            bookKey = bookKey,
-                            bookName = book.name,
-                            author = book.author,
-                            coverUrl = book.getDisplayCover().orEmpty(),
-                            label = "${book.name} · ${book.author.ifBlank { getString(R.string.ai_chat_unknown_author) }}",
-                            characters = characters.sortedWith(
-                                compareByDescending<BookCharacter> { it.roleLevel }
-                                    .thenBy { it.sortOrder }
-                                    .thenBy { it.id }
-                            )
-                        )
-                    }
-                    .filter { it.characters.isNotEmpty() }
-                    .sortedBy { it.label }
-            }
-            if (groups.isEmpty()) {
-                toastOnUi(R.string.toast_no_character_card)
-                return@launch
-            }
-            characterPickerGroups = groups
-            characterPickerVisible = true
-        }
-    }
-
-    private fun addCharacterCompanion(group: CharacterPickGroup, character: BookCharacter) {
-        val companionId = characterCompanionId(character)
-        val existing = AppConfig.aiChatCompanionList.firstOrNull { it.id == companionId }
-        if (existing != null) {
-            viewModel.switchCompanion(existing.id)
-            refreshToken.intValue += 1
-            return
-        }
-        val companion = AiChatCompanionConfig(
-            id = companionId,
-            type = AiChatCompanionConfig.TYPE_CHARACTER,
-            name = character.displayName(),
-            avatar = character.avatar,
-            bookKey = group.bookKey,
-            characterId = character.id.toString(),
-            prompt = "",
-            ttsRouteJson = character.speechRouteJson,
-            order = AppConfig.aiChatCompanionList.size
-        )
-        AppConfig.upsertAiChatCompanion(companion)
-        viewModel.switchCompanion(companion.id)
-        refreshToken.intValue += 1
-    }
-
     private fun showCompanionActions(companion: AiChatCompanionConfig) {
         if (viewModel.isRequesting) {
             toastOnUi(R.string.ai_chat_wait_current)
             return
         }
-        val isDefault = companion.id == AiChatCompanionConfig.DEFAULT_COMPANION_ID
-        val items = if (isDefault) {
-            listOf(
-                getString(R.string.ai_chat_new_chat),
-                getString(R.string.ai_chat_edit_default_persona)
-            )
-        } else {
-            listOf(
-                getString(R.string.ai_chat_edit_character_card),
-                getString(R.string.ai_chat_new_chat),
-                getString(R.string.ai_chat_remove_character_assistant)
-            )
+        if (companion.id == AiChatCompanionConfig.DEFAULT_COMPANION_ID) {
+            startNewChatForCompanion(companion.id)
+            return
         }
+        val items = listOf(
+            getString(R.string.ai_chat_new_chat),
+            getString(R.string.ai_chat_remove_character_assistant)
+        )
         selector(companion.name.ifBlank { getString(R.string.ai_chat_assistant) }, items) { _, _, index ->
-            if (isDefault) {
-                when (index) {
-                    0 -> startNewChatForCompanion(companion.id)
-                    1 -> showDefaultCompanionPromptDialog(companion)
-                }
-            } else {
-                when (index) {
-                    0 -> openCharacterEditor(companion)
-                    1 -> startNewChatForCompanion(companion.id)
-                    2 -> confirmDeleteCompanion(companion)
-                }
+            when (index) {
+                0 -> startNewChatForCompanion(companion.id)
+                1 -> confirmDeleteCompanion(companion)
             }
         }
     }
@@ -461,52 +316,6 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
         }
         viewModel.startNewSession()
         refreshToken.intValue += 1
-    }
-
-    private fun openCharacterEditor(companion: AiChatCompanionConfig) {
-        val characterId = companion.characterId.toLongOrNull()
-        if (characterId == null || characterId <= 0L) {
-            toastOnUi(R.string.toast_character_card_missing)
-            return
-        }
-        lifecycleScope.launch {
-            val bookUrl = withContext(Dispatchers.IO) {
-                appDb.bookDao.all.firstOrNull { book ->
-                    book.characterBookKey() == companion.bookKey
-                }?.bookUrl.orEmpty()
-            }
-            startActivity(
-                Intent(this@AiChatActivity, BookCharacterEditActivity::class.java).apply {
-                    putExtra(BookCharacterManageActivity.EXTRA_BOOK_URL, bookUrl)
-                    putExtra(BookCharacterManageActivity.EXTRA_CHARACTER_BOOK_KEY, companion.bookKey)
-                    putExtra(BookCharacterManageActivity.EXTRA_CHARACTER_ID, characterId)
-                }
-            )
-        }
-    }
-
-    private fun showDefaultCompanionPromptDialog(companion: AiChatCompanionConfig) {
-        val binding = DialogEditTextBinding.inflate(layoutInflater).apply {
-            editView.setSingleLine(false)
-            editView.minLines = 8
-            editView.inputType = InputType.TYPE_CLASS_TEXT or
-                    InputType.TYPE_TEXT_FLAG_MULTI_LINE or
-                    InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-            editView.setText(companion.prompt)
-        }
-        alert(title = getString(R.string.ai_chat_persona_title, companion.name)) {
-            customView { binding.root }
-            okButton {
-                val prompt = binding.editView.text?.toString().orEmpty().trim()
-                if (prompt.isBlank()) {
-                    toastOnUi(R.string.toast_prompt_empty)
-                } else {
-                    AppConfig.upsertAiChatCompanion(companion.copy(prompt = prompt))
-                    refreshToken.intValue += 1
-                }
-            }
-            cancelButton()
-        }
     }
 
     private fun confirmDeleteCompanion(companion: AiChatCompanionConfig) {
@@ -690,521 +499,4 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
             refreshToken.intValue += 1
         }
     }
-
-    private fun characterCompanionId(character: BookCharacter): String {
-        return "character_${character.id}"
-    }
-
-    @Composable
-    private fun AiCharacterCompanionPickerDialogV2(
-        groups: List<CharacterPickGroup>,
-        onDismiss: () -> Unit,
-        onCharacterSelected: (CharacterPickGroup, BookCharacter) -> Unit
-    ) {
-        val style = aiComposeStyle(this@AiChatActivity)
-        var query by remember(groups) { mutableStateOf("") }
-        var selectedGroup by remember(groups) { mutableStateOf<CharacterPickGroup?>(null) }
-        var selectedRole by remember(groups) { mutableIntStateOf(BookCharacter.ROLE_MAIN) }
-        val filteredGroups = remember(groups, query) {
-            val keyword = query.trim()
-            if (keyword.isBlank()) {
-                groups
-            } else {
-                groups.filter { group ->
-                    group.bookName.contains(keyword, ignoreCase = true) ||
-                        group.author.contains(keyword, ignoreCase = true) ||
-                        group.label.contains(keyword, ignoreCase = true) ||
-                        group.characters.any { character ->
-                            character.displayName().contains(keyword, ignoreCase = true)
-                        }
-                }
-            }
-        }
-        Dialog(onDismissRequest = onDismiss) {
-            Surface(
-                shape = RoundedCornerShape(style.metrics.cardRadius),
-                color = style.colors.composerSurface,
-                tonalElevation = 0.dp,
-                shadowElevation = 14.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .widthIn(max = 620.dp)
-                    .heightIn(max = 720.dp)
-            ) {
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.ai_chat_add_character_assistant),
-                                color = style.colors.primaryText,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Text(
-                                text = selectedGroup?.let {
-                                    stringResource(
-                                        R.string.ai_chat_pick_character_from,
-                                        it.bookName.ifBlank { it.label }
-                                    )
-                                } ?: stringResource(R.string.ai_chat_select_book_first),
-                                color = style.colors.secondaryText,
-                                fontSize = 12.sp,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(top = 2.dp)
-                            )
-                        }
-                        Text(
-                            text = stringResource(R.string.close),
-                            color = style.colors.accent,
-                            fontSize = 14.sp,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(style.metrics.chipRadius))
-                                .clickable(onClick = onDismiss)
-                                .padding(horizontal = 10.dp, vertical = 7.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                    CharacterPickerSearchFieldV2(
-                        value = query,
-                        onValueChange = {
-                            query = it
-                            selectedGroup = null
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(14.dp))
-                    val current = selectedGroup
-                    if (current == null) {
-                        Text(
-                            text = stringResource(R.string.ai_chat_pick_book),
-                            color = style.colors.secondaryText,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        if (filteredGroups.isEmpty()) {
-                            CharacterPickerEmptyV2(stringResource(R.string.ai_chat_no_matching_book))
-                        } else {
-                            LazyVerticalGrid(
-                                columns = GridCells.Fixed(3),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .heightIn(min = 280.dp, max = 460.dp),
-                                contentPadding = PaddingValues(bottom = 8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                gridItems(filteredGroups, key = { it.bookKey }) { group ->
-                                    CharacterBookGridCardV2(
-                                        group = group,
-                                        onClick = {
-                                            selectedGroup = group
-                                            selectedRole = bestRoleFor(group)
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    } else {
-                        CharacterSelectedBookCardV2(
-                            group = current,
-                            onChangeBook = { selectedGroup = null }
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        val addedCharacterIds = remember(current.bookKey, current.characters.size) {
-                            AppConfig.aiChatCompanionList
-                                .mapNotNull { it.characterId.toLongOrNull() }
-                                .toSet()
-                        }
-                        LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.padding(bottom = 10.dp)
-                        ) {
-                            items(characterRoleFilters(current), key = { it.roleLevel }) { filter ->
-                                CharacterRoleFilterChipV2(
-                                    filter = filter,
-                                    selected = filter.roleLevel == selectedRole,
-                                    onClick = { selectedRole = filter.roleLevel }
-                                )
-                            }
-                        }
-                        val filteredCharacters = current.characters.filter { character ->
-                            characterMatchesRole(character, selectedRole)
-                        }
-                        Text(
-                            text = stringResource(R.string.ai_chat_pick_character),
-                            color = style.colors.secondaryText,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(max = 360.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(filteredCharacters, key = { it.id }) { character ->
-                                CharacterPickRowV2(
-                                    character = character,
-                                    added = character.id in addedCharacterIds,
-                                    onClick = {
-                                        onCharacterSelected(current, character)
-                                        onDismiss()
-                                    }
-                                )
-                            }
-                            if (filteredCharacters.isEmpty()) {
-                                item {
-                                    CharacterPickerEmptyV2(stringResource(R.string.ai_chat_group_empty))
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    private fun CharacterPickerSearchFieldV2(
-        value: String,
-        onValueChange: (String) -> Unit
-    ) {
-        val style = aiComposeStyle(this@AiChatActivity)
-        Surface(
-            shape = RoundedCornerShape(style.metrics.cardRadius),
-            color = style.colors.cardSurface.copy(alpha = 0.92f),
-            tonalElevation = 0.dp,
-            shadowElevation = 0.dp,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .heightIn(min = 44.dp)
-                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                if (value.isBlank()) {
-                    Text(
-                        text = stringResource(R.string.ai_chat_search_hint),
-                        color = style.colors.secondaryText.copy(alpha = 0.72f),
-                        fontSize = 14.sp
-                    )
-                }
-                BasicTextField(
-                    value = value,
-                    onValueChange = onValueChange,
-                    singleLine = true,
-                    textStyle = TextStyle(
-                        color = style.colors.primaryText,
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-    }
-
-    @Composable
-    private fun CharacterPickerEmptyV2(text: String) {
-        val style = aiComposeStyle(this@AiChatActivity)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(160.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = text, color = style.colors.secondaryText, fontSize = 14.sp)
-        }
-    }
-
-    @Composable
-    private fun CharacterBookGridCardV2(
-        group: CharacterPickGroup,
-        onClick: () -> Unit
-    ) {
-        val style = aiComposeStyle(this@AiChatActivity)
-        Surface(
-            shape = RoundedCornerShape(style.metrics.cardRadius),
-            color = style.colors.cardSurface.copy(alpha = 0.94f),
-            tonalElevation = 0.dp,
-            shadowElevation = 0.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClick)
-        ) {
-            Column(modifier = Modifier.padding(8.dp)) {
-                BookCoverImage(
-                    path = group.coverUrl,
-                    name = group.bookName.ifBlank { group.label },
-                    author = group.author,
-                    sourceOrigin = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(0.75f),
-                    style = CoverImageView.CoverStyle.GRID,
-                    loadOnlyWifi = false,
-                    preferThumb = true,
-                    fillBounds = true
-                )
-                Text(
-                    text = group.bookName.ifBlank { group.label },
-                    color = style.colors.primaryText,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(top = 7.dp)
-                )
-                Text(
-                    text = stringResource(R.string.ai_chat_character_count, group.characters.size),
-                    color = style.colors.secondaryText,
-                    fontSize = 11.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-    }
-
-    @Composable
-    private fun CharacterSelectedBookCardV2(
-        group: CharacterPickGroup,
-        onChangeBook: () -> Unit
-    ) {
-        val style = aiComposeStyle(this@AiChatActivity)
-        Surface(
-            shape = RoundedCornerShape(style.metrics.cardRadius),
-            color = style.colors.cardSurface.copy(alpha = 0.94f),
-            tonalElevation = 0.dp,
-            shadowElevation = 0.dp,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BookCoverImage(
-                    path = group.coverUrl,
-                    name = group.bookName.ifBlank { group.label },
-                    author = group.author,
-                    sourceOrigin = null,
-                    modifier = Modifier
-                        .width(52.dp)
-                        .height(72.dp),
-                    style = CoverImageView.CoverStyle.COMPACT,
-                    loadOnlyWifi = false,
-                    preferThumb = true,
-                    fillBounds = true
-                )
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 12.dp)
-                ) {
-                    Text(
-                        text = group.bookName.ifBlank { group.label },
-                        color = style.colors.primaryText,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = stringResource(
-                            R.string.ai_chat_author_and_count,
-                            group.author.ifBlank { stringResource(R.string.ai_chat_unknown_author) },
-                            group.characters.size
-                        ),
-                        color = style.colors.secondaryText,
-                        fontSize = 12.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(top = 3.dp)
-                    )
-                }
-                Text(
-                    text = stringResource(R.string.ai_chat_change_book),
-                    color = style.colors.accent,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(style.metrics.chipRadius))
-                        .clickable(onClick = onChangeBook)
-                        .padding(horizontal = 10.dp, vertical = 7.dp)
-                )
-            }
-        }
-    }
-
-    @Composable
-    private fun CharacterRoleFilterChipV2(
-        filter: CharacterRoleFilter,
-        selected: Boolean,
-        onClick: () -> Unit
-    ) {
-        val style = aiComposeStyle(this@AiChatActivity)
-        Surface(
-            shape = RoundedCornerShape(style.metrics.chipRadius),
-            color = if (selected) style.colors.accent.copy(alpha = 0.14f) else style.colors.cardSurface,
-            tonalElevation = 0.dp,
-            shadowElevation = 0.dp,
-            modifier = Modifier.clickable(onClick = onClick)
-        ) {
-            Text(
-                text = "${filter.label} ${filter.count}",
-                color = if (selected) style.colors.accent else style.colors.secondaryText,
-                fontSize = 13.sp,
-                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp)
-            )
-        }
-    }
-
-    @Composable
-    private fun CharacterPickRowV2(
-        character: BookCharacter,
-        added: Boolean,
-        onClick: () -> Unit
-    ) {
-        val style = aiComposeStyle(this@AiChatActivity)
-        Surface(
-            shape = RoundedCornerShape(style.metrics.cardRadius),
-            color = style.colors.cardSurface.copy(alpha = 0.94f),
-            tonalElevation = 0.dp,
-            shadowElevation = 0.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClick)
-        ) {
-            Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CharacterAvatar(
-                    path = character.avatar,
-                    contentDescription = character.displayName(),
-                    sizeDp = 42,
-                    modifier = Modifier.clip(CircleShape)
-                )
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 10.dp)
-                ) {
-                    Text(
-                        text = character.displayName(),
-                        color = style.colors.primaryText,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = listOfNotNull(
-                            character.roleLabel().takeIf { it.isNotBlank() },
-                            character.genderLabel().takeIf {
-                                BookCharacter.normalizeGender(character.gender) != BookCharacter.GENDER_UNKNOWN
-                            },
-                            BookCharacterProfileMeta.ageOf(character).takeIf { it.isNotBlank() }
-                        )
-                            .joinToString(" · ")
-                            .ifBlank { stringResource(R.string.ai_chat_character_card) },
-                        color = style.colors.secondaryText,
-                        fontSize = 12.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(top = 2.dp)
-                    )
-                    val summary = characterCardSummary(character)
-                    if (summary.isNotBlank()) {
-                        Text(
-                            text = summary,
-                            color = style.colors.secondaryText,
-                            fontSize = 12.sp,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.padding(top = 6.dp)
-                        )
-                    }
-                }
-                Text(
-                    text = if (added) stringResource(R.string.ai_chat_action_open) else stringResource(R.string.add),
-                    color = if (added) style.colors.secondaryText else style.colors.accent,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(start = 10.dp)
-                )
-            }
-        }
-    }
-
-    private fun bestRoleFor(group: CharacterPickGroup?): Int {
-        val characters = group?.characters.orEmpty()
-        return when {
-            characters.any { it.roleLevel == BookCharacter.ROLE_MAIN } -> BookCharacter.ROLE_MAIN
-            characters.any { it.roleLevel == BookCharacter.ROLE_IMPORTANT } -> BookCharacter.ROLE_IMPORTANT
-            else -> BookCharacter.ROLE_NORMAL
-        }
-    }
-
-    private fun characterRoleFilters(group: CharacterPickGroup): List<CharacterRoleFilter> {
-        return listOf(
-            CharacterRoleFilter(
-                roleLevel = BookCharacter.ROLE_MAIN,
-                label = getString(R.string.ai_chat_role_main),
-                count = group.characters.count { it.roleLevel == BookCharacter.ROLE_MAIN }
-            ),
-            CharacterRoleFilter(
-                roleLevel = BookCharacter.ROLE_IMPORTANT,
-                label = getString(R.string.ai_chat_role_important),
-                count = group.characters.count { it.roleLevel == BookCharacter.ROLE_IMPORTANT }
-            ),
-            CharacterRoleFilter(
-                roleLevel = BookCharacter.ROLE_NORMAL,
-                label = getString(R.string.ai_chat_role_normal),
-                count = group.characters.count { characterMatchesRole(it, BookCharacter.ROLE_NORMAL) }
-            )
-        )
-    }
-
-    private fun characterMatchesRole(character: BookCharacter, roleLevel: Int): Boolean {
-        return when (roleLevel) {
-            BookCharacter.ROLE_MAIN -> character.roleLevel == BookCharacter.ROLE_MAIN
-            BookCharacter.ROLE_IMPORTANT -> character.roleLevel == BookCharacter.ROLE_IMPORTANT
-            else -> character.roleLevel != BookCharacter.ROLE_MAIN &&
-                    character.roleLevel != BookCharacter.ROLE_IMPORTANT
-        }
-    }
-
-    private fun characterCardSummary(character: BookCharacter): String {
-        return listOf(
-            character.identity,
-            character.appearance,
-            character.personality,
-            character.biography
-        )
-            .map { it.trim() }
-            .firstOrNull { it.isNotBlank() }
-            .orEmpty()
-    }
-
-    private data class CharacterRoleFilter(
-        val roleLevel: Int,
-        val label: String,
-        val count: Int
-    )
-
-    private data class CharacterPickGroup(
-        val bookKey: String,
-        val bookName: String,
-        val author: String,
-        val coverUrl: String,
-        val label: String,
-        val characters: List<BookCharacter>
-    )
 }
