@@ -126,7 +126,7 @@ class HttpReadAloudService : BaseReadAloudService(),
     private val cache by lazy {
         SimpleCache(
             File(cacheDir, "httpTTS_cache"),
-            LeastRecentlyUsedCacheEvictor(128 * 1024 * 1024),
+            LeastRecentlyUsedCacheEvictor(AppConfig.readAloudCacheMb * 1024L * 1024L),
             StandaloneDatabaseProvider(appCtx)
         )
     }

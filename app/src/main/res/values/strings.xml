@@ -177,6 +177,17 @@
     <string name="ra_timer_finishing">Finishing this paragraph</string>
     <string name="ra_timer_finishing_cue">Timer finished, stopping after this paragraph</string>
     <string name="ra_timer_stopped">Timer finished, playback stopped</string>
+    <string name="ra_cache_limit">Read-aloud cache limit</string>
+    <string name="ra_cache_limit_mb">%1$d MB</string>
+    <string name="ra_cache_limit_gb">%1$d GB</string>
+    <string name="ra_cache_limit_message">Larger keeps more synthesized speech for replay without calling the engine again. Takes effect next time you start read-aloud.</string>
+    <string name="ra_cache_summary">Used %1$s of %2$s</string>
+    <string name="ra_cache_summary_calculating">Calculating…</string>
+    <string name="ra_cache_clear">Clear read-aloud cache</string>
+    <string name="ra_cache_clear_summary">Deletes synthesized audio only, text cache is untouched</string>
+    <string name="ra_cache_clear_confirm">Synthesized speech will be deleted and generated again next time. AI voices will be called once more. Read-aloud stops first if it is running.</string>
+    <string name="ra_cache_clear_done">Read-aloud cache cleared</string>
+    <string name="ra_cache_clear_failed">Some files are still in use, try again later</string>
     <string name="playing_timer">Playing(%d min left)</string>
     <string name="ps_hide_navigation_bar">Hide virtual buttons when reading</string>
     <string name="pt_hide_navigation_bar">Hide navigation bar</string>
