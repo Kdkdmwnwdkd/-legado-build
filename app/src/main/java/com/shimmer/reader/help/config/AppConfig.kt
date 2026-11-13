@@ -2131,6 +2131,16 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
             appCtx.putPrefInt(PreferKey.ttsTimer, value)
         }
 
+    /**
+     * 朗读音频缓存上限（MB）。只影响 HTTP TTS 的流式缓存，
+     * 改完要等下一次开始朗读、服务重建缓存时才生效。
+     */
+    var readAloudCacheMb: Int
+        get() = appCtx.getPrefInt(PreferKey.readAloudCacheMb, 128).coerceIn(64, 2048)
+        set(value) {
+            appCtx.putPrefInt(PreferKey.readAloudCacheMb, value.coerceIn(64, 2048))
+        }
+
     val speechRatePlay: Int get() = if (ttsFlowSys) defaultSpeechRate else ttsSpeechRate
 
     var chineseConverterType: Int

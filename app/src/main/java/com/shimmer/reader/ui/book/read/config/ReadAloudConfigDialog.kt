@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
+import androidx.lifecycle.lifecycleScope
 import com.shimmer.reader.R
 import com.shimmer.reader.base.BasePrefDialogFragment
 import com.shimmer.reader.constant.EventBus
@@ -18,6 +19,7 @@ import com.shimmer.reader.data.appDb
 import com.shimmer.reader.help.IntentHelp
 import com.shimmer.reader.help.book.BookIdentity
 import com.shimmer.reader.help.config.AppConfig
+import com.shimmer.reader.help.readaloud.ReadAloudCacheStore
 import com.shimmer.reader.help.readaloud.ReadAloudConfigChangeNotifier
 import com.shimmer.reader.help.readaloud.ReadAloudSpeakerLoudnessManager
 import com.shimmer.reader.help.readaloud.role.ReadAloudPreprocessRuleConfig
@@ -50,7 +52,12 @@ import com.shimmer.reader.ui.widget.compose.showComposeChoiceListDialog
 import com.shimmer.reader.ui.widget.compose.showComposeConfirmDialog
 import com.shimmer.reader.ui.widget.compose.showComposeNumberPickerDialog
 import com.shimmer.reader.ui.widget.compose.showComposeTextInputDialog
+import com.shimmer.reader.utils.ConvertUtils
 import com.shimmer.reader.utils.dpToPx
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import splitties.init.appCtx
 import com.shimmer.reader.utils.postEvent
 import com.shimmer.reader.utils.setLayout
@@ -66,6 +73,7 @@ private const val KEY_READ_ALOUD_SPEAKER_MANAGE = "readAloudSpeakerManage"
 private const val KEY_READ_ALOUD_LOUDNESS_RESET = "readAloudSpeakerLoudnessReset"
 private const val KEY_MEDIA_BUTTON_PER_NEXT = "mediaButtonPerNext"
 private const val KEY_SYS_TTS_CONFIG = "sysTtsConfig"
+private const val KEY_READ_ALOUD_CACHE_CLEAR = "readAloudCacheClear"
 private val SPEAKER_MANAGE_SUMMARY: String
     get() = appCtx.getString(R.string.ra_cfg_speaker_manage_summary)
 
@@ -272,6 +280,81 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                     route.emotionName.takeIf { it.isNotBlank() }?.let(::add)
                 }.joinToString(" · ")
             }
+
+        /** 朗读缓存占用；null 表示还在后台统计 */
+        private var cacheSizeBytes: Long? = null
+
+        private val cacheSummary: String
+            get() {
+                val used = cacheSizeBytes
+                    ?: return getString(R.string.ra_cache_summary_calculating)
+                return getString(
+                    R.string.ra_cache_summary,
+                    ConvertUtils.formatFileSize(used),
+                    cacheLimitLabel(AppConfig.readAloudCacheMb)
+                )
+            }
+
+        private fun cacheLimitLabel(mb: Int): String =
+            if (mb >= 1024) getString(R.string.ra_cache_limit_gb, mb / 1024)
+            else getString(R.string.ra_cache_limit_mb, mb)
+
+        override fun onResume() {
+            super.onResume()
+            loadCacheSize()
+        }
+
+        private fun loadCacheSize() {
+            lifecycleScope.launch {
+                val size = withContext(Dispatchers.IO) { ReadAloudCacheStore.sizeBytes() }
+                if (!isAdded) return@launch
+                cacheSizeBytes = size
+                refreshSettings()
+            }
+        }
+
+        private fun showCacheLimitDialog() {
+            val limits = listOf(128, 256, 512, 1024)
+            val current = AppConfig.readAloudCacheMb
+            showComposeChoiceListDialog(
+                title = getString(R.string.ra_cache_limit),
+                labels = limits.map { cacheLimitLabel(it) },
+                selectedIndex = limits.indexOfFirst { it == current }.coerceAtLeast(0),
+                message = getString(R.string.ra_cache_limit_message)
+            ) { index ->
+                limits.getOrNull(index)?.let {
+                    AppConfig.readAloudCacheMb = it
+                    refreshSettings()
+                }
+            }
+        }
+
+        private fun confirmClearCache() {
+            showComposeConfirmDialog(
+                title = getString(R.string.ra_cache_clear),
+                message = getString(R.string.ra_cache_clear_confirm),
+                dangerPositive = true,
+                onPositive = {
+                    val context = requireContext().applicationContext
+                    lifecycleScope.launch {
+                        // SimpleCache 占着目录，必须等服务销毁再删
+                        if (BaseReadAloudService.isRun) {
+                            ReadAloud.stop(context)
+                            delay(800)
+                        }
+                        val cleared = withContext(Dispatchers.IO) { ReadAloudCacheStore.clear() }
+                        val size = withContext(Dispatchers.IO) { ReadAloudCacheStore.sizeBytes() }
+                        if (!isAdded) return@launch
+                        cacheSizeBytes = size
+                        refreshSettings()
+                        toastOnUi(
+                            if (cleared) R.string.ra_cache_clear_done
+                            else R.string.ra_cache_clear_failed
+                        )
+                    }
+                }
+            )
+        }
 
         override fun buildPageSpec(): SettingPageSpec {
             return SettingPageSpec(
@@ -735,6 +818,18 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                     title = getString(R.string.sys_tts_config),
                     summary = getString(R.string.sys_tts_config_summary),
                     onClick = { IntentHelp.openTTSSetting() }
+                ),
+                action(
+                    key = PreferKey.readAloudCacheMb,
+                    title = getString(R.string.ra_cache_limit),
+                    summary = cacheSummary,
+                    onClick = ::showCacheLimitDialog
+                ),
+                action(
+                    key = KEY_READ_ALOUD_CACHE_CLEAR,
+                    title = getString(R.string.ra_cache_clear),
+                    summary = getString(R.string.ra_cache_clear_summary),
+                    onClick = ::confirmClearCache
                 )
             )
         }

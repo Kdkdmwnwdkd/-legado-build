@@ -178,6 +178,17 @@
     <string name="ra_timer_finishing">读完这段就停</string>
     <string name="ra_timer_finishing_cue">定时到了，读完这一段就停</string>
     <string name="ra_timer_stopped">定时结束，已停止朗读</string>
+    <string name="ra_cache_limit">朗读缓存上限</string>
+    <string name="ra_cache_limit_mb">%1$d MB</string>
+    <string name="ra_cache_limit_gb">%1$d GB</string>
+    <string name="ra_cache_limit_message">调大能多留住几章已经合成好的语音，重听时不用再调一次引擎。改完下次开始朗读时生效。</string>
+    <string name="ra_cache_summary">已用 %1$s，上限 %2$s</string>
+    <string name="ra_cache_summary_calculating">正在统计…</string>
+    <string name="ra_cache_clear">清理朗读缓存</string>
+    <string name="ra_cache_clear_summary">只删合成出来的语音，正文缓存不受影响</string>
+    <string name="ra_cache_clear_confirm">清空后重听要重新合成，用 AI 配音的会再调一次接口。正在朗读的话会先停下来。</string>
+    <string name="ra_cache_clear_done">朗读缓存已清空</string>
+    <string name="ra_cache_clear_failed">有文件正在使用，稍后再试</string>
     <string name="playing_timer">正在播放（还剩 %d 分钟）</string>
     <string name="ps_hide_navigation_bar">阅读界面隐藏虚拟按键</string>
     <string name="pt_hide_navigation_bar">隐藏导航栏</string>
