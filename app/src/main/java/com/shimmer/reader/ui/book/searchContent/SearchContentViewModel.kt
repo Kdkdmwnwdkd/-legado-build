@@ -9,14 +9,22 @@ import com.shimmer.reader.data.entities.BookChapter
 import com.shimmer.reader.help.book.BookHelp
 import com.shimmer.reader.help.book.ContentProcessor
 import com.shimmer.reader.help.config.AppConfig
+import com.shimmer.reader.model.webBook.WebBook
 import com.shimmer.reader.utils.ChineseUtils
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withTimeoutOrNull
 
 class SearchContentViewModel(application: Application) : BaseViewModel(application) {
     companion object {
         var replaceEnabled: Boolean = false
         var regexReplace: Boolean = false
+
+        /** 单次联网补搜最多抓多少章，抓完还有剩余就再给一次入口，避免一口气把整本书请求完 */
+        const val MAX_NETWORK_BATCH = 200
+
+        /** 连续这么多章都取不到正文就认为书源在拦，主动停下来 */
+        const val MAX_FAIL_STREAK = 8
     }
     var bookUrl: String = ""
     var book: Book? = null
@@ -25,6 +33,18 @@ class SearchContentViewModel(application: Application) : BaseViewModel(applicati
     var searchResultCounts = 0
     val cacheChapterNames = hashSetOf<String>()
     val searchResultList: MutableList<SearchResult> = mutableListOf()
+
+    /** 全书章节总数，用来告诉用户这次到底搜了多大范围 */
+    var totalChapters: Int = 0
+
+    /** 已经搜过（含联网补搜）的章节数 */
+    var searchedChapters: Int = 0
+
+    /** 没有缓存、等着联网补搜的章节 */
+    val pendingChapters: MutableList<BookChapter> = mutableListOf()
+
+    /** 联网补搜里取不到正文的章节数 */
+    var networkFailedChapters: Int = 0
 
     fun initBook(bookUrl: String, success: () -> Unit) {
         this.bookUrl = bookUrl
@@ -38,13 +58,28 @@ class SearchContentViewModel(application: Application) : BaseViewModel(applicati
         }
     }
 
+    fun resetSearchState() {
+        searchResultCounts = 0
+        totalChapters = 0
+        searchedChapters = 0
+        networkFailedChapters = 0
+        pendingChapters.clear()
+        searchResultList.clear()
+    }
+
+    /**
+     * 搜一章。rawContent 为空时读缓存，联网补搜直接把取到的正文传进来。
+     */
     suspend fun searchChapter(
         query: String,
-        chapter: BookChapter
+        chapter: BookChapter,
+        rawContent: String? = null
     ): List<SearchResult> {
         val searchResultsWithinChapter: MutableList<SearchResult> = mutableListOf()
         val book = book ?: return searchResultsWithinChapter
-        val chapterContent = BookHelp.getContent(book, chapter) ?: return searchResultsWithinChapter
+        val chapterContent = rawContent
+            ?: BookHelp.getContent(book, chapter)
+            ?: return searchResultsWithinChapter
         currentCoroutineContext().ensureActive()
         chapter.title = when (AppConfig.chineseConverterType) {
             1 -> ChineseUtils.t2s(chapter.title)
@@ -73,6 +108,21 @@ class SearchContentViewModel(application: Application) : BaseViewModel(applicati
         }
         searchResultCounts += searchResultsWithinChapter.size
         return searchResultsWithinChapter
+    }
+
+    /**
+     * 联网取一章正文，只用于搜索。不落缓存：搜一遍整本书就把正文全存下来，磁盘和书源都受不了。
+     * 取不到返回 null，由调用方计数并跳过。
+     */
+    suspend fun fetchChapterContent(chapter: BookChapter): String? {
+        val book = book ?: return null
+        val bookSource = appDb.bookSourceDao.getBookSource(book.origin) ?: return null
+        val content = kotlin.runCatching {
+            withTimeoutOrNull(30_000) {
+                WebBook.getContentAwait(bookSource, book, chapter, needSave = false)
+            }
+        }.getOrNull()
+        return content?.takeIf { it.isNotBlank() }
     }
 
     private suspend fun searchPosition(content: String, pattern: String): List<Int> {

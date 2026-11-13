@@ -30,7 +30,7 @@ class SearchContentAdapter(context: Context, val callback: Callback) :
             val isDur = callback.durChapterIndex() == item.chapterIndex
             if (payloads.isEmpty()) {
                 tvSearchResult.text = item.getHtmlCompat(textColor, accentColor)
-                tvSearchResult.paint.isFakeBoldText = isDur
+                tvSearchResult.paint.isFakeBoldText = isDur || item.isAction
             }
         }
     }
@@ -38,7 +38,7 @@ class SearchContentAdapter(context: Context, val callback: Callback) :
     override fun registerListener(holder: ItemViewHolder, binding: ItemSearchListBinding) {
         holder.itemView.setOnClickListener {
             getItem(holder.layoutPosition)?.let {
-                if (it.query.isNotBlank()) callback.openSearchResult(it, holder.layoutPosition)
+                if (it.isAction || it.query.isNotBlank()) callback.openSearchResult(it, holder.layoutPosition)
             }
         }
     }

@@ -978,6 +978,11 @@
     <string name="search_content">全文搜索</string>
     <string name="search_content_size">搜索结果</string>
     <string name="search_content_empty">搜索内容为空，请检查净化或简繁设置</string>
+    <string name="search_content_scope">结果 %1$d · 已搜 %2$d/%3$d 章</string>
+    <string name="search_content_uncached_hint">还有 %1$d 章未缓存，点此联网补搜</string>
+    <string name="search_content_uncached_empty">已缓存的章节里没有找到，另有 %1$d 章未缓存，点此联网补搜</string>
+    <string name="search_content_net_stopped">书源连续取不到正文，已停止补搜</string>
+    <string name="search_content_net_failed">%1$d 章取不到正文，已跳过</string>
     <string name="rss_source_empty">RSS 源目前为空！</string>
     <string name="explore_empty">当前没有发现源！</string>
     <string name="page_key_set_help">将焦点放到输入框按下物理按键会自动录入键值，多个按键会自动用英文逗号隔开。</string>

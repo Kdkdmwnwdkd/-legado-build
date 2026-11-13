@@ -1446,6 +1446,11 @@
     <string name="title_font">Title font</string>
     <string name="search_content_size">search result</string>
     <string name="search_content_empty">Empty search result, check conversation settings</string>
+    <string name="search_content_scope">Results %1$d · searched %2$d/%3$d chapters</string>
+    <string name="search_content_uncached_hint">%1$d chapters not cached yet, tap to search them online</string>
+    <string name="search_content_uncached_empty">Nothing found in cached chapters. %1$d chapters are not cached yet, tap to search them online</string>
+    <string name="search_content_net_stopped">Online search stopped: chapters kept failing to load</string>
+    <string name="search_content_net_failed">%1$d chapters skipped, their text could not be loaded</string>
     <string name="tts_speech_reduce">Decrease speech speed</string>
     <string name="tts_speech_add">Increase speech speed</string>
     <string name="open_sys_dir_picker_error">Error opening system folder selector, automatically open application folder selector</string>
