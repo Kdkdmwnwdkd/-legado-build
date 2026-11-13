@@ -44,6 +44,7 @@ import com.shimmer.reader.help.book.isLocal
 import com.shimmer.reader.help.book.isVideo
 import com.shimmer.reader.help.book.isWebFile
 import com.shimmer.reader.help.book.removeType
+import com.shimmer.reader.help.book.BookRemarkStore
 import com.shimmer.reader.help.config.AppConfig
 import com.shimmer.reader.help.config.LocalConfig
 import com.shimmer.reader.help.webView.WebJsExtensions
@@ -410,6 +411,12 @@ class BookInfoComposeActivity :
             onCopyTocUrl = ::copyTocUrl,
             onClearCache = ::clearBookCache,
             onSetupWebIntro = ::setupWebIntro,
+            onRemarkClick = {
+                val bookUrl = uiState.bookUrl.ifBlank { viewModel.getBook(false)?.bookUrl.orEmpty() }
+                BookRemarkDialog.show(this, uiState.name, bookUrl) {
+                    updateUiState()
+                }
+            },
             onIntroButtonClick = { name, click ->
                 viewModel.onButtonClick(this@BookInfoComposeActivity, "info button $name", click)
             },
@@ -557,6 +564,7 @@ class BookInfoComposeActivity :
             readTimeText = readTimeText,
             coverPath = coverPath,
             intro = intro,
+            remark = BookRemarkStore.get(book.bookUrl),
             kinds = book.getKindList(),
             customTags = BookTagHelper.parse(book.customTag),
             groupText = groupText,

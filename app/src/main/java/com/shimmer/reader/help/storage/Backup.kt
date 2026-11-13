@@ -14,6 +14,7 @@ import com.shimmer.reader.help.DirectLinkUpload
 import com.shimmer.reader.lib.cloud.S3CapacityFullException
 import com.shimmer.reader.lib.cloud.S3ContainerManager
 import com.shimmer.reader.lib.cloud.CloudStorageType
+import com.shimmer.reader.help.book.BookRemarkStore
 import com.shimmer.reader.help.config.AppConfig
 import com.shimmer.reader.help.config.AdvancedTitlePackageManager
 import com.shimmer.reader.help.config.BubblePackageManager
@@ -80,6 +81,7 @@ object Backup {
     internal const val bookCharacterRelationsFileName = "bookCharacterRelations.json"
     internal const val bookCharacterAvatarsDirName = "bookCharacterAvatars"
     internal const val readMenuIconsDirName = "readMenuIcons"
+    internal const val bookRemarksFileName = "bookRemarks.json"
     internal const val speakerGroupsFileName = "readAloudSpeakerGroups.json"
     internal const val speakerGroupItemsFileName = "readAloudSpeakerGroupItems.json"
     internal const val advancedTitlePackagesDirName = "advancedTitlePackages"
@@ -102,6 +104,7 @@ object Backup {
             "readRecordDaily.json",
             "readRecentBooks.json",
             "readMenuCustomButtons.json",
+            bookRemarksFileName,
             "searchHistory.json",
             "sourceSub.json",
             "txtTocRule.json",
@@ -200,6 +203,7 @@ object Backup {
         writeListToJson(appDb.readRecordDailyDao.allDesc, "readRecordDaily.json", backupPath)
         writeListToJson(appDb.readRecentBookDao.all, "readRecentBooks.json", backupPath)
         writeListToJson(appDb.readMenuCustomButtonDao.all(), "readMenuCustomButtons.json", backupPath)
+        writeListToJson(BookRemarkStore.all(), bookRemarksFileName, backupPath)
         writeListToJson(appDb.searchKeywordDao.all, "searchHistory.json", backupPath)
         writeListToJson(appDb.ruleSubDao.all, "sourceSub.json", backupPath)
         writeListToJson(appDb.txtTocRuleDao.all, "txtTocRule.json", backupPath)
