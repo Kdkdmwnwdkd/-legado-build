@@ -161,6 +161,8 @@ data class BookInfoUiState(
     val readTimeText: String = "",
     val coverPath: String? = null,
     val intro: String = "",
+    /** 用户自己写的一句话备注，空表示没写 */
+    val remark: String = "",
     val kinds: List<String> = emptyList(),
     val customTags: List<String> = emptyList(),
     val groupText: String = "",
@@ -218,6 +220,7 @@ data class BookInfoActions(
     val onSetupWebIntro: (WebView) -> Unit = {},
     val onRefreshEnabledChanged: (Boolean) -> Unit = {},
     val onQuickActionsChanged: () -> Unit = {},
+    val onRemarkClick: () -> Unit = {},
     val onIntroButtonClick: (String, String) -> Unit = { _, _ -> },
     val onIntroImageClick: (String) -> Unit = {},
     val onIntroImageLongClick: (String) -> Unit = {}
@@ -474,6 +477,11 @@ fun BookInfoComposeRoute(
                             }
                         }
                     }
+                    BookInfoRemarkRow(
+                        remark = state.remark,
+                        style = style,
+                        onClick = actions.onRemarkClick
+                    )
                     BookInfoIntroPanel(
                         intro = state.intro,
                         state = state,
@@ -1199,6 +1207,41 @@ private fun BookInfoMoreActionSheet(
             }
             Spacer(modifier = Modifier.height(10.dp))
         }
+    }
+}
+
+@Composable
+private fun BookInfoRemarkRow(
+    remark: String,
+    style: BookInfoComposeStyle,
+    onClick: () -> Unit
+) {
+    val hasRemark = remark.isNotBlank()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 22.dp, vertical = 4.dp)
+            .clip(RoundedCornerShape(style.metrics.actionRadius))
+            .background(style.colors.surfaceVariant.copy(alpha = 0.72f))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Text(
+            text = stringResource(R.string.book_remark_title),
+            color = style.colors.secondaryText,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = if (hasRemark) remark else stringResource(R.string.book_remark_empty),
+            color = if (hasRemark) style.colors.primaryText else style.colors.secondaryText,
+            fontSize = 14.sp,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
