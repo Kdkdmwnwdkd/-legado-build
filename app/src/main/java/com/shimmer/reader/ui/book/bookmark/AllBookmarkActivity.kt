@@ -33,17 +33,34 @@ class AllBookmarkActivity : VMBaseActivity<ActivityAllBookmarkBinding, AllBookma
     override val viewModel by viewModels<AllBookmarkViewModel>()
     override val binding by viewBinding(ActivityAllBookmarkBinding::inflate)
     private val bookmarksState = mutableStateOf<List<Bookmark>>(emptyList())
+    private val queryState = mutableStateOf("")
+
+    /** 导出跟着搜索框走：搜到什么就导出什么，搜索框空着就是全部 */
+    private fun currentBookmarks() = filterBookmarks(bookmarksState.value, queryState.value)
+
     private val exportDir = registerForActivityResult(HandleFileContract()) {
         it.uri?.let { uri ->
             when (it.requestCode) {
-                1 -> viewModel.exportBookmark(uri)
-                2 -> viewModel.exportBookmarkMd(uri)
+                1 -> viewModel.exportBookmark(uri, currentBookmarks())
+                2 -> viewModel.exportBookmarkMd(uri, currentBookmarks())
             }
         }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         initComposeContent()
+        binding.searchView.maxWidth = Int.MAX_VALUE
+        binding.searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                binding.searchView.clearFocus()
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                queryState.value = newText.orEmpty()
+                return true
+            }
+        })
         lifecycleScope.launch {
             appDb.bookmarkDao.flowAll().catch {
                 AppLog.put("所有书签界面获取数据失败\n${it.localizedMessage}", it)
@@ -64,6 +81,7 @@ class AllBookmarkActivity : VMBaseActivity<ActivityAllBookmarkBinding, AllBookma
             setContent {
                 AllBookmarkScreen(
                     bookmarks = bookmarksState.value,
+                    query = queryState.value,
                     onItemClick = ::onItemClick,
                     onItemLongClick = ::onItemLongClick
                 )
