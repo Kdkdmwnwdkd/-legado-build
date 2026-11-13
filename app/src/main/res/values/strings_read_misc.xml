@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="bubble_quick_pick_title">Choose paragraph comment bubble</string>
-    <string name="read_menu_jump_confirm_title">Jump to chapter</string>
-    <string name="read_menu_jump_confirm_message">Jump to this chapter?</string>
-    <string name="share_note_pick_template">Choose share template</string>
-    <string name="share_note_manage_template">Manage templates</string>
-    <string name="read_aloud_minutes">%1$d min</string>
-    <string name="read_aloud_set_time">Set duration</string>
-    <string name="reader_template_asset_missing">Asset is missing, please import it again</string>
-    <string name="reader_template_font_hint">You can pick fonts and backgrounds on the edit page, or copy image URLs and font CSS from the asset library into the page code.</string>
-    <string name="manga_no_more_chapters">No more chapters!</string>
-    <string name="manga_load_failed_retry">Failed to load, tap to retry</string>
+    <string name="bubble_quick_pick_title">选择段评气泡</string>
+    <string name="read_menu_jump_confirm_title">章节跳转确认</string>
+    <string name="read_menu_jump_confirm_message">确定要跳转章节吗？</string>
+    <string name="share_note_pick_template">选择分享模板</string>
+    <string name="share_note_manage_template">管理模板</string>
+    <string name="read_aloud_minutes">%1$d 分钟</string>
+    <string name="read_aloud_set_time">设定时间</string>
+    <string name="reader_template_asset_missing">素材已丢失，请重新导入</string>
+    <string name="reader_template_font_hint">可在编辑页直接选择字体和背景，或从素材库复制图片地址、字体 CSS 放入页面代码。</string>
+    <string name="manga_no_more_chapters">暂无章节了！</string>
+    <string name="manga_load_failed_retry">加载失败，点击重试</string>
 </resources>
