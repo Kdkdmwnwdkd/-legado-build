@@ -197,6 +197,14 @@ class OtherConfigFragment : ComposeSettingFragment() {
                 valuesRes = R.array.text_read_engine_values,
                 defaultValue = com.shimmer.reader.help.config.TextReadEnginePolicy.DEFAULT
             ),
+            intChoice(
+                key = PreferKey.readingBreakMinutes,
+                title = str(R.string.reading_break_title),
+                summary = str(R.string.reading_break_summary),
+                entriesRes = R.array.reading_break_entries,
+                valuesRes = R.array.reading_break_values,
+                defaultValue = 0
+            ),
             SettingActionSpec(
                 key = KEY_LOCAL_PASSWORD,
                 title = str(R.string.set_local_password),

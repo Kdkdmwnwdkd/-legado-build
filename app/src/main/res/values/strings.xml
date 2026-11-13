@@ -1550,6 +1550,11 @@
     <string name="bookmark_share_excerpt">分享摘录</string>
     <string name="bookmark_edit">编辑书签</string>
     <string name="bookmark_empty_excerpt">这条书签没有正文可拷贝</string>
+    <string name="reading_break_title">阅读休息提醒</string>
+    <string name="reading_break_summary">连续阅读到设定时长后提醒活动一下；听书和锁屏时间不计入</string>
+    <string name="reading_break_message">已经连续看了 %1$d 分钟。起身走两步、看看远处，眼睛和脖子会舒服些。</string>
+    <string name="reading_break_continue">接着读</string>
+    <string name="reading_break_skip_today">今天不再提醒</string>
     <string name="change_source_batch">批量换源</string>
     <string name="book_type_different">书籍类型不一样</string>
     <string name="soure_change_source">是否确认换源</string>
