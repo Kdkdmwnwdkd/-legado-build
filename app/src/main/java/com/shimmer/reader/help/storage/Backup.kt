@@ -80,6 +80,8 @@ object Backup {
     internal const val bookCharacterRelationsFileName = "bookCharacterRelations.json"
     internal const val bookCharacterAvatarsDirName = "bookCharacterAvatars"
     internal const val readMenuIconsDirName = "readMenuIcons"
+    internal const val speakerGroupsFileName = "readAloudSpeakerGroups.json"
+    internal const val speakerGroupItemsFileName = "readAloudSpeakerGroupItems.json"
     internal const val advancedTitlePackagesDirName = "advancedTitlePackages"
     internal const val bubblePackagesDirName = "bubblePackages"
 
@@ -104,6 +106,8 @@ object Backup {
             "sourceSub.json",
             "txtTocRule.json",
             "httpTTS.json",
+            speakerGroupsFileName,
+            speakerGroupItemsFileName,
             "keyboardAssists.json",
             "dictRule.json",
             bookCharactersFileName,
@@ -200,6 +204,8 @@ object Backup {
         writeListToJson(appDb.ruleSubDao.all, "sourceSub.json", backupPath)
         writeListToJson(appDb.txtTocRuleDao.all, "txtTocRule.json", backupPath)
         writeListToJson(appDb.httpTTSDao.all, "httpTTS.json", backupPath)
+        writeListToJson(appDb.readAloudSpeakerGroupDao.groups(), speakerGroupsFileName, backupPath)
+        writeListToJson(appDb.readAloudSpeakerGroupDao.items(), speakerGroupItemsFileName, backupPath)
         writeListToJson(appDb.keyboardAssistsDao.all, "keyboardAssists.json", backupPath)
         writeListToJson(appDb.dictRuleDao.all, "dictRule.json", backupPath)
         writeListToJson(appDb.bookCharacterDao.allCharacters(), bookCharactersFileName, backupPath)

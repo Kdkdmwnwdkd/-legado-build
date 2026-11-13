@@ -145,7 +145,8 @@ internal fun filterBookmarks(bookmarks: List<Bookmark>, query: String): List<Boo
     }
 }
 
-private fun bookLabel(bookmark: Bookmark): String {    return if (bookmark.bookAuthor.isBlank()) {
+private fun bookLabel(bookmark: Bookmark): String {
+    return if (bookmark.bookAuthor.isBlank()) {
         bookmark.bookName
     } else {
         "${bookmark.bookName}（${bookmark.bookAuthor}）"

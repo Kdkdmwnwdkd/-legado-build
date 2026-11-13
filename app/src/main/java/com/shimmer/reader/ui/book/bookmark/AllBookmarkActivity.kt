@@ -106,8 +106,9 @@ class AllBookmarkActivity : VMBaseActivity<ActivityAllBookmarkBinding, AllBookma
         }
     }
 
+    /** 长按先给「拷贝/分享」，想改内容再进编辑 */
     private fun onItemLongClick(bookmark: Bookmark, position: Int) {
-        showDialogFragment(BookmarkDialog(bookmark, position))
+        showDialogFragment(BookmarkActionDialog(bookmark, position))
     }
 
     override fun onCompatCreateOptionsMenu(menu: Menu): Boolean {
