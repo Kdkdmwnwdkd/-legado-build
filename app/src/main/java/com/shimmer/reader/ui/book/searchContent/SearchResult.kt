@@ -15,7 +15,9 @@ data class SearchResult(
     val pageIndex: Int = 0,
     val queryIndexInResult: Int = 0,
     val queryIndexInChapter: Int = 0,
-    val isRegex: Boolean = false
+    val isRegex: Boolean = false,
+    // 列表末尾的提示行（未缓存章节、空结果），点了执行动作而不是跳章节
+    val isAction: Boolean = false
 ) {
     fun getHtmlCompat(textColor: String, accentColor: String): Spanned {
         if (query.isNotBlank()) {
