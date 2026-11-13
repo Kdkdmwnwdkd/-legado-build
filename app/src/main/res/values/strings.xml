@@ -130,6 +130,13 @@
     <string name="cancel">取消</string>
     <string name="backup_confirmation">确认备份吗？</string>
     <string name="backup_message">新备份会替换原有备份。\n备份文件夹 YueDu</string>
+    <string name="restore_confirm_meta">备份时间：%1$s　大小：%2$s</string>
+    <string name="restore_confirm_content">包含：书架 %1$d 本 · 书签 %2$d 条 · 书源 %3$d 个 · 分组 %4$d 个 · 阅读记录 %5$d 条</string>
+    <string name="restore_confirm_hint">恢复会把备份写入本机，同一条目以备份为准；本机独有的数据会保留。</string>
+    <string name="restore_confirm_start">开始恢复</string>
+    <string name="restore_confirm_unreadable">读不出这个文件的内容，可能不是本应用的备份，或者文件已经损坏。继续恢复可能覆盖现有数据。</string>
+    <string name="restore_confirm_unknown_time">未知</string>
+    <string name="restore_confirm_unknown_size">未知</string>
     <string name="restore_confirmation">确认恢复吗？</string>
     <string name="restore_message">恢复书架会覆盖现有书架。</string>
     <string name="backup_success">备份成功</string>
