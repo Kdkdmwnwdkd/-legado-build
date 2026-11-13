@@ -174,6 +174,9 @@
     <string name="ra_chapter_quota_set">Will stop after %d chapters</string>
     <string name="ra_chapter_quota_off">Chapter timer off</string>
     <string name="ra_chapter_quota_done">Chapter limit reached, playback stopped</string>
+    <string name="ra_timer_finishing">Finishing this paragraph</string>
+    <string name="ra_timer_finishing_cue">Timer finished, stopping after this paragraph</string>
+    <string name="ra_timer_stopped">Timer finished, playback stopped</string>
     <string name="playing_timer">Playing(%d min left)</string>
     <string name="ps_hide_navigation_bar">Hide virtual buttons when reading</string>
     <string name="pt_hide_navigation_bar">Hide navigation bar</string>

@@ -335,6 +335,8 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
 
     private fun finishUtteranceAndRefill(ref: UtteranceRef) {
         if (!completeQueuedUtterance(ref) || pause) return
+        // 这一段刚念完，定时也到点了，就停在这里，不填下一段
+        if (consumeStopAfterCue()) return
         if (ref.cueIndex == nowSpeak && !moveToNextCue()) {
             nextChapter()
             return
