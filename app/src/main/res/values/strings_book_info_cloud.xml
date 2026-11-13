@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="book_info_preview_source_title">Source details</string>
-    <string name="book_info_preview_toc_title">Chapter preview</string>
-    <string name="book_info_preview_gallery_title">Gallery preview</string>
-    <string name="book_info_images_count">%1$d related images, tap to open the full gallery</string>
+    <string name="book_info_preview_source_title">书源详情</string>
+    <string name="book_info_preview_toc_title">目录预览</string>
+    <string name="book_info_preview_gallery_title">图库预览</string>
+    <string name="book_info_images_count">共 %1$d 张相关图片，点击查看完整图库</string>
 
-    <string name="book_cloud_cache_package_summary">Upload to and download from cloud backup packages, then add cached chapters to the shelf</string>
-    <string name="book_cloud_library_chapter_summary">Show a cloud button on the reading page to switch the book body by current chapter</string>
-    <string name="book_cloud_reading_backup">Reading cloud backup of &lt;%1$s&gt;…</string>
-    <string name="book_cloud_backup_not_found">No local or cloud backup found for &lt;%1$s&gt;</string>
-    <string name="book_cloud_source_summary">%1$d sources in total, %2$d local, %3$d cloud</string>
-    <string name="book_cloud_source_line">Local %1$d/%2$d · Cloud %3$d/%4$d</string>
-    <string name="book_cloud_uploading">Uploading cloud backup…</string>
-    <string name="book_cloud_downloading">Downloading cloud backup…</string>
-    <string name="book_cloud_applying_cache">Applying local cache…</string>
+    <string name="book_cloud_cache_package_summary">从云端备份包上传、下载、用缓存入架</string>
+    <string name="book_cloud_library_chapter_summary">阅读页显示云按钮，按当前章节切换书库正文</string>
+    <string name="book_cloud_reading_backup">正在读取《%1$s》的云端备份…</string>
+    <string name="book_cloud_backup_not_found">未找到《%1$s》的本地或云端备份</string>
+    <string name="book_cloud_source_summary">共 %1$d 个来源，本地 %2$d 个，云端 %3$d 个</string>
+    <string name="book_cloud_source_line">本地 %1$d/%2$d · 云端 %3$d/%4$d</string>
+    <string name="book_cloud_uploading">正在上传云端备份…</string>
+    <string name="book_cloud_downloading">正在下载云端备份…</string>
+    <string name="book_cloud_applying_cache">正在应用本地缓存…</string>
 </resources>

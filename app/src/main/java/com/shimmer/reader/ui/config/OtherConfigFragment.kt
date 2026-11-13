@@ -80,7 +80,7 @@ class OtherConfigFragment : ComposeSettingFragment() {
                             title = str(R.string.language),
                             entriesRes = R.array.language,
                             valuesRes = R.array.language_value,
-                            defaultValue = "auto"
+                            defaultValue = "zh"
                         )
                     )
                 ),
