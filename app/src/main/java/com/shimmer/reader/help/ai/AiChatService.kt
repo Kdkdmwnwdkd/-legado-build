@@ -20,7 +20,6 @@ import com.shimmer.reader.ui.main.ai.AiChatCompanionConfig
 import com.shimmer.reader.ui.main.ai.AiModelConfig
 import com.shimmer.reader.ui.main.ai.AiProviderConfig
 import com.shimmer.reader.ui.main.ai.AiSkillConfig
-import com.shimmer.reader.ui.main.ai.AiWorldBookEntry
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.InterruptedIOException
@@ -433,15 +432,6 @@ object AiChatService {
                 success = true
             )
         }
-        val worldBookContext = AiWorldBookManager.retrieve(memoryContext, preparedContext.messages)
-        if (worldBookContext.isNotEmpty) {
-            AiAgentStateStore.trace(
-                run = agentRun,
-                eventType = AiAgentTrace.EVENT_WORLD_BOOK_RETRIEVED,
-                payload = worldBookContext.toTraceJson(),
-                success = true
-            )
-        }
         val agentPlan = AiAgentPlanner.create(preparedContext.messages, tools)
         if (agentPlan.steps.isNotEmpty()) {
             AiAgentStateStore.trace(
@@ -451,8 +441,7 @@ object AiChatService {
                 success = true
             )
         }
-        val dynamicContextTokens = AiContextManager.estimateTokens(worldBookContext.toTokenText()) +
-                AiContextManager.estimateTokens(agentPlan.toSystemPrompt())
+        val dynamicContextTokens = AiContextManager.estimateTokens(agentPlan.toSystemPrompt())
         val totalTokensWithDynamicContext = estimatedTotalTokens + dynamicContextTokens
         onContextStats(
             JSONObject().apply {
@@ -468,7 +457,6 @@ object AiChatService {
             messages = preparedContext.messages,
             contextSummary = preparedContext.summary,
             retrievedMemory = retrievedMemory,
-            worldBookContext = worldBookContext,
             agentPlan = agentPlan,
             activeSkills = activeSkills,
             systemPrompt = buildModeSystemPrompt(systemPrompt, agentMode)
@@ -1278,7 +1266,6 @@ object AiChatService {
         messages: List<AiChatMessage>,
         contextSummary: AiContextSummary? = null,
         retrievedMemory: AiRetrievedMemory = AiRetrievedMemory(),
-        worldBookContext: AiWorldBookContext = AiWorldBookContext(),
         agentPlan: AiAgentPlan = AiAgentPlan("", emptyList()),
         activeSkills: List<AiSkillConfig> = emptyList(),
         systemPrompt: String = AppConfig.aiSystemPrompt.ifBlank { AppConfig.DEFAULT_AI_SYSTEM_PROMPT },
@@ -1293,11 +1280,6 @@ object AiChatService {
             put("role", "system")
             put("content", AI_WORKSPACE_POLICY_PROMPT)
         }
-        appendWorldBookInjections(
-            conversation = conversation,
-            worldBookContext = worldBookContext,
-            position = AiWorldBookEntry.POSITION_AFTER_SYSTEM_PROMPT
-        )
         personaPrompt.takeIf { it.isNotBlank() }?.let { prompt ->
             conversation += JSONObject().apply {
                 put("role", "system")
@@ -1339,11 +1321,6 @@ object AiChatService {
         }
         val textMessages = messages.filter { (it.kind ?: AiChatMessage.Kind.TEXT) == AiChatMessage.Kind.TEXT }
         val requestMessages = if (AppConfig.aiContextCompressionEnabled) textMessages else textMessages.takeLast(12)
-        appendWorldBookInjections(
-            conversation = conversation,
-            worldBookContext = worldBookContext,
-            position = AiWorldBookEntry.POSITION_BEFORE_PROMPT
-        )
         requestMessages.forEach { message ->
             conversation += JSONObject().apply {
                 put(
@@ -1363,8 +1340,6 @@ object AiChatService {
                 }
             }
         }
-        insertWorldBookBeforeLastUser(conversation, worldBookContext)
-        insertWorldBookByDepth(conversation, worldBookContext)
         return conversation
     }
 
@@ -1391,58 +1366,6 @@ object AiChatService {
                 }
             }
         return conversation
-    }
-
-    private fun appendWorldBookInjections(
-        conversation: MutableList<JSONObject>,
-        worldBookContext: AiWorldBookContext,
-        position: String
-    ) {
-        worldBookContext.injections
-            .filter {
-                if (position == AiWorldBookEntry.POSITION_AFTER_SYSTEM_PROMPT) {
-                    it.position == position || it.position.isBlank()
-                } else {
-                    it.position == position
-                }
-            }
-            .forEach { injection ->
-                conversation += worldBookInjectionMessage(injection)
-            }
-    }
-
-    private fun insertWorldBookBeforeLastUser(
-        conversation: MutableList<JSONObject>,
-        worldBookContext: AiWorldBookContext
-    ) {
-        val messages = worldBookContext.injections
-            .filter { it.position == AiWorldBookEntry.POSITION_BEFORE_LAST_USER }
-            .map(::worldBookInjectionMessage)
-        if (messages.isEmpty()) return
-        val index = conversation.indexOfLast { it.optString("role") == "user" }
-            .takeIf { it >= 0 }
-            ?: conversation.size
-        conversation.addAll(index, messages)
-    }
-
-    private fun insertWorldBookByDepth(
-        conversation: MutableList<JSONObject>,
-        worldBookContext: AiWorldBookContext
-    ) {
-        worldBookContext.injections
-            .filter { it.position == AiWorldBookEntry.POSITION_INJECT_DEPTH }
-            .sortedByDescending { it.injectDepth }
-            .forEach { injection ->
-                val index = (conversation.size - injection.injectDepth).coerceIn(1, conversation.size)
-                conversation.add(index, worldBookInjectionMessage(injection))
-            }
-    }
-
-    private fun worldBookInjectionMessage(injection: AiWorldBookInjection): JSONObject {
-        return JSONObject().apply {
-            put("role", injection.role)
-            put("content", injection.content)
-        }
     }
 
     private fun resolveChatCompanion(memoryContext: AiMemoryContext?): AiChatCompanionConfig {

@@ -371,10 +371,6 @@
             android:name=".ui.main.ai.AiImageGalleryActivity"
             android:launchMode="standard" />
         <activity
-            android:name=".ui.config.AiWorldBookManageActivity"
-            android:launchMode="standard"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
-        <activity
             android:name=".ui.book.character.BookCharacterManageActivity"
             android:launchMode="standard" />
         <activity

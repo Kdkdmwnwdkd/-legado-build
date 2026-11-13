@@ -1,6 +1,5 @@
 ﻿package com.shimmer.reader.ui.book.read
 
-import android.content.Intent
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -82,9 +81,7 @@ import com.shimmer.reader.help.ai.AiToolRegistry
 import com.shimmer.reader.help.config.AppConfig
 import com.shimmer.reader.lib.dialogs.alert
 import com.shimmer.reader.lib.dialogs.selector
-import com.shimmer.reader.ui.config.AiWorldBookManageActivity
 import com.shimmer.reader.ui.main.ai.AiChatMessage
-import com.shimmer.reader.ui.main.ai.AiWorldBookBinding
 import com.shimmer.reader.ui.main.ai.compose.AiComposeMarkdownText
 import com.shimmer.reader.ui.main.ai.compose.AiComposeStyle
 import com.shimmer.reader.ui.main.ai.compose.AiCopyTextButton
@@ -829,73 +826,6 @@ class ReadAiFloatingPanel @JvmOverloads constructor(
                     windowMcpServerIds = emptySet()
                 }
             }
-        }
-    }
-
-    private fun openWorldBookManage() {
-        context.startActivity(
-            Intent(context, AiWorldBookManageActivity::class.java)
-        )
-    }
-
-    private fun activeReadAiWorldBookCount(): Int {
-        return AppConfig.aiWorldBookList.count { worldBook ->
-            worldBook.enabled && worldBook.bindings.any { binding ->
-                binding.enabled &&
-                        binding.targetType == AiWorldBookBinding.TARGET_COMPANION &&
-                        binding.targetKey == READ_AI_COMPANION_ID
-            }
-        }
-    }
-
-    private fun showReadAiWorldBookDialog() {
-        val worldBooks = AppConfig.aiWorldBookList
-        if (worldBooks.isEmpty()) {
-            context.selector(
-                context.getString(R.string.ai_chat_world_book),
-                listOf(context.getString(R.string.ai_chat_open_world_book_manage))
-            ) { _, _, _ ->
-                openWorldBookManage()
-            }
-            return
-        }
-        val selected = worldBooks.filter { book ->
-            book.bindings.any {
-                it.enabled &&
-                        it.targetType == AiWorldBookBinding.TARGET_COMPANION &&
-                        it.targetKey == READ_AI_COMPANION_ID
-            }
-        }.mapTo(linkedSetOf()) { it.id }
-        context.alert(title = context.getString(R.string.read_ai_worldbook_dialog_title)) {
-            multiChoiceItems(
-                items = worldBooks.map { book ->
-                    "${book.name}${if (book.enabled) "" else context.getString(R.string.read_ai_worldbook_disabled)}"
-                }.toTypedArray(),
-                checkedItems = BooleanArray(worldBooks.size) { index -> worldBooks[index].id in selected }
-            ) { _, which, isChecked ->
-                if (isChecked) selected += worldBooks[which].id else selected -= worldBooks[which].id
-            }
-            okButton {
-                AppConfig.aiWorldBookList = worldBooks.map { book ->
-                    val withoutReadAi = book.bindings.filterNot {
-                        it.targetType == AiWorldBookBinding.TARGET_COMPANION &&
-                                it.targetKey == READ_AI_COMPANION_ID
-                    }
-                    if (book.id in selected) {
-                        book.copy(
-                            bindings = withoutReadAi + AiWorldBookBinding(
-                                targetType = AiWorldBookBinding.TARGET_COMPANION,
-                                targetKey = READ_AI_COMPANION_ID,
-                                order = withoutReadAi.size
-                            )
-                        )
-                    } else {
-                        book.copy(bindings = withoutReadAi)
-                    }
-                }
-            }
-            neutralButton(context.getString(R.string.ai_chat_manage)) { openWorldBookManage() }
-            cancelButton()
         }
     }
 

@@ -411,7 +411,6 @@ object AiToolRegistry {
         tools += AiImageTool.resolvedTools()
         tools += AiBookCharacterTool.resolvedTools()
         tools += AiReadAloudBgmTool.resolvedTools()
-        tools += AiWorldBookTool.resolvedTools()
         return tools.distinctBy { it.name }
     }
 
