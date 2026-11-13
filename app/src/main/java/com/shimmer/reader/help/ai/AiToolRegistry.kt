@@ -158,35 +158,8 @@ object AiToolRegistry {
         "reading_webview",
         "capture_web_requests",
         "generate_image",
-        "list_book_characters",
-        "upsert_book_character",
-        "delete_book_character",
-        "list_book_character_relations",
-        "upsert_book_character_relation",
-        "delete_book_character_relation",
-        "list_ai_gallery_images",
-        "set_book_character_avatar_from_gallery",
-        "generate_book_character_avatar",
-        "list_speech_catalogs",
-        "assign_character_speech_route",
-        "batch_assign_character_speech_routes",
-        "clear_character_speech_routes",
-        "list_speech_voice_groups",
-        "upsert_speech_voice_group",
-        "delete_speech_voice_group",
-        "batch_manage_speech_voice_groups",
         "list_read_aloud_bgm_catalog",
         "assign_read_aloud_bgm_ranges",
-        "list_world_books",
-        "upsert_world_book",
-        "delete_world_book",
-        "upsert_world_book_entry",
-        "delete_world_book_entry",
-        "list_world_book_bindings",
-        "upsert_world_book_binding",
-        "delete_world_book_binding",
-        "import_world_book_json",
-        "export_world_book_json",
         "get_app_settings",
         "set_app_setting",
         "set_app_settings_batch",
@@ -409,7 +382,6 @@ object AiToolRegistry {
         tools += AiSettingsTool.resolvedTools()
         tools += AiWorkspaceTool.resolvedTools()
         tools += AiImageTool.resolvedTools()
-        tools += AiBookCharacterTool.resolvedTools()
         tools += AiReadAloudBgmTool.resolvedTools()
         return tools.distinctBy { it.name }
     }
