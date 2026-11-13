@@ -1546,6 +1546,10 @@
     <string name="bookmark_search_hint">搜书名、章节、摘录或备注</string>
     <string name="bookmark_empty">还没有书签。阅读时选中一段文字，点「书签」就能存成摘录。</string>
     <string name="bookmark_search_empty">没有匹配的摘录</string>
+    <string name="bookmark_copy_excerpt">拷贝摘录</string>
+    <string name="bookmark_share_excerpt">分享摘录</string>
+    <string name="bookmark_edit">编辑书签</string>
+    <string name="bookmark_empty_excerpt">这条书签没有正文可拷贝</string>
     <string name="change_source_batch">批量换源</string>
     <string name="book_type_different">书籍类型不一样</string>
     <string name="soure_change_source">是否确认换源</string>
