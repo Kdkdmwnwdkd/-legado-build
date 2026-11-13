@@ -25,7 +25,8 @@ import java.util.Locale
  */
 internal class ReadingBreakTimer(private var limitMs: Long) {
 
-    private var resumedAt = 0L
+    /** null 表示当前在后台；不用 0 当哨兵，elapsedRealtime 本身就可能从 0 起算 */
+    private var resumedAt: Long? = null
     private var accumulatedMs = 0L
 
     fun setLimit(limit: Long) {
@@ -33,20 +34,20 @@ internal class ReadingBreakTimer(private var limitMs: Long) {
     }
 
     fun onResumed(now: Long) {
-        if (resumedAt == 0L) {
+        if (resumedAt == null) {
             resumedAt = now
         }
     }
 
     fun onPaused(now: Long) {
-        if (resumedAt != 0L) {
-            accumulatedMs += (now - resumedAt).coerceAtLeast(0L)
-            resumedAt = 0L
+        resumedAt?.let {
+            accumulatedMs += (now - it).coerceAtLeast(0L)
+            resumedAt = null
         }
     }
 
     fun elapsed(now: Long): Long {
-        val running = if (resumedAt != 0L) (now - resumedAt).coerceAtLeast(0L) else 0L
+        val running = resumedAt?.let { (now - it).coerceAtLeast(0L) } ?: 0L
         return accumulatedMs + running
     }
 
@@ -55,9 +56,7 @@ internal class ReadingBreakTimer(private var limitMs: Long) {
     /** 提醒过之后重新从头计时，接着读的那段不再算进上一轮 */
     fun reset(now: Long) {
         accumulatedMs = 0L
-        if (resumedAt != 0L) {
-            resumedAt = now
-        }
+        resumedAt?.let { resumedAt = now }
     }
 }
 

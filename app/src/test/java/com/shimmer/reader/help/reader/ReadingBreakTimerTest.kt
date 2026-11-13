@@ -9,7 +9,7 @@ class ReadingBreakTimerTest {
 
     @Test
     fun onlyCountsTimeSpentInForeground() {
-        val timer = ReadingBreakTimer(45 * minute)
+        val timer = ReadingBreakTimer(75 * minute)
         timer.onResumed(0L)
         timer.onPaused(30 * minute)
 
@@ -35,7 +35,7 @@ class ReadingBreakTimerTest {
 
         assertEquals(0L, timer.elapsed(31 * minute))
         assertEquals(30 * minute, timer.remaining(31 * minute))
-        assertEquals(20 * minute, timer.elapsed(41 * minute))
+        assertEquals(10 * minute, timer.elapsed(41 * minute))
     }
 
     @Test
