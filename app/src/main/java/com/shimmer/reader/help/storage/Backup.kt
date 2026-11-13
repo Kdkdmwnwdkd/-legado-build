@@ -79,6 +79,7 @@ object Backup {
     internal const val bookCharactersFileName = "bookCharacters.json"
     internal const val bookCharacterRelationsFileName = "bookCharacterRelations.json"
     internal const val bookCharacterAvatarsDirName = "bookCharacterAvatars"
+    internal const val readMenuIconsDirName = "readMenuIcons"
     internal const val advancedTitlePackagesDirName = "advancedTitlePackages"
     internal const val bubblePackagesDirName = "bubblePackages"
 
@@ -96,6 +97,9 @@ object Backup {
             "rssStar.json",
             "replaceRule.json",
             "readRecord.json",
+            "readRecordDaily.json",
+            "readRecentBooks.json",
+            "readMenuCustomButtons.json",
             "searchHistory.json",
             "sourceSub.json",
             "txtTocRule.json",
@@ -189,6 +193,9 @@ object Backup {
         writeListToJson(appDb.rssStarDao.all, "rssStar.json", backupPath)
         writeListToJson(appDb.replaceRuleDao.all, "replaceRule.json", backupPath)
         writeListToJson(appDb.readRecordDao.all, "readRecord.json", backupPath)
+        writeListToJson(appDb.readRecordDailyDao.allDesc, "readRecordDaily.json", backupPath)
+        writeListToJson(appDb.readRecentBookDao.all, "readRecentBooks.json", backupPath)
+        writeListToJson(appDb.readMenuCustomButtonDao.all(), "readMenuCustomButtons.json", backupPath)
         writeListToJson(appDb.searchKeywordDao.all, "searchHistory.json", backupPath)
         writeListToJson(appDb.ruleSubDao.all, "sourceSub.json", backupPath)
         writeListToJson(appDb.txtTocRuleDao.all, "txtTocRule.json", backupPath)
@@ -202,6 +209,7 @@ object Backup {
                 .writeText(AutoTaskImport.exportJson(rules), Charsets.UTF_8)
         }
         exportBookCharacterAvatars()
+        exportReadMenuIcons()
         exportVisualResourcePackages()
         GSON.toJson(appDb.serverDao.all).let { json ->
             aes.runCatching {
@@ -286,6 +294,7 @@ object Backup {
             paths[i] = backupPath + File.separator + paths[i]
         }
         File(backupPath, bookCharacterAvatarsDirName).takeIf { it.exists() }?.let { paths.add(it.absolutePath) }
+        File(backupPath, readMenuIconsDirName).takeIf { it.exists() }?.let { paths.add(it.absolutePath) }
         File(backupPath, advancedTitlePackagesDirName).takeIf { it.exists() }?.let { paths.add(it.absolutePath) }
         File(backupPath, bubblePackagesDirName).takeIf { it.exists() }?.let { paths.add(it.absolutePath) }
         File(backupPath, com.shimmer.reader.help.book.highlight.HighlightRules.BACKUP_DIR)
@@ -423,6 +432,22 @@ object Backup {
             copyDir(sourceDir, targetDir)
         }.onFailure {
             AppLog.put("备份角色头像出错\n${it.localizedMessage}", it)
+        }
+    }
+
+    /**
+     * 自定义阅读菜单按钮的图标是 externalFiles 下的独立文件，只备份 JSON 会在换机后丢图。
+     */
+    private fun exportReadMenuIcons() {
+        val sourceDir = appCtx.externalFiles.getFile(readMenuIconsDirName)
+        if (!sourceDir.exists() || !sourceDir.isDirectory) {
+            return
+        }
+        sourceDir.listFiles()?.takeIf { it.isNotEmpty() } ?: return
+        kotlin.runCatching {
+            copyDir(sourceDir, File(backupPath, readMenuIconsDirName))
+        }.onFailure {
+            AppLog.put("备份阅读菜单按钮图标出错\n${it.localizedMessage}", it)
         }
     }
 
