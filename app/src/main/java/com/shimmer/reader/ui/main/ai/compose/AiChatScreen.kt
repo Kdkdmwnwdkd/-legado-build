@@ -128,7 +128,6 @@ data class AiChatScreenActions(
     val onSelectModel: () -> Unit,
     val onOpenImageGallery: (() -> Unit)? = null,
     val onOpenWindowAbilities: (() -> Unit)? = null,
-    val onOpenWorldBooks: (() -> Unit)? = null,
     val onToggleAutoSpeak: (() -> Unit)? = null,
     val onSpeakMessage: ((String, AiChatCompanionConfig, String) -> Unit)? = null,
     val onAddCompanion: (() -> Unit)? = null,
@@ -729,14 +728,6 @@ private fun AiChatTopBar(
                                 AiTopMenuAction(
                                     stringResource(R.string.ai_chat_window_abilities),
                                     openAbilities
-                                )
-                            )
-                        }
-                        actions.onOpenWorldBooks?.let { openWorldBooks ->
-                            add(
-                                AiTopMenuAction(
-                                    stringResource(R.string.ai_chat_browse_world_book),
-                                    openWorldBooks
                                 )
                             )
                         }

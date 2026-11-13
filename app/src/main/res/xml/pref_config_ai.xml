@@ -67,12 +67,6 @@
             app:iconSpaceReserved="false" />
 
         <com.shimmer.reader.lib.prefs.Preference
-            android:key="aiWorldBookManage"
-            android:summary="全局或角色助手长期设定"
-            android:title="世界书管理"
-            app:iconSpaceReserved="false" />
-
-        <com.shimmer.reader.lib.prefs.Preference
             android:key="aiDefaultModelSettings"
             android:summary="正文问 AI、文章总结、多角色、生图供应商"
             android:title="默认模型"

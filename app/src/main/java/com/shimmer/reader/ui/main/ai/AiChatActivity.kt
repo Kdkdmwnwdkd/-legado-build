@@ -61,7 +61,6 @@ import com.shimmer.reader.help.character.BookCharacterProfileMeta
 import com.shimmer.reader.help.config.AppConfig
 import com.shimmer.reader.lib.dialogs.alert
 import com.shimmer.reader.lib.dialogs.selector
-import com.shimmer.reader.ui.config.AiWorldBookManageActivity
 import com.shimmer.reader.ui.config.ConfigActivity
 import com.shimmer.reader.ui.config.ConfigTag
 import com.shimmer.reader.ui.book.character.BookCharacterEditActivity
@@ -113,7 +112,6 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
                     onSelectModel = ::showModelSelectorDialog,
                     onOpenImageGallery = null,
                     onOpenWindowAbilities = ::showWindowAbilityDialog,
-                    onOpenWorldBooks = null,
                     onToggleAutoSpeak = ::toggleAutoSpeak,
                     onSpeakMessage = { text, companion, playbackKey ->
                         speakCompanionMessage(text, companion, playbackKey)
@@ -431,14 +429,12 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
         val items = if (isDefault) {
             listOf(
                 getString(R.string.ai_chat_new_chat),
-                getString(R.string.ai_chat_edit_default_persona),
-                getString(R.string.ai_chat_world_book)
+                getString(R.string.ai_chat_edit_default_persona)
             )
         } else {
             listOf(
                 getString(R.string.ai_chat_edit_character_card),
                 getString(R.string.ai_chat_new_chat),
-                getString(R.string.ai_chat_world_book),
                 getString(R.string.ai_chat_remove_character_assistant)
             )
         }
@@ -447,14 +443,12 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
                 when (index) {
                     0 -> startNewChatForCompanion(companion.id)
                     1 -> showDefaultCompanionPromptDialog(companion)
-                    2 -> showCompanionWorldBookDialog(companion)
                 }
             } else {
                 when (index) {
                     0 -> openCharacterEditor(companion)
                     1 -> startNewChatForCompanion(companion.id)
-                    2 -> showCompanionWorldBookDialog(companion)
-                    3 -> confirmDeleteCompanion(companion)
+                    2 -> confirmDeleteCompanion(companion)
                 }
             }
         }
@@ -533,62 +527,6 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
         }
     }
 
-    private fun showCompanionWorldBookDialog(companion: AiChatCompanionConfig = viewModel.currentCompanion()) {
-        val worldBooks = AppConfig.aiWorldBookList
-        if (worldBooks.isEmpty()) {
-            selector(
-                getString(R.string.ai_chat_world_book),
-                listOf(getString(R.string.ai_chat_open_world_book_manage))
-            ) { _, _, _ ->
-                openWorldBookManage()
-            }
-            return
-        }
-        val visibleWorldBooks = worldBooks.filter { it.enabled && !it.isGlobalWorldBookEnabled() }
-        if (visibleWorldBooks.isEmpty()) {
-            selector(
-                getString(R.string.ai_chat_world_book),
-                listOf(
-                    getString(R.string.ai_chat_no_bindable_world_book),
-                    getString(R.string.ai_chat_open_world_book_manage)
-                )
-            ) { _, _, which ->
-                if (which == 1) openWorldBookManage()
-            }
-            return
-        }
-        val visibleIds = visibleWorldBooks.map { it.id }.toSet()
-        val selected = companion.worldBookIds.filterTo(mutableSetOf()) { it in visibleIds }
-        alert(title = getString(R.string.ai_chat_world_book_title, companion.name)) {
-            multiChoiceItems(
-                items = visibleWorldBooks.map { book ->
-                    buildString {
-                        append(book.name)
-                        if (book.bindings.any { it.enabled && it.targetType == AiWorldBookBinding.TARGET_GLOBAL }) {
-                            append(getString(R.string.ai_chat_world_book_global))
-                        }
-                        if (!book.enabled) {
-                            append(getString(R.string.ai_chat_world_book_disabled))
-                        }
-                    }
-                }.toTypedArray(),
-                checkedItems = BooleanArray(visibleWorldBooks.size) { index ->
-                    visibleWorldBooks[index].id in selected
-                }
-            ) { _, which, isChecked ->
-                if (isChecked) selected += visibleWorldBooks[which].id else selected -= visibleWorldBooks[which].id
-            }
-            okButton {
-                AppConfig.upsertAiChatCompanion(
-                    companion.copy(worldBookIds = selected.filter { id -> id in visibleIds })
-                )
-                refreshToken.intValue += 1
-            }
-            neutralButton(getString(R.string.ai_chat_manage)) { openWorldBookManage() }
-            cancelButton()
-        }
-    }
-
     private fun showWindowAbilityDialog() {
         if (viewModel.isRequesting) {
             toastOnUi(R.string.ai_chat_wait_current)
@@ -599,32 +537,17 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
             listOf(
                 getString(R.string.ai_chat_skill_count, viewModel.activeWindowSkillIds().size),
                 getString(R.string.ai_chat_mcp_count, viewModel.activeWindowMcpServerIds().size),
-                getString(R.string.ai_chat_world_book_count, activeCompanionWorldBookCount()),
                 getString(R.string.ai_chat_clear_skill_mcp)
             )
         ) { _, _, index ->
             when (index) {
                 0 -> showWindowSkillDialog()
                 1 -> showWindowMcpDialog()
-                2 -> showCompanionWorldBookDialog()
-                3 -> {
+                2 -> {
                     viewModel.setActiveWindowSkillIds(emptySet())
                     viewModel.setActiveWindowMcpServerIds(emptySet())
                     refreshToken.intValue += 1
                 }
-            }
-        }
-    }
-
-    private fun openWorldBookManage() {
-        startActivity(Intent(this, AiWorldBookManageActivity::class.java))
-    }
-
-    private fun activeCompanionWorldBookCount(): Int {
-        val companion = viewModel.currentCompanion()
-        return companion.worldBookIds.count { worldBookId ->
-            AppConfig.aiWorldBookList.any {
-                it.id == worldBookId && it.enabled && !it.isGlobalWorldBookEnabled()
             }
         }
     }
@@ -1268,12 +1191,6 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
             .map { it.trim() }
             .firstOrNull { it.isNotBlank() }
             .orEmpty()
-    }
-
-    private fun AiWorldBookConfig.isGlobalWorldBookEnabled(): Boolean {
-        return enabled && bindings.any { binding ->
-            binding.enabled && binding.targetType == AiWorldBookBinding.TARGET_GLOBAL
-        }
     }
 
     private data class CharacterRoleFilter(
