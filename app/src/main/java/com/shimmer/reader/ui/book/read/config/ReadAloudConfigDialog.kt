@@ -337,10 +337,16 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 onPositive = {
                     val context = requireContext().applicationContext
                     lifecycleScope.launch {
-                        // SimpleCache 占着目录，必须等服务销毁再删
+                        // SimpleCache 占着目录，得等服务真的销毁再删；
+                        // stop 是投递 intent，不是同步的，所以等状态而不是死等一个固定时长
                         if (BaseReadAloudService.isRun) {
                             ReadAloud.stop(context)
-                            delay(800)
+                            var waited = 0
+                            while (BaseReadAloudService.isRun && waited < 3000) {
+                                delay(100)
+                                waited += 100
+                            }
+                            delay(200)
                         }
                         val cleared = withContext(Dispatchers.IO) { ReadAloudCacheStore.clear() }
                         val size = withContext(Dispatchers.IO) { ReadAloudCacheStore.sizeBytes() }
