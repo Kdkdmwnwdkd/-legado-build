@@ -16,6 +16,7 @@ import com.shimmer.reader.constant.EventBus
 import com.shimmer.reader.constant.PreferKey
 import com.shimmer.reader.data.appDb
 import com.shimmer.reader.help.IntentHelp
+import com.shimmer.reader.help.book.BookIdentity
 import com.shimmer.reader.help.config.AppConfig
 import com.shimmer.reader.help.readaloud.ReadAloudConfigChangeNotifier
 import com.shimmer.reader.help.readaloud.ReadAloudSpeakerLoudnessManager
@@ -33,7 +34,9 @@ import com.shimmer.reader.lib.theme.primaryTextColor
 import com.shimmer.reader.lib.theme.themeCardColorOrDefault
 import com.shimmer.reader.lib.theme.uiTypeface
 import com.shimmer.reader.model.ReadAloud
+import com.shimmer.reader.model.ReadBook
 import com.shimmer.reader.service.BaseReadAloudService
+import com.shimmer.reader.ui.book.character.BookCharacterManageActivity
 import com.shimmer.reader.ui.config.compose.ComposeSettingFragment
 import com.shimmer.reader.ui.config.compose.SettingActionSpec
 import com.shimmer.reader.ui.config.compose.SettingChoiceOption
@@ -58,6 +61,7 @@ import com.shimmer.reader.utils.toastOnUi
 private const val KEY_AI_READ_ALOUD_BGM_MANAGE = "aiReadAloudBgmManage"
 private const val KEY_AI_READ_ALOUD_USAGE_RECORDS = "aiReadAloudUsageRecords"
 private const val KEY_AI_READ_ALOUD_MODEL_ROUTING = "aiReadAloudModelRouting"
+private const val KEY_AI_READ_ALOUD_CHARACTER_MANAGE = "aiReadAloudCharacterManage"
 private const val KEY_READ_ALOUD_SPEAKER_MANAGE = "readAloudSpeakerManage"
 private const val KEY_READ_ALOUD_LOUDNESS_RESET = "readAloudSpeakerLoudnessReset"
 private const val KEY_MEDIA_BUTTON_PER_NEXT = "mediaButtonPerNext"
@@ -463,6 +467,12 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                 .enabledTracksByType(com.shimmer.reader.data.entities.ReadAloudBgmTrack.TYPE_SFX)
                 .size
             val loudnessCount = ReadAloudSpeakerLoudnessManager.learnedSpeakerCount()
+            val currentBook = ReadBook.book
+            val characterCount = runCatching {
+                currentBook?.let {
+                    appDb.bookCharacterDao.characters(BookIdentity.key(it)).size
+                } ?: 0
+            }.getOrDefault(0)
             return listOf(
                 switch(
                     key = PreferKey.aiReadAloudRoleEnabled,
@@ -512,6 +522,25 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
                     checked = AppConfig.aiReadAloudAutoCreateAvatar,
                     enabled = enabled && AppConfig.aiReadAloudAutoCreateCharacters,
                     onCheckedChange = { AppConfig.aiReadAloudAutoCreateAvatar = it }
+                ),
+                action(
+                    key = KEY_AI_READ_ALOUD_CHARACTER_MANAGE,
+                    title = getString(R.string.ra_cfg_character_manage),
+                    summary = when {
+                        currentBook == null -> getString(R.string.ra_cfg_character_manage_no_book)
+                        characterCount > 0 -> getString(
+                            R.string.ra_cfg_character_manage_summary,
+                            characterCount
+                        )
+                        else -> getString(R.string.ra_cfg_character_manage_empty)
+                    },
+                    enabled = currentBook != null,
+                    onClick = {
+                        val bookUrl = currentBook?.bookUrl.orEmpty()
+                        startActivity<BookCharacterManageActivity> {
+                            putExtra(BookCharacterManageActivity.EXTRA_BOOK_URL, bookUrl)
+                        }
+                    }
                 ),
                 action(
                     key = KEY_READ_ALOUD_SPEAKER_MANAGE,
