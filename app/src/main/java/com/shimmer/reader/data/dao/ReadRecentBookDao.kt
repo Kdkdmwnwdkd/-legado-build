@@ -32,6 +32,12 @@ interface ReadRecentBookDao {
     @Query("select max(lastRead) from readRecentBooks")
     fun latestReadTime(): Long?
 
+    @get:Query("select * from readRecentBooks")
+    val all: List<ReadRecentBook>
+
+    @Query("select * from readRecentBooks where bookUrl = :bookUrl limit 1")
+    fun get(bookUrl: String): ReadRecentBook?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(record: ReadRecentBook)
 

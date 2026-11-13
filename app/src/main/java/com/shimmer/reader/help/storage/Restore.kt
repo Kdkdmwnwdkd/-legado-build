@@ -25,7 +25,10 @@ import com.shimmer.reader.data.entities.Bookmark
 import com.shimmer.reader.data.entities.DictRule
 import com.shimmer.reader.data.entities.HttpTTS
 import com.shimmer.reader.data.entities.KeyboardAssist
+import com.shimmer.reader.data.entities.ReadMenuCustomButton
+import com.shimmer.reader.data.entities.ReadRecentBook
 import com.shimmer.reader.data.entities.ReadRecord
+import com.shimmer.reader.data.entities.ReadRecordDaily
 import com.shimmer.reader.data.entities.ReplaceRule
 import com.shimmer.reader.data.entities.RssSource
 import com.shimmer.reader.data.entities.RssStar
@@ -58,6 +61,8 @@ import com.shimmer.reader.model.AutoTask
 import com.shimmer.reader.model.AutoTaskImport
 import com.shimmer.reader.model.localBook.LocalBook
 import com.shimmer.reader.model.localBook.epubcore.template.EpubReaderTemplateStore
+import com.shimmer.reader.receiver.ReadGoalWidgetProvider
+import com.shimmer.reader.receiver.ReadRankWidgetProvider
 import com.shimmer.reader.utils.FileUtils
 import com.shimmer.reader.utils.GSON
 import com.shimmer.reader.utils.LogUtils
@@ -212,6 +217,9 @@ object Restore {
             }
         }
         restoreBookCharacters(path)
+        restoreReadRecordDaily(path)
+        restoreRecentBooks(path)
+        restoreReadMenuCustomButtons(path)
         File(path, "servers.json").takeIf {
             it.exists()
         }?.runCatching {
@@ -350,6 +358,76 @@ object Restore {
                 LauncherIconHelp.changeIcon(appCtx.getPrefString(PreferKey.launcherIcon))
             }
             ThemeConfig.applyDayNight(appCtx)
+        }
+    }
+
+    private fun restoreReadRecordDaily(path: String) {
+        fileToListT<ReadRecordDaily>(path, "readRecordDaily.json")?.let { items ->
+            items.forEach { incoming ->
+                val local = appDb.readRecordDailyDao.get(incoming.date)
+                if (RestoreMergePolicy.dailyReadTimeShouldReplace(local, incoming)) {
+                    appDb.readRecordDailyDao.insert(incoming)
+                }
+            }
+            // 桌面上的阅读目标、排行小组件读的是同一张表，恢复后要主动刷一次
+            ReadGoalWidgetProvider.updateAll(appCtx, force = true)
+            ReadRankWidgetProvider.updateAll(appCtx, force = true)
+        }
+    }
+
+    private fun restoreRecentBooks(path: String) {
+        fileToListT<ReadRecentBook>(path, "readRecentBooks.json")?.let { items ->
+            items.forEach { incoming ->
+                val local = appDb.readRecentBookDao.get(incoming.bookUrl)
+                if (RestoreMergePolicy.recentBookShouldReplace(local, incoming)) {
+                    appDb.readRecentBookDao.insert(incoming)
+                }
+            }
+        }
+    }
+
+    /**
+     * 自定义阅读菜单按钮的图标存在 externalFiles/readMenuIcons 下，备份包里是同名目录。
+     * 恢复时先落图标文件，再把 JSON 里的绝对路径改成新机器上的路径。
+     */
+    private fun restoreReadMenuIcons(path: String): Map<String, String> {
+        val sourceDir = File(path, Backup.readMenuIconsDirName)
+        if (!sourceDir.isDirectory) return emptyMap()
+        val targetDir = appCtx.externalFiles.getFile(Backup.readMenuIconsDirName).apply { mkdirs() }
+        val restored = hashMapOf<String, String>()
+        sourceDir.listFiles()?.forEach { file ->
+            if (!file.isFile) return@forEach
+            runCatching {
+                val target = File(targetDir, file.name)
+                file.copyTo(target, overwrite = true)
+                restored[file.name] = target.absolutePath
+            }.onFailure {
+                AppLog.put("恢复阅读菜单按钮图标出错 ${file.name}\n${it.localizedMessage}", it)
+            }
+        }
+        return restored
+    }
+
+    private fun restoreReadMenuCustomButtons(path: String) {
+        val items = fileToListT<ReadMenuCustomButton>(path, "readMenuCustomButtons.json") ?: return
+        val icons = restoreReadMenuIcons(path)
+        val existingNames = appDb.readMenuCustomButtonDao.all()
+            .map { it.name.trim() }
+            .filter { it.isNotEmpty() }
+            .toMutableSet()
+        var order = appDb.readMenuCustomButtonDao.maxOrder() ?: 0
+        items.forEach { incoming ->
+            val name = incoming.name.trim()
+            // 同名按钮视为已经存在，跳过，避免覆盖本机改过的脚本
+            if (name.isNotEmpty() && !existingNames.add(name)) return@forEach
+            order += 1
+            val iconName = incoming.iconPath
+                .takeIf { it.isNotBlank() }
+                ?.let { File(it).name }
+            val iconPath = iconName?.let { icons[it] } ?: incoming.iconPath
+            appDb.readMenuCustomButtonDao.insert(
+                incoming.copy(id = 0L, order = order, iconPath = iconPath)
+            )
         }
     }
 
