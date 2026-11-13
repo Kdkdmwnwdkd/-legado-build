@@ -25,6 +25,8 @@ import com.shimmer.reader.data.entities.Bookmark
 import com.shimmer.reader.data.entities.DictRule
 import com.shimmer.reader.data.entities.HttpTTS
 import com.shimmer.reader.data.entities.KeyboardAssist
+import com.shimmer.reader.data.entities.ReadAloudSpeakerGroup
+import com.shimmer.reader.data.entities.ReadAloudSpeakerGroupItem
 import com.shimmer.reader.data.entities.ReadMenuCustomButton
 import com.shimmer.reader.data.entities.ReadRecentBook
 import com.shimmer.reader.data.entities.ReadRecord
@@ -55,6 +57,7 @@ import com.shimmer.reader.help.config.ReadBookConfig
 import com.shimmer.reader.help.config.ThemeConfig
 import com.shimmer.reader.help.config.ThemePackageManager
 import com.shimmer.reader.help.config.TopBarConfig
+import com.shimmer.reader.help.readaloud.speech.SpeechVoiceGroupRepository
 import com.shimmer.reader.model.VideoPlay.VIDEO_PREF_NAME
 import com.shimmer.reader.model.BookCover
 import com.shimmer.reader.model.AutoTask
@@ -194,6 +197,8 @@ object Restore {
         fileToListT<HttpTTS>(path, "httpTTS.json")?.let {
             insertRestored(it) { items -> appDb.httpTTSDao.insert(*items) }
         }
+        // 音色组里的成员引用 httpTTS，必须等 httpTTS 落库之后再恢复
+        restoreSpeakerGroups(path)
         fileToListT<DictRule>(path, "dictRule.json")?.let {
             insertRestored(it) { items -> appDb.dictRuleDao.insert(*items) }
         }
@@ -428,6 +433,37 @@ object Restore {
             appDb.readMenuCustomButtonDao.insert(
                 incoming.copy(id = 0L, order = order, iconPath = iconPath)
             )
+        }
+    }
+
+    /**
+     * 恢复朗读音色组：先按名字把「备份里的组」对到「本机的组」，再按旧 id → 新 id 写成员。
+     * 组名相同就并入本机组（成员去重后追加），否则新建一组挂在末尾。
+     */
+    private fun restoreSpeakerGroups(path: String) {
+        val groups = fileToListT<ReadAloudSpeakerGroup>(path, Backup.speakerGroupsFileName) ?: return
+        if (groups.isEmpty()) return
+        val items = fileToListT<ReadAloudSpeakerGroupItem>(path, Backup.speakerGroupItemsFileName)
+            .orEmpty()
+        val plan = SpeakerGroupRestorePlanner.plan(
+            localGroups = appDb.readAloudSpeakerGroupDao.groups(),
+            localItems = appDb.readAloudSpeakerGroupDao.items(),
+            incomingGroups = groups,
+            incomingItems = items,
+            isInvalidGroupName = SpeechVoiceGroupRepository::isInvalidGroupName
+        )
+        // 占位 id 换成真正入库后的自增 id，成员才能挂对组
+        val realGroupIds = hashMapOf<Long, Long>()
+        plan.groups.forEach { group ->
+            realGroupIds[group.id] = appDb.readAloudSpeakerGroupDao.insertGroup(group.copy(id = 0L))
+        }
+        val restoredItems = plan.items.mapNotNull { item ->
+            val groupId = realGroupIds[item.groupId] ?: item.groupId.takeIf { it > 0L }
+                ?: return@mapNotNull null
+            item.copy(groupId = groupId)
+        }
+        restoredItems.chunked(RESTORE_INSERT_BATCH_SIZE).forEach { chunk ->
+            appDb.readAloudSpeakerGroupDao.insertItems(chunk)
         }
     }
 
