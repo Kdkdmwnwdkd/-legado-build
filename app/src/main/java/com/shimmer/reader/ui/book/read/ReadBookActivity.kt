@@ -108,6 +108,7 @@ import com.shimmer.reader.help.config.ThemeConfig
 import com.shimmer.reader.help.coroutine.Coroutine
 import com.shimmer.reader.help.readaloud.ReadAloudPlaybackState
 import com.shimmer.reader.help.readaloud.ReadAloudProgressState
+import com.shimmer.reader.help.reader.ReadingBreakReminder
 import com.shimmer.reader.help.source.getSourceType
 import com.shimmer.reader.help.storage.Backup
 import com.shimmer.reader.lib.dialogs.AndroidAlertBuilder
@@ -963,9 +964,11 @@ class ReadBookActivity : BaseReadBookActivity(),
         binding.readAloudPlayerPanel.post {
             consumeGlobalReadAloudPanelOpen()
         }
+        ReadingBreakReminder.onReaderResumed(this)
     }
 
     override fun onPause() {
+        ReadingBreakReminder.onReaderPaused()
         readerTemplateActiveClock.pause()
         super.onPause()
         binding.epubReadView.onDirectHostPause()

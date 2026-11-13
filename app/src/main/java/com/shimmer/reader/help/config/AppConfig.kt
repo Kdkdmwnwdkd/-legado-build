@@ -2445,6 +2445,13 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
             )
         }
 
+    /** 连续阅读提醒的间隔，0 表示关闭；只用来算时长，不做业务判断 */
+    var readingBreakMinutes: Int
+        get() = appCtx.getPrefInt(PreferKey.readingBreakMinutes, 0).coerceIn(0, 180)
+        set(value) {
+            appCtx.putPrefInt(PreferKey.readingBreakMinutes, value.coerceIn(0, 180))
+        }
+
     var contentSelectSpeakMod: Int
         get() = appCtx.getPrefInt(PreferKey.contentSelectSpeakMod)
         set(value) {

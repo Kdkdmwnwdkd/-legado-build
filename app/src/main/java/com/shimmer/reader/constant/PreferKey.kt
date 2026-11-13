@@ -379,6 +379,8 @@ object PreferKey {
     const val defaultHomePage = "defaultHomePage"
     const val showBookshelfFastScroller = "showBookshelfFastScroller"
     const val fastScrollerTouchTargetDp = "fastScrollerTouchTargetDp"
+    const val readingBreakMinutes = "readingBreakMinutes"
+    const val readingBreakSkipDate = "readingBreakSkipDate"
     const val importKeepEnable = "importKeepEnable"
     const val importShowComment = "importShowComment"
     const val clickImgWay = "clickImgWay"
