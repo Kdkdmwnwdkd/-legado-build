@@ -24,13 +24,16 @@ object BookRemarkDialog {
         onSaved: (String) -> Unit
     ) {
         if (bookUrl.isBlank()) return
+        // 这两个是 Context 扩展属性，在 EditText 的 apply 块里要显式取
+        val textColor = context.primaryTextColor
+        val hintColor = context.secondaryTextColor
         val editText = ThemeEditText(context).apply {
             hint = context.getString(R.string.book_remark_hint)
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
             minLines = 3
             maxLines = 8
-            setTextColor(primaryTextColor)
-            setHintTextColor(secondaryTextColor)
+            setTextColor(textColor)
+            setHintTextColor(hintColor)
             setText(BookRemarkStore.get(bookUrl))
             setSelection(text?.length ?: 0)
         }
