@@ -5,7 +5,7 @@ import android.net.Uri
 import com.shimmer.reader.R
 import com.shimmer.reader.base.BaseViewModel
 import com.shimmer.reader.constant.AppLog
-import com.shimmer.reader.data.appDb
+import com.shimmer.reader.data.entities.Bookmark
 import com.shimmer.reader.utils.FileDoc
 import com.shimmer.reader.utils.GSON
 import com.shimmer.reader.utils.createFileIfNotExist
@@ -20,15 +20,15 @@ class AllBookmarkViewModel(application: Application) : BaseViewModel(application
 
 
     /**
-     * 导出书签
+     * 导出书签。导出范围由调用方传入，跟随列表当前的搜索结果。
      */
-    fun exportBookmark(treeUri: Uri) {
+    fun exportBookmark(treeUri: Uri, bookmarks: List<Bookmark>) {
         execute {
             val dateFormat = SimpleDateFormat("yyMMddHHmmss", Locale.getDefault())
             val fileName = "bookmark-${dateFormat.format(Date())}.json"
             val dirDoc = FileDoc.fromUri(treeUri, true)
             dirDoc.createFileIfNotExist(fileName).openOutputStream().getOrThrow().use {
-                GSON.writeToOutputStream(it, appDb.bookmarkDao.all)
+                GSON.writeToOutputStream(it, bookmarks)
             }
         }.onError {
             AppLog.put("导出失败\n${it.localizedMessage}", it, true)
@@ -38,7 +38,7 @@ class AllBookmarkViewModel(application: Application) : BaseViewModel(application
     }
 
 
-    fun exportBookmarkMd(treeUri: Uri) {
+    fun exportBookmarkMd(treeUri: Uri, bookmarks: List<Bookmark>) {
         execute {
             val dateFormat = SimpleDateFormat("yyMMddHHmmss", Locale.getDefault())
             val fileName = "bookmark-${dateFormat.format(Date())}.md"
@@ -47,15 +47,22 @@ class AllBookmarkViewModel(application: Application) : BaseViewModel(application
             fileDoc.use { outputStream ->
                 var name = ""
                 var author = ""
-                appDb.bookmarkDao.all.forEach {
+                bookmarks.forEach {
                     if (it.bookName != name || it.bookAuthor != author) {
                         name = it.bookName
                         author = it.bookAuthor
-                        outputStream.write("## ${it.bookName} ${it.bookAuthor}\n\n".toByteArray())
+                        val title = if (author.isBlank()) name else "$name（$author）"
+                        outputStream.write("## $title\n\n".toByteArray())
                     }
-                    outputStream.write("#### ${it.chapterName}\n\n".toByteArray())
-                    outputStream.write("###### 原文\n ${it.bookText}\n\n".toByteArray())
-                    outputStream.write("###### 摘要\n ${it.content}\n\n".toByteArray())
+                    outputStream.write("### ${it.chapterName}\n\n".toByteArray())
+                    if (it.bookText.isNotBlank()) {
+                        // 摘录按引用块写，导入其他 Markdown 工具时能看出这是原文
+                        val quoted = it.bookText.trim().replace("\n", "\n> ")
+                        outputStream.write("> $quoted\n\n".toByteArray())
+                    }
+                    if (it.content.isNotBlank()) {
+                        outputStream.write("${it.content.trim()}\n\n".toByteArray())
+                    }
                 }
             }
         }.onError {
