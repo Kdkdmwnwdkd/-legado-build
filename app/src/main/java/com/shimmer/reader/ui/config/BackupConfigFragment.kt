@@ -1,6 +1,8 @@
 package com.shimmer.reader.ui.config
 
 import android.content.Context
+import android.net.Uri
+import android.text.format.Formatter
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -22,6 +24,8 @@ import com.shimmer.reader.help.config.LocalConfig
 import com.shimmer.reader.help.coroutine.Coroutine
 import com.shimmer.reader.help.storage.Backup
 import com.shimmer.reader.help.storage.BackupConfig
+import com.shimmer.reader.help.storage.BackupSummary
+import com.shimmer.reader.help.storage.BackupSummaryReader
 import com.shimmer.reader.help.storage.CloudBackupFailedException
 import com.shimmer.reader.help.storage.ImportOldData
 import com.shimmer.reader.help.storage.Restore
@@ -61,6 +65,9 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import splitties.init.appCtx
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
 
@@ -103,18 +110,7 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
         }
     }
     private val restoreDoc = registerForActivityResult(HandleFileContract()) {
-        it.uri?.let { uri ->
-            waitDialog.setText(R.string.restore)
-            waitDialog.show()
-            val task = Coroutine.async {
-                Restore.restore(appCtx, uri)
-            }.onFinally {
-                waitDialog.dismiss()
-            }
-            waitDialog.setOnCancelListener {
-                task.cancel()
-            }
-        }
+        it.uri?.let { uri -> confirmRestoreLocal(uri) }
     }
     private val restoreOld = registerForActivityResult(HandleFileContract()) {
         it.uri?.let { uri ->
@@ -682,6 +678,72 @@ class BackupConfigFragment : ComposeSettingFragment(), MenuProvider {
                 backup(path, uploadCloud = true, checkS3FullPrompt = checkS3FullPrompt)
             }
             .request()
+    }
+
+    /**
+     * 恢复前先把备份里有什么读出来给用户看。
+     * 恢复是覆盖性的，选错文件不该一路无阻地写进去。
+     */
+    private fun confirmRestoreLocal(uri: Uri) {
+        val ctx = context ?: return
+        lifecycleScope.launch {
+            val summary = runCatching { BackupSummaryReader.read(ctx, uri) }.getOrNull()
+            if (!isAdded) return@launch
+            val message = if (summary == null) {
+                getString(R.string.restore_confirm_unreadable)
+            } else {
+                buildRestoreMessage(summary)
+            }
+            showComposeConfirmDialog(
+                title = getString(R.string.restore),
+                message = message,
+                positiveText = getString(R.string.restore_confirm_start),
+                onPositive = { startRestore(uri) }
+            )
+        }
+    }
+
+    private fun buildRestoreMessage(summary: BackupSummary): String {
+        val timeText = if (summary.createdAt > 0L) {
+            SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                .format(Date(summary.createdAt))
+        } else {
+            getString(R.string.restore_confirm_unknown_time)
+        }
+        val sizeText = if (summary.sizeBytes > 0L) {
+            Formatter.formatShortFileSize(appCtx, summary.sizeBytes)
+        } else {
+            getString(R.string.restore_confirm_unknown_size)
+        }
+        return buildString {
+            append(getString(R.string.restore_confirm_meta, timeText, sizeText))
+            append('\n')
+            append(
+                getString(
+                    R.string.restore_confirm_content,
+                    summary.books,
+                    summary.bookmarks,
+                    summary.sources,
+                    summary.groups,
+                    summary.readRecords
+                )
+            )
+            append("\n\n")
+            append(getString(R.string.restore_confirm_hint))
+        }
+    }
+
+    private fun startRestore(uri: Uri) {
+        waitDialog.setText(R.string.restore)
+        waitDialog.show()
+        val task = Coroutine.async {
+            Restore.restore(appCtx, uri)
+        }.onFinally {
+            waitDialog.dismiss()
+        }
+        waitDialog.setOnCancelListener {
+            task.cancel()
+        }
     }
 
     fun restore() {
