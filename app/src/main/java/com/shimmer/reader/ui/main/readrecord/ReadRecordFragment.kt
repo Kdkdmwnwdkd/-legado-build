@@ -408,7 +408,7 @@ class ReadRecordFragment() : BaseFragment(R.layout.activity_read_record), MainFr
         val days = daily.map { ReadRecordExporter.Day(it.date, it.readTime) }
         val books = appDb.readRecordDao.allShow
             .map { ReadRecordExporter.Book(it.bookName, it.readTime) }
-            .sortedByDescending { it.readTime }
+            .sortedByDescending { it.readTimeMs }
         val today = LocalDate.now().toString()
         return ExportBundle(
             summary = ReadRecordExporter.Summary(
