@@ -31,7 +31,7 @@ def buildVersionCode = project.hasProperty("VERSION_CODE")
 
 android {
     compileSdk = compile_sdk_version
-    namespace = 'io.legado.app'
+    namespace = 'com.shimmer.reader'
     kotlin {
         jvmToolchain {
             languageVersion.set(JavaLanguageVersion.of(17))
@@ -53,9 +53,8 @@ android {
         }
     }
     defaultConfig {
-        // 独立产品标识：与「阅读 Archive」（io.legado.app.Archive）和
-        // 原版（io.legado.app）互不覆盖，可共存安装。
-        applicationId "io.legado.app.shimmer"
+        // 独立产品标识：与其他分支互不覆盖，可共存安装。
+        applicationId "com.shimmer.reader"
         minSdk 24
         targetSdk 36
         multiDexEnabled true
@@ -91,7 +90,7 @@ android {
                 signingConfig signingConfigs.myConfig
             }
             // 不再追加 .Archive 后缀：包名已由 defaultConfig 唯一确定，
-            // 避免与上游 Archive 版同包名互相覆盖。
+            // 避免与同类应用同包名互相覆盖。
             manifestPlaceholders.put("app_name", "@string/app_launcher_name")
 
             minifyEnabled false

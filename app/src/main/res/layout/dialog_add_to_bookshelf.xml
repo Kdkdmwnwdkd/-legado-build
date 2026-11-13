@@ -80,7 +80,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <io.legado.app.ui.widget.anima.RotateLoading
+    <com.shimmer.reader.ui.widget.anima.RotateLoading
         android:id="@+id/rotate_loading"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -89,7 +89,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@id/book_info" />
 
-    <io.legado.app.ui.widget.text.AccentTextView
+    <com.shimmer.reader.ui.widget.text.AccentTextView
         android:id="@+id/tv_ok"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -111,7 +111,7 @@
         app:layout_constraintRight_toLeftOf="@+id/tv_ok"
         app:layout_constraintTop_toBottomOf="@+id/book_info" />
 
-    <io.legado.app.ui.widget.text.AccentTextView
+    <com.shimmer.reader.ui.widget.text.AccentTextView
         android:id="@+id/tv_read"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

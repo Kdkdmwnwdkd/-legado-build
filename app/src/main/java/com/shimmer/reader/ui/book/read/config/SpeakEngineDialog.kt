@@ -1,0 +1,877 @@
+package com.shimmer.reader.ui.book.read.config
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.shimmer.reader.R
+import com.shimmer.reader.base.BaseDialogFragment
+import com.shimmer.reader.constant.AppLog
+import com.shimmer.reader.constant.EventBus
+import com.shimmer.reader.data.appDb
+import com.shimmer.reader.data.entities.HttpTTS
+import com.shimmer.reader.databinding.DialogEditTextBinding
+import com.shimmer.reader.help.DirectLinkUpload
+import com.shimmer.reader.help.config.AppConfig
+import com.shimmer.reader.help.readaloud.speech.SpeechRoute
+import com.shimmer.reader.help.readaloud.speech.SpeechRouteSanitizer
+import com.shimmer.reader.help.readaloud.speech.SpeechVoiceCatalogRepository
+import com.shimmer.reader.help.readaloud.speech.SpeechVoiceEngineGroup
+import com.shimmer.reader.help.readaloud.speech.SpeechVoiceOption
+import com.shimmer.reader.lib.dialogs.SelectItem
+import com.shimmer.reader.lib.dialogs.alert
+import com.shimmer.reader.lib.theme.accentColor
+import com.shimmer.reader.lib.theme.composeActionRadius
+import com.shimmer.reader.lib.theme.composePanelRadius
+import com.shimmer.reader.lib.theme.primaryTextColor
+import com.shimmer.reader.lib.theme.secondaryTextColor
+import com.shimmer.reader.lib.theme.uiTypeface
+import com.shimmer.reader.model.ReadAloud
+import com.shimmer.reader.model.ReadBook
+import com.shimmer.reader.ui.association.ImportHttpTtsDialog
+import com.shimmer.reader.ui.association.showShibbolethDialog
+import com.shimmer.reader.ui.file.HandleFileContract
+import com.shimmer.reader.ui.login.SourceLoginActivity
+import com.shimmer.reader.ui.widget.compose.showComposeConfirmDialog
+import com.shimmer.reader.ui.widget.compose.showComposeTextInputDialog
+import com.shimmer.reader.utils.ACache
+import com.shimmer.reader.utils.ColorUtils
+import com.shimmer.reader.utils.FileUtils
+import com.shimmer.reader.utils.GSON
+import com.shimmer.reader.utils.ShibbolethCodec
+import com.shimmer.reader.utils.dpToPx
+import com.shimmer.reader.utils.fromJsonObject
+import com.shimmer.reader.utils.isAbsUrl
+import com.shimmer.reader.utils.isJsonObject
+import com.shimmer.reader.utils.postEvent
+import com.shimmer.reader.utils.sendToClip
+import com.shimmer.reader.utils.setLayout
+import com.shimmer.reader.utils.showDialogFragment
+import com.shimmer.reader.utils.splitNotBlank
+import com.shimmer.reader.utils.startActivity
+import com.shimmer.reader.utils.toastOnUi
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
+import java.io.File
+import splitties.init.appCtx
+
+/**
+ * TTS 引擎管理。
+ */
+class SpeakEngineDialog : BaseDialogFragment(0), SpeakEngineDialogActions {
+
+    private val viewModel: SpeakEngineViewModel by viewModels()
+    private val ttsUrlKey = "ttsUrlKey"
+    private val callBack: CallBack? get() = parentFragment as? CallBack
+    private var ttsEngine by mutableStateOf(ReadAloud.ttsEngine)
+    private var httpTtsList by mutableStateOf<List<HttpTTS>>(emptyList())
+    private var pickerGroupKey by mutableStateOf<String?>(null)
+
+    private val importDocResult = registerForActivityResult(HandleFileContract()) {
+        it.uri?.let { uri -> showDialogFragment(ImportHttpTtsDialog(uri.toString())) }
+    }
+
+    private val exportDirResult = registerForActivityResult(HandleFileContract()) {
+        it.uri?.let { uri ->
+            val url = uri.toString()
+            showComposeTextInputDialog(
+                title = getString(R.string.export_success),
+                hint = getString(R.string.path),
+                initialValue = url,
+                message = DirectLinkUpload.getSummary().takeIf { url.isAbsUrl() },
+                readOnly = true,
+                positiveText = getString(R.string.copy_text),
+                neutralText = getString(R.string.shibboleth)
+                    .takeIf { ShibbolethCodec.canEncodeUrl(url) },
+                onPositive = { requireContext().sendToClip(url) },
+                onNeutral = { showShibbolethDialog(url, ShibbolethCodec.TTS_RULE) }
+            )
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setLayout(ViewGroup.LayoutParams.MATCH_PARENT, 0.9f)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                SpeakEngineScreen(
+                    ttsEngine = ttsEngine,
+                    httpTtsList = httpTtsList,
+                    pickerGroupKey = pickerGroupKey,
+                    actions = this@SpeakEngineDialog
+                )
+            }
+        }
+    }
+
+    override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
+        lifecycleScope.launch {
+            appDb.httpTTSDao.flowAll()
+                .catch { AppLog.put("朗读引擎界面获取数据失败\n${it.localizedMessage}", it) }
+                .flowOn(IO)
+                .conflate()
+                .collect {
+                    httpTtsList = it
+                }
+        }
+    }
+
+    override fun openSpeakerPicker(group: SpeechVoiceEngineGroup) {
+        pickerGroupKey = group.key
+    }
+
+    override fun closeSpeakerPicker() {
+        pickerGroupKey = null
+    }
+
+    override fun selectRoute(route: SpeechRoute) {
+        ttsEngine = route.toJson()
+        pickerGroupKey = null
+        ReadBook.book?.setTtsEngine(null)
+        AppConfig.ttsEngine = ttsEngine
+        callBack?.upSpeakEngineSummary()
+        notifyReadAloudEngineChanged()
+        route.engineValue.toLongOrNull()
+            ?.let { appDb.httpTTSDao.get(it) }
+            ?.takeIf { !it.loginUrl.isNullOrBlank() && it.getLoginInfo().isNullOrBlank() }
+            ?.let { loginKey ->
+                startActivity<SourceLoginActivity> {
+                    putExtra("type", "httpTts")
+                    putExtra("key", loginKey.id.toString())
+                }
+            }
+    }
+
+    override fun addHttpTts() {
+        showDialogFragment<HttpTtsEditDialog>()
+    }
+
+    override fun editHttpTts(id: Long) {
+        showDialogFragment(HttpTtsEditDialog(id))
+    }
+
+    override fun deleteHttpTts(httpTTS: HttpTTS) {
+        showComposeConfirmDialog(
+            title = getString(R.string.draw),
+            message = getString(R.string.sure_del) + "\n" + httpTTS.name,
+            positiveText = getString(R.string.yes),
+            negativeText = getString(R.string.no),
+            onPositive = {
+                val appContext = requireContext().applicationContext
+                lifecycleScope.launch(IO) {
+                    appDb.httpTTSDao.delete(httpTTS)
+                    val result = SpeechRouteSanitizer.cleanDeletedHttpTts(httpTTS)
+                    if (result.changed) {
+                        val message = buildList {
+                            if (result.characterCount > 0) {
+                                add(
+                                    appCtx.getString(
+                                        R.string.speak_cleanup_characters,
+                                        result.characterCount
+                                    )
+                                )
+                            }
+                            if (result.bookCount > 0) {
+                                add(
+                                    appCtx.getString(
+                                        R.string.speak_cleanup_books,
+                                        result.bookCount
+                                    )
+                                )
+                            }
+                            if (result.speakerGroupItemCount > 0) {
+                                add(
+                                    appCtx.getString(
+                                        R.string.speak_cleanup_speaker_items,
+                                        result.speakerGroupItemCount
+                                    )
+                                )
+                            }
+                            if (result.globalCleared) {
+                                add(appCtx.getString(R.string.speak_cleanup_global))
+                            }
+                        }.joinToString(appCtx.getString(R.string.speak_list_separator))
+                        appContext.toastOnUi(appCtx.getString(R.string.toast_cleared_invalid_tts, message))
+                    }
+                    notifyReadAloudEngineChanged()
+                }
+            }
+        )
+    }
+
+    private fun notifyReadAloudEngineChanged() {
+        ReadAloud.refreshReadAloudClass()
+        postEvent(
+            EventBus.READ_ALOUD_CONFIG_CHANGED,
+            Bundle().apply {
+                putString(
+                    EventBus.READ_ALOUD_CONFIG_SCOPE,
+                    EventBus.READ_ALOUD_CONFIG_SCOPE_ENGINE
+                )
+            }
+        )
+    }
+
+    override fun login(group: SpeechVoiceEngineGroup) {
+        group.loginKey.takeIf { it.isNotBlank() }?.let { key ->
+            startActivity<SourceLoginActivity> {
+                putExtra("type", "httpTts")
+                putExtra("key", key)
+            }
+        }
+    }
+
+    override fun importDefault() {
+        viewModel.importDefault()
+    }
+
+    override fun importLocal() {
+        importDocResult.launch {
+            mode = HandleFileContract.FILE
+            allowExtensions = arrayOf("txt", "json")
+        }
+    }
+
+    override fun importOnline() {
+        val aCache = ACache.get(cacheDir = false)
+        val cacheUrls = aCache.getAsString(ttsUrlKey)
+            ?.splitNotBlank(",")
+            ?.toMutableList()
+            ?: mutableListOf()
+        alert(R.string.import_on_line) {
+            val alertBinding = DialogEditTextBinding.inflate(layoutInflater).apply {
+                editView.hint = "url"
+                editView.setFilterValues(cacheUrls)
+                editView.delCallBack = {
+                    cacheUrls.remove(it)
+                    aCache.put(ttsUrlKey, cacheUrls.joinToString(","))
+                }
+            }
+            customView { alertBinding.root }
+            okButton {
+                alertBinding.editView.text?.toString()?.let { url ->
+                    if (url.isAbsUrl() && !cacheUrls.contains(url)) {
+                        cacheUrls.add(0, url)
+                        aCache.put(ttsUrlKey, cacheUrls.joinToString(","))
+                    }
+                    showDialogFragment(ImportHttpTtsDialog(url))
+                }
+            }
+        }
+    }
+
+    override fun exportAll() {
+        exportDirResult.launch {
+            mode = HandleFileContract.EXPORT
+            fileData = HandleFileContract.FileData(
+                "httpTts.json",
+                GSON.toJson(httpTtsList).toByteArray(),
+                "application/json"
+            )
+        }
+    }
+
+    override fun exportSelected() {
+        val id = SpeechRoute.fromTtsEngineValue(ttsEngine).engineValue.toLongOrNull()
+        val tts = id?.let { appDb.httpTTSDao.get(it) }
+        if (tts == null) {
+            toastOnUi(R.string.is_system_tts_no_export)
+            return
+        }
+        exportHttpTts(tts)
+    }
+
+    override fun exportHttpTts(httpTTS: HttpTTS) {
+        exportDirResult.launch {
+            mode = HandleFileContract.EXPORT
+            fileData = HandleFileContract.FileData(
+                "httpTts_${httpTTS.name}.json",
+                GSON.toJson(httpTTS).toByteArray(),
+                "application/json"
+            )
+        }
+    }
+
+    override fun clearCache() {
+        execute {
+            notifyReadAloudEngineChanged()
+            val ttsFolderPath = "${requireContext().cacheDir.absolutePath}${File.separator}httpTTS${File.separator}"
+            FileUtils.listDirsAndFiles(ttsFolderPath)?.forEach {
+                FileUtils.delete(it.absolutePath)
+            }
+            toastOnUi(R.string.clear_cache_success)
+        }
+    }
+
+    override fun close() {
+        dismissAllowingStateLoss()
+    }
+
+    interface CallBack {
+        fun upSpeakEngineSummary()
+    }
+}
+
+private interface SpeakEngineDialogActions {
+    fun openSpeakerPicker(group: SpeechVoiceEngineGroup)
+    fun closeSpeakerPicker()
+    fun selectRoute(route: SpeechRoute)
+    fun addHttpTts()
+    fun editHttpTts(id: Long)
+    fun deleteHttpTts(httpTTS: HttpTTS)
+    fun login(group: SpeechVoiceEngineGroup)
+    fun importDefault()
+    fun importLocal()
+    fun importOnline()
+    fun exportAll()
+    fun exportSelected()
+    fun exportHttpTts(httpTTS: HttpTTS)
+    fun clearCache()
+    fun close()
+}
+
+@Composable
+private fun SpeakEngineScreen(
+    ttsEngine: String?,
+    httpTtsList: List<HttpTTS>,
+    pickerGroupKey: String?,
+    actions: SpeakEngineDialogActions
+) {
+    val context = LocalContext.current
+    val colors = rememberSpeakEngineColors()
+    val groups = rememberSpeechGroups(httpTtsList)
+    val currentRoute = SpeechRoute.fromTtsEngineValue(ttsEngine)
+    var importDialogVisible by remember { mutableStateOf(false) }
+    CompositionLocalProvider(
+        LocalTextStyle provides LocalTextStyle.current.copy(fontFamily = FontFamily(context.uiTypeface()))
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = colors.page,
+            shape = RoundedCornerShape(context.composePanelRadius())
+        ) {
+            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = stringResource(R.string.speak_engine),
+                    color = colors.text,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.weight(1f)
+                )
+                TextButton(onClick = actions::close) { Text(stringResource(R.string.close), color = colors.subText) }
+            }
+            Text(
+                text = speechRouteSummary(currentRoute, groups, defaultText = stringResource(R.string.speak_default_engine)),
+                color = colors.subText,
+                fontSize = 12.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+            EngineTopActions(
+                colors = colors,
+                onAdd = actions::addHttpTts,
+                onImport = { importDialogVisible = true },
+                onExportAll = actions::exportAll,
+                onClearCache = actions::clearCache,
+                modifier = Modifier.padding(top = 12.dp)
+            )
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(groups, key = { it.key }) { group ->
+                    val httpTts = httpTtsForGroup(group, httpTtsList)
+                    EngineGroupRow(
+                        group = group,
+                        selected = routeMatchesGroup(currentRoute, group),
+                        colors = colors,
+                        onClick = { actions.openSpeakerPicker(group) },
+                        onLogin = if (!group.loginUrl.isNullOrBlank()) {
+                            { actions.login(group) }
+                        } else {
+                            null
+                        },
+                        onEdit = httpTts?.let { { actions.editHttpTts(it.id) } },
+                        onExport = httpTts?.let { { actions.exportHttpTts(it) } },
+                        onDelete = httpTts?.let { { actions.deleteHttpTts(it) } }
+                    )
+                }
+            }
+        }
+        pickerGroupKey?.let { key ->
+            SpeechVoiceRoutePickerDialog(
+                title = stringResource(R.string.ra_select_voice),
+                groups = groups,
+                currentRoute = currentRoute,
+                initialGroupKey = key,
+                onDismiss = actions::closeSpeakerPicker,
+                onRouteSelected = actions::selectRoute,
+                onLogin = actions::login
+            )
+        }
+        if (importDialogVisible) {
+            ImportChoiceDialog(
+                colors = colors,
+                onDismiss = { importDialogVisible = false },
+                onDefault = {
+                    importDialogVisible = false
+                    actions.importDefault()
+                },
+                onLocal = {
+                    importDialogVisible = false
+                    actions.importLocal()
+                },
+                onOnline = {
+                    importDialogVisible = false
+                    actions.importOnline()
+                }
+            )
+            }
+        }
+    }
+}
+
+@Composable
+private fun rememberSpeechGroups(httpTtsList: List<HttpTTS>): List<SpeechVoiceEngineGroup> {
+    val context = LocalContext.current
+    return SpeechVoiceCatalogRepository.allGroups(context, httpTtsList)
+}
+
+
+private fun httpTtsForGroup(group: SpeechVoiceEngineGroup, httpTtsList: List<HttpTTS>): HttpTTS? {
+    val id = group.loginKey.toLongOrNull() ?: return null
+    return httpTtsList.firstOrNull { it.id == id }
+}
+
+@Composable
+private fun EngineTopActions(
+    colors: SpeakEngineColors,
+    onAdd: () -> Unit,
+    onImport: () -> Unit,
+    onExportAll: () -> Unit,
+    onClearCache: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        SmallEngineAction(stringResource(R.string.speak_add), onAdd, colors)
+        SmallEngineAction(stringResource(R.string.import_), onImport, colors)
+        SmallEngineAction(stringResource(R.string.speak_export_all), onExportAll, colors)
+        SmallEngineAction(stringResource(R.string.speak_clear_cache), onClearCache, colors)
+    }
+}
+
+@Composable
+private fun ImportChoiceDialog(
+    colors: SpeakEngineColors,
+    onDismiss: () -> Unit,
+    onDefault: () -> Unit,
+    onLocal: () -> Unit,
+    onOnline: () -> Unit
+) {
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier.fillMaxWidth().widthIn(max = 360.dp),
+            color = colors.page,
+            shape = RoundedCornerShape(LocalContext.current.composePanelRadius()),
+            border = BorderStroke(1.dp, colors.stroke)
+        ) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = stringResource(R.string.speak_import_rules),
+                        color = colors.text,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.weight(1f)
+                    )
+                    TextButton(onClick = onDismiss) { Text(stringResource(R.string.close), color = colors.subText) }
+                }
+                ImportChoiceRow(
+                    stringResource(R.string.speak_import_builtin),
+                    stringResource(R.string.speak_import_builtin_desc),
+                    colors,
+                    onDefault
+                )
+                ImportChoiceRow(
+                    stringResource(R.string.import_local),
+                    stringResource(R.string.speak_import_local_desc),
+                    colors,
+                    onLocal
+                )
+                ImportChoiceRow(
+                    stringResource(R.string.speak_import_online),
+                    stringResource(R.string.speak_import_online_desc),
+                    colors,
+                    onOnline
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ImportChoiceRow(
+    title: String,
+    subtitle: String,
+    colors: SpeakEngineColors,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        color = colors.card,
+        shape = RoundedCornerShape(LocalContext.current.composeActionRadius()),
+        border = BorderStroke(1.dp, colors.stroke)
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 13.dp, vertical = 11.dp)) {
+            Text(title, color = colors.text, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+            Text(subtitle, color = colors.subText, fontSize = 11.sp, modifier = Modifier.padding(top = 3.dp))
+        }
+    }
+}
+
+@Composable
+private fun EngineGroupRow(
+    group: SpeechVoiceEngineGroup,
+    selected: Boolean,
+    colors: SpeakEngineColors,
+    onClick: () -> Unit,
+    onLogin: (() -> Unit)?,
+    onEdit: (() -> Unit)?,
+    onExport: (() -> Unit)?,
+    onDelete: (() -> Unit)?
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        color = if (selected) colors.accent.copy(alpha = 0.15f) else colors.card,
+        shape = RoundedCornerShape(LocalContext.current.composeActionRadius()),
+        border = BorderStroke(1.dp, if (selected) colors.accent else colors.stroke)
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(group.title, color = colors.text, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(group.subtitle, color = colors.subText, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                }
+                if (selected) {
+                    Text(stringResource(R.string.current), color = colors.accent, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                }
+            }
+            val explicitCount = group.options.count { it.explicitSpeaker }
+            if (explicitCount > 0 || group.emotions.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    if (explicitCount > 0) {
+                        InfoPill(
+                            stringResource(R.string.speak_speaker, explicitCount),
+                            colors
+                        )
+                    }
+                    if (group.emotions.isNotEmpty()) {
+                        InfoPill(
+                            stringResource(R.string.speak_emotion, group.emotions.size),
+                            colors
+                        )
+                    }
+                }
+            }
+            if (onLogin != null || onEdit != null || onExport != null || onDelete != null) {
+                Row(
+                    modifier = Modifier.padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    onLogin?.let { InlineEngineAction(stringResource(R.string.login), colors.accent, it) }
+                    onEdit?.let { InlineEngineAction(stringResource(R.string.edit), colors.accent, it) }
+                    onExport?.let { InlineEngineAction(stringResource(R.string.export_str), colors.accent, it) }
+                    onDelete?.let { InlineEngineAction(stringResource(R.string.delete), colors.danger, it) }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CompactEngineAction(
+    text: String,
+    colors: SpeakEngineColors,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = modifier.height(34.dp).clickable(onClick = onClick),
+        color = colors.page,
+        shape = RoundedCornerShape(LocalContext.current.composeActionRadius()),
+        border = BorderStroke(1.dp, colors.stroke)
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(text, color = colors.text, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalLayoutApi::class)
+private fun EngineDetail(
+    group: SpeechVoiceEngineGroup?,
+    httpTts: HttpTTS?,
+    colors: SpeakEngineColors,
+    actions: SpeakEngineDialogActions
+) {
+    if (group == null) {
+        Box(modifier = Modifier.fillMaxWidth().height(220.dp), contentAlignment = Alignment.Center) {
+            Text(stringResource(R.string.no_tts_engine), color = colors.subText, fontSize = 14.sp)
+        }
+        return
+    }
+    Column(modifier = Modifier.fillMaxWidth().padding(14.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(group.title, color = colors.text, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+                Text(group.subtitle, color = colors.subText, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp))
+            }
+        }
+        if (!group.loginUrl.isNullOrBlank() || httpTts != null) {
+            Row(
+                modifier = Modifier.padding(top = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (!group.loginUrl.isNullOrBlank()) {
+                    DetailEngineAction(stringResource(R.string.login), colors.accent) { actions.login(group) }
+                }
+                httpTts?.let {
+                    DetailEngineAction(stringResource(R.string.edit), colors.accent) { actions.editHttpTts(it.id) }
+                    DetailEngineAction(stringResource(R.string.delete), colors.danger) { actions.deleteHttpTts(it) }
+                }
+            }
+        }
+        Text(
+            stringResource(R.string.speak_speaker_list),
+            color = colors.subText,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(top = 14.dp)
+        )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 74.dp, max = 300.dp)
+                .padding(top = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(group.options, key = { it.key }) { option ->
+                SpeakerOptionRow(option = option, colors = colors)
+            }
+        }
+        if (group.emotions.isNotEmpty()) {
+            Text(
+                stringResource(R.string.speak_emotion_section),
+                color = colors.subText,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(top = 14.dp)
+            )
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                group.emotions.forEach { emotion ->
+                    Surface(
+                        color = colors.page,
+                        shape = RoundedCornerShape(LocalContext.current.composeActionRadius()),
+                        border = BorderStroke(1.dp, colors.stroke)
+                    ) {
+                        Text(emotion.emotionName, color = colors.text, fontSize = 12.sp, modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp))
+                    }
+                }
+            }
+        }
+        Text(
+            text = stringResource(R.string.speak_engine_hint),
+            color = colors.subText,
+            fontSize = 12.sp,
+            lineHeight = 18.sp,
+            modifier = Modifier.padding(top = 14.dp)
+        )
+    }
+}
+
+@Composable
+private fun SpeakerOptionRow(option: SpeechVoiceOption, colors: SpeakEngineColors) {
+    Surface(
+        color = colors.page,
+        shape = RoundedCornerShape(LocalContext.current.composeActionRadius()),
+        border = BorderStroke(1.dp, colors.stroke)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 11.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(option.speakerName, color = colors.text, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(
+                    option.groupName.ifBlank { option.engineName },
+                    color = colors.subText,
+                    fontSize = 11.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            if (option.toneID.isNotBlank()) {
+                Text(
+                    option.toneID,
+                    color = colors.subText,
+                    fontSize = 11.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.widthIn(max = 120.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun InfoPill(text: String, colors: SpeakEngineColors) {
+    Surface(
+        color = colors.page,
+        shape = RoundedCornerShape(LocalContext.current.composeActionRadius()),
+        border = BorderStroke(1.dp, colors.stroke)
+    ) {
+        Text(text, color = colors.subText, fontSize = 11.sp, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+    }
+}
+
+@Composable
+private fun InlineEngineAction(text: String, color: Color, onClick: () -> Unit) {
+    TextButton(onClick = onClick, modifier = Modifier.height(32.dp)) {
+        Text(text, color = color, fontSize = 12.sp)
+    }
+}
+
+@Composable
+private fun DetailEngineAction(text: String, color: Color, onClick: () -> Unit) {
+    Surface(
+        modifier = Modifier.height(34.dp).clickable(onClick = onClick),
+        color = color.copy(alpha = 0.10f),
+        shape = RoundedCornerShape(LocalContext.current.composeActionRadius()),
+        border = BorderStroke(1.dp, color.copy(alpha = 0.28f))
+    ) {
+        Box(modifier = Modifier.padding(horizontal = 14.dp), contentAlignment = Alignment.Center) {
+            Text(text, color = color, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
+
+@Composable
+private fun SmallEngineAction(text: String, onClick: () -> Unit, colors: SpeakEngineColors) {
+    Surface(
+        modifier = Modifier.height(34.dp).clickable(onClick = onClick),
+        color = colors.card,
+        shape = RoundedCornerShape(LocalContext.current.composeActionRadius()),
+        border = BorderStroke(1.dp, colors.stroke)
+    ) {
+        Box(modifier = Modifier.padding(horizontal = 12.dp), contentAlignment = Alignment.Center) {
+            Text(text, color = colors.text, fontSize = 12.sp)
+        }
+    }
+}
+
+private data class SpeakEngineColors(
+    val page: Color,
+    val card: Color,
+    val text: Color,
+    val subText: Color,
+    val stroke: Color,
+    val accent: Color,
+    val danger: Color
+)
+
+@Composable
+private fun rememberSpeakEngineColors(): SpeakEngineColors {
+    val context = LocalContext.current
+    val night = AppConfig.isNightTheme
+    val accent = context.accentColor
+    val page = Color(if (night) 0xff15171b.toInt() else 0xffffffff.toInt())
+    val card = Color(if (night) 0xff20242a.toInt() else 0xfff6f7fa.toInt())
+    val text = Color(context.primaryTextColor)
+    val subText = Color(context.secondaryTextColor)
+    val stroke = Color(if (night) 0x26ffffff else 0x18000000)
+    return SpeakEngineColors(
+        page = page,
+        card = card,
+        text = text,
+        subText = subText,
+        stroke = stroke,
+        accent = Color(accent),
+        danger = Color(ColorUtils.blendColors(0xffff4444.toInt(), accent, 0.08f))
+    )
+}

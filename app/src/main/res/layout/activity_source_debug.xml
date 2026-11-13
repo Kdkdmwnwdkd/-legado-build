@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <io.legado.app.ui.widget.TitleBar
+    <com.shimmer.reader.ui.widget.TitleBar
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,11 +21,11 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        app:layoutManager="io.legado.app.ui.widget.recycler.NoChildScrollLinearLayoutManager"
+        app:layoutManager="com.shimmer.reader.ui.widget.recycler.NoChildScrollLinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title_bar" />
 
-    <io.legado.app.ui.widget.anima.RotateLoading
+    <com.shimmer.reader.ui.widget.anima.RotateLoading
         android:id="@+id/rotate_loading"
         android:layout_width="36dp"
         android:layout_height="36dp"
@@ -36,7 +36,7 @@
         app:layout_constraintTop_toBottomOf="@+id/title_bar"
         app:loading_width="2dp" />
 
-    <io.legado.app.ui.widget.NoChildScrollNestedScrollView
+    <com.shimmer.reader.ui.widget.NoChildScrollNestedScrollView
         android:id="@+id/help"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -203,6 +203,6 @@
 
         </LinearLayout>
 
-    </io.legado.app.ui.widget.NoChildScrollNestedScrollView>
+    </com.shimmer.reader.ui.widget.NoChildScrollNestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

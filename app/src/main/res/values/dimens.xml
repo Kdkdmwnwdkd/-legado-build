@@ -56,6 +56,8 @@
     <dimen name="main_search_button_size">48dp</dimen>
     <dimen name="main_ai_floating_ball_size">52dp</dimen>
     <dimen name="main_ai_floating_ball_icon_padding">13dp</dimen>
+    <dimen name="main_ai_mascot_width">84dp</dimen>
+    <dimen name="main_ai_mascot_height">126dp</dimen>
     <dimen name="main_ai_floating_ball_safe_margin">24dp</dimen>
     <dimen name="main_search_button_elevation">14dp</dimen>
     <dimen name="main_search_button_icon_size">22dp</dimen>

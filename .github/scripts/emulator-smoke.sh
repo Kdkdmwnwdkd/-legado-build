@@ -9,9 +9,9 @@
 set +e
 
 # debug 变体在 applicationId 上加了 .debug 后缀；Activity 的完整类名则由
-# namespace（io.legado.app）决定，不是 applicationId —— 所以不能用
+# namespace（com.shimmer.reader）决定，不是 applicationId —— 所以不能用
 # "$PKG/.ui.main.MainActivity" 这种相对写法，必须向系统要真实组件名。
-PKG=io.legado.app.shimmer.debug
+PKG=com.shimmer.reader.debug
 
 APK=$(find app/build/outputs/apk -name '*.apk' | head -n 1)
 echo "APK=$APK"
@@ -37,7 +37,7 @@ ACT=$(adb shell cmd package resolve-activity --brief -c android.intent.category.
 echo "resolved component: [$ACT]"
 case "$ACT" in
   */*) ;;
-  *) ACT="$PKG/io.legado.app.ui.main.MainActivity"; echo "回退到: $ACT" ;;
+  *) ACT="$PKG/com.shimmer.reader.ui.main.MainActivity"; echo "回退到: $ACT" ;;
 esac
 adb logcat -c
 adb shell am start -W -n "$ACT"

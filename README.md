@@ -8,43 +8,18 @@
 
 应用不内置任何书籍内容，不提供内容来源，也不托管任何书籍。
 
-> 本仓库独立维护，不跟踪任何上游项目的更新，也不接收以「同步上游」为目的的 PR。代码来源与许可见文末「来源与许可」。
+> 本仓库独立维护，不跟踪任何外部项目的更新，也不接收以「同步外部项目」为目的的 PR。代码来源与许可见文末「来源与许可」。
 
 ## 下载与更新
 
 - [GitHub Releases](https://github.com/Kdkdmwnwdkd/-legado-build/releases)：唯一发布渠道，应用内更新同样读取这里。
 
-安装包名是 `io.legado.app.shimmer`。前缀 `io.legado.app` 沿用自上游，几个分支都这样：
-
-| 项目 | 包名 |
-| --- | --- |
-| 原版 Legado | `io.legado.app` |
-| 阅读 Sigma | `io.legado.app.release` |
-| 阅读 Archive | `io.legado.app.Archive` |
-| 本项目 | `io.legado.app.shimmer` |
-
-本项目建立在阅读 Archive 之上，所以和它共用同一段命名空间，只用后缀区分安装身份。三者互不覆盖，可同时安装。
-
-代码里的 `namespace` 仍是 `io.legado.app`，与 Archive 一致。这不是笔误：书源 JavaScript 可以通过 `Packages.io.legado.app.*` 直接引用内部类，改掉包路径会让这类书源失效，混淆规则也要跟着重写。安装身份的区分已经由 `applicationId` 的后缀完成。
-
 最低系统要求 **Android 7.0（API 24）**。旧版本曾声明支持 Android 5.0，但主界面依赖的渲染组件从 2025 年起就要求 API 24，低版本实际无法运行，故不再声明。
-
-## 从旧版本迁移
-
-包名变更后，旧版本的本地数据不会自动带过来（Android 按包名隔离数据）。迁移方式：
-
-1. 在旧版中打开「备份与恢复」，导出完整备份（`.zip`）。
-2. 安装本版，在「备份与恢复」中选择该文件恢复。
-3. 确认书源、书架、阅读进度、阅读设置都正常后，再卸载旧版。
-
-> 旧版的「书源分组」「阅读主题」等自定义项也会随备份恢复；WebDAV 备份需要重新填写账号。
 
 ## 主要改动
 
-- 独立包名 `io.legado.app.shimmer`，可与 Legado、阅读 Archive 共存。
 - 更新只读本仓库的 GitHub Release。
 - 版本号统一为时间戳（epoch 分钟），本地构建与 CI 产物可直接比较新旧。
-- 签名密钥移出仓库，由 CI Secrets 提供。
 - 听书跟随翻页：手动翻页时听书自动跳到当前页，跨章节同样生效。
 - 书源查重支持按分组选择。
 - 备份区分本地与云端：云端失败不再中断本地备份。
@@ -88,26 +63,11 @@
 
 > 不要用 `./gradlew test`：它会同时编译 debug 与 release 两套 Kotlin，耗时接近翻倍，CI 用的是上面这条。
 
-正式包需要签名参数，仓库内不再保存任何密钥：
-
-```bash
-./gradlew :app:assembleAppRelease -Pabi=arm64-v8a \
-  -PRELEASE_STORE_FILE=/path/to/shimmer-release.jks \
-  -PRELEASE_STORE_PASSWORD=... \
-  -PRELEASE_KEY_ALIAS=shimmer-release \
-  -PRELEASE_KEY_PASSWORD=...
-```
+正式包需要四个签名参数（库路径、库密码、别名、密钥密码）。仓库里不保存签名库，也不写具体参数，构建时由本机命令行或 CI Secrets 传入；参数清单与签名库生成方式见维护者本地文档。
 
 ## 发布准备（维护者）
 
-自动发布依赖以下仓库 Secrets，缺任意一个都会在构建前直接失败：
-
-| Secret | 内容 |
-| --- | --- |
-| `KEYSTORE_B64` | 签名库的 base64：`base64 -w0 shimmer-release.jks` |
-| `KEYSTORE_PASSWORD` | 签名库密码 |
-| `KEY_ALIAS` | 密钥别名 |
-| `KEY_PASSWORD` | 密钥密码 |
+自动发布依赖仓库 Secrets（签名库与密码）。这些值不在仓库里，配置方式见维护者本地文档。
 
 工作流：
 

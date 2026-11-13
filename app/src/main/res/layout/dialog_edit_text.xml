@@ -10,7 +10,7 @@
     android:paddingRight="16dp"
     android:paddingBottom="8dp">
 
-    <io.legado.app.ui.widget.text.AutoCompleteTextView
+    <com.shimmer.reader.ui.widget.text.AutoCompleteTextView
         android:id="@+id/edit_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

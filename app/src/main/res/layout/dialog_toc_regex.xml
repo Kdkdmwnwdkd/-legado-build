@@ -40,7 +40,7 @@
             android:textColor="@color/secondaryText"
             tools:ignore="RtlHardcoded" />
 
-        <io.legado.app.ui.widget.text.AccentTextView
+        <com.shimmer.reader.ui.widget.text.AccentTextView
             android:id="@+id/tv_ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

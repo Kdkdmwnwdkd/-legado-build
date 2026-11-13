@@ -137,7 +137,7 @@ getResponse(): Response //返回访问结果,网络朗读引擎采用的是这�
 
 * 发现url格式
 > 对比登录ui，name换成了title，url用来打开发现页面，其余相同  
-> 额外的变量[infoMap](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/utils/InfoMap.kt)可读取按钮的切换值
+> 额外的变量[infoMap](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/utils/InfoMap.kt)可读取按钮的切换值
 ```js
 //读取值
 var input = infoMap["关键词"];
@@ -294,7 +294,7 @@ let options = {
 
 * 图片解密
 > 适用于图片需要二次解密的情况，直接填写JavaScript，返回解密后的`ByteArray`  
-> 部分变量说明：java（仅支持[js扩展类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/io/legado/app/help/JsExtensions.kt)），result为待解密图片的`ByteArray`，src为图片链接
+> 部分变量说明：java（仅支持[js扩展类](https://github.com/Kdkdmwnwdkd/-legado-build/blob/main/app/src/main/java/com/shimmer/reader/help/JsExtensions.kt)），result为待解密图片的`ByteArray`，src为图片链接
 
 ```js
 java.createSymmetricCrypto("AES/CBC/PKCS5Padding", key, iv).decrypt(result)

@@ -432,8 +432,7 @@ rather than pixels.
 The device-observed baseline is
 `Legado-3.26.08161550-29781110-arm64-v8a-R8-release.apk`, SHA-256
 `da55b2473eb8cfbec9120ed421dcc082ddd8c6c33c3dc8ea7f6d4ad7ee7c392c`.
-Its signing certificate SHA-256 is
-`d6441f18d3413a81c0e82e51f550c558c5d79213e921b02dec30bd3473d4f2b6`.
+Its signing certificate SHA-256 is recorded outside this repository.
 
 The confirmed symptom is timing-dependent: a slow drag reveals the publisher
 background correctly, while a fast drag briefly reveals the plain reader background
@@ -1002,12 +1001,12 @@ $env:GRADLE_OPTS='-Dorg.gradle.jvmargs=-Xmx6g'
   'ORG_GRADLE_PROJECT_kotlin.daemon.jvmargs', '-Xmx6g', 'Process'
 )
 .\gradlew.bat :app:testAppReleaseUnitTest `
-  --tests 'io.legado.app.constant.PageAnimationSpeedTest' `
-  --tests 'io.legado.app.help.book.EpubContentCachePolicyTest' `
-  --tests 'io.legado.app.help.config.EpubReadEnginePolicyTest' `
-  --tests 'io.legado.app.model.localBook.epubcore.*' `
-  --tests 'io.legado.app.ui.book.read.ReadBookStartupPolicyTest' `
-  --tests 'io.legado.app.ui.book.read.epub.*' `
+  --tests 'com.shimmer.reader.constant.PageAnimationSpeedTest' `
+  --tests 'com.shimmer.reader.help.book.EpubContentCachePolicyTest' `
+  --tests 'com.shimmer.reader.help.config.EpubReadEnginePolicyTest' `
+  --tests 'com.shimmer.reader.model.localBook.epubcore.*' `
+  --tests 'com.shimmer.reader.ui.book.read.ReadBookStartupPolicyTest' `
+  --tests 'com.shimmer.reader.ui.book.read.epub.*' `
   --no-daemon --no-parallel --max-workers=1
 .\gradlew.bat :app:compileAppReleaseKotlin `
   --no-daemon --no-parallel --max-workers=1
@@ -1025,7 +1024,7 @@ powershell -ExecutionPolicy Bypass -File `
 powershell -ExecutionPolicy Bypass -File `
   output/playwright/run-epub-annotation-probe.ps1
 .\gradlew.bat :app:connectedAppDebugAndroidTest `
-  -Pandroid.testInstrumentationRunnerArguments.class=io.legado.app.ui.book.read.epub.EpubDirectWebResourceRenderTest `
+  -Pandroid.testInstrumentationRunnerArguments.class=com.shimmer.reader.ui.book.read.epub.EpubDirectWebResourceRenderTest `
   --no-daemon --no-parallel --max-workers=1
 ```
 
@@ -1131,10 +1130,10 @@ Gradle 相关测试、全量 Lint 和签名构建成功，用时 `41m 52s`。JVM
 | 交付项 | 验证结果 |
 | --- | --- |
 | 版本 | `3.26.09090108`（`29814788`） |
-| 应用 / ABI | `io.legado.app.Archive`，仅 `arm64-v8a` |
+| 应用 / ABI | Archive 分支，仅 `arm64-v8a` |
 | APK 大小 | 40,611,825 字节 |
 | APK SHA-256 | `8bfd883dfc6d1cd6bd08f64ed2d1de17b9a21d3069ba180992161fea925f4343` |
-| 签名证书 SHA-256 | `d6441f18d3413a81c0e82e51f550c558c5d79213e921b02dec30bd3473d4f2b6` |
+| 签名证书 SHA-256 | 记录在仓库外 |
 | R2 对象 | `legado-arm64-v8a.apk`、`latest.json` |
 | R2 更新时间 | `2026-09-08T18:23:10Z` |
 

@@ -29,4 +29,5 @@
     <string name="ra_retry_audio">Retrying current audio</string>
     <string name="ra_tts_error_code">TTS error %1$d</string>
     <string name="ra_tts_error">TTS error</string>
+    <string name="ra_engine_no_response">Reading engine is not responding. Playback paused.</string>
 </resources>

@@ -24,7 +24,7 @@
         android:layout_marginEnd="14dp"
         android:background="@color/background_card">
 
-        <io.legado.app.ui.widget.image.PhotoView
+        <com.shimmer.reader.ui.widget.image.PhotoView
             android:id="@+id/photo_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

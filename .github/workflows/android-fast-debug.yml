@@ -189,7 +189,7 @@ jobs:
             echo "- APK: ${{ steps.apk.outputs.name }}"
             echo "- 构建时间: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
             echo
-            echo "包名 io.legado.app.shimmer。与已安装的正式版同签名时可直接覆盖升级；"
+            echo "包名 com.shimmer.reader。与已安装的正式版同签名时可直接覆盖升级；"
             echo "若提示签名冲突，先卸载旧包再装（数据请提前备份）。"
           } > notes.md
           echo "更新说明预览："

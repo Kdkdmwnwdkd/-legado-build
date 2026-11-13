@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <io.legado.app.ui.widget.TitleBar
+    <com.shimmer.reader.ui.widget.TitleBar
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -78,14 +78,14 @@
 
                 </FrameLayout>
 
-                <io.legado.app.ui.widget.MainTopBarView
+                <com.shimmer.reader.ui.widget.MainTopBarView
                     android:id="@+id/top_bar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
             </FrameLayout>
 
-            <io.legado.app.ui.widget.recycler.RecyclerViewAtPager2
+            <com.shimmer.reader.ui.widget.recycler.RecyclerViewAtPager2
                 android:id="@+id/rv_find"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

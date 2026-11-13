@@ -60,7 +60,7 @@
             android:src="@drawable/ic_reduce"
             android:tint="@color/primaryText" />
 
-        <io.legado.app.lib.theme.view.ThemeSeekBar
+        <com.shimmer.reader.lib.theme.view.ThemeSeekBar
             android:id="@+id/seek_bar"
             android:layout_width="0dp"
             android:layout_height="25dp"

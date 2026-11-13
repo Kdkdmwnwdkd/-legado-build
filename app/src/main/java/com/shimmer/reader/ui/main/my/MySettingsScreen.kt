@@ -1,0 +1,547 @@
+package com.shimmer.reader.ui.main.my
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.shimmer.reader.R
+import com.shimmer.reader.lib.theme.UiCorner
+import com.shimmer.reader.ui.widget.compose.AppSettingPalette
+import com.shimmer.reader.ui.widget.compose.AppSettingSectionTitle
+import com.shimmer.reader.ui.widget.compose.LegadoMiuixPalette
+import com.shimmer.reader.ui.widget.compose.LegadoMiuixSwitch
+import com.shimmer.reader.ui.widget.compose.appSettingPanelBackground
+import com.shimmer.reader.ui.widget.compose.appSettingRowDecoration
+import com.shimmer.reader.ui.widget.compose.rememberAppSettingPalette
+
+internal enum class MySettingsRowKind {
+    Action,
+    ThemeMode,
+    WebService,
+    AutoTaskService
+}
+
+internal data class MySettingsThemeOption(
+    val value: String,
+    val label: String,
+    val summary: String = ""
+)
+
+internal data class MySettingsSubSearchItem(
+    val ownerKey: String,
+    val title: String,
+    val summary: String,
+    val key: String,
+    val ownerConfigTag: String
+) {
+    val searchText: String = listOf(title, summary, key).joinToString(" ").lowercase()
+}
+
+internal data class MySettingsRowModel(
+    val key: String,
+    val title: String,
+    val summary: String? = null,
+    val kind: MySettingsRowKind = MySettingsRowKind.Action,
+    val danger: Boolean = false
+)
+
+internal data class MySettingsSectionModel(
+    val title: String,
+    val rows: List<MySettingsRowModel>
+)
+
+internal data class MyWebServiceUiState(
+    val checked: Boolean,
+    val summary: String
+)
+
+private data class VisibleSection(
+    val title: String,
+    val rows: List<VisibleRow>
+)
+
+private data class VisibleRow(
+    val row: MySettingsRowModel,
+    val summary: String,
+    /** 搜索时该页命中的全部条目，一条一项，不再只留第一个。 */
+    val subResults: List<MySettingsSubSearchItem> = emptyList()
+)
+
+private val SettingsHorizontalPadding = 12.dp
+
+@Composable
+internal fun MySettingsScreen(
+    sections: List<MySettingsSectionModel>,
+    subSearchItems: List<MySettingsSubSearchItem>,
+    searchQuery: String,
+    themeModeLabel: String,
+    webServiceState: MyWebServiceUiState,
+    autoTaskServiceState: MyWebServiceUiState,
+    onThemeModeClick: () -> Unit,
+    onWebServiceCheckedChange: (Boolean) -> Unit,
+    onWebServiceClick: () -> Unit,
+    onAutoTaskServiceCheckedChange: (Boolean) -> Unit,
+    onAutoTaskServiceClick: () -> Unit,
+    onRowClick: (String, MySettingsSubSearchItem?) -> Unit
+) {
+    val colors = rememberAppSettingPalette()
+    val panelRadiusPx = colors.panelRadiusPx
+    val visibleSections = buildVisibleSections(
+        sections = sections,
+        subSearchItems = subSearchItems,
+        searchQuery = searchQuery,
+        webServiceState = webServiceState,
+        autoTaskServiceState = autoTaskServiceState,
+        themeModeLabel = themeModeLabel,
+    )
+
+    CompositionLocalProvider(
+        LocalTextStyle provides LocalTextStyle.current.copy(fontFamily = colors.bodyFontFamily)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colors.page)
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    top = 8.dp,
+                    bottom = dimensionResource(R.dimen.main_content_bottom_bar_padding) + 24.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                items(visibleSections, key = { it.title }) { section ->
+                    SettingsSectionCard(
+                        section = section,
+                        colors = colors,
+                        panelRadiusPx = panelRadiusPx,
+                        themeModeLabel = themeModeLabel,
+                        webServiceState = webServiceState,
+                        autoTaskServiceState = autoTaskServiceState,
+                        onThemeModeClick = onThemeModeClick,
+                        onWebServiceCheckedChange = onWebServiceCheckedChange,
+                        onWebServiceClick = onWebServiceClick,
+                        onAutoTaskServiceCheckedChange = onAutoTaskServiceCheckedChange,
+                        onAutoTaskServiceClick = onAutoTaskServiceClick,
+                        onRowClick = onRowClick
+                    )
+                }
+                if (visibleSections.isEmpty()) {
+                    item("empty") {
+                        EmptySettingsFrame(
+                            colors = colors,
+                            panelRadiusPx = panelRadiusPx
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SettingsSectionCard(
+    section: VisibleSection,
+    colors: AppSettingPalette,
+    panelRadiusPx: Float,
+    themeModeLabel: String,
+    webServiceState: MyWebServiceUiState,
+    autoTaskServiceState: MyWebServiceUiState,
+    onThemeModeClick: () -> Unit,
+    onWebServiceCheckedChange: (Boolean) -> Unit,
+    onWebServiceClick: () -> Unit,
+    onAutoTaskServiceCheckedChange: (Boolean) -> Unit,
+    onAutoTaskServiceClick: () -> Unit,
+    onRowClick: (String, MySettingsSubSearchItem?) -> Unit
+) {
+    val context = LocalContext.current
+    val panelImage = remember(context, panelRadiusPx, colors.themeSignature) {
+        UiCorner.panelImageDrawable(context, panelRadiusPx)
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = SettingsHorizontalPadding)
+            .appSettingPanelBackground(
+                normalColor = colors.row,
+                panelImage = panelImage,
+                borderColor = colors.border,
+                radiusPx = panelRadiusPx
+            )
+    ) {
+        AppSettingSectionTitle(title = section.title, palette = colors)
+        val cellCount = section.rows.sumOf { 1 + it.subResults.size }
+        var cellIndex = 0
+        section.rows.forEach { item ->
+            val isLastRowInSection = cellIndex == cellCount - 1
+            val showDivider = !isLastRowInSection
+            cellIndex++
+            when (item.row.kind) {
+                MySettingsRowKind.ThemeMode -> SettingsActionRow(
+                    item = item.copy(summary = themeModeLabel),
+                    colors = colors,
+                    panelRadiusPx = panelRadiusPx,
+                    isFirst = false,
+                    isLast = isLastRowInSection,
+                    showDivider = showDivider,
+                    onClick = onThemeModeClick
+                )
+
+                MySettingsRowKind.WebService -> ServiceSwitchRow(
+                    item = item,
+                    state = webServiceState,
+                    colors = colors,
+                    panelRadiusPx = panelRadiusPx,
+                    isFirst = false,
+                    isLast = isLastRowInSection,
+                    showDivider = showDivider,
+                    onCheckedChange = onWebServiceCheckedChange,
+                    onClick = onWebServiceClick
+                )
+
+                MySettingsRowKind.AutoTaskService -> ServiceSwitchRow(
+                    item = item,
+                    state = autoTaskServiceState,
+                    colors = colors,
+                    panelRadiusPx = panelRadiusPx,
+                    isFirst = false,
+                    isLast = isLastRowInSection,
+                    showDivider = showDivider,
+                    onCheckedChange = onAutoTaskServiceCheckedChange,
+                    onClick = onAutoTaskServiceClick
+                )
+
+                MySettingsRowKind.Action -> SettingsActionRow(
+                    item = item,
+                    colors = colors,
+                    panelRadiusPx = panelRadiusPx,
+                    isFirst = false,
+                    isLast = isLastRowInSection,
+                    showDivider = showDivider,
+                    onClick = { onRowClick(item.row.key, null) }
+                )
+            }
+            item.subResults.forEach { subResult ->
+                SettingsSubResultRow(
+                    item = subResult,
+                    colors = colors,
+                    panelRadiusPx = panelRadiusPx,
+                    isLast = cellIndex == cellCount - 1,
+                    showDivider = cellIndex != cellCount - 1,
+                    onClick = { onRowClick(item.row.key, subResult) }
+                )
+                cellIndex++
+            }
+        }
+    }
+}
+
+/**
+ * 搜索命中的具体设置项。挂在所属入口行的下方，一行一项，
+ * 点哪一项就直接跳到那一项，而不是笼统地打开页面顶部。
+ */
+@Composable
+private fun SettingsSubResultRow(
+    item: MySettingsSubSearchItem,
+    colors: AppSettingPalette,
+    panelRadiusPx: Float,
+    isLast: Boolean,
+    showDivider: Boolean,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 52.dp)
+            .appSettingRowDecoration(
+                pressed = pressed,
+                pressedColor = colors.rowPressed,
+                dividerColor = colors.divider,
+                showDivider = showDivider,
+                radiusPx = panelRadiusPx,
+                isFirst = false,
+                isLast = isLast
+            )
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            )
+            .padding(start = 32.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = item.title,
+                color = colors.secondaryText,
+                fontSize = 15.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            if (item.summary.isNotBlank()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = item.summary,
+                    color = colors.secondaryText.copy(alpha = 0.72f),
+                    fontSize = 13.sp,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SettingsActionRow(
+    item: VisibleRow,
+    colors: AppSettingPalette,
+    panelRadiusPx: Float,
+    isFirst: Boolean,
+    isLast: Boolean,
+    showDivider: Boolean,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+    val textColor = if (item.row.danger) colors.danger else colors.primaryText
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 60.dp)
+            .appSettingRowDecoration(
+                pressed = pressed,
+                pressedColor = colors.rowPressed,
+                dividerColor = colors.divider,
+                showDivider = showDivider,
+                radiusPx = panelRadiusPx,
+                isFirst = isFirst,
+                isLast = isLast,
+                danger = item.row.danger,
+                dangerColor = colors.danger
+            )
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            )
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = item.row.title,
+                color = textColor,
+                fontSize = 16.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            if (item.summary.isNotBlank()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = item.summary,
+                    color = colors.secondaryText,
+                    fontSize = 14.sp,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ServiceSwitchRow(
+    item: VisibleRow,
+    state: MyWebServiceUiState,
+    colors: AppSettingPalette,
+    panelRadiusPx: Float,
+    isFirst: Boolean,
+    isLast: Boolean,
+    showDivider: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val pressed by interactionSource.collectIsPressedAsState()
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 60.dp)
+            .appSettingRowDecoration(
+                pressed = pressed,
+                pressedColor = colors.rowPressed,
+                dividerColor = colors.divider,
+                showDivider = showDivider,
+                radiusPx = panelRadiusPx,
+                isFirst = isFirst,
+                isLast = isLast
+            )
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            )
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = item.row.title,
+                color = colors.primaryText,
+                fontSize = 16.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = state.summary,
+                color = colors.secondaryText,
+                fontSize = 14.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        LegadoMiuixSwitch(
+            checked = state.checked,
+            onCheckedChange = onCheckedChange,
+            palette = colors.toMiuixPalette()
+        )
+    }
+}
+
+@Composable
+private fun EmptySettingsFrame(
+    colors: AppSettingPalette,
+    panelRadiusPx: Float
+) {
+    val context = LocalContext.current
+    val panelImage = remember(context, panelRadiusPx, colors.themeSignature) {
+        UiCorner.panelImageDrawable(context, panelRadiusPx)
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = SettingsHorizontalPadding)
+            .appSettingPanelBackground(
+                normalColor = colors.row,
+                panelImage = panelImage,
+                borderColor = colors.border,
+                radiusPx = panelRadiusPx
+            )
+    ) {
+        AppSettingSectionTitle(title = stringResource(R.string.settings_search_title), palette = colors)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 60.dp)
+                .padding(horizontal = 16.dp, vertical = 10.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.settings_search_empty),
+                color = colors.secondaryText,
+                fontSize = 14.sp
+            )
+        }
+    }
+}
+
+private fun buildVisibleSections(
+    sections: List<MySettingsSectionModel>,
+    subSearchItems: List<MySettingsSubSearchItem>,
+    searchQuery: String,
+    webServiceState: MyWebServiceUiState,
+    autoTaskServiceState: MyWebServiceUiState,
+    themeModeLabel: String
+): List<VisibleSection> {
+    val query = searchQuery.trim().lowercase()
+    return sections.mapNotNull { section ->
+        val rows = section.rows.mapNotNull { row ->
+            val summary = row.effectiveSummary(
+                webServiceState = webServiceState,
+                autoTaskServiceState = autoTaskServiceState,
+                themeModeLabel = themeModeLabel
+            )
+            val matchedSubItems = if (query.isBlank()) {
+                emptyList()
+            } else {
+                subSearchItems.filter { item ->
+                    item.ownerKey == row.key && item.searchText.contains(query)
+                }
+            }
+            val visible = query.isBlank()
+                || row.title.lowercase().contains(query)
+                || summary.lowercase().contains(query)
+                || row.key.lowercase().contains(query)
+                || matchedSubItems.isNotEmpty()
+            if (visible) {
+                VisibleRow(
+                    row = row,
+                    summary = summary,
+                    subResults = matchedSubItems
+                )
+            } else {
+                null
+            }
+        }
+        rows.takeIf { it.isNotEmpty() }?.let { VisibleSection(section.title, it) }
+    }
+}
+
+private fun MySettingsRowModel.effectiveSummary(
+    webServiceState: MyWebServiceUiState,
+    autoTaskServiceState: MyWebServiceUiState,
+    themeModeLabel: String
+): String {
+    return when (kind) {
+        MySettingsRowKind.ThemeMode -> themeModeLabel
+        MySettingsRowKind.WebService -> webServiceState.summary
+        MySettingsRowKind.AutoTaskService -> autoTaskServiceState.summary
+        MySettingsRowKind.Action -> summary.orEmpty()
+    }
+}
+
+private fun AppSettingPalette.toMiuixPalette(): LegadoMiuixPalette {
+    return LegadoMiuixPalette(
+        accent = accent,
+        surface = Color(row),
+        surfaceVariant = Color(row),
+        primaryText = primaryText,
+        secondaryText = secondaryText,
+        danger = danger,
+        onAccent = onAccent
+    )
+}

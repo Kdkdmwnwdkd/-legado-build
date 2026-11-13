@@ -193,16 +193,16 @@
             android:launchMode="singleTask" />
         <!-- 音频播放界面 -->
         <activity
-            android:name="io.legado.app.ui.book.audio.AudioPlayActivity"
+            android:name="com.shimmer.reader.ui.book.audio.AudioPlayActivity"
             android:launchMode="singleTask" />
         <!-- 视频播放器界面 -->
         <activity
-            android:name="io.legado.app.ui.video.VideoPlayerActivity"
+            android:name="com.shimmer.reader.ui.video.VideoPlayerActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:launchMode="singleTask" />
         <!-- 授权界面 -->
         <activity
-            android:name="io.legado.app.lib.permission.PermissionActivity"
+            android:name="com.shimmer.reader.lib.permission.PermissionActivity"
             android:theme="@style/Activity.Permission" />
         <!-- 二维码扫描 -->
         <activity
@@ -371,10 +371,6 @@
             android:name=".ui.main.ai.AiImageGalleryActivity"
             android:launchMode="standard" />
         <activity
-            android:name=".ui.config.AiWorldBookManageActivity"
-            android:launchMode="standard"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
-        <activity
             android:name=".ui.book.character.BookCharacterManageActivity"
             android:launchMode="standard" />
         <activity
@@ -400,6 +396,11 @@
         <!-- 书源管理 -->
         <activity
             android:name=".ui.book.source.manage.BookSourceActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="behind" />
+        <!-- 书源校验进度 -->
+        <activity
+            android:name=".ui.book.source.manage.CheckSourceProgressActivity"
             android:launchMode="singleTop"
             android:screenOrientation="behind" />
         <!-- 订阅源管理 -->
@@ -488,7 +489,7 @@
             android:launchMode="standard" />
         <!-- 书源登录 -->
         <activity
-            android:name="io.legado.app.ui.login.SourceLoginActivity"
+            android:name="com.shimmer.reader.ui.login.SourceLoginActivity"
             android:configChanges="orientation|screenSize"
             android:hardwareAccelerated="true"
             android:theme="@style/AppTheme.Transparent" />

@@ -404,20 +404,20 @@ $env:PATH="$env:JAVA_HOME\bin;$env:PATH"
 ```powershell
 node --check app/src/main/assets/epub/direct-runtime.js
 .\gradlew.bat :app:testAppDebugUnitTest `
-  --tests "io.legado.app.ui.book.read.epub.EpubDirectRuntimeAssetTest" `
-  --tests "io.legado.app.ui.book.read.epub.EpubPageFrameTargetTest" `
-  --tests "io.legado.app.model.localBook.epubcore.layout.EpubReaderChromeDataPolicyTest" `
+  --tests "com.shimmer.reader.ui.book.read.epub.EpubDirectRuntimeAssetTest" `
+  --tests "com.shimmer.reader.ui.book.read.epub.EpubPageFrameTargetTest" `
+  --tests "com.shimmer.reader.model.localBook.epubcore.layout.EpubReaderChromeDataPolicyTest" `
   --no-parallel --console=plain
 ```
 
 ```powershell
 .\gradlew.bat :app:testAppDebugUnitTest `
-  --tests "io.legado.app.constant.PageAnimationSpeedTest" `
-  --tests "io.legado.app.help.book.EpubContentCachePolicyTest" `
-  --tests "io.legado.app.help.config.EpubReadEnginePolicyTest" `
-  --tests "io.legado.app.model.localBook.epubcore.*" `
-  --tests "io.legado.app.ui.book.read.ReadBookStartupPolicyTest" `
-  --tests "io.legado.app.ui.book.read.epub.*" `
+  --tests "com.shimmer.reader.constant.PageAnimationSpeedTest" `
+  --tests "com.shimmer.reader.help.book.EpubContentCachePolicyTest" `
+  --tests "com.shimmer.reader.help.config.EpubReadEnginePolicyTest" `
+  --tests "com.shimmer.reader.model.localBook.epubcore.*" `
+  --tests "com.shimmer.reader.ui.book.read.ReadBookStartupPolicyTest" `
+  --tests "com.shimmer.reader.ui.book.read.epub.*" `
   --no-parallel --max-workers=1 --console=plain
 ```
 

@@ -2,7 +2,7 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <io.legado.app.lib.prefs.NameListPreference
+    <com.shimmer.reader.lib.prefs.NameListPreference
         android:defaultValue="modern"
         android:key="modernRssMode"
         android:summary="@string/modern_rss_page_summary"
@@ -11,7 +11,7 @@
         app:entryValues="@array/page_mode_values"
         app:iconSpaceReserved="false" />
 
-    <io.legado.app.lib.prefs.Preference
+    <com.shimmer.reader.lib.prefs.Preference
         android:key="search_jump_modernRssMode"
         android:title="@string/modern_rss_page"
         android:visible="false" />

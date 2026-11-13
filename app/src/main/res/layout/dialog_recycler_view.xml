@@ -19,14 +19,14 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <io.legado.app.ui.widget.recycler.scroller.FastScrollRecyclerView
+        <com.shimmer.reader.ui.widget.recycler.scroller.FastScrollRecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="none"
             tools:ignore="SpeakableTextPresentCheck" />
 
-        <io.legado.app.ui.widget.anima.RotateLoading
+        <com.shimmer.reader.ui.widget.anima.RotateLoading
             android:id="@+id/rotate_loading"
             android:layout_width="36dp"
             android:layout_height="36dp"
@@ -54,7 +54,7 @@
         app:flexWrap="wrap"
         app:justifyContent="space_between">
 
-        <io.legado.app.ui.widget.text.AccentTextView
+        <com.shimmer.reader.ui.widget.text.AccentTextView
             android:id="@+id/tv_footer_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
                 tools:ignore="RtlHardcoded"
                 tools:visibility="visible" />
 
-            <io.legado.app.ui.widget.text.AccentTextView
+            <com.shimmer.reader.ui.widget.text.AccentTextView
                 android:id="@+id/tv_ok"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -5,7 +5,7 @@
     android:orientation="horizontal"
     android:padding="4dp">
 
-    <io.legado.app.ui.widget.text.AccentTextView
+    <com.shimmer.reader.ui.widget.text.AccentTextView
         android:id="@+id/sp_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

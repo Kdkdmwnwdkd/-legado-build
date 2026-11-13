@@ -18,7 +18,7 @@
             android:focusable="false"
             android:importantForAccessibility="no" />
 
-        <io.legado.app.ui.widget.LockableViewPager
+        <com.shimmer.reader.ui.widget.LockableViewPager
             android:id="@+id/view_pager_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -50,7 +50,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/search_button_container">
 
-            <io.legado.app.ui.widget.StableLiquidGlassView
+            <com.shimmer.reader.ui.widget.StableLiquidGlassView
                 android:id="@+id/bottom_navigation_glass_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -83,7 +83,7 @@
                 android:clickable="false"
                 android:focusable="false">
 
-                <io.legado.app.ui.widget.StableLiquidGlassView
+                <com.shimmer.reader.ui.widget.StableLiquidGlassView
                     android:id="@+id/bottom_navigation_indicator_glass_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -100,7 +100,7 @@
 
             </FrameLayout>
 
-            <io.legado.app.lib.theme.view.ThemeBottomNavigationVIew
+            <com.shimmer.reader.lib.theme.view.ThemeBottomNavigationVIew
                 android:id="@+id/bottom_navigation_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -123,7 +123,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <io.legado.app.ui.widget.StableLiquidGlassView
+            <com.shimmer.reader.ui.widget.StableLiquidGlassView
                 android:id="@+id/search_button_glass_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -225,7 +225,7 @@
                     app:cardPreventCornerOverlap="false"
                     app:cardUseCompatPadding="false">
 
-                    <io.legado.app.ui.widget.image.CircleImageView
+                    <com.shimmer.reader.ui.widget.image.CircleImageView
                         android:id="@+id/side_goal_avatar"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"

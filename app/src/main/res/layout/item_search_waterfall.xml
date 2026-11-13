@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <io.legado.app.ui.widget.image.CoverImageView
+        <com.shimmer.reader.ui.widget.image.CoverImageView
             android:id="@+id/iv_cover"
             android:layout_width="match_parent"
             android:layout_height="168dp"
@@ -65,7 +65,7 @@
         android:textColor="@color/secondaryText"
         android:textSize="11.5sp" />
 
-    <io.legado.app.ui.widget.LabelsBar
+    <com.shimmer.reader.ui.widget.LabelsBar
         android:id="@+id/ll_kind"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
         android:orientation="horizontal"
         android:visibility="gone" />
 
-    <io.legado.app.ui.widget.text.MultilineTextView
+    <com.shimmer.reader.ui.widget.text.MultilineTextView
         android:id="@+id/tv_introduce"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

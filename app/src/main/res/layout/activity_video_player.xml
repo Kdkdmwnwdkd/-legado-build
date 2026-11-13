@@ -6,12 +6,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <io.legado.app.ui.widget.TitleBar
+    <com.shimmer.reader.ui.widget.TitleBar
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <io.legado.app.help.gsyVideo.VideoPlayer
+    <com.shimmer.reader.help.gsyVideo.VideoPlayer
         android:id="@+id/playerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -169,7 +169,7 @@
                     android:padding="0dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-                <io.legado.app.ui.widget.image.ImageButton
+                <com.shimmer.reader.ui.widget.image.ImageButton
                     android:id="@+id/iv_chapter"
                     android:layout_width="match_parent"
                     android:layout_height="42dp"
@@ -219,7 +219,7 @@
                     android:textSize="13.5sp"
                     tools:text="Source: example" />
 
-                <io.legado.app.ui.widget.text.AccentBgTextView
+                <com.shimmer.reader.ui.widget.text.AccentBgTextView
                     android:id="@+id/btn_change_source"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -267,7 +267,7 @@
                     android:textSize="13.5sp"
                     tools:text="Origin: example" />
 
-                <io.legado.app.ui.widget.text.AccentBgTextView
+                <com.shimmer.reader.ui.widget.text.AccentBgTextView
                     android:id="@+id/btn_edit_source"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -315,7 +315,7 @@
                     android:textColor="@color/tv_text_summary"
                     android:textSize="13.5sp" />
 
-                <io.legado.app.ui.widget.text.AccentBgTextView
+                <com.shimmer.reader.ui.widget.text.AccentBgTextView
                     android:id="@+id/btn_login_source"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
