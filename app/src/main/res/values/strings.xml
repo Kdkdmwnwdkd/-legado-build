@@ -166,6 +166,14 @@
     <string name="set_timer">Timer</string>
     <string name="read_aloud_pause">Speak Paused</string>
     <string name="read_aloud_timer">Speaking(%d min left)</string>
+    <string name="read_aloud_chapter_quota">Speaking(%d chapters left)</string>
+    <string name="ra_timer_by_chapter">By chapter</string>
+    <string name="ra_timer_this_chapter">This chapter</string>
+    <string name="ra_timer_more_chapters">%d chapters</string>
+    <string name="ra_chapter_quota_this_chapter">Will stop after this chapter</string>
+    <string name="ra_chapter_quota_set">Will stop after %d chapters</string>
+    <string name="ra_chapter_quota_off">Chapter timer off</string>
+    <string name="ra_chapter_quota_done">Chapter limit reached, playback stopped</string>
     <string name="playing_timer">Playing(%d min left)</string>
     <string name="ps_hide_navigation_bar">Hide virtual buttons when reading</string>
     <string name="pt_hide_navigation_bar">Hide navigation bar</string>

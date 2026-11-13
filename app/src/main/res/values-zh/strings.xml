@@ -167,6 +167,14 @@
     <string name="set_timer">定时</string>
     <string name="read_aloud_pause">朗读暂停</string>
     <string name="read_aloud_timer">正在朗读（还剩 %d 分钟）</string>
+    <string name="read_aloud_chapter_quota">正在朗读（还剩 %d 章）</string>
+    <string name="ra_timer_by_chapter">按章节停止</string>
+    <string name="ra_timer_this_chapter">读完本章</string>
+    <string name="ra_timer_more_chapters">再读 %d 章</string>
+    <string name="ra_chapter_quota_this_chapter">读完本章后停止</string>
+    <string name="ra_chapter_quota_set">再读 %d 章后停止</string>
+    <string name="ra_chapter_quota_off">已取消章节定时</string>
+    <string name="ra_chapter_quota_done">已读完设定的章节，朗读停止</string>
     <string name="playing_timer">正在播放（还剩 %d 分钟）</string>
     <string name="ps_hide_navigation_bar">阅读界面隐藏虚拟按键</string>
     <string name="pt_hide_navigation_bar">隐藏导航栏</string>

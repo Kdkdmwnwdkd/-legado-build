@@ -11,6 +11,7 @@ object EventBus {
     const val READ_ALOUD_PROGRESS = "readAloudProgress"
     const val AUDIO_DS = "audioDs"
     const val READ_ALOUD_DS = "readAloudDs"
+    const val READ_ALOUD_CHAPTER_QUOTA = "readAloudChapterQuota"
     const val READ_ALOUD_PLAYBACK_STATE = "readAloudPlaybackState"
     const val READ_ALOUD_PANEL_ACTIVE = "readAloudPanelActive"
     const val READ_ALOUD_FOLLOW_CHANGED = "readAloudFollowChanged"
