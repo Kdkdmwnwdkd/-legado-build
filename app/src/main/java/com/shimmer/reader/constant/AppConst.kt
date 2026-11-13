@@ -24,6 +24,12 @@ object AppConst {
 
     const val MAX_THREAD = 9
 
+    /**
+     * 搜索池的线程上限。搜索的等待几乎全在 suspend 的 await 上，不占线程，
+     * 但带 @js 的书源解析是 CPU 密集的，池子太小会被这些源占满、让其余源排队。
+     */
+    const val MAX_SEARCH_THREAD = 32
+
     const val DEFAULT_WEBDAV_ID = -1L
 
     /**

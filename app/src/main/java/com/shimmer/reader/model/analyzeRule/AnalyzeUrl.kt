@@ -106,7 +106,9 @@ class AnalyzeUrl(
     private val infoMap: MutableMap<String, String>? = null,
     private val extraParams: Map<String, String>? = null,
     private val webViewPoolScope: WebViewPool.Scope = WebViewPool.Scope.GLOBAL,
-    private val dnsScope: DnsScope = source?.getNetworkDnsScope() ?: DnsScope.READING
+    private val dnsScope: DnsScope = source?.getNetworkDnsScope() ?: DnsScope.READING,
+    // 单次请求的连接超时（毫秒）。为 null 时沿用全局 OkHttp 客户端的 15 秒。
+    private val connectTimeoutMs: Long? = null
 ) : JsExtensions {
 
     // URL 选项里的超时与重定向控制（书源可对单个请求单独设置）
@@ -640,11 +642,14 @@ class AnalyzeUrl(
         val readTimeoutMs = urlReadTimeoutMs ?: readTimeout
         val callTimeoutMs = urlCallTimeoutMs ?: callTimeout
         if (readTimeoutMs == null && callTimeoutMs == null &&
-            followRedirectsOption == null && dnsIp == null
+            followRedirectsOption == null && dnsIp == null && connectTimeoutMs == null
         ) {
             return client
         }
         return client.newBuilder().run {
+            connectTimeoutMs?.let {
+                connectTimeout(it, TimeUnit.MILLISECONDS)
+            }
             followRedirectsOption?.let {
                 followRedirects(it)
                 followSslRedirects(it)
