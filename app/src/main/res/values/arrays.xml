@@ -220,6 +220,22 @@
         <item>60</item>
     </string-array>
 
+    <string-array name="reading_break_entries">
+        <item>关闭</item>
+        <item>30 分钟</item>
+        <item>45 分钟</item>
+        <item>60 分钟</item>
+        <item>90 分钟</item>
+    </string-array>
+
+    <string-array name="reading_break_values">
+        <item>0</item>
+        <item>30</item>
+        <item>45</item>
+        <item>60</item>
+        <item>90</item>
+    </string-array>
+
 	<string-array name="discovery_page_mode_entries">
 		<item>@string/discovery_page_mode_modern</item>
 		<item>@string/discovery_page_mode_legacy</item>
