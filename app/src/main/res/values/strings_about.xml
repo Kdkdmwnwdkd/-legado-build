@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="about_beta_badge">Beta</string>
-    <string name="about_beta_update">Beta update</string>
-    <string name="about_beta_download_key">Download key</string>
-    <string name="about_beta_download_url">Download URL</string>
-    <string name="about_beta_enable">Enable beta updates</string>
-    <string name="about_beta_enable_message">When enabled, update checks compare both the stable and the beta channel. A stable build newer than the beta is preferred; otherwise the beta is installed when no newer stable exists.</string>
-    <string name="about_accel_enabled">Enabled · %1$s</string>
-    <string name="about_accel_disabled">Not enabled</string>
+    <string name="about_beta_badge">内测版</string>
+    <string name="about_beta_update">内测版更新</string>
+    <string name="about_beta_download_key">下载密钥</string>
+    <string name="about_beta_download_url">下载地址</string>
+    <string name="about_beta_enable">启用内测版更新</string>
+    <string name="about_beta_enable_message">启用后，检测更新会优先比较正式版和内测版。正式版版本高于内测版时更新正式版，否则在没有更高正式版时更新内测版。</string>
+    <string name="about_accel_enabled">已启用 · %1$s</string>
+    <string name="about_accel_disabled">未启用</string>
 
-    <string name="update_accel_title">Acceleration</string>
-    <string name="update_accel_github_proxy">GitHub acceleration proxy</string>
-    <string name="update_accel_template_hint">The proxy template supports the ${url} placeholder. If it is missing, the original GitHub URL is appended to the proxy address.</string>
-    <string name="update_accel_no_proxy">No proxy</string>
-    <string name="update_accel_add">Add proxy</string>
-    <string name="update_accel_edit">Edit proxy</string>
+    <string name="update_accel_title">加速管理</string>
+    <string name="update_accel_github_proxy">GitHub 加速代理</string>
+    <string name="update_accel_template_hint">代理模板支持 ${url} 占位符。未填写占位符时，会自动把原始 GitHub 地址拼到代理地址后面。</string>
+    <string name="update_accel_no_proxy">不使用代理</string>
+    <string name="update_accel_add">添加代理</string>
+    <string name="update_accel_edit">编辑代理</string>
 </resources>

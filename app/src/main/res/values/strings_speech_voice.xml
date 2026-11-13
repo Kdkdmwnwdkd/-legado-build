@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="speech_voice_use_default_engine">Use default read-aloud engine</string>
-    <string name="speech_voice_default">Default read-aloud</string>
-    <string name="speech_voice_speaker">Speaker</string>
-    <string name="speech_voice_no_emotion">No emotion</string>
-    <string name="speech_voice_login_refresh">Sign in / refresh auth</string>
+    <string name="speech_voice_use_default_engine">使用默认朗读引擎</string>
+    <string name="speech_voice_default">默认朗读</string>
+    <string name="speech_voice_speaker">发言人</string>
+    <string name="speech_voice_no_emotion">无情绪</string>
+    <string name="speech_voice_login_refresh">登录 / 刷新授权</string>
 </resources>

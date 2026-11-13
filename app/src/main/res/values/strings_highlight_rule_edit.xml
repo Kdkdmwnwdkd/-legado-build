@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="highlight_style_text_color">Text color</string>
-    <string name="highlight_style_background">Background color</string>
-    <string name="highlight_style_underline">Underline</string>
-    <string name="highlight_style_double_line">Double underline</string>
-    <string name="highlight_style_dotted_line">Dotted underline</string>
-    <string name="highlight_style_wavy_line">Wavy underline</string>
-    <string name="highlight_style_strikethrough">Strikethrough</string>
-    <string name="highlight_style_outline">Outline</string>
+    <string name="highlight_style_text_color">文字上色</string>
+    <string name="highlight_style_background">背景上色</string>
+    <string name="highlight_style_underline">下划线</string>
+    <string name="highlight_style_double_line">双下划线</string>
+    <string name="highlight_style_dotted_line">点线</string>
+    <string name="highlight_style_wavy_line">波浪线</string>
+    <string name="highlight_style_strikethrough">删除线</string>
+    <string name="highlight_style_outline">描边</string>
 
-    <string name="highlight_color_accent">Reading accent</string>
-    <string name="highlight_color_red">Red</string>
-    <string name="highlight_color_orange">Orange</string>
-    <string name="highlight_color_yellow">Yellow</string>
-    <string name="highlight_color_green">Green</string>
-    <string name="highlight_color_teal">Teal</string>
-    <string name="highlight_color_blue">Blue</string>
-    <string name="highlight_color_purple">Purple</string>
-    <string name="highlight_color_pink">Pink</string>
-    <string name="highlight_color_brown">Brown</string>
-    <string name="highlight_color_gray">Gray</string>
+    <string name="highlight_color_accent">阅读强调色</string>
+    <string name="highlight_color_red">红色</string>
+    <string name="highlight_color_orange">橙色</string>
+    <string name="highlight_color_yellow">黄色</string>
+    <string name="highlight_color_green">绿色</string>
+    <string name="highlight_color_teal">青色</string>
+    <string name="highlight_color_blue">蓝色</string>
+    <string name="highlight_color_purple">紫色</string>
+    <string name="highlight_color_pink">粉色</string>
+    <string name="highlight_color_brown">棕色</string>
+    <string name="highlight_color_gray">灰色</string>
 
-    <string name="highlight_rule_deleted_error">This highlight rule has been deleted. Go back to the list and refresh.</string>
-    <string name="highlight_rule_custom_css_font">Custom CSS font</string>
-    <string name="highlight_rule_original_background">Rule background</string>
+    <string name="highlight_rule_deleted_error">此高亮规则已被删除，请返回管理页刷新</string>
+    <string name="highlight_rule_custom_css_font">自定义 CSS 字体</string>
+    <string name="highlight_rule_original_background">原规则背景</string>
 </resources>
