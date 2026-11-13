@@ -2695,7 +2695,6 @@ bookUrl：%7$s
     <string name="toast_not_manga_source">所选择的源不是漫画源</string>
     <string name="toast_reopen_floating_playback">授权后重新打开悬浮播放</string>
     <string name="toast_rank_tags_range">排行榜控件需要选择 3-9 个 Tag</string>
-    <string name="toast_prompt_empty">提示词不能为空</string>
     <string name="toast_search_url_cover_required">搜索url和cover规则不能为空</string>
     <string name="toast_min_count_reached">数量已是最少, 不能删除.</string>
     <string name="toast_folder_name_empty">文件夹名不能为空</string>
@@ -2722,7 +2721,6 @@ bookUrl：%7$s
     <string name="toast_template_render_failed">模板渲染失败，本次阅读已恢复默认排版；模板源码已保留</string>
     <string name="toast_generating_share_image">正在生成分享图片</string>
     <string name="toast_no_container_to_export">没有可导出的书库容器</string>
-    <string name="toast_no_character_card">没有可添加的角色卡</string>
     <string name="toast_no_skill">没有可用 Skill</string>
     <string name="toast_no_mcp">没有已启用 MCP</string>
     <string name="toast_no_data">没有数据</string>
@@ -2741,7 +2739,6 @@ bookUrl：%7$s
     <string name="toast_need_two_characters">至少需要两个角色</string>
     <string name="toast_need_two_characters_relation">至少需要两个角色才能编辑关系网</string>
     <string name="toast_character_missing">角色不存在</string>
-    <string name="toast_character_card_missing">角色卡不存在</string>
     <string name="toast_character_name_empty">角色名称不能为空</string>
     <string name="toast_rss_source_missing">订阅源不存在</string>
     <string name="toast_setting_saved">设定成功</string>
