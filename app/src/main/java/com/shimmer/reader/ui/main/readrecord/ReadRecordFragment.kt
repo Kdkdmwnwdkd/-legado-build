@@ -21,6 +21,7 @@ import com.shimmer.reader.data.appDb
 import com.shimmer.reader.data.entities.Book
 import com.shimmer.reader.databinding.ActivityReadRecordBinding
 import com.shimmer.reader.help.config.AppConfig
+import com.shimmer.reader.help.reader.ReadRecordExporter
 import com.shimmer.reader.help.config.TopBarConfig
 import com.shimmer.reader.lib.dialogs.alert
 import com.shimmer.reader.lib.dialogs.selector
@@ -58,12 +59,15 @@ import com.shimmer.reader.ui.image.ImageCropContract
 import com.shimmer.reader.ui.main.MainFragmentInterface
 import com.shimmer.reader.ui.widget.MainTopBarView
 import com.shimmer.reader.ui.widget.RoundedTagBarView
+import com.shimmer.reader.ui.widget.compose.ComposeTextInputDialog
 import com.shimmer.reader.ui.widget.compose.LegadoComposeTheme
 import com.shimmer.reader.utils.ColorUtils
 import com.shimmer.reader.utils.ImageCropHelper
 import com.shimmer.reader.utils.applyMainBottomBarPadding
 import com.shimmer.reader.utils.applyStatusBarPadding
 import com.shimmer.reader.utils.dpToPx
+import com.shimmer.reader.utils.sendToClip
+import com.shimmer.reader.utils.showDialogFragment
 import com.shimmer.reader.utils.observeEvent
 import com.shimmer.reader.utils.registerForActivityResult
 import com.shimmer.reader.utils.startActivityForBook
@@ -75,6 +79,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -151,6 +156,21 @@ class ReadRecordFragment() : BaseFragment(R.layout.activity_read_record), MainFr
             toastOnUi(getString(R.string.image_crop_failed, getString(R.string.unknown)))
         }
         pendingAvatarUpdate = null
+    }
+    private val exportRecordResult = registerForActivityResult(HandleFileContract()) { result ->
+        result.uri?.let { uri ->
+            showDialogFragment(
+                ComposeTextInputDialog.create(
+                    title = getString(R.string.export_success),
+                    hint = getString(R.string.path),
+                    initialValue = uri.toString(),
+                    readOnly = true,
+                    positiveText = getString(android.R.string.ok),
+                    negativeText = getString(android.R.string.cancel),
+                    onPositive = { requireContext().sendToClip(it) }
+                )
+            )
+        }
     }
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
@@ -325,6 +345,8 @@ class ReadRecordFragment() : BaseFragment(R.layout.activity_read_record), MainFr
                     AppConfig.enableReadRecord
             }
 
+            R.id.menu_export_record -> exportReadRecord()
+
             R.id.menu_clear_record -> {
                 alert(R.string.delete, R.string.sure_del) {
                     yesButton {
@@ -342,6 +364,64 @@ class ReadRecordFragment() : BaseFragment(R.layout.activity_read_record), MainFr
                 }
             }
         }
+    }
+
+    /** 导出已有记录，不触发重新统计 */
+    private fun exportReadRecord() {
+        val ctx = context ?: return
+        ctx.selector(
+            listOf<CharSequence>(
+                getString(R.string.read_record_export_markdown),
+                getString(R.string.read_record_export_csv)
+            )
+        ) { _, which ->
+            val asCsv = which == 1
+            lifecycleScope.launch {
+                val bundle = withContext(IO) { loadExportBundle() }
+                val text = if (asCsv) {
+                    ReadRecordExporter.buildCsv(bundle.days)
+                } else {
+                    ReadRecordExporter.buildMarkdown(
+                        summary = bundle.summary,
+                        days = bundle.days,
+                        books = bundle.books,
+                        exportedAt = bundle.exportedAt
+                    )
+                }
+                // 文件名带时间戳，连续导出两次不会在同一个目录里互相覆盖
+                val stamp = LocalDateTime.now()
+                    .format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmm"))
+                exportRecordResult.launch {
+                    mode = HandleFileContract.EXPORT
+                    fileData = HandleFileContract.FileData(
+                        "read-record-$stamp.${if (asCsv) "csv" else "md"}",
+                        text,
+                        if (asCsv) "text/csv" else "text/markdown"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadExportBundle(): ExportBundle {
+        val daily = appDb.readRecordDailyDao.allDesc
+        val days = daily.map { ReadRecordExporter.Day(it.date, it.readTime) }
+        val books = appDb.readRecordDao.allShow
+            .map { ReadRecordExporter.Book(it.bookName, it.readTime) }
+            .sortedByDescending { it.readTimeMs }
+        val today = LocalDate.now().toString()
+        return ExportBundle(
+            summary = ReadRecordExporter.Summary(
+                todayTimeMs = days.firstOrNull { it.date == today }?.readTimeMs ?: 0L,
+                totalTimeMs = appDb.readRecordDao.allTime,
+                activeDays = days.count { it.readTimeMs > 0L },
+                bookCount = books.size
+            ),
+            days = days,
+            books = books,
+            exportedAt = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+        )
     }
 
     private fun preloadData() {
@@ -868,6 +948,13 @@ class ReadRecordFragment() : BaseFragment(R.layout.activity_read_record), MainFr
 
 private const val DATA_STALE_MS = 60_000L
 private const val requestGoalAvatar = 501
+
+private data class ExportBundle(
+    val summary: ReadRecordExporter.Summary,
+    val days: List<ReadRecordExporter.Day>,
+    val books: List<ReadRecordExporter.Book>,
+    val exportedAt: String
+)
 
 private data class ReadRecordDashboard(
     val today: LocalDate,

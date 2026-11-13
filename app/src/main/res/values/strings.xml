@@ -1193,6 +1193,9 @@
     <string name="read_record_last_open">上次打开 %1$s</string>
     <string name="read_record_current_chapter">当前 %1$s</string>
     <string name="read_record_active_days_value">%1$d 天</string>
+    <string name="read_record_export">导出阅读记录</string>
+    <string name="read_record_export_markdown">Markdown 报告（概览、每日明细、书籍排行）</string>
+    <string name="read_record_export_csv">CSV 每日明细（可用表格软件打开）</string>
     <string name="read_record_clear_all">清空全部记录</string>
     <string name="read_record_placeholder">--</string>
     <string name="read_record_heatmap_range">最近 16 周</string>
