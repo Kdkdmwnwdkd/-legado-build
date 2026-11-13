@@ -10,48 +10,21 @@
     <string name="ai_chat_mode_switched">Switched to %1$s</string>
     <string name="ai_chat_delete_from_here">Delete this message and everything after it?</string>
 
-    <string name="ai_chat_unknown_author">Unknown author</string>
     <string name="ai_chat_new_chat">New chat</string>
-    <string name="ai_chat_edit_default_persona">Edit default assistant persona</string>
-    <string name="ai_chat_world_book">World books</string>
-    <string name="ai_chat_edit_character_card">Edit character card</string>
     <string name="ai_chat_remove_character_assistant">Remove character assistant</string>
     <string name="ai_chat_assistant">Assistant</string>
-    <string name="ai_chat_persona_title">%1$s · Persona</string>
-    <string name="ai_chat_world_book_title">%1$s · World books</string>
-    <string name="ai_chat_open_world_book_manage">Open world book manager</string>
-    <string name="ai_chat_no_bindable_world_book">No world books can be bound per character</string>
-    <string name="ai_chat_world_book_global">" (global)"</string>
-    <string name="ai_chat_world_book_disabled">" (disabled in library)"</string>
     <string name="ai_chat_manage">Manage</string>
 
     <string name="ai_chat_window_abilities">This window\'s abilities</string>
     <string name="ai_chat_skill_count">Skill: %1$d</string>
     <string name="ai_chat_mcp_count">MCP: %1$d</string>
-    <string name="ai_chat_world_book_count">World books: %1$d</string>
     <string name="ai_chat_clear_skill_mcp">Clear Skill/MCP</string>
     <string name="ai_chat_window_skill">This window\'s Skill</string>
     <string name="ai_chat_window_mcp">This window\'s MCP</string>
     <string name="ai_chat_clear">Clear</string>
 
-    <string name="ai_chat_add_character_assistant">Add character assistant</string>
-    <string name="ai_chat_pick_character_from">Pick a character from \"%1$s\"</string>
-    <string name="ai_chat_pick_book">Pick a book</string>
-    <string name="ai_chat_no_matching_book">No matching books</string>
-    <string name="ai_chat_pick_character">Pick a character</string>
-    <string name="ai_chat_group_empty">No characters in this group yet</string>
-    <string name="ai_chat_search_hint">Search title, author, or character</string>
-    <string name="ai_chat_character_count">%1$d characters</string>
-    <string name="ai_chat_author_and_count">%1$s · %2$d characters</string>
-    <string name="ai_chat_change_book">Change</string>
-    <string name="ai_chat_character_card">Character card</string>
-    <string name="ai_chat_action_open">Open</string>
     <string name="ai_chat_remove_companion_message">Remove \"%1$s\"? Its chat history will be deleted too.</string>
-    <string name="ai_chat_role_main">Protagonist</string>
-    <string name="ai_chat_role_important">Important</string>
-    <string name="ai_chat_role_normal">Ordinary</string>
 
-    <string name="ai_chat_browse_world_book">Browse world books</string>
     <string name="ai_chat_auto_speak_option">Auto-play voice: %1$s</string>
     <string name="ai_chat_switch_on">On</string>
     <string name="ai_chat_switch_off">Off</string>
@@ -60,7 +33,7 @@
     <string name="ai_chat_sessions">Sessions</string>
     <string name="ai_chat_no_history_sessions">No conversation history yet</string>
     <string name="ai_chat_more_sessions">%1$d more sessions</string>
-    <string name="ai_chat_default_system_prompt">Default system prompt</string>
+    <string name="ai_chat_default_system_prompt">General assistant</string>
     <string name="ai_chat_role_with_book">Character · %1$s</string>
     <string name="ai_chat_role_label">Character</string>
     <string name="ai_chat_untitled_session">Untitled session</string>

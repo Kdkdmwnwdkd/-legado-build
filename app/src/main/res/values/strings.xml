@@ -2756,7 +2756,6 @@ Selected text or question:
     <string name="toast_not_manga_source">The selected source is not a manga source</string>
     <string name="toast_reopen_floating_playback">Reopen floating playback after authorization</string>
     <string name="toast_rank_tags_range">The ranking widget needs 3-9 tags</string>
-    <string name="toast_prompt_empty">Prompt cannot be empty</string>
     <string name="toast_search_url_cover_required">Search URL and cover rule cannot be empty</string>
     <string name="toast_min_count_reached">This is the minimum count and cannot be deleted.</string>
     <string name="toast_folder_name_empty">Folder name cannot be empty</string>
@@ -2783,7 +2782,6 @@ Selected text or question:
     <string name="toast_template_render_failed">Template rendering failed. Default layout restored; template source kept.</string>
     <string name="toast_generating_share_image">Generating share image...</string>
     <string name="toast_no_container_to_export">No library container to export</string>
-    <string name="toast_no_character_card">No character card available to add</string>
     <string name="toast_no_skill">No Skill available</string>
     <string name="toast_no_mcp">No MCP enabled</string>
     <string name="toast_no_data">No data</string>
@@ -2802,7 +2800,6 @@ Selected text or question:
     <string name="toast_need_two_characters">At least two characters are required</string>
     <string name="toast_need_two_characters_relation">At least two characters are needed to edit the relationship map</string>
     <string name="toast_character_missing">Character does not exist</string>
-    <string name="toast_character_card_missing">Character card does not exist</string>
     <string name="toast_character_name_empty">Character name cannot be empty</string>
     <string name="toast_rss_source_missing">Subscription source does not exist</string>
     <string name="toast_setting_saved">Setting saved</string>
