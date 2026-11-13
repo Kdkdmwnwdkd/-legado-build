@@ -32,7 +32,16 @@ import java.util.concurrent.Executors
 import kotlin.math.min
 
 class SearchModel(private val scope: CoroutineScope, private val callBack: CallBack) {
-    val threadCount = AppConfig.threadCount
+    companion object {
+        /** 连接阶段给 6 秒：域名死掉、DNS 解析不出的源不该占满整个超时窗口 */
+        private const val CONNECT_TIMEOUT_MS = 6_000L
+        /** 单次搜索请求的总时长上限，比外层的 withTimeout 略短，让 OkHttp 先给出明确错误 */
+        private const val CALL_TIMEOUT_MS = 20_000L
+        /** 单个书源（含解析）的总时长上限 */
+        private const val SOURCE_TIMEOUT_MS = 25_000L
+    }
+
+    val threadCount = AppConfig.threadCount.coerceAtLeast(1)
     private var searchPool: ExecutorCoroutineDispatcher? = null
     private var mSearchId = 0L
     private var searchPage = 1
@@ -46,7 +55,8 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
     private fun initSearchPool() {
         searchPool?.close()
         searchPool = Executors
-            .newFixedThreadPool(min(threadCount, AppConst.MAX_THREAD)).asCoroutineDispatcher()
+            .newFixedThreadPool(min(threadCount, AppConst.MAX_SEARCH_THREAD))
+            .asCoroutineDispatcher()
     }
 
     fun search(searchId: Long, key: String) {
@@ -87,14 +97,17 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
             }.onStart {
                 callBack.onSearchStart()
             }.mapParallelSafe(threadCount) {
-                withTimeout(30000L) {
+                withTimeout(SOURCE_TIMEOUT_MS) {
                     WebBook.searchBookAwait(
                         it, searchKey, searchPage,
                         filter = { name, author, kind ->
                             !precision || name.contains(searchKey) ||
                                     author.contains(searchKey) ||
                                     kind?.contains(searchKey) == true
-                        })
+                        },
+                        connectTimeoutMs = CONNECT_TIMEOUT_MS,
+                        callTimeoutMs = CALL_TIMEOUT_MS
+                    )
                 }
             }.onEach { items ->
                 for (book in items) {

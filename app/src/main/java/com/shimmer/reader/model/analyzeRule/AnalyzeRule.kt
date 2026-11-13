@@ -2,6 +2,7 @@ package com.shimmer.reader.model.analyzeRule
 
 import android.text.TextUtils
 import androidx.annotation.Keep
+import androidx.collection.LruCache
 import com.google.gson.internal.LinkedTreeMap
 import com.script.CompiledScript
 import com.script.buildScriptBindings
@@ -29,7 +30,6 @@ import com.shimmer.reader.utils.GSONStrict
 import com.shimmer.reader.utils.NetworkUtils
 import com.shimmer.reader.utils.fromJsonArray
 import com.shimmer.reader.utils.fromJsonObject
-import com.shimmer.reader.utils.getOrPutLimit
 import com.shimmer.reader.utils.isDataUrl
 import com.shimmer.reader.utils.isJson
 import com.shimmer.reader.utils.isMainThread
@@ -78,9 +78,12 @@ class AnalyzeRule(
     private var analyzeByJSoup: AnalyzeByJSoup? = null
     private var analyzeByJSonPath: AnalyzeByJSonPath? = null
 
-    private val stringRuleCache = hashMapOf<String, List<SourceRule>>()
-    private val regexCache = hashMapOf<String, Regex?>()
-    private val scriptCache = hashMapOf<String, CompiledScript>()
+    /**
+     * 规则切分缓存是实例级的：SourceRule 是内部类且字段可变（makeUpRule 会就地改写），
+     * 跨实例共享会串值，绝对不能提到 companion。
+     * 用 LruCache 而不是 getOrPutLimit：后者在容量满之后不再写入，缓存会永久冻结。
+     */
+    private val stringRuleCache = LruCache<String, List<SourceRule>>(STRING_RULE_CACHE_SIZE)
     private var topScopeRef: WeakReference<Scriptable>? = null
     private var evalJSCallCount = 0
 
@@ -512,13 +515,18 @@ class AnalyzeRule(
     }
 
     private fun compileRegexCache(regex: String): Regex? {
-        return regexCache.getOrPutLimit(regex, 16) {
-            try {
-                regex.toRegex()
-            } catch (e: Exception) {
-                null
-            }
+        val cached = regexCache[regex]
+        if (cached != null) {
+            return cached as? Regex
         }
+        val compiled = try {
+            regex.toRegex()
+        } catch (e: Exception) {
+            null
+        }
+        // LruCache 不收 null，编译失败也要占格，避免每次都重试
+        regexCache.put(regex, compiled ?: InvalidRegex)
+        return compiled
     }
 
     /**
@@ -526,9 +534,8 @@ class AnalyzeRule(
      */
     private fun splitSourceRuleCacheString(ruleStr: String?): List<SourceRule> {
         if (ruleStr.isNullOrEmpty()) return emptyList()
-        return stringRuleCache.getOrPut(ruleStr) {
-            splitSourceRule(ruleStr)
-        }
+        stringRuleCache[ruleStr]?.let { return it }
+        return splitSourceRule(ruleStr).also { stringRuleCache.put(ruleStr, it) }
     }
 
     /**
@@ -580,9 +587,8 @@ class AnalyzeRule(
     }
 
     private fun getOrCreateSingleSourceRule(rule: String): List<SourceRule> {
-        return stringRuleCache.getOrPutLimit(rule, 16) {
-            listOf(SourceRule(rule))
-        }
+        stringRuleCache[rule]?.let { return it }
+        return listOf(SourceRule(rule)).also { stringRuleCache.put(rule, it) }
     }
 
     /**
@@ -875,9 +881,8 @@ class AnalyzeRule(
     }
 
     private fun compileScriptCache(jsStr: String): CompiledScript {
-        return scriptCache.getOrPutLimit(jsStr, 16) {
-            RhinoScriptEngine.compile(jsStr)
-        }
+        scriptCache[jsStr]?.let { return it }
+        return RhinoScriptEngine.compile(jsStr).also { scriptCache.put(jsStr, it) }
     }
 
     override fun getSource(): BaseSource? {
@@ -970,6 +975,20 @@ class AnalyzeRule(
     }
 
     companion object {
+        private const val STRING_RULE_CACHE_SIZE = 64
+        private const val REGEX_CACHE_SIZE = 128
+        private const val SCRIPT_CACHE_SIZE = 64
+
+        /** 正则编译失败时的占位值，LruCache 不接受 null */
+        private object InvalidRegex
+
+        /**
+         * 正则与脚本编译结果是不可变产物，可以跨实例、跨线程共享（与 JsSourceEngine 的
+         * scriptCache 同理）。原来它们挂在实例上，正文每章新建 AnalyzeRule 就要重编译一遍。
+         */
+        private val regexCache = LruCache<String, Any>(REGEX_CACHE_SIZE)
+        private val scriptCache = LruCache<String, CompiledScript>(SCRIPT_CACHE_SIZE)
+
         private val putPattern = Pattern.compile("@put:(\\{[^}]+?\\})", Pattern.CASE_INSENSITIVE)
         private val evalPattern =
             Pattern.compile("@get:\\{[^}]+?\\}|\\{\\{[\\w\\W]*?\\}\\}", Pattern.CASE_INSENSITIVE)
