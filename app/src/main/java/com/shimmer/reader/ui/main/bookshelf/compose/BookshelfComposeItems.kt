@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import com.shimmer.reader.R
 import com.shimmer.reader.data.dao.BookShelfDisplay
 import com.shimmer.reader.data.entities.BookGroup
 import com.shimmer.reader.help.book.BookTagHelper
@@ -56,7 +58,14 @@ data class BookshelfBookItemUi(
     val unreadCount: Int,
     val hasNewChapter: Boolean,
     val tags: List<String>,
-    val lastUpdateText: String?
+    val lastUpdateText: String?,
+    /**
+     * 这本书挂的书源已停用或被删除。
+     *
+     * 只影响书架上的显示和点击提示，书本身、阅读进度、缓存章节都不动：
+     * 源关掉之后已经缓存过的章节还是能读的。
+     */
+    val sourceDisabled: Boolean = false
 ) : BookshelfItemUi {
     override val key: String = "book:${display.bookUrl}"
     override val contentType: String = "book"
@@ -67,7 +76,8 @@ fun buildBookshelfItems(
     books: List<BookShelfDisplay>,
     isRootGroup: Boolean,
     groupId: Long,
-    isUpdating: (String) -> Boolean
+    isUpdating: (String) -> Boolean,
+    disabledOrigins: Set<String> = emptySet()
 ): List<BookshelfItemUi> {
     val configuredTags = AppConfig.bookshelfGroupTags[groupId].orEmpty()
     val hiddenTags = AppConfig.bookshelfHiddenTags[groupId].orEmpty()
@@ -83,13 +93,42 @@ fun buildBookshelfItems(
                 book.latestChapterTime.toTimeAgo()
             } else {
                 null
-            }
+            },
+            sourceDisabled = book.origin in disabledOrigins
         )
     }
     if (!isRootGroup) {
         return bookItems
     }
     return groups.map(::BookshelfFolderItemUi) + bookItems
+}
+
+/**
+ * 用最新的「不可用书源」集合给已有条目补标记。
+ *
+ * 书架会先把上次的条目快照铺到屏幕上再等数据库回填，快照里没有源的状态，
+ * 直接用会有一瞬间的角标缺失。恢复快照时拿当前集合重算一遍，两者就能对上。
+ */
+fun markSourceDisabled(
+    items: List<BookshelfItemUi>,
+    disabledOrigins: Set<String>
+): List<BookshelfItemUi> {
+    if (items.isEmpty()) return items
+    var changed = false
+    val updated = items.map { item ->
+        if (item is BookshelfBookItemUi) {
+            val disabled = item.display.origin in disabledOrigins
+            if (disabled != item.sourceDisabled) {
+                changed = true
+                item.copy(sourceDisabled = disabled)
+            } else {
+                item
+            }
+        } else {
+            item
+        }
+    }
+    return if (changed) updated else items
 }
 
 private fun BookShelfDisplay.displayUserTags(
@@ -172,6 +211,12 @@ fun BookshelfGridItem(
             if (item is BookshelfBookItemUi) {
                 BookshelfStatusBadge(item)
             }
+            BookshelfSourceDisabledBadge(
+                item = item,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(5.dp)
+            )
             if (showBookName == 2) {
                 Text(
                     text = item.displayName,
@@ -219,6 +264,31 @@ private fun BookshelfCover(
         modifier = modifier,
         fragment = fragment,
         lifecycle = lifecycle
+    )
+}
+
+/**
+ * 封面上角「源已停用」的小标。
+ *
+ * 放左上角：右上角是未读/更新中的角标，底部可能压着书名，只有这里不会撞。
+ * 点它没有单独事件——整本书的点击会走提示框，那里才有换源入口。
+ */
+@Composable
+internal fun BookshelfSourceDisabledBadge(
+    item: BookshelfItemUi,
+    modifier: Modifier = Modifier
+) {
+    if (item !is BookshelfBookItemUi || !item.sourceDisabled) return
+    Text(
+        text = stringResource(R.string.bookshelf_source_disabled_badge),
+        modifier = modifier
+            .clip(RoundedCornerShape(3.dp))
+            .background(Color.Black.copy(alpha = 0.62f))
+            .padding(horizontal = 4.dp, vertical = 2.dp),
+        color = Color.White,
+        fontSize = 9.sp,
+        fontWeight = FontWeight.Medium,
+        maxLines = 1
     )
 }
 

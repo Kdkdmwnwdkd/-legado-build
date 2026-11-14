@@ -299,6 +299,12 @@ private fun BookshelfCoverBlock(
             fragment = fragment,
             lifecycle = lifecycle
         )
+        BookshelfSourceDisabledBadge(
+            item = item,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(4.dp)
+        )
     }
 }
 
