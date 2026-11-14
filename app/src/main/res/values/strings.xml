@@ -1350,6 +1350,9 @@
     <string name="change_source_compare_intro_body">原书：\n%1$s\n\n该源：\n%2$s</string>
     <string name="change_source_intro_none">暂无简介</string>
     <string name="change_source_compare_intro_empty">原书没有简介，没法比对</string>
+    <string name="change_source_align_title">新书源的目录对不上</string>
+    <string name="change_source_align_message">原来停在第 %1$d 章《%2$s》，新书源里找不到对应的章节。\n\n继续换源会定位到第 %3$d 章《%4$s》，可能不是同一本书，也可能只是目录里多了卷名或说明。换源后可以在目录里手动选章节。</string>
+    <string name="change_source_align_continue">仍然换源</string>
     <string name="url_already">此 URL 已订阅</string>
     <string name="high_brush_title">高刷新率</string>
     <string name="high_brush_summary">使用屏幕最高刷新率</string>
