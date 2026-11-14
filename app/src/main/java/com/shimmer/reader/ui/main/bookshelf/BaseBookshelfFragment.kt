@@ -143,6 +143,7 @@ abstract class BaseBookshelfFragment(layoutId: Int) : VMBaseFragment<BookshelfVi
             R.id.menu_bookshelf_manage -> startActivity<BookshelfManageActivity> {
                 putExtra("groupId", groupId)
             }
+            R.id.menu_orphan_source -> startActivity<BookshelfOrphanSourceActivity>()
 
             R.id.menu_download -> startActivity<CacheActivity> {
                 putExtra("groupId", groupId)

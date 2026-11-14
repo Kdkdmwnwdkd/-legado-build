@@ -379,6 +379,26 @@ interface BookDao {
     )
     fun orphanSourceOrigins(): List<String>
 
+    /**
+     * 和 [orphanSourceOrigins] 同一套判定，但把整行取回来，供「失效书源清单」列表显示。
+     *
+     * 用 not in 子查询而不是 join：源被删（不在表里）和源被停用（enabled = 0）都会被
+     * 「不在启用列表里」这一条覆盖，也不用担心 join 之后列名冲突。
+     *
+     * 按最近阅读时间倒序：一本正在追的书突然打不开，比半年前加进来没读过的更值得先处理。
+     */
+    @Query(
+        """
+        select * from books
+        where type & ${BookType.notShelf} = 0
+        and origin not like '${BookType.localTag}%'
+        and origin not like '${BookType.webDavTag}%'
+        and origin not in (select bookSourceUrl from book_sources where enabled = 1)
+        order by durChapterTime desc
+        """
+    )
+    fun booksWithOrphanSource(): List<Book>
+
     @Query(
         """select exists(select 1 from books where type & ${BookType.local} > 0 
         and (originName = :fileName or (origin != '${BookType.localTag}' and origin like '%' || :fileName)))"""
