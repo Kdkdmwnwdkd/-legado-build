@@ -2,7 +2,9 @@ package com.shimmer.reader.help
 
 import com.shimmer.reader.data.entities.BaseSource
 import com.shimmer.reader.exception.ConcurrentException
+import com.shimmer.reader.help.config.AppConfig
 import com.shimmer.reader.model.analyzeRule.AnalyzeUrl.ConcurrentRecord
+import com.shimmer.reader.utils.NetworkUtils
 import kotlinx.coroutines.delay
 import java.util.concurrent.ConcurrentHashMap
 
@@ -10,6 +12,41 @@ class ConcurrentRateLimiter(source: BaseSource?) {
 
     companion object {
         val concurrentRecordMap = ConcurrentHashMap<String, ConcurrentRecord>()
+
+        /**
+         * 限速记录用哪个 key。
+         *
+         * 关闭共用时一个书源一份记录，和原来完全一致；
+         * 打开后同一个主域、同一个速率的书源共用一份配额。
+         *
+         * 速率不同不合并：配额是一份令牌池，把 1/3s 和 2/1s 并在一起，
+         * 快的那个会被慢的拖住，而慢的那个也不会因此变快，没有意义。
+         */
+        fun recordKey(
+            sourceUrl: String?,
+            concurrentRate: String?,
+            shareByHost: Boolean,
+            hostOf: (String) -> String?,
+        ): String? {
+            val url = sourceUrl?.takeIf { it.isNotBlank() } ?: return null
+            if (!shareByHost) return url
+            val host = hostOf(url)?.trim()?.lowercase()?.takeIf { it.isNotBlank() }
+                ?: return url
+            return "host:$host#${concurrentRate.orEmpty()}"
+        }
+
+        /**
+         * 按当前设置算这个书源该用哪个记录 key。
+         *
+         * 书源编辑里改并发率时也要用同一套算法，否则会往一个没人用的 key 上写。
+         */
+        fun keyOf(url: String?, rate: String?): String? = recordKey(
+            sourceUrl = url,
+            concurrentRate = rate,
+            shareByHost = AppConfig.shareRateLimitByHost,
+            hostOf = NetworkUtils::getSubDomainOrNull
+        )
+
         /**
          * 更新并发率
          */
@@ -47,7 +84,7 @@ class ConcurrentRateLimiter(source: BaseSource?) {
     }
 
     private val concurrentRate = source?.concurrentRate
-    private val key = source?.getKey()
+    private val key = keyOf(source?.getKey(), concurrentRate)
     /**
      * 开始访问,并发判断
      */
