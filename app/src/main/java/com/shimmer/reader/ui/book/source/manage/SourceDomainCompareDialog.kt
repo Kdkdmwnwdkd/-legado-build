@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -40,10 +42,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.shimmer.reader.data.appDb
+import com.shimmer.reader.help.source.DomainPickPlan
 import com.shimmer.reader.help.source.ProbeResult
 import com.shimmer.reader.help.source.SourceCapability
 import com.shimmer.reader.help.source.SourceDomainGroup
 import com.shimmer.reader.help.source.SourceDomainIndex
+import com.shimmer.reader.help.source.SourceDomainPick
 import com.shimmer.reader.help.source.SourceProbe
 import com.shimmer.reader.help.source.SourceProbeCache
 import com.shimmer.reader.help.source.probeText
@@ -54,10 +58,12 @@ import com.shimmer.reader.ui.widget.compose.AppDialogStyle
 import com.shimmer.reader.ui.widget.compose.ComposeDialogFragment
 import com.shimmer.reader.ui.widget.compose.rememberAppDialogStyle
 import com.shimmer.reader.utils.NetworkUtils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * 同一个域名下的书源横向对比。
@@ -136,10 +142,14 @@ private fun SourceDomainCompareContent(
     style: AppDialogStyle,
 ) {
     val sources = group?.sources.orEmpty()
+    // 已经停用的源不再参与实测，省得在死源上浪费时间
+    val probeTargets = sources.filter { it.enabled }
     val scope = rememberCoroutineScope()
     val results = remember { mutableStateMapOf<String, ProbeResult>() }
     var running by remember { mutableStateOf(false) }
     var doneCount by remember { mutableStateOf(0) }
+    var asking by remember { mutableStateOf(false) }
+    var lastDisabled by remember { mutableStateOf<List<String>>(emptyList()) }
 
     // 报表刷新（比如写回了 respondTime）会重建 group，这里把已有结论接回来
     LaunchedEffect(group) {
@@ -147,6 +157,10 @@ private fun SourceDomainCompareContent(
             SourceProbeCache.get(source.url)?.let { results[source.url] = it }
         }
     }
+
+    // 一组最多十几个源，直接算比缓存更省心
+    val probeMap = results.toMap()
+    val plan = group?.let { SourceDomainPick.plan(it, probeMap) } ?: DomainPickPlan()
 
     Column(
         modifier = Modifier
@@ -175,11 +189,11 @@ private fun SourceDomainCompareContent(
             ProbeButton(
                 running = running,
                 done = doneCount,
-                total = sources.size,
+                total = probeTargets.size,
                 style = style,
                 onClick = {
-                    if (!running && sources.isNotEmpty()) {
-                        val targets = sources.map { it.url }
+                    if (!running && probeTargets.isNotEmpty()) {
+                        val targets = probeTargets.map { it.url }
                         scope.launch {
                             running = true
                             doneCount = 0
@@ -201,6 +215,15 @@ private fun SourceDomainCompareContent(
                     }
                 }
             )
+            if (plan.hasAction) {
+                Spacer(Modifier.width(8.dp))
+                PickButton(
+                    count = plan.disable.size,
+                    style = style,
+                    enabled = !running,
+                    onClick = { asking = true }
+                )
+            }
         }
         Spacer(Modifier.height(8.dp))
         Text(
@@ -210,7 +233,12 @@ private fun SourceDomainCompareContent(
         )
         Spacer(Modifier.height(10.dp))
         sources.forEach { source ->
-            CapabilityRow(source = source, probe = results[source.url], style = style)
+            CapabilityRow(
+                source = source,
+                probe = results[source.url],
+                reason = plan.reasons[source.url],
+                style = style
+            )
         }
         Spacer(Modifier.height(10.dp))
         Text(
@@ -222,7 +250,106 @@ private fun SourceDomainCompareContent(
             color = style.secondaryText,
             fontSize = 11.sp
         )
+        if (lastDisabled.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "已停用 ${lastDisabled.size} 个源",
+                    color = style.secondaryText,
+                    fontSize = 12.sp
+                )
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    text = "撤销",
+                    color = style.accent,
+                    fontSize = 12.sp,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(4.dp))
+                        .clickable {
+                            val urls = lastDisabled
+                            lastDisabled = emptyList()
+                            scope.launch {
+                                withContext(Dispatchers.IO) {
+                                    val list = urls.mapNotNull {
+                                        appDb.bookSourceDao.getBookSource(it)
+                                    }
+                                    list.forEach { it.enabled = true }
+                                    if (list.isNotEmpty()) {
+                                        appDb.bookSourceDao.update(*list.toTypedArray())
+                                    }
+                                }
+                            }
+                        }
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                )
+            }
+        }
         Spacer(Modifier.height(4.dp))
+    }
+
+    if (asking) {
+        val targets = plan.disable
+        AlertDialog(
+            onDismissRequest = { asking = false },
+            shape = RoundedCornerShape(style.panelRadius),
+            containerColor = style.surface,
+            title = {
+                Text(
+                    text = "停用 ${targets.size} 个冗余源",
+                    color = style.primaryText,
+                    fontSize = 16.sp
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        text = "这些源的能力被同组里更靠谱的源覆盖，停用后不影响搜索和阅读：",
+                        color = style.secondaryText,
+                        fontSize = 13.sp
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = buildString {
+                            append(targets.take(8).joinToString("\n") { "· ${it.name}" })
+                            if (targets.size > 8) append("\n… 等 ${targets.size} 个")
+                        },
+                        color = style.primaryText,
+                        fontSize = 13.sp
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "只停用，不删除。随时可以在书源列表里重新启用。",
+                        color = style.secondaryText,
+                        fontSize = 11.sp
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    asking = false
+                    val urls = targets.map { it.url }
+                    if (urls.isNotEmpty()) {
+                        lastDisabled = urls
+                        scope.launch {
+                            withContext(Dispatchers.IO) {
+                                val list = urls.mapNotNull { appDb.bookSourceDao.getBookSource(it) }
+                                list.forEach { it.enabled = false }
+                                if (list.isNotEmpty()) {
+                                    appDb.bookSourceDao.update(*list.toTypedArray())
+                                }
+                            }
+                        }
+                    }
+                }) {
+                    Text("停用", color = style.danger)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { asking = false }) {
+                    Text("取消", color = style.secondaryText)
+                }
+            }
+        )
     }
 }
 
@@ -254,9 +381,35 @@ private fun ProbeButton(
 }
 
 @Composable
+private fun PickButton(
+    count: Int,
+    style: AppDialogStyle,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(
+                if (enabled) style.danger.copy(alpha = 0.12f)
+                else style.secondaryText.copy(alpha = 0.08f)
+            )
+            .then(if (enabled) Modifier.clickable(onClick = onClick) else Modifier)
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+    ) {
+        Text(
+            text = "停用冗余 $count 个",
+            color = if (enabled) style.danger else style.secondaryText.copy(alpha = 0.5f),
+            fontSize = 13.sp
+        )
+    }
+}
+
+@Composable
 private fun CapabilityRow(
     source: SourceCapability,
     probe: ProbeResult?,
+    reason: String?,
     style: AppDialogStyle,
 ) {
     Row(
@@ -283,11 +436,19 @@ private fun CapabilityRow(
                     if (isNotEmpty()) append(" · ")
                     append(it.reason)
                 }
+                reason?.takeIf { it.isNotBlank() }?.let {
+                    if (isNotEmpty()) append(" · ")
+                    append("冗余，$it")
+                }
             }
             if (sub.isNotEmpty()) {
                 Text(
                     text = sub,
-                    color = if (probe != null && !probe.passed) style.danger else style.secondaryText,
+                    color = when {
+                        probe != null && !probe.passed -> style.danger
+                        reason != null -> style.danger.copy(alpha = 0.8f)
+                        else -> style.secondaryText
+                    },
                     fontSize = 11.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
