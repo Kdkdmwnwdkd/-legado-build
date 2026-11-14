@@ -11,6 +11,7 @@ import com.shimmer.reader.constant.AppLog
 import com.shimmer.reader.data.entities.rule.RowUi
 import com.shimmer.reader.exception.NoStackTraceException
 import com.shimmer.reader.help.CacheManager
+import com.shimmer.reader.help.ConcurrentRateLimiter.Companion.keyOf
 import com.shimmer.reader.help.ConcurrentRateLimiter.Companion.updateConcurrentRate
 import com.shimmer.reader.help.JsExtensions
 import com.shimmer.reader.help.config.AppConfig
@@ -406,7 +407,7 @@ interface BaseSource : JsExtensions {
      * 设置并发率
      */
     fun putConcurrent(value: String) {
-        updateConcurrentRate(getKey(),value)
+        updateConcurrentRate(keyOf(getKey(), value) ?: getKey(), value)
     }
 
     /**
