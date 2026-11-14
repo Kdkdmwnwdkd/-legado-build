@@ -42,6 +42,7 @@ object PreferKey {
     const val hideNavigationBar = "hideNavigationBar"
     const val precisionSearch = "precisionSearch"
     const val staggerSearch = "staggerSearch"
+    const val searchLocalPreview = "searchLocalPreview"
     const val readAloudByPage = "readAloudByPage"
     const val showReadAloudFloatingBall = "showReadAloudFloatingBall"
     const val readAloudFloatingBallSide = "readAloudFloatingBallSide"

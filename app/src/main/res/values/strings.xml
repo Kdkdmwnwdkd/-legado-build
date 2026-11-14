@@ -992,6 +992,7 @@
     <string name="dur_pos">当前位置：</string>
     <string name="precision_search">精准搜索</string>
     <string name="stagger_search">错峰搜索</string>
+    <string name="local_preview">秒出上次结果</string>
     <string name="service_starting">正在启动服务</string>
     <string name="empty">空</string>
     <string name="file_chooser">文件选择</string>

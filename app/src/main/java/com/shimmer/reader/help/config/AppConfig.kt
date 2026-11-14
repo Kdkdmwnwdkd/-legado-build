@@ -2733,6 +2733,19 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
             appCtx.putPrefBoolean(PreferKey.staggerSearch, value)
         }
 
+    /**
+     * 搜索开始时先用本地记录铺一屏。
+     *
+     * 默认开：同一个词搜第二次时，上次的结果直接显示出来，网络结果再逐条替换。
+     * 铺出来的条目只来自启用中的书源，且一旦某个源本轮跑完就换成它这次的结果，
+     * 所以不会把已经下架的书一直留在屏幕上。
+     */
+    var searchLocalPreview: Boolean
+        get() = appCtx.getPrefBoolean(PreferKey.searchLocalPreview, true)
+        set(value) {
+            appCtx.putPrefBoolean(PreferKey.searchLocalPreview, value)
+        }
+
     var brightnessVwPos: Boolean
         get() = appCtx.getPrefBoolean(PreferKey.brightnessVwPos)
         set(value) {
