@@ -51,6 +51,9 @@ import com.shimmer.reader.data.entities.BookSourcePart
 import com.shimmer.reader.databinding.ActivityBookSourceBinding
 import com.shimmer.reader.help.DirectLinkUpload
 import com.shimmer.reader.help.config.LocalConfig
+import com.shimmer.reader.help.source.SourceCapability
+import com.shimmer.reader.help.source.SourceDomainIndex
+import com.shimmer.reader.help.source.toCapability
 import com.shimmer.reader.model.CheckSource
 import com.shimmer.reader.model.Debug
 import com.shimmer.reader.ui.association.ImportBookSourceDialog
@@ -137,6 +140,10 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
     private val searchQueryState = mutableStateOf("")
     private val showSourceHostState = mutableStateOf(false)
     private val sourceHostHeaders = mutableStateMapOf<String, String?>()
+    /** 组标题第二行的统计，如「12 个源 · 搜索 3 · 发现 12」 */
+    private val sourceHostSummaries = mutableStateMapOf<String, String>()
+    /** 书源静态能力，按 bookSourceUrl 索引 */
+    private val capabilityCache = hashMapOf<String, SourceCapability>()
     private val debugMessagesState = mutableStateMapOf<String, String>()
     private val isCheckingState = mutableStateOf(Debug.isChecking)
     private val qrResult = registerForActivityResult(QrCodeResult()) {
@@ -174,9 +181,28 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
         initComposeContent()
         upBookSource()
         initLiveDataGroup()
+        initCapabilitySnapshot()
         resumeCheckSource()
         if (!LocalConfig.bookSourcesHelpVersionIsLast) {
             showHelp("SourceMBookHelp")
+        }
+    }
+
+    /**
+     * 收集书源的静态能力快照，供「按域名分组」的组标题显示统计。
+     * 与书源列表分开收集：能力只在新增/删除/导入时变化，不必跟着排序、拖拽刷新。
+     */
+    private fun initCapabilitySnapshot() {
+        lifecycleScope.launch {
+            appDb.bookSourceDao.flowCapabilities()
+                .flowWithLifecycleAndDatabaseChange(
+                    lifecycle,
+                    table = AppDatabase.BOOK_SOURCE_TABLE_NAME
+                ).flowOn(IO).conflate().collect { rows ->
+                    capabilityCache.clear()
+                    rows.forEach { capabilityCache[it.bookSourceUrl] = it.toCapability() }
+                    updateSourceHostHeaders(sourcesState)
+                }
         }
     }
 
@@ -287,6 +313,10 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
                         isSelectMode = isSelectMode.value,
                         showSourceHost = showSourceHostState.value,
                         sourceHostHeaders = sourceHostHeaders,
+                        sourceHostSummaries = sourceHostSummaries,
+                        onSourceHostClick = { host ->
+                            showDialogFragment(SourceDomainCompareDialog.newInstance(host))
+                        },
                         debugMessages = debugMessagesState,
                         isChecking = isCheckingState.value,
                         reorderEnabled = sort == BookSourceSort.Default &&
@@ -1112,6 +1142,40 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
                 sourceHostHeaders[url] = header
             }
         }
+        val summaries = buildSourceHostSummaries(sources)
+        sourceHostSummaries.keys
+            .filter { it !in summaries }
+            .toList()
+            .forEach { sourceHostSummaries.remove(it) }
+        summaries.forEach { (url, summary) ->
+            if (sourceHostSummaries[url] != summary) {
+                sourceHostSummaries[url] = summary
+            }
+        }
+    }
+
+    /**
+     * 组标题的统计。只在每个域名的第一个源上挂一条，保持和 host 头一致。
+     * 统计的是「当前列表里」这一组的源，搜索过滤后数字会跟着变。
+     */
+    private fun buildSourceHostSummaries(sources: List<BookSourcePart>): Map<String, String> {
+        if (!groupSourcesByDomain) return emptyMap()
+        if (capabilityCache.isEmpty()) return emptyMap()
+        val groups = SourceDomainIndex.group(
+            sources = sources.mapNotNull { capabilityCache[it.bookSourceUrl] },
+            hostOf = NetworkUtils::getSubDomainOrNull,
+            onlyDuplicated = false
+        ).associateBy { it.host }
+        val summaries = LinkedHashMap<String, String>()
+        var lastHost: String? = null
+        sources.forEachIndexed { index, source ->
+            val host = getSourceHost(source.bookSourceUrl)
+            if (index == 0 || host != lastHost) {
+                groups[host]?.let { summaries[source.bookSourceUrl] = it.summary() }
+            }
+            lastHost = host
+        }
+        return summaries
     }
 
     private fun refreshDebugMessages(force: Boolean = false) {
