@@ -131,6 +131,16 @@ class SearchActivity : VMBaseActivity<ActivityBookSearchBinding, SearchViewModel
                 }
             }
 
+            R.id.menu_stagger_search -> {
+                putPrefBoolean(
+                    PreferKey.staggerSearch,
+                    !getPrefBoolean(PreferKey.staggerSearch, true)
+                )
+                searchView.query?.toString()?.trim()?.let {
+                    searchView.setQuery(it, true)
+                }
+            }
+
             R.id.menu_search_scope -> alertSearchScope()
             R.id.menu_source_manage -> startActivity<BookSourceActivity>()
             R.id.menu_log -> showDialogFragment(AppLogDialog())
@@ -171,6 +181,7 @@ class SearchActivity : VMBaseActivity<ActivityBookSearchBinding, SearchViewModel
 
     private fun prepareSearchMenu(menu: Menu) {
         menu.findItem(R.id.menu_precision_search)?.isChecked = getPrefBoolean(PreferKey.precisionSearch)
+        menu.findItem(R.id.menu_stagger_search)?.isChecked = getPrefBoolean(PreferKey.staggerSearch, true)
         menu.removeGroup(R.id.menu_group_1)
         menu.removeGroup(R.id.menu_group_2)
         var hasChecked = false

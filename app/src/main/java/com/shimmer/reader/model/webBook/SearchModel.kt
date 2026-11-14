@@ -1,5 +1,6 @@
 package com.shimmer.reader.model.webBook
 
+import android.os.SystemClock
 import com.shimmer.reader.constant.AppConst
 import com.shimmer.reader.constant.AppLog
 import com.shimmer.reader.constant.PreferKey
@@ -8,7 +9,10 @@ import com.shimmer.reader.data.entities.BookSourcePart
 import com.shimmer.reader.data.entities.SearchBook
 import com.shimmer.reader.exception.NoStackTraceException
 import com.shimmer.reader.help.config.AppConfig
+import com.shimmer.reader.help.source.ScheduledSource
+import com.shimmer.reader.help.source.SearchSchedule
 import com.shimmer.reader.ui.book.search.SearchScope
+import com.shimmer.reader.utils.NetworkUtils
 import com.shimmer.reader.utils.getPrefBoolean
 import com.shimmer.reader.utils.mapParallelSafe
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +20,7 @@ import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
@@ -47,6 +52,8 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
     private var searchPage = 1
     private var searchKey: String = ""
     private var bookSourceParts = emptyList<BookSourcePart>()
+    /** 按「同站错峰」排好顺序的搜索任务 */
+    private var searchTasks = emptyList<ScheduledSource<BookSourcePart>>()
     private var searchBooks = arrayListOf<SearchBook>()
     private var searchJob: Job? = null
     private var workingState = MutableStateFlow(true)
@@ -74,6 +81,7 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
                 callBack.onSearchCancel(NoStackTraceException("启用书源为空"))
                 return
             }
+            searchTasks = scheduleSources(bookSourceParts)
             mSearchId = searchId
             searchPage = 1
             initSearchPool()
@@ -88,8 +96,12 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
         var hasMore = false
         searchJob = scope.launch(searchPool!!) {
             flow {
-                for (bs in bookSourceParts) {
-                    bs.getBookSource()?.let {
+                val startAt = SystemClock.elapsedRealtime()
+                for (task in searchTasks) {
+                    // 同一个站点上的第 2 个源往后挪一点，别让十几个源同时挤同一个站
+                    val wait = task.delayMs - (SystemClock.elapsedRealtime() - startAt)
+                    if (wait > 0) delay(wait)
+                    task.source.getBookSource()?.let {
                         emit(it)
                     }
                     workingState.first { it }
@@ -208,6 +220,25 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
             currentCoroutineContext().ensureActive()
             searchBooks = equalData
         }
+    }
+
+    /**
+     * 搜索源发放顺序。
+     *
+     * 关掉「错峰搜索」时完全按原来的顺序、不等待，行为与之前一致。
+     */
+    private fun scheduleSources(
+        sources: List<BookSourcePart>
+    ): List<ScheduledSource<BookSourcePart>> {
+        if (!AppConfig.staggerSearch) {
+            return sources.map { ScheduledSource(it, 0L, "") }
+        }
+        return SearchSchedule.order(
+            sources = sources,
+            urlOf = { it.bookSourceUrl },
+            respondTimeOf = { it.respondTime },
+            hostOf = NetworkUtils::getSubDomainOrNull,
+        )
     }
 
     fun pause() {
