@@ -51,9 +51,6 @@ import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern
 import java.util.zip.ZipFile
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
 
 @Suppress("unused", "ConstPropertyName")
 object BookHelp {
@@ -663,6 +660,9 @@ object BookHelp {
 
     /**
      * 根据目录名获取当前章节
+     *
+     * 判定本身在 [ChapterAlign] 里，这里只把书的字段喂进去。
+     * 换源界面需要知道「到底对上了没有」，所以那边直接用 [ChapterAlign.align]。
      */
     fun getDurChapter(
         oldDurChapterIndex: Int,
@@ -670,47 +670,29 @@ object BookHelp {
         newChapterList: List<BookChapter>,
         oldChapterListSize: Int = 0
     ): Int {
-        if (oldDurChapterIndex <= 0) return 0
-        if (newChapterList.isEmpty()) return oldDurChapterIndex
-        val oldChapterNum = getChapterNum(oldDurChapterName)
-        val oldName = getPureChapterName(oldDurChapterName)
-        val newChapterSize = newChapterList.size
-        val durIndex =
-            if (oldChapterListSize == 0) oldDurChapterIndex
-            else oldDurChapterIndex * oldChapterListSize / newChapterSize
-        val min = max(0, min(oldDurChapterIndex, durIndex) - 10)
-        val max = min(newChapterSize - 1, max(oldDurChapterIndex, durIndex) + 10)
-        var nameSim = 0.0
-        var newIndex = 0
-        var newNum = 0
-        if (oldName.isNotEmpty()) {
-            for (i in min..max) {
-                val newName = getPureChapterName(newChapterList[i].title)
-                val temp = jaccardSimilarity.apply(oldName, newName)
-                if (temp > nameSim) {
-                    nameSim = temp
-                    newIndex = i
-                }
-            }
-        }
-        if (nameSim < 0.96 && oldChapterNum > 0) {
-            for (i in min..max) {
-                val temp = getChapterNum(newChapterList[i].title)
-                if (temp == oldChapterNum) {
-                    newNum = temp
-                    newIndex = i
-                    break
-                } else if (abs(temp - oldChapterNum) < abs(newNum - oldChapterNum)) {
-                    newNum = temp
-                    newIndex = i
-                }
-            }
-        }
-        return if (nameSim > 0.96 || abs(newNum - oldChapterNum) < 1) {
-            newIndex
-        } else {
-            min(max(0, newChapterList.size - 1), oldDurChapterIndex)
-        }
+        return alignChapter(
+            oldDurChapterIndex,
+            oldDurChapterName,
+            newChapterList,
+            oldChapterListSize
+        ).index
+    }
+
+    fun alignChapter(
+        oldDurChapterIndex: Int,
+        oldDurChapterName: String?,
+        newChapterList: List<BookChapter>,
+        oldChapterListSize: Int = 0
+    ): ChapterAlign.Result {
+        return ChapterAlign.align(
+            oldIndex = oldDurChapterIndex,
+            oldTitle = oldDurChapterName,
+            oldTotal = oldChapterListSize,
+            newTitles = newChapterList.map { it.title },
+            pureName = ::getPureChapterName,
+            chapterNum = ::getChapterNum,
+            similarity = { a, b -> jaccardSimilarity.apply(a, b) }
+        )
     }
 
     fun getDurChapter(

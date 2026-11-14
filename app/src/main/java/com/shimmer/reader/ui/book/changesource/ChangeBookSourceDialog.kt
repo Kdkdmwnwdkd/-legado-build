@@ -25,6 +25,7 @@ import com.shimmer.reader.data.entities.BookChapter
 import com.shimmer.reader.data.entities.BookSource
 import com.shimmer.reader.data.entities.SearchBook
 import com.shimmer.reader.databinding.DialogBookChangeSourceBinding
+import com.shimmer.reader.help.book.BookHelp
 import com.shimmer.reader.help.book.IntroMatch
 import com.shimmer.reader.help.book.isWebFile
 import com.shimmer.reader.help.config.AppConfig
@@ -459,6 +460,48 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
         }
     }
 
+    /**
+     * 换源之前先确认进度能不能对上。
+     *
+     * [BookHelp.getDurChapter] 对不上时会安静地按原序号落位，换完之后
+     * 用户要读到一半才发现跳到别处去了。这里把判定结果提前摆出来：
+     * 对上了直接换；没对上就把「原来停在哪、会跳到哪」说清楚，让人自己决定。
+     */
+    private fun confirmChapterAlign(toc: List<BookChapter>, onContinue: () -> Unit) {
+        val old = callBack?.oldBook
+        if (old == null || toc.isEmpty() || old.durChapterIndex <= 0) {
+            onContinue()
+            return
+        }
+        val result = BookHelp.alignChapter(
+            old.durChapterIndex,
+            old.durChapterTitle,
+            toc,
+            old.totalChapterNum
+        )
+        val target = toc.getOrNull(result.index)
+        if (result.matched || target == null) {
+            onContinue()
+            return
+        }
+        alert(
+            title = getString(R.string.change_source_align_title),
+            message = getString(
+                R.string.change_source_align_message,
+                old.durChapterIndex + 1,
+                old.durChapterTitle?.takeIf { it.isNotBlank() }
+                    ?: getString(R.string.unknown),
+                result.index + 1,
+                target.title
+            )
+        ) {
+            positiveButton(R.string.change_source_align_continue) {
+                onContinue()
+            }
+            negativeButton(R.string.cancel)
+        }
+    }
+
     private fun changeSource(searchBook: SearchBook, onSuccess: (() -> Unit)? = null) {
         waitDialog.setText(R.string.load_toc)
         waitDialog.show()
@@ -476,8 +519,10 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
         }
         val coroutine = viewModel.getToc(book, { toc, source ->
             waitDialog.dismiss()
-            callBack?.changeTo(source, book, toc)
-            onSuccess?.invoke()
+            confirmChapterAlign(toc) {
+                callBack?.changeTo(source, book, toc)
+                onSuccess?.invoke()
+            }
         }, {
             waitDialog.dismiss()
             AppLog.put("换源获取目录出错\n$it", it, true)
