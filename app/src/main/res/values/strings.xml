@@ -63,6 +63,16 @@
     <string name="bookshelf_source_disabled_message">《%1$s》用的书源「%2$s」已停用或被删除，打开后只能看到已经缓存过的章节。</string>
     <string name="bookshelf_source_disabled_change_source">去换源</string>
     <string name="bookshelf_source_disabled_open_anyway">仍然打开</string>
+    <string name="bookshelf_orphan_entry">失效书源清单</string>
+    <string name="bookshelf_orphan_title">失效书源</string>
+    <string name="bookshelf_orphan_summary">这些书的书源已停用或被删除，换源后可以继续读。已经缓存过的章节不受影响。</string>
+    <string name="bookshelf_orphan_stats">共 %1$d 本 · 涉及 %2$d 个书源</string>
+    <string name="bookshelf_orphan_one_source">这些书都挂在同一个书源上，修好它比一本一本换省事。</string>
+    <string name="bookshelf_orphan_empty">书架里的书现在都能正常打开。</string>
+    <string name="bookshelf_orphan_change_source">换源</string>
+    <string name="bookshelf_orphan_read_anyway">直接阅读</string>
+    <string name="bookshelf_orphan_progress">读至 %1$s</string>
+    <string name="bookshelf_orphan_no_progress">还没开始读</string>
     <string name="action_search">搜索</string>
     <string name="action_download">下载</string>
     <string name="layout_list">列表</string>
