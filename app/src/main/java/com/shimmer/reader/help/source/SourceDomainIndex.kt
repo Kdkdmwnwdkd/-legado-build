@@ -185,3 +185,24 @@ fun BookSourceCapabilityRow.toCapability(): SourceCapability = SourceCapability(
     hasContent = hasContent,
     respondTime = respondTime,
 )
+
+/**
+ * 对比表右侧那一格。
+ *
+ * 没实测过就退回书源里存的响应时间（校验会写，没测过是默认值 180 秒，按「没测过」处理）；
+ * 实测失败一律显示一个叉，具体原因写在源名下面那一行。
+ * 实测显示的只是「搜索这一段」花了多久，和 respondTime 的口径不同，所以带毫秒。
+ */
+fun probeText(source: SourceCapability, probe: ProbeResult?): String {
+    if (probe == null) {
+        return if (source.hasRespondTime) "${source.respondTime / 1000}s" else "—"
+    }
+    if (!probe.passed) return "✗"
+    val ms = probe.searchMs
+    if (ms <= 0L) return "✓"
+    if (ms < 1000) return "${ms}ms"
+    if (ms >= 10_000) return "${ms / 1000}s"
+    // 自己拼小数位，避开 String.format 在小数点符号上的地区差异
+    val tenth = ms / 100
+    return if (tenth % 10 == 0L) "${tenth / 10}s" else "${tenth / 10}.${tenth % 10}s"
+}
