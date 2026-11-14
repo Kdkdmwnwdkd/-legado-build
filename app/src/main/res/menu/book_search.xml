@@ -10,6 +10,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/menu_stagger_search"
+        android:checkable="true"
+        android:title="@string/stagger_search"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_source_manage"
         android:title="@string/book_source_manage"
         app:showAsAction="never" />

@@ -2721,6 +2721,18 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
             appCtx.putPrefBoolean(PreferKey.shareRateLimitByHost, value)
         }
 
+    /**
+     * 搜索时同一个站点的书源错峰发放。
+     *
+     * 默认开：书源列表按手动顺序排，同站十几个源会在同一瞬间打同一个站，
+     * 站点限速或排队，结果每个都慢。错峰只调整先后，不减少任何书源。
+     */
+    var staggerSearch: Boolean
+        get() = appCtx.getPrefBoolean(PreferKey.staggerSearch, true)
+        set(value) {
+            appCtx.putPrefBoolean(PreferKey.staggerSearch, value)
+        }
+
     var brightnessVwPos: Boolean
         get() = appCtx.getPrefBoolean(PreferKey.brightnessVwPos)
         set(value) {
