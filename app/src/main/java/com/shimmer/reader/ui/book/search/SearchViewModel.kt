@@ -29,6 +29,9 @@ class SearchViewModel(application: Application) : BaseViewModel(application) {
     val searchScope: SearchScope = SearchScope(AppConfig.searchScope)
     var searchFinishLiveData = MutableLiveData<Boolean>()
     var isSearchLiveData = MutableLiveData<Boolean>()
+
+    /** 当前这一屏是不是「上次结果的预览」，刷新完成后自动变回 false */
+    var previewLiveData = MutableLiveData<Boolean>()
     var searchKey: String = ""
     var hasMore = true
     private var searchID = 0L
@@ -44,16 +47,25 @@ class SearchViewModel(application: Application) : BaseViewModel(application) {
 
         override fun onSearchSuccess(searchBooks: List<SearchBook>) {
             VideoBookPreloader.preloadSearchBooks(viewModelScope, searchBooks)
+            previewLiveData.postValue(false)
+            searchBookLiveData.postValue(searchBooks)
+        }
+
+        override fun onSearchPreview(searchBooks: List<SearchBook>) {
+            VideoBookPreloader.preloadSearchBooks(viewModelScope, searchBooks)
+            previewLiveData.postValue(true)
             searchBookLiveData.postValue(searchBooks)
         }
 
         override fun onSearchFinish(isEmpty: Boolean, hasMore: Boolean) {
             this@SearchViewModel.hasMore = hasMore
+            previewLiveData.postValue(false)
             isSearchLiveData.postValue(false)
             searchFinishLiveData.postValue(isEmpty)
         }
 
         override fun onSearchCancel(exception: Throwable?) {
+            previewLiveData.postValue(false)
             isSearchLiveData.postValue(false)
             exception?.let {
                 context.toastOnUi(it.localizedMessage)
@@ -102,6 +114,7 @@ class SearchViewModel(application: Application) : BaseViewModel(application) {
                 searchModel.cancelSearch()
                 searchID = System.currentTimeMillis()
                 searchBookLiveData.postValue(emptyList())
+                previewLiveData.postValue(false)
                 searchKey = key
                 hasMore = true
             }
