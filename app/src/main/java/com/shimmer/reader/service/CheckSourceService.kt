@@ -85,6 +85,9 @@ class CheckSourceService : BaseService() {
     /** 是否跑完了全程。用户中途取消时为 false，结束时不该报「完成」。 */
     private var finished = false
 
+    /** 本轮被自动停用的源上，已经加入书架的书名。收尾时告诉用户哪些书会打不开。 */
+    private var affectedBookNames: List<String> = emptyList()
+
     private val notificationBuilder by lazy {
         NotificationCompat.Builder(this, AppConst.channelIdReadAloud)
             .setSmallIcon(R.drawable.ic_network_check)
@@ -153,6 +156,7 @@ class CheckSourceService : BaseService() {
                 finishCount = 0
                 summary.reset()
                 enabledBefore.clear()
+                affectedBookNames = emptyList()
                 finished = false
                 notificationMsg = getString(R.string.progress_show, "", 0, originSize)
                 upNotification()
@@ -163,7 +167,8 @@ class CheckSourceService : BaseService() {
                 summary.record(
                     invalidGroups = it.invalidGroupList(),
                     wasEnabled = enabledBefore[it.bookSourceUrl] ?: true,
-                    enabledNow = it.enabled
+                    enabledNow = it.enabled,
+                    origin = it.bookSourceUrl
                 )
                 notificationMsg = getString(
                     R.string.progress_show,
@@ -176,6 +181,11 @@ class CheckSourceService : BaseService() {
             }.onCompletion {
                 // 被取消时 onCompletion 收到 CancellationException，此时不算跑完
                 if (it == null) finished = true
+                if (finished && summary.disabledOrigins.isNotEmpty()) {
+                    affectedBookNames = runCatching {
+                        appDb.bookDao.namesByOrigins(summary.disabledOrigins)
+                    }.getOrElse { emptyList() }
+                }
                 CheckSourceRunStore.finish(
                     cancelled = it != null,
                     autoDisabled = summary.disabledSources
@@ -489,7 +499,17 @@ class CheckSourceService : BaseService() {
         } else {
             ""
         }
-        return brief + failedPart + disabledPart
+        // 停用会连带影响书架里正在读的书，这一点比「停用了几个源」更该让用户看到
+        val affectedPart = if (affectedBookNames.isNotEmpty()) {
+            getString(
+                R.string.check_source_done_affected,
+                affectedBookNames.size,
+                affectedBookNames.take(2).joinToString("、")
+            )
+        } else {
+            ""
+        }
+        return brief + failedPart + disabledPart + affectedPart
     }
 
     /**

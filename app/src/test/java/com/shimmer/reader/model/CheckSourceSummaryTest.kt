@@ -141,4 +141,38 @@ class CheckSourceSummaryTest {
         assertEquals(0, s.usable)
         assertTrue(s.topFailures().isEmpty())
     }
+
+    @Test
+    fun disabledOriginsKeepOnlySourcesTurnedOffThisRound() {
+        val s = CheckSourceSummary().apply {
+            record(listOf("搜索失效"), true, false, origin = "https://a.com")
+            // 本来就是关着的，不该算进来
+            record(listOf("搜索失效"), false, false, origin = "https://b.com")
+            record(emptyList(), true, true, origin = "https://c.com")
+        }
+
+        assertEquals(1, s.disabledSources)
+        assertEquals(listOf("https://a.com"), s.disabledOrigins)
+    }
+
+    @Test
+    fun resetClearsDisabledOrigins() {
+        val s = CheckSourceSummary().apply {
+            record(listOf("目录失效"), true, false, origin = "https://a.com")
+            reset()
+        }
+
+        assertEquals(0, s.disabledSources)
+        assertTrue(s.disabledOrigins.isEmpty())
+    }
+
+    @Test
+    fun recordWithoutOriginStillCounts() {
+        val s = CheckSourceSummary().apply {
+            record(listOf("搜索失效"), true, false)
+        }
+
+        assertEquals(1, s.disabledSources)
+        assertTrue(s.disabledOrigins.isEmpty())
+    }
 }
