@@ -1170,6 +1170,9 @@ class ReadBookActivity : BaseReadBookActivity(),
 
             R.id.menu_download -> showDownloadDialog()
             R.id.menu_add_bookmark -> addBookmark()
+            R.id.menu_book_notes -> ReadBook.book?.let {
+                showDialogFragment(BookNoteListDialog.newInstance(it))
+            }
             R.id.menu_simulated_reading -> showSimulatedReading()
             R.id.menu_edit_content -> showDialogFragment(ContentEditDialog())
             R.id.menu_update_toc -> ReadBook.book?.let {
@@ -5782,6 +5785,11 @@ class ReadBookActivity : BaseReadBookActivity(),
             binding.readView.isTextSelected = true
             isSelectingSearchResult = false
         }
+    }
+
+    /** 从「本书摘录」点一条：跳回它所在的位置 */
+    fun openBookNote(note: com.shimmer.reader.data.entities.Bookmark) {
+        viewModel.openChapter(note.chapterIndex, note.chapterPos)
     }
 
     override fun addBookmark() {
