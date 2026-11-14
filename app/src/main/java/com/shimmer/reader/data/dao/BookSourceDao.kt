@@ -9,6 +9,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.shimmer.reader.constant.AppPattern
 import com.shimmer.reader.data.entities.BookSource
+import com.shimmer.reader.data.entities.BookSourceCapabilityRow
 import com.shimmer.reader.data.entities.BookSourcePart
 import com.shimmer.reader.utils.cnCompare
 import com.shimmer.reader.utils.splitNotBlank
@@ -22,6 +23,23 @@ interface BookSourceDao {
 
     @Query("select * from book_sources_part order by customOrder asc")
     fun flowAll(): Flow<List<BookSourcePart>>
+
+    /**
+     * 按域名看同组书源时用的能力快照。
+     *
+     * 只读规则字段是否为空，不联网、不改表结构；
+     * "{}" 和 "null" 都视为没有配规则。
+     */
+    @Query(
+        """select bookSourceUrl, bookSourceName, bookSourceGroup, enabled, enabledExplore, respondTime,
+        case when searchUrl is not null and trim(searchUrl) not in ('', 'null') then 1 else 0 end as hasSearch,
+        case when exploreUrl is not null and trim(exploreUrl) not in ('', 'null') then 1 else 0 end as hasExplore,
+        case when ruleBookInfo is not null and trim(ruleBookInfo) not in ('', 'null', '{}') then 1 else 0 end as hasInfo,
+        case when ruleToc is not null and trim(ruleToc) not in ('', 'null', '{}') then 1 else 0 end as hasToc,
+        case when ruleContent is not null and trim(ruleContent) not in ('', 'null', '{}') then 1 else 0 end as hasContent
+        from book_sources order by customOrder asc"""
+    )
+    fun flowCapabilities(): Flow<List<BookSourceCapabilityRow>>
 
     @Query(
         """select bp.*

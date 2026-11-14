@@ -1,7 +1,9 @@
 package com.shimmer.reader.ui.book.source.manage
 
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -44,6 +46,8 @@ internal fun BookSourceScreen(
     isSelectMode: Boolean,
     showSourceHost: Boolean,
     sourceHostHeaders: Map<String, String?>,
+    sourceHostSummaries: Map<String, String> = emptyMap(),
+    onSourceHostClick: (String) -> Unit = {},
     debugMessages: Map<String, String>,
     isChecking: Boolean,
     reorderEnabled: Boolean,
@@ -145,7 +149,9 @@ internal fun BookSourceScreen(
                     ) {
                         BookSourceHostHeader(
                             hostText = it,
-                            palette = palette
+                            summary = sourceHostSummaries[source.bookSourceUrl],
+                            palette = palette,
+                            onClick = { onSourceHostClick(it) }
                         )
                     }
                 }
@@ -163,19 +169,34 @@ internal fun BookSourceScreen(
 @Composable
 private fun BookSourceHostHeader(
     hostText: String,
-    palette: AppManagementPalette
+    summary: String?,
+    palette: AppManagementPalette,
+    onClick: () -> Unit
 ) {
-    Text(
-        text = hostText,
-        color = palette.settings.accent,
-        fontSize = 13.sp,
-        fontWeight = FontWeight.Medium,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
+    Column(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = onClick)
             .padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 4.dp)
-    )
+    ) {
+        Text(
+            text = hostText,
+            color = palette.settings.accent,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        summary?.takeIf { it.isNotBlank() }?.let {
+            Text(
+                text = it,
+                color = palette.settings.secondaryText,
+                fontSize = 11.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
 }
 
 @Composable
