@@ -43,6 +43,7 @@ class AllBookmarkActivity : VMBaseActivity<ActivityAllBookmarkBinding, AllBookma
             when (it.requestCode) {
                 1 -> viewModel.exportBookmark(uri, currentBookmarks())
                 2 -> viewModel.exportBookmarkMd(uri, currentBookmarks())
+                3 -> viewModel.exportBookmarkObsidian(uri, currentBookmarks())
             }
         }
     }
@@ -123,6 +124,9 @@ class AllBookmarkActivity : VMBaseActivity<ActivityAllBookmarkBinding, AllBookma
             }
             R.id.menu_export_md -> exportDir.launch {
                 requestCode = 2
+            }
+            R.id.menu_export_obsidian -> exportDir.launch {
+                requestCode = 3
             }
         }
         return super.onCompatOptionsItemSelected(item)
