@@ -357,6 +357,28 @@ interface BookDao {
     @Query("select name from books where origin in (:origins)")
     fun namesByOrigins(origins: List<String>): List<String>
 
+    /**
+     * 书架上「源已经不能用了」的书所挂的 origin。
+     *
+     * 停用或删除书源只改 book_sources，books 表一个字段都不动，所以书架自己看不出
+     * 哪本书点开会打不开。这里 join 一次把两类源挑出来：记录不存在（源被删了）、
+     * 记录存在但 enabled = 0（源被停用了）。
+     *
+     * 本地书和 WebDAV 书的 origin 是 loc_book::… / webDav::…，本来就不走书源，
+     * 在 SQL 里直接排除，免得它们全被标成「源已停用」。
+     */
+    @Query(
+        """
+        select distinct b.origin from books b
+        left join book_sources s on s.bookSourceUrl = b.origin
+        where b.type & ${BookType.notShelf} = 0
+        and b.origin not like '${BookType.localTag}%'
+        and b.origin not like '${BookType.webDavTag}%'
+        and (s.bookSourceUrl is null or s.enabled = 0)
+        """
+    )
+    fun orphanSourceOrigins(): List<String>
+
     @Query(
         """select exists(select 1 from books where type & ${BookType.local} > 0 
         and (originName = :fileName or (origin != '${BookType.localTag}' and origin like '%' || :fileName)))"""

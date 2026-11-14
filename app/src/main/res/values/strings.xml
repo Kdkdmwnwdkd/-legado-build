@@ -58,6 +58,11 @@
     <string name="last_read">最后阅读</string>
     <string name="update_log">更新日志</string>
     <string name="bookshelf_empty">书架还空着，先去搜索书籍或从发现里添加吧！</string>
+    <string name="bookshelf_source_disabled_badge">源已停用</string>
+    <string name="bookshelf_source_disabled_title">书源不可用</string>
+    <string name="bookshelf_source_disabled_message">《%1$s》用的书源「%2$s」已停用或被删除，打开后只能看到已经缓存过的章节。</string>
+    <string name="bookshelf_source_disabled_change_source">去换源</string>
+    <string name="bookshelf_source_disabled_open_anyway">仍然打开</string>
     <string name="action_search">搜索</string>
     <string name="action_download">下载</string>
     <string name="layout_list">列表</string>

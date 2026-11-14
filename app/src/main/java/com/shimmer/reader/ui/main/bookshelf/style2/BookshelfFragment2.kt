@@ -57,8 +57,10 @@ import com.shimmer.reader.ui.main.bookshelf.compose.BookshelfItemUi
 import com.shimmer.reader.ui.main.bookshelf.compose.BookshelfListItem
 import com.shimmer.reader.ui.main.bookshelf.compose.BookshelfSnapshotStore
 import com.shimmer.reader.ui.main.bookshelf.compose.buildBookshelfItems
+import com.shimmer.reader.ui.main.bookshelf.compose.markSourceDisabled
 import com.shimmer.reader.ui.main.bookshelf.compose.rememberBookshelfListRenderConfig
 import com.shimmer.reader.ui.main.bookshelf.compose.updateBookshelfItemUpdating
+import com.shimmer.reader.ui.main.bookshelf.showSourceUnavailableDialog
 import com.shimmer.reader.ui.widget.compose.ComposeLazyGridFastScroller
 import com.shimmer.reader.ui.widget.compose.ComposeLazyListFastScroller
 import com.shimmer.reader.utils.applyMainBottomBarPadding
@@ -121,6 +123,9 @@ class BookshelfFragment2() : BaseBookshelfFragment(R.layout.fragment_bookshelf2)
     private var composeListItemStyle by mutableIntStateOf(AppConfig.bookshelfListItemStyle)
     private var composeListIntroLines by mutableIntStateOf(AppConfig.bookshelfListIntroLines)
 
+    /** 书架上有书挂着「已停用 / 已删除」的书源，只存 origin，用来打角标和点击提示。 */
+    private var disabledOrigins: Set<String> = emptySet()
+
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
         setSupportToolbar(binding.titleBar.toolbar)
         installModernBookshelfOverflow(binding.titleBar.toolbar)
@@ -128,6 +133,31 @@ class BookshelfFragment2() : BaseBookshelfFragment(R.layout.fragment_bookshelf2)
         initComposeBookshelf()
         initBookGroupData()
         initBooksData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshDisabledOrigins()
+    }
+
+    /** 停用书源不会改 books 表，书架只能每次回到前台重算一次。 */
+    private fun refreshDisabledOrigins() {
+        if (!isAdded) return
+        viewLifecycleOwner.lifecycleScope.launch {
+            val latest = loadDisabledOrigins()
+            if (latest == disabledOrigins) return@launch
+            disabledOrigins = latest
+            if (composeItems.isNotEmpty()) {
+                updateComposeItems(shelfDisplays)
+            }
+        }
+    }
+
+    private suspend fun loadDisabledOrigins(): Set<String> {
+        return withContext(IO) {
+            runCatching { appDb.bookDao.orphanSourceOrigins().toSet() }
+                .getOrDefault(emptySet())
+        }
     }
 
     private fun initRecyclerView() {
@@ -390,6 +420,7 @@ class BookshelfFragment2() : BaseBookshelfFragment(R.layout.fragment_bookshelf2)
         booksFlowJob = viewLifecycleOwner.lifecycleScope.launch {
             if (useComposeBookshelf) {
                 val snapshotKey = currentComposeSnapshotKey()
+                disabledOrigins = loadDisabledOrigins()
                 restoreComposeSnapshot(snapshotKey)
                 appDb.bookDao.flowShelfByGroup(groupId).map { list ->
                     val sortedList = sortShelfDisplays(list, AppConfig.getBookSortByGroupId(groupId))
@@ -398,7 +429,8 @@ class BookshelfFragment2() : BaseBookshelfFragment(R.layout.fragment_bookshelf2)
                         books = sortedList,
                         isRootGroup = groupId == BookGroup.IdRoot,
                         groupId = groupId,
-                        isUpdating = ::isUpdate
+                        isUpdating = ::isUpdate,
+                        disabledOrigins = disabledOrigins
                     )
                     sortedList to items
                 }.flowWithLifecycleAndDatabaseChangeFirst(
@@ -503,7 +535,8 @@ class BookshelfFragment2() : BaseBookshelfFragment(R.layout.fragment_bookshelf2)
             books = list,
             isRootGroup = groupId == BookGroup.IdRoot,
             groupId = groupId,
-            isUpdating = ::isUpdate
+            isUpdating = ::isUpdate,
+            disabledOrigins = disabledOrigins
         )
         composeDataVersion++
     }
@@ -541,8 +574,9 @@ class BookshelfFragment2() : BaseBookshelfFragment(R.layout.fragment_bookshelf2)
         if (currentComposeSnapshotKey() != snapshotKey || items.isEmpty()) {
             return
         }
-        composeItems = items
-        shelfDisplays = items.mapNotNull { (it as? BookshelfBookItemUi)?.display }
+        val markedItems = markSourceDisabled(items, disabledOrigins)
+        composeItems = markedItems
+        shelfDisplays = markedItems.mapNotNull { (it as? BookshelfBookItemUi)?.display }
         books = shelfDisplays.map { it.toMinimalBook() }
         composeDataVersion++
         itemCount = items.size
@@ -561,7 +595,18 @@ class BookshelfFragment2() : BaseBookshelfFragment(R.layout.fragment_bookshelf2)
 
     private fun onComposeItemClick(item: BookshelfItemUi) {
         when (item) {
-            is BookshelfBookItemUi -> startActivityForBook(item.display.toMinimalBook())
+            is BookshelfBookItemUi -> {
+                val display = item.display
+                // 以数据库里的实时状态为准：快照恢复出来的条目可能还没有标记。
+                if (item.sourceDisabled || display.origin in disabledOrigins) {
+                    showSourceUnavailableDialog(display) {
+                        startActivityForBook(display.toMinimalBook())
+                    }
+                } else {
+                    startActivityForBook(display.toMinimalBook())
+                }
+            }
+
             is BookshelfFolderItemUi -> {
                 switchGroup(item.group.groupId)
             }
