@@ -35,6 +35,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/menu_check_intro"
+        android:title="@string/check_intro"
+        android:checkable="true"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_load_word_count"
         android:title="@string/load_word_count"
         android:checkable="true"

@@ -1344,6 +1344,12 @@
     <string name="system_tts">系统 TTS</string>
     <string name="export_type">导出格式</string>
     <string name="checkAuthor">校验作者</string>
+    <string name="check_intro">比对简介</string>
+    <string name="change_source_intro_mismatch">简介和原书对不上，可能是同名书</string>
+    <string name="change_source_compare_intro">简介对比</string>
+    <string name="change_source_compare_intro_body">原书：\n%1$s\n\n该源：\n%2$s</string>
+    <string name="change_source_intro_none">暂无简介</string>
+    <string name="change_source_compare_intro_empty">原书没有简介，没法比对</string>
     <string name="url_already">此 URL 已订阅</string>
     <string name="high_brush_title">高刷新率</string>
     <string name="high_brush_summary">使用屏幕最高刷新率</string>
