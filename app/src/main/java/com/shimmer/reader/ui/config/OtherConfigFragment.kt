@@ -262,6 +262,12 @@ class OtherConfigFragment : ComposeSettingFragment() {
                 summary = CheckSource.summary,
                 onClick = { showDialogFragment<CheckSourceConfig>() }
             ),
+            switch(
+                key = PreferKey.shareRateLimitByHost,
+                title = str(R.string.share_rate_limit_by_host),
+                summary = str(R.string.share_rate_limit_by_host_summary),
+                defaultValue = false
+            ),
             SettingActionSpec(
                 key = PreferKey.uploadRule,
                 title = str(R.string.direct_link_upload_rule),

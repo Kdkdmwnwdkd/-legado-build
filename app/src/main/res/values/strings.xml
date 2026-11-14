@@ -1476,6 +1476,8 @@
 
     <!-- check source config string -->
     <string name="check_source_config">校验设置</string>
+    <string name="share_rate_limit_by_host">同域名书源共用限速</string>
+    <string name="share_rate_limit_by_host_summary">同一个站点有多个书源时，按书源里写的并发率排队访问，不再各算各的。开启后同站多源会明显变慢，但更不容易被站点拦。</string>
     <string name="check_source_item">校验项目</string>
     <string name="check_source_timeout">单个书源校验超时（秒）</string>
     <string name="check_source_thread_count">校验并发数（1-64）</string>

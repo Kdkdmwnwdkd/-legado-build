@@ -2708,6 +2708,19 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
             appCtx.putPrefBoolean(PreferKey.audioPlayWakeLock, value)
         }
 
+    /**
+     * 同域名的书源要不要共用一份限速配额。
+     *
+     * 默认关：每个书源各自算自己的 concurrentRate，和原来一致。
+     * 打开后，同一个主域、同一个速率的书源排队访问——书源里写的 1/3s 才真正对这个站点生效，
+     * 代价是同站多个源一起用时明显变慢。
+     */
+    var shareRateLimitByHost: Boolean
+        get() = appCtx.getPrefBoolean(PreferKey.shareRateLimitByHost)
+        set(value) {
+            appCtx.putPrefBoolean(PreferKey.shareRateLimitByHost, value)
+        }
+
     var brightnessVwPos: Boolean
         get() = appCtx.getPrefBoolean(PreferKey.brightnessVwPos)
         set(value) {
