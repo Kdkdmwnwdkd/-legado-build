@@ -47,6 +47,8 @@ class ChangeBookSourceAdapter(
                     && oldItem.getDisplayLastChapterTitle() == newItem.getDisplayLastChapterTitle()
                     && oldItem.chapterWordCountText == newItem.chapterWordCountText
                     && oldItem.respondTime == newItem.respondTime
+                    // 加载详情后简介才会回来，这时要重绘，否则「简介对不上」的提示出不来
+                    && oldItem.intro == newItem.intro
         }
 
     }
@@ -147,6 +149,14 @@ class ChangeBookSourceAdapter(
             } else {
                 tvRespondTime.gone()
             }
+
+            // 简介对不上时加一行提示。不改排序、不过滤，只是让用户少踩一次坑。
+            if (callBack.isIntroMismatch(item)) {
+                tvIntroMismatch.visible()
+                tvIntroMismatch.text = context.getString(R.string.change_source_intro_mismatch)
+            } else {
+                tvIntroMismatch.gone()
+            }
         }
     }
 
@@ -237,6 +247,10 @@ class ChangeBookSourceAdapter(
                         updateItems(0, itemCount, listOf<Int>())
                     }
                 }
+
+                R.id.menu_compare_intro -> {
+                    callBack.compareIntro(searchBook)
+                }
             }
             true
         }
@@ -252,5 +266,11 @@ class ChangeBookSourceAdapter(
         fun deleteSource(searchBook: SearchBook)
         fun setBookScore(searchBook: SearchBook, score: Int)
         fun getBookScore(searchBook: SearchBook): Int
+
+        /** 候选源的简介和原书对不上时为 true。 */
+        fun isIntroMismatch(searchBook: SearchBook): Boolean
+
+        /** 长按菜单「对比简介」：把原书和该源的简介摆在一起看。 */
+        fun compareIntro(searchBook: SearchBook)
     }
 }

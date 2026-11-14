@@ -2364,6 +2364,16 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
             appCtx.putPrefBoolean(PreferKey.changeSourceCheckAuthor, value)
         }
 
+    /**
+     * 换源列表是否按简介判断「可能是同名书」。默认开：只在明显对不上时加一行提示，
+     * 不影响排序和过滤，关掉纯粹是给嫌这行字碍眼的人留的开关。
+     */
+    var changeSourceCheckIntro: Boolean
+        get() = appCtx.getPrefBoolean(PreferKey.changeSourceCheckIntro, true)
+        set(value) {
+            appCtx.putPrefBoolean(PreferKey.changeSourceCheckIntro, value)
+        }
+
     var ttsEngine: String?
         get() = appCtx.getPrefString(PreferKey.ttsEngine)
         set(value) {

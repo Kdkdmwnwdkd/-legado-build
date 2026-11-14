@@ -25,6 +25,7 @@ import com.shimmer.reader.data.entities.BookChapter
 import com.shimmer.reader.data.entities.BookSource
 import com.shimmer.reader.data.entities.SearchBook
 import com.shimmer.reader.databinding.DialogBookChangeSourceBinding
+import com.shimmer.reader.help.book.IntroMatch
 import com.shimmer.reader.help.book.isWebFile
 import com.shimmer.reader.help.config.AppConfig
 import com.shimmer.reader.lib.dialogs.alert
@@ -46,6 +47,7 @@ import com.shimmer.reader.utils.getCompatDrawable
 import com.shimmer.reader.utils.observeEvent
 import com.shimmer.reader.utils.setLayout
 import com.shimmer.reader.utils.startActivity
+import com.shimmer.reader.utils.toastOnUi
 import com.shimmer.reader.utils.transaction
 import com.shimmer.reader.utils.viewbindingdelegate.viewBinding
 import kotlinx.coroutines.Dispatchers.IO
@@ -153,6 +155,8 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
         binding.toolBar.setOnMenuItemClickListener(this)
         binding.toolBar.menu.findItem(R.id.menu_check_author)
             ?.isChecked = AppConfig.changeSourceCheckAuthor
+        binding.toolBar.menu.findItem(R.id.menu_check_intro)
+            ?.isChecked = AppConfig.changeSourceCheckIntro
         binding.toolBar.menu.findItem(R.id.menu_load_info)
             ?.isChecked = AppConfig.changeSourceLoadInfo
         binding.toolBar.menu.findItem(R.id.menu_load_toc)
@@ -315,6 +319,12 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
                 item.isChecked = !item.isChecked
             }
 
+            R.id.menu_check_intro -> {
+                AppConfig.changeSourceCheckIntro = !item.isChecked
+                item.isChecked = !item.isChecked
+                adapter.notifyItemRangeChanged(0, adapter.itemCount)
+            }
+
             R.id.menu_load_toc -> {
                 AppConfig.changeSourceLoadToc = !item.isChecked
                 item.isChecked = !item.isChecked
@@ -416,6 +426,37 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
 
     override fun getBookScore(searchBook: SearchBook): Int {
         return viewModel.getBookScore(searchBook)
+    }
+
+    /** 简介判定的结果按「源 + 书 + 该源当前这份简介」缓存，滚动时不重复计算。 */
+    private val introMismatchCache = HashMap<String, Boolean>()
+
+    override fun isIntroMismatch(searchBook: SearchBook): Boolean {
+        if (!AppConfig.changeSourceCheckIntro) return false
+        val base = viewModel.baseIntro ?: return false
+        val key = searchBook.primaryStr() + "#" + (searchBook.intro?.hashCode() ?: 0)
+        return introMismatchCache.getOrPut(key) {
+            IntroMatch.isMismatch(base, searchBook.intro)
+        }
+    }
+
+    override fun compareIntro(searchBook: SearchBook) {
+        val base = viewModel.baseIntro
+        if (base.isNullOrBlank()) {
+            requireContext().toastOnUi(getString(R.string.change_source_compare_intro_empty))
+            return
+        }
+        alert(
+            title = getString(R.string.change_source_compare_intro),
+            message = getString(
+                R.string.change_source_compare_intro_body,
+                base,
+                searchBook.intro?.takeIf { it.isNotBlank() }
+                    ?: getString(R.string.change_source_intro_none)
+            )
+        ) {
+            okButton()
+        }
     }
 
     private fun changeSource(searchBook: SearchBook, onSuccess: (() -> Unit)? = null) {

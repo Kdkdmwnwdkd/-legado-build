@@ -73,6 +73,23 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_origin" />
 
     <TextView
+        android:id="@+id/tv_intro_mismatch"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="8dp"
+        android:maxLines="2"
+        android:textColor="@color/md_amber_600"
+        android:textSize="12sp"
+        android:visibility="gone"
+        tools:text="简介和原书对不上，可能是同名书"
+        tools:visibility="visible"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/iv_checked"
+        app:layout_constraintTop_toBottomOf="@+id/tv_last" />
+
+    <TextView
         android:id="@+id/tv_current_chapter_word_count"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -83,7 +100,7 @@
         android:textColor="@color/secondaryText"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/iv_checked"
-        app:layout_constraintTop_toBottomOf="@+id/tv_last" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_intro_mismatch" />
 
     <TextView
         android:id="@+id/tv_respond_time"

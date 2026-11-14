@@ -69,6 +69,15 @@ open class ChangeBookSourceViewModel(application: Application) : BaseViewModel(a
     var author: String = ""
     private var fromReadBookActivity = false
     private var oldBook: Book? = null
+
+    /**
+     * 原书简介，换源列表用来判断候选源是不是同一本书。可能为 null（原书没有简介）。
+     *
+     * 可能由后台协程回填，adapter 在主线程读，所以标 volatile。
+     */
+    @Volatile
+    var baseIntro: String? = null
+        private set
     private var screenKey: String = ""
     private var bookSourceParts = arrayListOf<BookSourcePart>()
     val totalSourceCount: Int
@@ -162,6 +171,24 @@ open class ChangeBookSourceViewModel(application: Application) : BaseViewModel(a
             }
             this.fromReadBookActivity = fromReadBookActivity
             oldBook = book
+        }
+        initBaseIntro(book)
+    }
+
+    /**
+     * 取原书简介，用于判断候选源是不是同一本书。
+     *
+     * 优先用传进来的书；从搜索页、详情页进来时可能只有书名和作者，这时回书架查一次。
+     * 查不到就算了——没有原书简介就没法比对，列表上什么都不显示，不会误报。
+     */
+    private fun initBaseIntro(book: Book?) {
+        baseIntro = book?.intro?.takeIf { it.isNotBlank() }
+        if (baseIntro != null || name.isBlank()) return
+        execute {
+            baseIntro = appDb.bookDao.getBook(name, author)?.intro?.takeIf { it.isNotBlank() }
+            if (baseIntro != null) {
+                searchCallback?.upAdapter()
+            }
         }
     }
 
