@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -16,7 +18,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import com.shimmer.reader.data.entities.SearchBook
 import com.shimmer.reader.help.config.AppConfig
@@ -41,6 +47,7 @@ fun SearchResultScreen(
     scrollToTopSignal: Int,
     bookshelfTick: Int,
     isInBookshelf: (SearchBook) -> Boolean,
+    isPreview: Boolean,
     lifecycle: Lifecycle,
     onBookClick: (SearchBook) -> Unit,
     onLoadMore: () -> Unit,
@@ -73,6 +80,19 @@ fun SearchResultScreen(
                 contentPadding = PaddingValues(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 86.dp),
                 verticalArrangement = Arrangement.spacedBy(if (rounded) 4.dp else 2.dp)
             ) {
+                if (isPreview) {
+                    item(key = "__preview_hint__") {
+                        Text(
+                            text = "下面是上次搜到的结果，正在重新搜索…",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 6.dp, vertical = 6.dp)
+                        )
+                    }
+                }
                 itemsIndexed(
                     items = books,
                     key = { _, book -> book.stableSearchBookKey() }

@@ -9,6 +9,7 @@ import com.shimmer.reader.data.entities.BookSourcePart
 import com.shimmer.reader.data.entities.SearchBook
 import com.shimmer.reader.exception.NoStackTraceException
 import com.shimmer.reader.help.config.AppConfig
+import com.shimmer.reader.help.search.LocalPreview
 import com.shimmer.reader.help.source.ScheduledSource
 import com.shimmer.reader.help.source.SearchSchedule
 import com.shimmer.reader.ui.book.search.SearchScope
@@ -16,6 +17,7 @@ import com.shimmer.reader.utils.NetworkUtils
 import com.shimmer.reader.utils.getPrefBoolean
 import com.shimmer.reader.utils.mapParallelSafe
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -31,6 +33,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import splitties.init.appCtx
 import java.util.concurrent.Executors
@@ -58,6 +61,12 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
     private var searchJob: Job? = null
     private var workingState = MutableStateFlow(true)
 
+    /** 首屏铺出来的缓存条目，网络结果到达后按源逐条替换 */
+    private val previewBookUrls = HashSet<String>()
+
+    /** 这轮有没有铺过缓存，没铺就不用做清理 */
+    private var previewUsed = false
+
 
     private fun initSearchPool() {
         searchPool?.close()
@@ -76,6 +85,8 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
                 close()
             }
             searchBooks.clear()
+            previewBookUrls.clear()
+            previewUsed = false
             bookSourceParts = callBack.getSearchScope().getBookSourceParts()
             if (bookSourceParts.isEmpty()) {
                 callBack.onSearchCancel(NoStackTraceException("启用书源为空"))
@@ -95,6 +106,8 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
         val precision = appCtx.getPrefBoolean(PreferKey.precisionSearch)
         var hasMore = false
         searchJob = scope.launch(searchPool!!) {
+            // 先把上次的结果铺出来，首屏不再是一个空列表加转圈
+            if (searchPage == 1) injectLocalPreview()
             flow {
                 val startAt = SystemClock.elapsedRealtime()
                 for (task in searchTasks) {
@@ -108,28 +121,46 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
                 }
             }.onStart {
                 callBack.onSearchStart()
-            }.mapParallelSafe(threadCount) {
-                withTimeout(SOURCE_TIMEOUT_MS) {
-                    WebBook.searchBookAwait(
-                        it, searchKey, searchPage,
-                        filter = { name, author, kind ->
-                            !precision || name.contains(searchKey) ||
-                                    author.contains(searchKey) ||
-                                    kind?.contains(searchKey) == true
-                        },
-                        connectTimeoutMs = CONNECT_TIMEOUT_MS,
-                        callTimeoutMs = CALL_TIMEOUT_MS
-                    )
+            }.mapParallelSafe(threadCount) { part ->
+                // 单源失败不该中断整轮搜索；这里自己吞掉异常，把「哪个源、有没有结果」
+                // 原样带出去，后面既要用它清理缓存，也要用它决定要不要刷新列表
+                val books = try {
+                    withTimeout(SOURCE_TIMEOUT_MS) {
+                        WebBook.searchBookAwait(
+                            part, searchKey, searchPage,
+                            filter = { name, author, kind ->
+                                !precision || name.contains(searchKey) ||
+                                        author.contains(searchKey) ||
+                                        kind?.contains(searchKey) == true
+                            },
+                            connectTimeoutMs = CONNECT_TIMEOUT_MS,
+                            callTimeoutMs = CALL_TIMEOUT_MS
+                        )
+                    }
+                } catch (e: Throwable) {
+                    currentCoroutineContext().ensureActive()
+                    null
                 }
-            }.onEach { items ->
-                for (book in items) {
-                    book.releaseHtmlData()
+                SourceResult(part.bookSourceUrl, books)
+            }.onEach { result ->
+                val items = result.books
+                if (items == null) {
+                    // 这个源这次没搜出来：把它上次留下的缓存条目一并撤掉，
+                    // 否则用户点进去才发现打不开
+                    if (dropPreviewOf(result.origin)) {
+                        callBack.onSearchSuccess(searchBooks)
+                    }
+                } else {
+                    for (book in items) {
+                        book.releaseHtmlData()
+                    }
+                    hasMore = hasMore || items.isNotEmpty()
+                    if (items.isNotEmpty()) appDb.searchBookDao.insert(*items.toTypedArray())
+                    val dropped = dropPreviewOf(result.origin)
+                    mergeItems(items, precision)
+                    currentCoroutineContext().ensureActive()
+                    if (items.isNotEmpty() || dropped) callBack.onSearchSuccess(searchBooks)
                 }
-                hasMore = hasMore || items.isNotEmpty()
-                appDb.searchBookDao.insert(*items.toTypedArray())
-                mergeItems(items, precision)
-                currentCoroutineContext().ensureActive()
-                callBack.onSearchSuccess(searchBooks)
             }.onCompletion {
                 if (it == null) callBack.onSearchFinish(searchBooks.isEmpty(), hasMore)
             }.catch {
@@ -138,6 +169,50 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
             }.collect()
         }
     }
+
+    /**
+     * 搜索开始前先用本地记录铺一屏。
+     *
+     * 同一个词搜第二次时，上次的结果立刻显示出来，网络结果再逐条替换，
+     * 首屏不再是一个空列表加转圈。只铺启用中的书源：已停用的源上次能搜到，
+     * 不代表现在还能打开。
+     */
+    private suspend fun injectLocalPreview() {
+        if (!AppConfig.searchLocalPreview) return
+        if (searchKey.isBlank()) return
+        val allowed = bookSourceParts.mapTo(HashSet()) { it.bookSourceUrl }
+        // 合并前多取一些：同一个书名在多个源各有记录，合并后会少一截
+        val cached = withContext(Dispatchers.IO) {
+            runCatching {
+                appDb.searchBookDao.searchLocalPreview(searchKey, LocalPreview.DEFAULT_LIMIT * 4)
+            }.getOrElse { emptyList() }
+        }.filter { it.origin in allowed }
+        if (cached.isEmpty()) return
+        val preview = LocalPreview.merge(cached, LocalPreview.DEFAULT_LIMIT)
+        if (preview.isEmpty()) return
+        preview.forEach { previewBookUrls.add(it.bookUrl) }
+        previewUsed = true
+        searchBooks.addAll(preview)
+        currentCoroutineContext().ensureActive()
+        callBack.onSearchPreview(searchBooks)
+    }
+
+    /**
+     * 某个源本轮已经跑完，撤掉它上次留下的缓存条目。
+     *
+     * @return 是否真的撤掉了东西，用来决定要不要刷新界面
+     */
+    private fun dropPreviewOf(origin: String): Boolean {
+        if (!previewUsed || previewBookUrls.isEmpty()) return false
+        val removed = searchBooks.removeAll { it.origin == origin && it.bookUrl in previewBookUrls }
+        if (removed) {
+            previewBookUrls.removeAll { url -> searchBooks.none { it.bookUrl == url } }
+        }
+        return removed
+    }
+
+    /** 单个源的搜索结果，books 为 null 表示这个源这次没跑通 */
+    private data class SourceResult(val origin: String, val books: List<SearchBook>?)
 
     private suspend fun mergeItems(newDataS: List<SearchBook>, precision: Boolean) {
         if (newDataS.isNotEmpty()) {
@@ -265,6 +340,9 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
         fun getSearchScope(): SearchScope
         fun onSearchStart()
         fun onSearchSuccess(searchBooks: List<SearchBook>)
+
+        /** 先铺出来的一屏本地记录，随后会被网络结果逐步替换 */
+        fun onSearchPreview(searchBooks: List<SearchBook>) {}
         fun onSearchFinish(isEmpty: Boolean, hasMore: Boolean)
         fun onSearchCancel(exception: Throwable? = null)
     }

@@ -16,6 +16,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
@@ -87,6 +88,8 @@ class SearchActivity : VMBaseActivity<ActivityBookSearchBinding, SearchViewModel
     // 搜索结果列表已 Compose 化(SearchResultScreen)，用快照状态驱动，替代原 SearchAdapter。
     private val searchResults = mutableStateListOf<SearchBook>()
     private val bookshelfTick = mutableIntStateOf(0)
+    /** 这一屏是上次结果的预览，还是本轮网络结果 */
+    private val searchPreviewMode = mutableStateOf(false)
     private val resultScrollToTopSignal = mutableIntStateOf(0)
     // 输入帮助区(书架命中 + 搜索历史)已 Compose 化，用快照状态驱动，替代原 BookAdapter/HistoryKeyAdapter。
     private val bookshelfHintBooks = mutableStateListOf<Book>()
@@ -141,6 +144,16 @@ class SearchActivity : VMBaseActivity<ActivityBookSearchBinding, SearchViewModel
                 }
             }
 
+            R.id.menu_local_preview -> {
+                putPrefBoolean(
+                    PreferKey.searchLocalPreview,
+                    !getPrefBoolean(PreferKey.searchLocalPreview, true)
+                )
+                searchView.query?.toString()?.trim()?.let {
+                    searchView.setQuery(it, true)
+                }
+            }
+
             R.id.menu_search_scope -> alertSearchScope()
             R.id.menu_source_manage -> startActivity<BookSourceActivity>()
             R.id.menu_log -> showDialogFragment(AppLogDialog())
@@ -182,6 +195,7 @@ class SearchActivity : VMBaseActivity<ActivityBookSearchBinding, SearchViewModel
     private fun prepareSearchMenu(menu: Menu) {
         menu.findItem(R.id.menu_precision_search)?.isChecked = getPrefBoolean(PreferKey.precisionSearch)
         menu.findItem(R.id.menu_stagger_search)?.isChecked = getPrefBoolean(PreferKey.staggerSearch, true)
+        menu.findItem(R.id.menu_local_preview)?.isChecked = getPrefBoolean(PreferKey.searchLocalPreview, true)
         menu.removeGroup(R.id.menu_group_1)
         menu.removeGroup(R.id.menu_group_2)
         var hasChecked = false
@@ -288,6 +302,7 @@ class SearchActivity : VMBaseActivity<ActivityBookSearchBinding, SearchViewModel
                 scrollToTopSignal = resultScrollToTopSignal.intValue,
                 bookshelfTick = bookshelfTick.intValue,
                 isInBookshelf = { isInBookshelf(it) },
+                isPreview = searchPreviewMode.value,
                 lifecycle = lifecycle,
                 onBookClick = { showBookInfo(it) },
                 onLoadMore = { scrollToBottom() }
@@ -366,6 +381,9 @@ class SearchActivity : VMBaseActivity<ActivityBookSearchBinding, SearchViewModel
             } else {
                 searchFinally()
             }
+        }
+        viewModel.previewLiveData.observe(this) {
+            searchPreviewMode.value = it
         }
         viewModel.searchBookLiveData.observe(this) {
             // 新搜索会以更短的列表重置(流式追加则只增长)，据此判断是否需要回到顶部。

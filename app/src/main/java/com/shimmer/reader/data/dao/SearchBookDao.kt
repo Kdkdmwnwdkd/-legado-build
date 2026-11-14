@@ -46,6 +46,21 @@ interface SearchBookDao {
     @Query("select * from searchBooks where name = :name and author = :author and origin in (select bookSourceUrl from book_sources) and $SAFE_SEARCH_BOOK_ROW order by originOrder limit 1")
     fun getFirstByNameAuthor(name: String, author: String): SearchBook?
 
+    /**
+     * 搜索开始前铺首屏用的本地记录。
+     *
+     * 只取启用中的书源：已停用的源上次能搜到，不代表现在还能打开，
+     * 铺出来只会让用户点进去报错。按记录时间倒序，近期的更可能还有效。
+     */
+    @Query(
+        """select * from searchBooks
+        where (name like '%'||:key||'%' or author like '%'||:key||'%')
+        and origin in (select bookSourceUrl from book_sources where enabled = 1)
+        and $SAFE_SEARCH_BOOK_ROW
+        order by time desc limit :limit"""
+    )
+    suspend fun searchLocalPreview(key: String, limit: Int): List<SearchBook>
+
     @Query(
         """select t1.name, t1.author, t1.origin, t1.originName, t1.coverUrl, t1.bookUrl, 
         t1.type, t1.time, t1.intro, t1.kind, t1.latestChapterTitle, t1.tocUrl, t1.variable, 
