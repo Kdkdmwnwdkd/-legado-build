@@ -25,11 +25,21 @@ class CheckSourceSummary {
     var disabledSources: Int = 0
         private set
 
+    /**
+     * 本轮被自动停用的源地址。
+     *
+     * 收尾文案要告诉用户「这几本正在读的书打不开了」，所以得知道具体是哪些源，
+     * 只记一个数量是不够的。
+     */
+    private val _disabledOrigins = ArrayList<String>()
+    val disabledOrigins: List<String> get() = _disabledOrigins
+
     /** 没有失效分组的源数量。 */
     val usable: Int get() = (checked - failedSources).coerceAtLeast(0)
 
     fun reset() {
         failures.clear()
+        _disabledOrigins.clear()
         checked = 0
         failedSources = 0
         disabledSources = 0
@@ -41,11 +51,20 @@ class CheckSourceSummary {
      * @param invalidGroups 本次结束时仍留在源上的失效分组，空表示这个源这轮可用
      * @param wasEnabled 校验开始前是否启用
      * @param enabledNow 校验结束后是否启用
+     * @param origin 书源地址，用于事后分析哪些书受影响；不传则只计数
      */
-    fun record(invalidGroups: List<String>, wasEnabled: Boolean, enabledNow: Boolean) {
+    fun record(
+        invalidGroups: List<String>,
+        wasEnabled: Boolean,
+        enabledNow: Boolean,
+        origin: String? = null,
+    ) {
         checked++
         // 只统计本轮由开变关的源：用户很久以前手动关掉的源不该算进来
-        if (wasEnabled && !enabledNow) disabledSources++
+        if (wasEnabled && !enabledNow) {
+            disabledSources++
+            origin?.takeIf { it.isNotBlank() }?.let { _disabledOrigins.add(it) }
+        }
         if (invalidGroups.isEmpty()) return
         failedSources++
         invalidGroups.distinct().forEach { tag ->

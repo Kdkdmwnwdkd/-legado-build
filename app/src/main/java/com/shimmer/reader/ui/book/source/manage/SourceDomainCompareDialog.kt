@@ -150,6 +150,24 @@ private fun SourceDomainCompareContent(
     var doneCount by remember { mutableStateOf(0) }
     var asking by remember { mutableStateOf(false) }
     var lastDisabled by remember { mutableStateOf<List<String>>(emptyList()) }
+    // 点开确认框的那一刻把名单定下来，避免实测结果刷新导致「看到的」和「停掉的」不一致
+    var pendingDisable by remember { mutableStateOf<List<SourceCapability>>(emptyList()) }
+    var affectedNames by remember { mutableStateOf<List<String>>(emptyList()) }
+    var affectedLoaded by remember { mutableStateOf(false) }
+
+    // 停用前先看看书架里有多少本书挂在这些源上，这句话不能等用户点了「停用」才说
+    LaunchedEffect(asking) {
+        if (!asking) return@LaunchedEffect
+        val urls = pendingDisable.map { it.url }
+        affectedNames = if (urls.isEmpty()) {
+            emptyList()
+        } else {
+            withContext(Dispatchers.IO) {
+                runCatching { appDb.bookDao.namesByOrigins(urls) }.getOrElse { emptyList() }
+            }
+        }
+        affectedLoaded = true
+    }
 
     // 报表刷新（比如写回了 respondTime）会重建 group，这里把已有结论接回来
     LaunchedEffect(group) {
@@ -221,7 +239,12 @@ private fun SourceDomainCompareContent(
                     count = plan.disable.size,
                     style = style,
                     enabled = !running,
-                    onClick = { asking = true }
+                    onClick = {
+                        pendingDisable = plan.disable
+                        affectedNames = emptyList()
+                        affectedLoaded = false
+                        asking = true
+                    }
                 )
             }
         }
@@ -288,7 +311,7 @@ private fun SourceDomainCompareContent(
     }
 
     if (asking) {
-        val targets = plan.disable
+        val targets = pendingDisable
         AlertDialog(
             onDismissRequest = { asking = false },
             shape = RoundedCornerShape(style.panelRadius),
@@ -303,7 +326,7 @@ private fun SourceDomainCompareContent(
             text = {
                 Column {
                     Text(
-                        text = "这些源的能力被同组里更靠谱的源覆盖，停用后不影响搜索和阅读：",
+                        text = "同组里有能力更全或更快的源，停用这些可以少打一批重复请求：",
                         color = style.secondaryText,
                         fontSize = 13.sp
                     )
@@ -316,6 +339,31 @@ private fun SourceDomainCompareContent(
                         color = style.primaryText,
                         fontSize = 13.sp
                     )
+                    if (affectedNames.isNotEmpty()) {
+                        Spacer(Modifier.height(10.dp))
+                        Text(
+                            text = buildString {
+                                append("其中 ${affectedNames.size} 本已加入书架的书会打不开：")
+                                append(affectedNames.take(3).joinToString("、"))
+                                if (affectedNames.size > 3) append(" 等")
+                            },
+                            color = style.danger,
+                            fontSize = 13.sp
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = "停用后可以在书架长按这本书，用「换源」换到别的源。",
+                            color = style.secondaryText,
+                            fontSize = 11.sp
+                        )
+                    } else if (affectedLoaded) {
+                        Spacer(Modifier.height(10.dp))
+                        Text(
+                            text = "书架里没有书依赖这些源，停用不影响正在读的书。",
+                            color = style.secondaryText,
+                            fontSize = 12.sp
+                        )
+                    }
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = "只停用，不删除。随时可以在书源列表里重新启用。",

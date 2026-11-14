@@ -348,6 +348,15 @@ interface BookDao {
     @Query("select exists(select 1 from books where name = :name and author = :author)")
     fun has(name: String, author: String): Boolean
 
+    /**
+     * 书架里挂在指定书源上的书名。
+     *
+     * 停用书源前用来提示影响面：这些源一旦关掉，用它们加进书架的书就打不开了。
+     * 只取书名而不是整行——Book 实体字段多，这里只需要数量和前几个名字。
+     */
+    @Query("select name from books where origin in (:origins)")
+    fun namesByOrigins(origins: List<String>): List<String>
+
     @Query(
         """select exists(select 1 from books where type & ${BookType.local} > 0 
         and (originName = :fileName or (origin != '${BookType.localTag}' and origin like '%' || :fileName)))"""
