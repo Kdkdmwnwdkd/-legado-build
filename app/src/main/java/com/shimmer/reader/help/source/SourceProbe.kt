@@ -107,7 +107,7 @@ object SourceProbe {
             }
         }
         val searchMs = SystemClock.elapsedRealtime() - searchStart
-        attempt.fold(
+        return attempt.fold(
             onSuccess = { books ->
                 if (books.isEmpty()) {
                     ProbeResult(
