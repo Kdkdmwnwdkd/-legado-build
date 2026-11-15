@@ -20,11 +20,16 @@ import com.shimmer.reader.model.ReadBook
 import com.shimmer.reader.utils.LogUtils
 import com.shimmer.reader.utils.servicePendingIntent
 import com.shimmer.reader.utils.toastOnUi
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicLong
 
@@ -55,11 +60,10 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
         val exhaustedAndEmpty: Boolean = false
     )
 
-    private data class SpeakAttempt(
+    private class PendingSpeak(
+        val tts: TextToSpeech?,
         val reservation: TtsQueueReservation,
-        val text: String,
-        val result: Int,
-        val error: Throwable?
+        val text: String
     )
 
     private var textToSpeech: TextToSpeech? = null
@@ -73,6 +77,12 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
     private var queueContext: QueueContext? = null
     private val silenceGuard = ReadAloudSilenceGuard()
     private var silenceWatchJob: Job? = null
+    // 补队列要连续调若干次 TextToSpeech.speak（每次都是跨进程调用），
+    // 必须串行，否则先后顺序会和队列顺序对不上，播出来是乱的。
+    private val fillMutex = Mutex()
+    // 一段念完之后要补货，但补货不能占着 TTS 的回调线程做。
+    private val refillQueue = Channel<UtteranceRef>(Channel.CONFLATED)
+    private var refillWorker: Job? = null
     private var consecutiveSilenceGiveUps = 0
     private val TAG = "TTSReadAloudService"
 
@@ -84,11 +94,15 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
             AppLog.put("${getString(R.string.tts_init_failed)}\n$it", it, true)
         }
         startSilenceWatchdog()
+        startRefillWorker()
     }
 
     override fun onDestroy() {
         silenceWatchJob?.cancel()
         silenceWatchJob = null
+        refillWorker?.cancel()
+        refillWorker = null
+        refillQueue.close()
         super.onDestroy()
         clearTTS()
     }
@@ -239,7 +253,7 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
             LogUtils.d(TAG, "朗读列表大小 ${contentList.size}")
             LogUtils.d(TAG, "朗读页数 ${textChapter?.pageSize}")
             ensureActive()
-            val fillResult = fillTtsQueue(queueRef)
+            val fillResult = fillMutex.withLock { fillTtsQueue(queueRef) }
             when {
                 fillResult.flushFailed -> recoverFromFlushFailure(queueRef)
                 fillResult.exhaustedAndEmpty -> moveToNextChapterAfterEmptyQueue(queueRef)
@@ -256,7 +270,10 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
     private fun fillTtsQueue(ref: UtteranceRef): QueueFillResult {
         var addedCount = 0
         while (true) {
-            val attempt = synchronized(queueStateLock) {
+            // 锁里只做两件事：占一个位置、取这一段正文。
+            // 真正的 speak 是跨进程调用，引擎正忙时会阻塞几百毫秒，
+            // 放在锁里会把 onStart/onDone 这些回调一起堵住——那就又卡回原样了。
+            val pending = synchronized(queueStateLock) {
                 val context = activeQueueContextLocked(ref)
                     ?: return QueueFillResult(addedCount)
                 val reservation = queueWindow.reserve(
@@ -268,42 +285,44 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
                     addedCount = addedCount,
                     exhaustedAndEmpty = queueWindow.exhausted && queueWindow.queuedCount == 0
                 )
-                val text = checkNotNull(context.speakText(reservation.cueIndex))
-                val tts = textToSpeech
-                val result: Result<Int> = if (tts == null) {
-                    Result.failure(NoStackTraceException("tts is null"))
-                } else {
-                    runCatching {
-                        tts.speak(
-                            text,
-                            if (reservation.flush) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD,
-                            ttsParamsForCue(reservation.cueIndex),
-                            utteranceId(ref.sessionId, ref.generation, reservation.cueIndex)
-                        )
-                    }
-                }
-                val resultCode = result.getOrDefault(TextToSpeech.ERROR)
-                if (resultCode == TextToSpeech.ERROR) {
-                    queueWindow.complete(ref.queueToken, reservation.cueIndex)
-                }
-                SpeakAttempt(
+                PendingSpeak(
+                    tts = textToSpeech,
                     reservation = reservation,
-                    text = text,
-                    result = resultCode,
-                    error = result.exceptionOrNull()
+                    text = checkNotNull(context.speakText(reservation.cueIndex))
                 )
             }
-            if (attempt.result != TextToSpeech.ERROR) {
+            val tts = pending.tts
+            val result: Result<Int> = if (tts == null) {
+                Result.failure(NoStackTraceException("tts is null"))
+            } else {
+                runCatching {
+                    tts.speak(
+                        pending.text,
+                        if (pending.reservation.flush) {
+                            TextToSpeech.QUEUE_FLUSH
+                        } else {
+                            TextToSpeech.QUEUE_ADD
+                        },
+                        ttsParamsForCue(pending.reservation.cueIndex),
+                        utteranceId(ref.sessionId, ref.generation, pending.reservation.cueIndex)
+                    )
+                }
+            }
+            if (result.getOrDefault(TextToSpeech.ERROR) != TextToSpeech.ERROR) {
                 addedCount++
                 continue
             }
-            attempt.error?.let {
+            // 这一句没交出去，把位置还回去，窗口才不会被占着补不进来
+            synchronized(queueStateLock) {
+                queueWindow.complete(ref.queueToken, pending.reservation.cueIndex)
+            }
+            result.exceptionOrNull()?.let {
                 AppLog.put("tts出错\n${it.localizedMessage}", it, true)
             }
-            if (attempt.reservation.flush) {
+            if (pending.reservation.flush) {
                 return QueueFillResult(addedCount, flushFailed = true)
             }
-            AppLog.put("tts朗读出错:${attempt.text}")
+            AppLog.put("tts朗读出错:${pending.text}")
         }
     }
 
@@ -346,9 +365,34 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
             text = contentList.getOrNull(nowSpeak),
             now = SystemClock.elapsedRealtime()
         )
-        val fillResult = fillTtsQueue(ref)
-        if (fillResult.flushFailed) {
-            recoverFromFlushFailure(ref)
+        // 补一次货要连续跨进程调用好几遍 speak。第三方引擎（MultiTTS 这类）正在合成时，
+        // 这些调用会阻塞，压在本回调线程上就等于把下一句的 onStart 一起堵住，
+        // 听感就是两句话之间空一下。丢给后台串行队列，回调立刻返回。
+        refillQueue.trySend(ref)
+    }
+
+    /**
+     * 补队列的后台工人。一次只处理一个请求：队列靠 [TtsQueueWindow] 自己往后推，
+     * 中途新来的请求覆盖旧的也不要紧，补货永远补到窗口满为止。
+     */
+    private fun startRefillWorker() {
+        if (refillWorker?.isActive == true) return
+        refillWorker = lifecycleScope.launch(Dispatchers.IO) {
+            for (ref in refillQueue) {
+                val result = runCatching {
+                    fillMutex.withLock { fillTtsQueue(ref) }
+                }
+                result.onSuccess { fillResult ->
+                    when {
+                        fillResult.flushFailed -> recoverFromFlushFailure(ref)
+                        fillResult.exhaustedAndEmpty -> moveToNextChapterAfterEmptyQueue(ref)
+                    }
+                }.onFailure {
+                    if (it !is CancellationException) {
+                        AppLog.put("tts补队列出错\n${it.localizedMessage}", it, true)
+                    }
+                }
+            }
         }
     }
 
@@ -380,12 +424,14 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
         }
     }
 
-    private fun ttsParamsForCue(cueIndex: Int): Bundle {
+    private fun ttsParamsForCue(cueIndex: Int): Bundle? {
+        // 逐句音量只有在线音频那条链路算得出真实增益；本地 TTS 没有音频样本可测，
+        // 绝大多数时候增益就是 1。这时再传 KEY_PARAM_VOLUME，一部分引擎会认为
+        // "参数变了"，每句都重新准备一次合成管线，正好卡在句与句之间。
+        val gain = speakerLoudnessInfo(cueIndex).gain
+        if (kotlin.math.abs(gain - 1f) < 0.01f) return null
         return Bundle().apply {
-            putFloat(
-                TextToSpeech.Engine.KEY_PARAM_VOLUME,
-                speakerLoudnessInfo(cueIndex).gain.coerceIn(0f, 1f)
-            )
+            putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, gain.coerceIn(0f, 1f))
         }
     }
 
@@ -571,7 +617,15 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
     }
 
     private companion object {
-        const val TTS_QUEUE_WINDOW_SIZE = 4
+        /**
+         * 交给引擎排队的段数。
+         *
+         * 原来只排 4 段。MultiTTS 这类引擎是"收到一段、合成一段、播一段"，一旦某段合成
+         * 比上一段播放慢，队列见底就得干等——听感就是每隔几句卡一下。排到 8 段，
+         * 引擎手上始终有几段的余量，短句连读的章节也不会被追着跑。
+         * 这些只是文本，占用可以忽略；暂停/跳转都会 QUEUE_FLUSH 清空，不会积压。
+         */
+        const val TTS_QUEUE_WINDOW_SIZE = 8
         const val SILENCE_CHECK_INTERVAL_MILLIS = 3_000L
         const val MAX_CONSECUTIVE_SILENCE_GIVE_UPS = 3
     }
