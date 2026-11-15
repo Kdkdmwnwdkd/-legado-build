@@ -2744,6 +2744,23 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
         }
 
     /**
+     * 搜索时限制同一个站点上的并发请求数。
+     *
+     * 错峰只管「什么时候发」，不管「同时几个在飞」：一个请求卡十秒，
+     * 错峰那 600ms 的间隔挡不住，同站十个源照样能在六秒内全部发出去。
+     * 这里给每个站点单独压一个并发上限，超出的排队。
+     *
+     * 和 [shareRateLimitByHost] 不是一回事：那个走书源自带的 concurrentRate，
+     * 是「单位时间内几次」，且只有作者配了才生效；这里是「同时几个」，
+     * 对所有源都生效，不依赖书源规则。
+     */
+    var searchHostConcurrency: Boolean
+        get() = appCtx.getPrefBoolean(PreferKey.searchHostConcurrency, true)
+        set(value) {
+            appCtx.putPrefBoolean(PreferKey.searchHostConcurrency, value)
+        }
+
+    /**
      * 搜索开始时先用本地记录铺一屏。
      *
      * 默认开：同一个词搜第二次时，上次的结果直接显示出来，网络结果再逐条替换。
