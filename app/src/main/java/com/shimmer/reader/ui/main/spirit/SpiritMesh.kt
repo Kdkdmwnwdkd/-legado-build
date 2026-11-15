@@ -156,7 +156,8 @@ class SpiritMesh(val cols: Int = 10, val rows: Int = 28) {
         private const val WAIST_SPREAD = 0.30f
         private const val FOOT_FADE_START = 0.30
         private const val FOOT_FADE_END = 0.86
-        private const val HEM_AMPLITUDE = 0.022f
+        /** 下摆摆幅，按控件宽度算；立绘缩小后要补一点，否则飘带看着像冻住了。 */
+        private const val HEM_AMPLITUDE = 0.026f
         private const val HEM_WAVE_SPAN = 2.6f
         private const val DEG = Math.PI.toFloat() / 180f
     }

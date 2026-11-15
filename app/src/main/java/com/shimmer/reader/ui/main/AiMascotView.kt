@@ -25,7 +25,7 @@ import kotlin.math.sin
  * 它只有一张立绘，但整张图被铺成网格做顺序蒙皮：转头时脖子会跟着弯，
  * 呼吸以脚底为锚，被拎起来时上半身会滞后半拍。这些细节决定了它是"站着"还是"贴上去的"。
  *
- * 平时会自己做一些小动作（张望、歪头、作揖、抖袖、打盹），节奏是 7~10 秒一次，
+ * 平时会自己做一些小动作（张望、歪头、作揖、抖袖、打盹），动作之间停四五秒，
  * 同一个动作不会连着做两遍。缩到屏幕边上之后，它会隔一阵探头出来看一眼。
  *
  * 透明区域不拦截触摸，避免挡住下面的书籍列表滑动。
@@ -379,9 +379,11 @@ class AiMascotView(context: Context) : View(context) {
 
     private fun pauseBeforeNext(): Float {
         // 收在边上时紧张一点，露在外面时懒散一点。
-        val base = if (docked) 5.6f else 7.2f
-        val drift = nextRoll(320) / 100f
-        val tired = if (quietRounds > 3) minOf(quietRounds - 3, 3) * 2.4f else 0f
+        // 但间隔别拉太长：一个动作自己只有两三秒，中间空七八秒，看着就是"没动"。
+        val base = if (docked) 3.4f else 4.2f
+        val drift = nextRoll(220) / 100f
+        // 久坐会越来越懒，但最多再多等三秒多，不然一放就是十几秒不动。
+        val tired = if (quietRounds > 3) minOf(quietRounds - 3, 3) * 1.2f else 0f
         return base + drift + tired
     }
 
