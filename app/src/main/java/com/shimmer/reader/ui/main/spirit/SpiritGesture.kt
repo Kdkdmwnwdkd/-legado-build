@@ -105,6 +105,11 @@ enum class SpiritGestureId {
  *
  * 关键帧的数字是按立绘的构图调的：人物颈部在 44% 高度，头部权重到 58% 才完全消失，
  * 所以小幅度的 [SpiritPose.turn] 看起来是"头在转"，再大就会变成"整张纸在歪"。
+ *
+ * 幅度按"小人在屏幕上只有一百来像素高"来定。立绘从 84dp 缩到 68dp 之后，
+ * 同样转 9 度少掉两成位移，看着就像是没动，所以这里整体放大了一成多：
+ * turn 仍守在 14 度以内不越"纸不歪"的边界，加的主要是 bend / nod / weight
+ * 这些真能看出身子在动的地方。
  */
 object SpiritRepertoire {
 
@@ -112,11 +117,11 @@ object SpiritRepertoire {
         SpiritGestureId.GREETING,
         listOf(
             SpiritKey(0, SpiritPose.REST),
-            SpiritKey(260, SpiritPose(turn = -7.5f, nod = -0.0160f, puff = 0.006f)),
-            SpiritKey(760, SpiritPose(turn = -7.5f, nod = -0.0136f, puff = 0.004f)),
-            SpiritKey(1_180, SpiritPose(turn = 7.9f, nod = -0.0160f, puff = 0.006f)),
-            SpiritKey(1_760, SpiritPose(turn = 7.9f, nod = -0.0104f)),
-            SpiritKey(2_240, SpiritPose(turn = 1.6f, nod = 0.0024f)),
+            SpiritKey(260, SpiritPose(turn = -8.8f, nod = -0.0190f, puff = 0.007f)),
+            SpiritKey(760, SpiritPose(turn = -8.8f, nod = -0.0162f, puff = 0.005f)),
+            SpiritKey(1_180, SpiritPose(turn = 9.2f, nod = -0.0190f, puff = 0.007f)),
+            SpiritKey(1_760, SpiritPose(turn = 9.2f, nod = -0.0124f)),
+            SpiritKey(2_240, SpiritPose(turn = 1.9f, nod = 0.0028f)),
             SpiritKey(2_800, SpiritPose.REST),
         ),
     )
@@ -125,9 +130,9 @@ object SpiritRepertoire {
         SpiritGestureId.SALUTE,
         listOf(
             SpiritKey(0, SpiritPose.REST),
-            SpiritKey(300, SpiritPose(bend = 11.9f, nod = 0.0260f, flow = 0.55f, puff = -0.005f)),
-            SpiritKey(940, SpiritPose(bend = 12.9f, nod = 0.0288f, flow = 0.5f, puff = -0.006f)),
-            SpiritKey(1_620, SpiritPose(bend = 4.2f, nod = 0.0080f, flow = 0.22f)),
+            SpiritKey(300, SpiritPose(bend = 14.2f, nod = 0.0310f, flow = 0.62f, puff = -0.006f)),
+            SpiritKey(940, SpiritPose(bend = 15.4f, nod = 0.0344f, flow = 0.58f, puff = -0.007f)),
+            SpiritKey(1_620, SpiritPose(bend = 5.0f, nod = 0.0096f, flow = 0.26f)),
             SpiritKey(2_400, SpiritPose.REST),
         ),
     )
@@ -136,10 +141,10 @@ object SpiritRepertoire {
         SpiritGestureId.SLEEVE,
         listOf(
             SpiritKey(0, SpiritPose.REST),
-            SpiritKey(360, SpiritPose(weight = -5.0f, bend = 2.5f, flow = 1f)),
-            SpiritKey(920, SpiritPose(weight = 5.0f, bend = -1.7f, flow = 1f)),
-            SpiritKey(1_520, SpiritPose(weight = -3.3f, flow = 0.7f)),
-            SpiritKey(2_020, SpiritPose(weight = 1.4f, flow = 0.42f)),
+            SpiritKey(360, SpiritPose(weight = -6.4f, bend = 3.0f, flow = 1f)),
+            SpiritKey(920, SpiritPose(weight = 6.4f, bend = -2.0f, flow = 1f)),
+            SpiritKey(1_520, SpiritPose(weight = -4.2f, flow = 0.72f)),
+            SpiritKey(2_020, SpiritPose(weight = 1.8f, flow = 0.46f)),
             SpiritKey(2_600, SpiritPose.REST),
         ),
     )
@@ -148,9 +153,9 @@ object SpiritRepertoire {
         SpiritGestureId.TILT,
         listOf(
             SpiritKey(0, SpiritPose.REST),
-            SpiritKey(420, SpiritPose(turn = 12.0f, nod = -0.0080f, flow = 0.4f)),
-            SpiritKey(1_400, SpiritPose(turn = 12.0f, nod = -0.0064f, flow = 0.32f)),
-            SpiritKey(1_820, SpiritPose(turn = 3.5f, flow = 0.18f)),
+            SpiritKey(420, SpiritPose(turn = 13.6f, nod = -0.0096f, flow = 0.46f)),
+            SpiritKey(1_400, SpiritPose(turn = 13.6f, nod = -0.0076f, flow = 0.38f)),
+            SpiritKey(1_820, SpiritPose(turn = 4.0f, flow = 0.22f)),
             SpiritKey(2_240, SpiritPose.REST),
         ),
     )
@@ -159,9 +164,9 @@ object SpiritRepertoire {
         SpiritGestureId.DOZE,
         listOf(
             SpiritKey(0, SpiritPose.REST),
-            SpiritKey(920, SpiritPose(nod = 0.0280f, bend = 5.6f, puff = -0.008f, flow = 0.15f)),
-            SpiritKey(2_640, SpiritPose(nod = 0.0320f, bend = 7.0f, puff = -0.011f, flow = 0.12f)),
-            SpiritKey(3_420, SpiritPose(nod = 0.0120f, bend = 2.8f, puff = -0.004f)),
+            SpiritKey(920, SpiritPose(nod = 0.0336f, bend = 6.6f, puff = -0.009f, flow = 0.18f)),
+            SpiritKey(2_640, SpiritPose(nod = 0.0384f, bend = 8.2f, puff = -0.012f, flow = 0.15f)),
+            SpiritKey(3_420, SpiritPose(nod = 0.0144f, bend = 3.3f, puff = -0.005f)),
             SpiritKey(4_200, SpiritPose.REST),
         ),
     )
@@ -170,11 +175,11 @@ object SpiritRepertoire {
         SpiritGestureId.GAZE,
         listOf(
             SpiritKey(0, SpiritPose.REST),
-            SpiritKey(320, SpiritPose(turn = -9.2f, flow = 0.3f)),
-            SpiritKey(1_060, SpiritPose(turn = -9.2f, nod = -0.0048f, flow = 0.26f)),
-            SpiritKey(1_560, SpiritPose(turn = 8.7f, nod = -0.0048f, flow = 0.3f)),
-            SpiritKey(2_240, SpiritPose(turn = 8.7f, flow = 0.24f)),
-            SpiritKey(2_640, SpiritPose(turn = 1.4f)),
+            SpiritKey(320, SpiritPose(turn = -10.6f, flow = 0.36f)),
+            SpiritKey(1_060, SpiritPose(turn = -10.6f, nod = -0.0058f, flow = 0.32f)),
+            SpiritKey(1_560, SpiritPose(turn = 10.2f, nod = -0.0058f, flow = 0.36f)),
+            SpiritKey(2_240, SpiritPose(turn = 10.2f, flow = 0.30f)),
+            SpiritKey(2_640, SpiritPose(turn = 1.6f)),
             SpiritKey(3_020, SpiritPose.REST),
         ),
     )
