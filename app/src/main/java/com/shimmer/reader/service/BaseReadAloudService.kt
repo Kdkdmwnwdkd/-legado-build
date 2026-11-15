@@ -146,6 +146,13 @@ abstract class BaseReadAloudService : BaseService(),
         private const val TAG = "BaseReadAloudService"
         private const val READ_FROM_POSITION_TIMEOUT_MILLIS = 15_000L
 
+        /**
+         * 焦点被抢后等多久才真的暂停。
+         * 短视频、语音消息、提示音这类抢占通常一两秒就结束，
+         * 等一等就能把"停一下再从这句重念一遍"整个省掉。
+         */
+        private const val FOCUS_PAUSE_DEBOUNCE_MILLIS = 900L
+
         private var suppressNextStopEvent = false
 
     }
@@ -198,6 +205,7 @@ abstract class BaseReadAloudService : BaseService(),
         get() = activeSessionId
     private var needResumeOnAudioFocusGain = false
     private var needResumeOnCallStateIdle = false
+    private var focusPauseJob: Job? = null
     private var registeredPhoneStateListener = false
     private var dsJob: Job? = null
     private val nextRolePrewarmLock = Any()
@@ -450,6 +458,7 @@ abstract class BaseReadAloudService : BaseService(),
     }
 
     override fun onDestroy() {
+        cancelPendingFocusPause()
         floatingWindow?.dispose()
         floatingWindow = null
         super.onDestroy()
@@ -838,6 +847,12 @@ abstract class BaseReadAloudService : BaseService(),
 
     @CallSuper
     open fun pauseReadAloud(abandonFocus: Boolean = true) {
+        cancelPendingFocusPause()
+        // 主动暂停（abandonFocus=true 是用户点出来的）就别再自动接着念了；
+        // 焦点导致的暂停传的是 false，要保留"焦点回来就继续"。
+        if (abandonFocus) {
+            needResumeOnAudioFocusGain = false
+        }
         if (useWakeLock) {
             if (wakeLock.isHeld) wakeLock.release()
             wifiLock?.let { if (it.isHeld) it.release() }
@@ -1483,7 +1498,10 @@ abstract class BaseReadAloudService : BaseService(),
         }
         when (focusChange) {
             AudioManager.AUDIOFOCUS_GAIN -> {
-                if (needResumeOnAudioFocusGain) {
+                val shouldResume = needResumeOnAudioFocusGain
+                needResumeOnAudioFocusGain = false
+                cancelPendingFocusPause()
+                if (shouldResume && pause) {
                     AppLog.put("音频焦点获得,继续朗读")
                     resumeReadAloud()
                 } else {
@@ -1492,23 +1510,48 @@ abstract class BaseReadAloudService : BaseService(),
             }
 
             AudioManager.AUDIOFOCUS_LOSS -> {
-                AppLog.put("音频焦点丢失,暂停朗读")
-                pauseReadAloud()
+                // 以前这里立刻 pauseReadAloud()，而这个方法默认还会把焦点一并放弃。
+                // 一旦放弃，我们就不在焦点栈里了，对方播完也不会再通知我们，
+                // 只能等用户手动点播放——听书时刷条视频、回条消息就停在那儿。
+                // 现在延迟暂停、并且保留焦点，让系统在对方播完后把焦点还回来。
+                scheduleFocusPause("其他应用占用了音频焦点")
             }
 
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
-                AppLog.put("音频焦点暂时丢失并会很快再次获得,暂停朗读")
-                if (!pause) {
-                    needResumeOnAudioFocusGain = true
-                    pauseReadAloud(false)
-                }
+                scheduleFocusPause("音频焦点暂时丢失")
             }
 
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-                // 短暂丢失焦点，这种情况是被其他应用申请了短暂的焦点希望其他声音能压低音量（或者关闭声音）凸显这个声音（比如短信提示音），
-                AppLog.put("音频焦点短暂丢失,不做处理")
+                // 短暂的提示音，继续念，不让 TTS 队列被清空重来
+                AppLog.put("音频焦点短暂丢失,继续朗读")
             }
         }
+    }
+
+    /**
+     * 焦点被别的声音抢走时，不立刻掐断朗读。
+     *
+     * 刷短视频、听语音消息、切歌这类操作抢走焦点的时间常常只有一两秒。
+     * 立刻暂停会把引擎里排好的段全部清掉，恢复时再从当前这句重念一遍，
+     * 听感就是"卡一下、还重复半句"。这里先等一小会儿，
+     * 期间焦点回来了就当作什么都没发生，队列一点没动。
+     */
+    private fun scheduleFocusPause(reason: String) {
+        if (!isRun || pause) return
+        needResumeOnAudioFocusGain = true
+        if (focusPauseJob?.isActive == true) return
+        focusPauseJob = lifecycleScope.launch {
+            delay(FOCUS_PAUSE_DEBOUNCE_MILLIS)
+            focusPauseJob = null
+            if (!isRun || pause || AppConfig.ignoreAudioFocus) return@launch
+            AppLog.put("$reason,暂停朗读")
+            pauseReadAloud(abandonFocus = false)
+        }
+    }
+
+    private fun cancelPendingFocusPause() {
+        focusPauseJob?.cancel()
+        focusPauseJob = null
     }
 
     private fun upReadAloudNotification() {
