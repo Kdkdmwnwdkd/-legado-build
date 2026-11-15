@@ -144,6 +144,16 @@ class SearchActivity : VMBaseActivity<ActivityBookSearchBinding, SearchViewModel
                 }
             }
 
+            R.id.menu_host_concurrency -> {
+                putPrefBoolean(
+                    PreferKey.searchHostConcurrency,
+                    !getPrefBoolean(PreferKey.searchHostConcurrency, true)
+                )
+                searchView.query?.toString()?.trim()?.let {
+                    searchView.setQuery(it, true)
+                }
+            }
+
             R.id.menu_local_preview -> {
                 putPrefBoolean(
                     PreferKey.searchLocalPreview,
@@ -195,6 +205,8 @@ class SearchActivity : VMBaseActivity<ActivityBookSearchBinding, SearchViewModel
     private fun prepareSearchMenu(menu: Menu) {
         menu.findItem(R.id.menu_precision_search)?.isChecked = getPrefBoolean(PreferKey.precisionSearch)
         menu.findItem(R.id.menu_stagger_search)?.isChecked = getPrefBoolean(PreferKey.staggerSearch, true)
+        menu.findItem(R.id.menu_host_concurrency)?.isChecked =
+            getPrefBoolean(PreferKey.searchHostConcurrency, true)
         menu.findItem(R.id.menu_local_preview)?.isChecked = getPrefBoolean(PreferKey.searchLocalPreview, true)
         menu.removeGroup(R.id.menu_group_1)
         menu.removeGroup(R.id.menu_group_2)

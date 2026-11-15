@@ -5,11 +5,13 @@ import com.shimmer.reader.constant.AppConst
 import com.shimmer.reader.constant.AppLog
 import com.shimmer.reader.constant.PreferKey
 import com.shimmer.reader.data.appDb
+import com.shimmer.reader.data.entities.BookSource
 import com.shimmer.reader.data.entities.BookSourcePart
 import com.shimmer.reader.data.entities.SearchBook
 import com.shimmer.reader.exception.NoStackTraceException
 import com.shimmer.reader.help.config.AppConfig
 import com.shimmer.reader.help.search.LocalPreview
+import com.shimmer.reader.help.source.HostConcurrencyGate
 import com.shimmer.reader.help.source.ScheduledSource
 import com.shimmer.reader.help.source.SearchSchedule
 import com.shimmer.reader.ui.book.search.SearchScope
@@ -49,6 +51,9 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
         private const val SOURCE_TIMEOUT_MS = 25_000L
     }
 
+    /** 一路经过错峰队列的搜索任务：源本身加上它归属的站点，供并发闸门分组 */
+    private data class SearchTask(val source: BookSource, val host: String)
+
     val threadCount = AppConfig.threadCount.coerceAtLeast(1)
     private var searchPool: ExecutorCoroutineDispatcher? = null
     private var mSearchId = 0L
@@ -57,6 +62,12 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
     private var bookSourceParts = emptyList<BookSourcePart>()
     /** 按「同站错峰」排好顺序的搜索任务 */
     private var searchTasks = emptyList<ScheduledSource<BookSourcePart>>()
+
+    /**
+     * 同站并发闸门。错峰管「什么时候发」，它管「同时几个在飞」。
+     * 每轮新搜索重建一次：上一轮残留的排队不该算到这一轮头上。
+     */
+    private var hostGate = newHostGate()
     private var searchBooks = arrayListOf<SearchBook>()
     private var searchJob: Job? = null
     private var workingState = MutableStateFlow(true)
@@ -93,6 +104,7 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
                 return
             }
             searchTasks = scheduleSources(bookSourceParts)
+            hostGate = newHostGate()
             mSearchId = searchId
             searchPage = 1
             initSearchPool()
@@ -115,33 +127,37 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
                     val wait = task.delayMs - (SystemClock.elapsedRealtime() - startAt)
                     if (wait > 0) delay(wait)
                     task.source.getBookSource()?.let {
-                        emit(it)
+                        emit(SearchTask(it, task.host))
                     }
                     workingState.first { it }
                 }
             }.onStart {
                 callBack.onSearchStart()
-            }.mapParallelSafe(threadCount) { part ->
+            }.mapParallelSafe(threadCount) { task ->
                 // 单源失败不该中断整轮搜索；这里自己吞掉异常，把「哪个源、有没有结果」
                 // 原样带出去，后面既要用它清理缓存，也要用它决定要不要刷新列表
                 val books = try {
-                    withTimeout(SOURCE_TIMEOUT_MS) {
-                        WebBook.searchBookAwait(
-                            part, searchKey, searchPage,
-                            filter = { name, author, kind ->
-                                !precision || name.contains(searchKey) ||
-                                        author.contains(searchKey) ||
-                                        kind?.contains(searchKey) == true
-                            },
-                            connectTimeoutMs = CONNECT_TIMEOUT_MS,
-                            callTimeoutMs = CALL_TIMEOUT_MS
-                        )
+                    // 闸门套在超时外面：排队的时间不算进单源超时，
+                    // 否则排久一点就直接判失败，这几个源等于白跑
+                    hostGate.withSlot(task.host) {
+                        withTimeout(SOURCE_TIMEOUT_MS) {
+                            WebBook.searchBookAwait(
+                                task.source, searchKey, searchPage,
+                                filter = { name, author, kind ->
+                                    !precision || name.contains(searchKey) ||
+                                            author.contains(searchKey) ||
+                                            kind?.contains(searchKey) == true
+                                },
+                                connectTimeoutMs = CONNECT_TIMEOUT_MS,
+                                callTimeoutMs = CALL_TIMEOUT_MS
+                            )
+                        }
                     }
                 } catch (e: Throwable) {
                     currentCoroutineContext().ensureActive()
                     null
                 }
-                SourceResult(part.bookSourceUrl, books)
+                SourceResult(task.source.bookSourceUrl, books)
             }.onEach { result ->
                 val items = result.books
                 if (items == null) {
@@ -297,16 +313,24 @@ class SearchModel(private val scope: CoroutineScope, private val callBack: CallB
         }
     }
 
+    private fun newHostGate(): HostConcurrencyGate {
+        val limit = if (AppConfig.searchHostConcurrency) HostConcurrencyGate.DEFAULT_LIMIT else 0
+        return HostConcurrencyGate(limit)
+    }
+
     /**
      * 搜索源发放顺序。
      *
-     * 关掉「错峰搜索」时完全按原来的顺序、不等待，行为与之前一致。
+     * 关掉「错峰搜索」时完全按原来的顺序、不等待，行为与之前一致；
+     * 但站点归属还是要带上，因为并发闸门是独立的一层，不该跟错峰一起被关掉。
      */
     private fun scheduleSources(
         sources: List<BookSourcePart>
     ): List<ScheduledSource<BookSourcePart>> {
         if (!AppConfig.staggerSearch) {
-            return sources.map { ScheduledSource(it, 0L, "") }
+            return sources.map {
+                ScheduledSource(it, 0L, NetworkUtils.getSubDomainOrNull(it.bookSourceUrl) ?: "")
+            }
         }
         return SearchSchedule.order(
             sources = sources,
