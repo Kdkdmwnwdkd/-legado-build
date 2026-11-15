@@ -509,6 +509,8 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
         if (book.isWebFile) { //文件类书源不解析目录
             val source = appDb.bookSourceDao.getBookSource(book.origin)
             if (source == null) {
+                // 书源被删了还在等目录，不关掉这个转圈弹窗会一直盖在界面上
+                waitDialog.dismiss()
                 AppLog.put("书源不存在", null, true)
                 return
             }
