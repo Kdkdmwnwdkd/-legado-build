@@ -129,6 +129,33 @@ class ChapterAlignTest {
     }
 
     @Test
+    fun `旧书章数多、新源章数少时按比例换算不会跳过整段窗口`() {
+        // 旧源 1000 章（中间夹着大量重复章和广告章），新源只有 500 章；
+        // 用户停在旧书第 900 章的《归途》，在新源里它是第 450 章。
+        // 换算方向写反的话，估算位置会跑到 1800，窗口变成 890..499 的空区间，
+        // 标题比对整段跳过，最后按原序号落到 499（最后一章）——进度直接从 90% 跳到末尾。
+        val toc = (1..500).map { "第${it}章 内容$it" }.toMutableList()
+        toc[449] = "第450章 归途"
+
+        val result = align(900, "第900章 归途", 1000, toc)
+
+        assertEquals(ChapterAlign.Reason.TITLE, result.reason)
+        assertEquals(449, result.index)
+        assertTrue(result.matched)
+    }
+
+    @Test
+    fun `换算位置溢出时窗口仍然有内容可找`() {
+        // 旧书 2000 章停在 1900 章，新源只有 120 章，按比例该落在末尾附近
+        val toc = (1..120).map { "第${it}章 内容$it" }
+        val result = align(1900, "第120章 内容120", 2000, toc)
+
+        assertEquals(ChapterAlign.Reason.TITLE, result.reason)
+        assertEquals(119, result.index)
+        assertTrue(result.index in toc.indices)
+    }
+
+    @Test
     fun `回退时也会带回窗口里最像的那一章`() {
         val toc = chapters("第1章 初入江湖", "第2章 风起云涌", "第3章 山雨欲来风满楼")
         // 标题只差几个字，够不上 0.96；编号对上走 NUMBER，但 bestIndex 依然要记录

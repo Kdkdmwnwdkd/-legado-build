@@ -73,9 +73,21 @@ object ChapterAlign {
 
         val newSize = newTitles.size
         // 新源可能多了卷标题、少了重复章，先按总章数比例估个大致位置，再在附近找。
-        val scaled = if (oldTotal <= 0) oldIndex else oldIndex * oldTotal / newSize
-        val from = maxOf(0, minOf(oldIndex, scaled) - WINDOW)
-        val to = minOf(newSize - 1, maxOf(oldIndex, scaled) + WINDOW)
+        //
+        // 换算方向是「旧序号 × 新章数 ÷ 旧总章数」。反过来写（× 旧总数 ÷ 新章数）
+        // 在两边章数差得多时会把位置推到新目录之外，窗口直接变成 from > to 的空区间，
+        // 标题和章节号两轮比对全部跳过，最后只能按原序号硬落——长书换到短源就是这样
+        // 从 90% 直接跳到最后一章的。
+        val scaled = if (oldTotal <= 0) {
+            oldIndex
+        } else {
+            (oldIndex.toLong() * newSize / oldTotal).toInt()
+        }
+        // 两个基准都先夹进新目录范围：任一个越界都会让窗口空掉。
+        val anchor = scaled.coerceIn(0, newSize - 1)
+        val pivot = oldIndex.coerceIn(0, newSize - 1)
+        val from = maxOf(0, minOf(pivot, anchor) - WINDOW)
+        val to = minOf(newSize - 1, maxOf(pivot, anchor) + WINDOW)
 
         val oldName = pureName(oldTitle)
         var bestIndex = 0
@@ -115,7 +127,7 @@ object ChapterAlign {
         }
 
         return Result(
-            index = minOf(newSize - 1, maxOf(0, oldIndex)),
+            index = pivot,
             reason = Reason.FALLBACK,
             bestIndex = bestIndex,
             bestSimilarity = bestSimilarity,
