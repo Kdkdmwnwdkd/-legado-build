@@ -413,6 +413,19 @@ data class Book(
                 replaceBook = toReplaceBook()
             )
             newBook.durChapterPos = durChapterPos
+            // 换源换了目录，章数得跟着改。新书来自 SearchBook.toBook()，那个对象里
+            // totalChapterNum 是默认的 0，不在这里补的话书架按 0 章算未读，
+            // 一直显示「已读完」，要等用户打开书重新拉一次目录才恢复。
+            newBook.totalChapterNum = toc.size
+            newBook.latestChapterTitle = toc.last().getDisplayTitle(
+                ContentProcessor.get(newBook.name, newBook.origin).getTitleReplaceRules(),
+                getUseReplaceRule(),
+                replaceBook = toReplaceBook()
+            )
+            // 「最近更新」说的是内容更新时间，不是换源时间。newBook 里没这个字段，
+            // 默认值就是当前时间，不接回旧值的话书架会显示「刚刚更新」，
+            // 按最近更新排序时也会蹿到最前面。
+            newBook.latestChapterTime = latestChapterTime
         }
         newBook.durChapterTime = durChapterTime
         newBook.group = group

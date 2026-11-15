@@ -171,8 +171,13 @@ fun getProxyClient(proxy: String? = null, scope: DnsScope = DnsScope.OTHER): OkH
         proxyClientCache[cacheKey]?.let { return it }
     }
     val r = Regex("(http|socks4|socks5)://(.*):(\\d{2,5})(@.*@.*)?")
-    val ms = r.findAll(proxy)
-    val group = ms.first()
+    // 书源里写代理经常漏协议头（"127.0.0.1:1080"），以前直接 first() 会抛
+    // NoSuchElementException，整条书源的所有请求只剩一句「List is empty」，
+    // 根本看不出是代理写错了。这里补个默认协议头，真解析不了再给能看懂的提示。
+    val normalized = if (proxy.contains("://")) proxy.trim() else "http://${proxy.trim()}"
+    val group = r.find(normalized) ?: throw IllegalArgumentException(
+        "代理地址格式不对，应为 http://主机:端口 或 socks5://主机:端口：$proxy"
+    )
     var username = ""       //代理服务器验证用户名
     var password = ""       //代理服务器验证密码
     val type = if (group.groupValues[1] == "http") "http" else "socks"

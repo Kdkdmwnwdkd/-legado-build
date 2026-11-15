@@ -333,7 +333,9 @@ object ImportOldData {
         var urlList = url.split("|")
         url = urlList[0]
         if (urlList.size > 1) {
-            map["charset"] = urlList[1].split("=")[1]
+            // 旧格式是 url|charset=gbk，但也见过直接写 url|gbk 的，
+            // 以前 split("=")[1] 遇到没等号的直接抛异常，一条书源出错整个旧数据都导不进来
+            map["charset"] = urlList[1].substringAfter("=").trim()
         }
         mather = jsPattern.matcher(url)
         val jsList = arrayListOf<String>()

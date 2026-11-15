@@ -263,8 +263,11 @@ abstract class RecyclerAdapter<ITEM, VB : ViewBinding>(protected val context: Co
     @Synchronized
     fun removeItem(item: ITEM) {
         kotlin.runCatching {
-            if (this.items.remove(item)) {
-                notifyItemRemoved(this.items.indexOf(item) + getHeaderCount())
+            // 必须先把下标取出来再删：删完再 indexOf 拿到的是后面那个相等元素的下标，
+            // 找不到时还是 -1，通知出去的位置和被删掉的那一行对不上
+            val index = this.items.indexOf(item)
+            if (index >= 0 && this.items.removeAt(index) != null) {
+                notifyItemRemoved(index + getHeaderCount())
             }
             onCurrentListChanged()
         }
