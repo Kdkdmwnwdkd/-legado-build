@@ -128,7 +128,7 @@ object ThemeConfig {
     }
 
     /**
-     * 鑾峰彇閾炬帴鑾峰彇鍥剧墖鏂囦欢锟?
+     * 把主题配置里的图片链接落成本地文件
      */
     private fun getUrlToFile(url: String): String {
         val suffix = when {
@@ -509,7 +509,7 @@ object ThemeConfig {
                 postEvent(EventBus.RECREATE, "")
             }
         } catch (e: Exception) {
-            AppLog.put("璁剧疆涓婚鍑洪敊\n$e", e, true)
+            AppLog.put("设置主题出错\n$e", e, true)
         }
     }
 
@@ -1011,7 +1011,7 @@ object ThemeConfig {
     }
 
     /**
-     * 鏇存柊涓婚
+     * 更新主题
      */
     fun applyTheme(context: Context, isNightTheme: Boolean = AppConfig.isNightTheme) = with(context) {
         when {

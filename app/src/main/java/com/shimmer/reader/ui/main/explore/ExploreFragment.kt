@@ -935,7 +935,7 @@ class ExploreFragment() : VMBaseFragment<ExploreViewModel>(R.layout.fragment_exp
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
-                AppLog.put("濂椾欢鍙戠幇鍔犺浇鍒嗙被澶辫触", e)
+                AppLog.put("套件发现加载分类失败", e)
                 emptyList()
             }
         }

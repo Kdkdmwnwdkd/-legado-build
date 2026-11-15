@@ -65,7 +65,12 @@ class RssViewModel(application: Application) : BaseViewModel(application) {
                     }
                 }
                 if (sortUrl.contains("::")) {
-                    return@execute sortUrl.split("::")[1]
+                    // split 会丢掉结尾的空串，"分类::" 这种写法只剩 1 个元素，[1] 就崩了；
+                    // 取不到地址时退回源地址，别把整条 RSS 源带崩
+                    return@execute sortUrl.split("::", limit = 2)
+                        .getOrNull(1)
+                        ?.takeIf { it.isNotBlank() }
+                        ?: rssSource.sourceUrl
                 } else {
                     return@execute sortUrl
                 }
