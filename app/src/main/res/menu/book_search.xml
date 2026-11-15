@@ -16,6 +16,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/menu_host_concurrency"
+        android:checkable="true"
+        android:title="@string/search_host_concurrency"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_local_preview"
         android:checkable="true"
         android:title="@string/local_preview"
