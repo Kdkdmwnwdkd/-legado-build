@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.lifecycle.lifecycleScope
 import com.shimmer.reader.base.BaseActivity
+import com.shimmer.reader.constant.AppLog
 import com.shimmer.reader.data.appDb
 import com.shimmer.reader.data.entities.Book
 import com.shimmer.reader.databinding.ActivityBookshelfOrphanSourceBinding
@@ -57,7 +58,15 @@ class BookshelfOrphanSourceActivity : BaseActivity<ActivityBookshelfOrphanSource
 
     private fun reload() {
         lifecycleScope.launch {
-            booksState = withContext(IO) { appDb.bookDao.booksWithOrphanSource() }
+            // 查库失败也要把转圈收掉：这个页面唯一的出口是返回键，
+            // 卡在 loading 上等于把人关在里面
+            booksState = withContext(IO) {
+                runCatching { appDb.bookDao.booksWithOrphanSource() }
+                    .getOrElse {
+                        AppLog.put("读取失效书源清单出错\n${it.localizedMessage}", it)
+                        emptyList()
+                    }
+            }
             loadingState = false
         }
     }

@@ -78,6 +78,9 @@ object IntroMatch {
         return false
     }
 
+    /** 简介里的 HTML 实体，`&nbsp;` 这类不处理会被当成字母 n、b、s、p 混进比对。 */
+    private val HTML_ENTITY = Regex("&[a-zA-Z#][a-zA-Z0-9]{0,8};")
+
     /**
      * 只留文字和数字，去掉标签、空白和标点，统一小写，再截断。
      *
@@ -88,7 +91,7 @@ object IntroMatch {
         if (raw.isNullOrEmpty()) return null
         val sb = StringBuilder(raw.length)
         var inTag = false
-        for (c in raw) {
+        for (c in HTML_ENTITY.replace(raw, " ")) {
             when {
                 c == '<' -> inTag = true
                 c == '>' -> {
