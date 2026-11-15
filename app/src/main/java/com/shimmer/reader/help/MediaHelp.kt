@@ -57,14 +57,40 @@ object MediaHelp {
     }
 
     /**
+     * 常驻的那段静音音频。
+     * 焦点被别的应用抢来抢去时 play() 会被反复调用，
+     * 每次都 new 一个 MediaPlayer，前一个还开着就被丢掉，
+     * 音频通道不停地开关，反而是额外的开销。
+     */
+    private var silentPlayer: MediaPlayer? = null
+
+    /**
      * 播放静音音频,用来获取音频焦点
      */
+    @Synchronized
     fun playSilentSound(mContext: Context) {
         kotlin.runCatching {
             // Stupid Android 8 "Oreo" hack to make media buttons work
-            val mMediaPlayer = MediaPlayer.create(mContext, R.raw.silent_sound)
-            mMediaPlayer.setOnCompletionListener { mMediaPlayer.release() }
-            mMediaPlayer.start()
+            val player = silentPlayer ?: MediaPlayer.create(mContext, R.raw.silent_sound)
+                ?.also { mp ->
+                    mp.setOnErrorListener { p, _, _ ->
+                        p.runCatching { release() }
+                        if (silentPlayer === p) silentPlayer = null
+                        true
+                    }
+                    silentPlayer = mp
+                } ?: return
+            if (!player.isPlaying) {
+                player.seekTo(0)
+                player.start()
+            }
         }
+    }
+
+    /** 朗读服务退出时放掉，不留着占音频通道 */
+    @Synchronized
+    fun releaseSilentSound() {
+        kotlin.runCatching { silentPlayer?.release() }
+        silentPlayer = null
     }
 }

@@ -103,6 +103,7 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
         refillWorker?.cancel()
         refillWorker = null
         refillQueue.close()
+        MediaHelp.releaseSilentSound()
         super.onDestroy()
         clearTTS()
     }
