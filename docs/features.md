@@ -1,6 +1,6 @@
 # 功能说明
 
-阅读Shimmer 是一个 Android 阅读器。支持自行添加书源、阅读本地书籍，并提供书架管理、听书、主题、AI 和自动任务等功能。应用不内置书籍内容，书源与阅读内容由使用者自行添加。
+阅读Shimmer 是独立维护的 Android 阅读器：书源和本地书都由你自己加进来，应用本身不带内容。下面按日常会用到的顺序，说明现在有哪些能力。
 
 本文对应当前版本。安装包见 [GitHub Releases](https://github.com/Kdkdmwnwdkd/-legado-build/releases)。
 
