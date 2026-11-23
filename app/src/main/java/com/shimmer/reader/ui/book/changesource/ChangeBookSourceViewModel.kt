@@ -95,7 +95,10 @@ open class ChangeBookSourceViewModel(application: Application) : BaseViewModel(a
     private var searchCallback: SourceCallback? = null
     private val chapterNumRegex = "^\\[(\\d+)]".toRegex()
     private val comparatorBase by lazy {
-        compareByDescending<SearchBook> { getBookScore(it) }
+        // 同名书排前面，只靠分卷数字勉强匹配上的垫底——放宽书名之后，
+        // 「斗破苍穹2」这类续作/分卷会跟着进来，不能让它占住列表顶部
+        compareByDescending<SearchBook> { SourceMatch.nameMatchLevel(name, it.name) }
+            .thenByDescending { getBookScore(it) }
             .thenByDescending { SourceConfig.getSourceScore(it.origin) }
     }
     private val defaultComparator by lazy {
