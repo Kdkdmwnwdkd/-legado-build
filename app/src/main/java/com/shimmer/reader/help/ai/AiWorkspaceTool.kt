@@ -733,12 +733,14 @@ object AiWorkspaceTool {
         val oldSource = appDb.bookSourceDao.getBookSource(source.bookSourceUrl)
         // 能走到应用这一步，说明刚在调试里跑通过。校验时自动打的「搜索失效」分组和
         // // Error: 注释留着只会让用户以为还没修好，源也会一直停在禁用状态，这里一并清掉。
+        // 分组只在这个源本来就被标成失效时才动——用户自己把源归到「失效备份」下的，
+        // 那是他的整理方式，不该被顺手删掉。
         val wasInvalid = oldSource?.getInvalidGroupNames()?.isNotBlank() == true
-        source.removeInvalidGroups()
-        source.removeErrorComment()
         if (wasInvalid) {
+            source.removeInvalidGroups()
             source.enabled = true
         }
+        source.removeErrorComment()
         val backupPath = oldSource?.let {
             val file = resolvePath(
                 sessionId,
@@ -750,6 +752,8 @@ object AiWorkspaceTool {
             file?.let { target -> relativePath(sessionId, target) }
         }
         appDb.bookSourceDao.insert(source)
+        // 内存里那条「搜索失效」还留着的话，回到列表照样挂红标，用户以为没修好
+        Debug.clearSourceMessage(source.bookSourceUrl)
         return ok()
             .put("sessionId", sessionId)
             .put("path", args.optString("path"))

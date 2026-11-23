@@ -274,7 +274,10 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
             viewLifecycleOwner.repeatOnLifecycle(STARTED) {
                 viewModel.searchDataFlow.conflate().collect {
                     adapter.setItems(it)
-                    delay(1000)
+                    // 列表本身是增量 diff，不用靠长间隔挡重绘。以前这里等 1 秒，
+                    // 搜索时结果一批批往上顶，看着像卡住；250ms 足够合并同一波返回，
+                    // 又跟得上手。
+                    delay(250)
                 }
             }
         }

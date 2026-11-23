@@ -1,5 +1,7 @@
 package com.shimmer.reader.help.book
 
+import java.util.concurrent.ConcurrentHashMap
+
 /**
  * 换源时判断「这条搜索结果是不是手里这本」。
  *
@@ -119,14 +121,48 @@ object SourceMatch {
     }
 
     /**
+     * 规范化结果缓存。
+     *
+     * 换源排序是一次反复比较：同一个书名在一次排序里会被 normalize 几十次，每次都要跑
+     * 正则、剥后缀、逐字过滤。候选书就几十上百本，按原串缓存一下，排序开销基本归零。
+     * 超过上限整体清掉——一次换源涉及的串有限，清空比维护淘汰策略划算。
+     */
+    private val nameCache = ConcurrentHashMap<String, String>(256)
+    private val authorCache = ConcurrentHashMap<String, String>(64)
+
+    /** 太长的书名不缓存：key 本身就有开销，而且这种串很少重复。 */
+    private const val MAX_CACHE_KEY_LENGTH = 128
+    private const val MAX_CACHE_SIZE = 1024
+
+    private fun cachedName(raw: String?): String {
+        if (raw.isNullOrEmpty()) return ""
+        if (raw.length > MAX_CACHE_KEY_LENGTH) return normalizeName(raw)
+        nameCache[raw]?.let { return it }
+        val value = normalizeName(raw)
+        if (nameCache.size >= MAX_CACHE_SIZE) nameCache.clear()
+        nameCache[raw] = value
+        return value
+    }
+
+    private fun cachedAuthor(raw: String?): String {
+        if (raw.isNullOrEmpty()) return ""
+        if (raw.length > MAX_CACHE_KEY_LENGTH) return normalizeAuthor(raw)
+        authorCache[raw]?.let { return it }
+        val value = normalizeAuthor(raw)
+        if (authorCache.size >= MAX_CACHE_SIZE) authorCache.clear()
+        authorCache[raw] = value
+        return value
+    }
+
+    /**
      * 书名匹配强度：2 = 规范化后完全相同，1 = 只差一到两位数字（分卷），0 = 不算同一本。
      *
      * 换源列表按这个强度排序。「斗破苍穹」搜出来一堆「斗破苍穹2」「斗破苍穹3」时，
      * 同名的那几条必须排在前面，分卷只能垫底——它们确实可能是同一本，但不该占据列表顶部。
      */
     fun nameMatchLevel(base: String?, candidate: String?): Int {
-        val a = normalizeName(base)
-        val b = normalizeName(candidate)
+        val a = cachedName(base)
+        val b = cachedName(candidate)
         if (a.isEmpty() || b.isEmpty()) return 0
         if (a == b) return 2
         // 分卷：「斗破苍穹」对「斗破苍穹2」
@@ -164,8 +200,8 @@ object SourceMatch {
      * 两边都写了才比，互相包含也算——「天蚕土豆」对「天蚕土豆 著」这种写法差异很常见。
      */
     fun authorMatches(base: String?, candidate: String?): Boolean {
-        val a = normalizeAuthor(base)
-        val b = normalizeAuthor(candidate)
+        val a = cachedAuthor(base)
+        val b = cachedAuthor(candidate)
         if (a.isEmpty() || b.isEmpty()) return true
         if (a == b) return true
         if (a.length >= 2 && b.contains(a)) return true

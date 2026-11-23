@@ -83,11 +83,19 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
         lifecycleScope.launch(Dispatchers.IO) {
             AiImageGalleryManager.cleanupExpiredTemporary()
         }
-        // 一键入口带过来的任务：进门就发，用户只需要等结果
-        intent.getStringExtra(EXTRA_INITIAL_PROMPT)?.takeIf { it.isNotBlank() }?.let { prompt ->
-            lifecycleScope.launch {
-                delay(400)
-                dispatchSend(prompt)
+        // 一键入口带过来的任务：进门就发，用户只需要等结果。
+        // 只在首次创建时发：转屏、切主题都会走 onCreate，intent 里的 extra 还在，
+        // 不挡住的话同一个修复任务会被重复提交，白烧一份 token 还可能把源改两遍。
+        if (savedInstanceState == null) {
+            intent.getStringExtra(EXTRA_INITIAL_PROMPT)?.takeIf { it.isNotBlank() }?.let { prompt ->
+                intent.removeExtra(EXTRA_INITIAL_PROMPT)
+                lifecycleScope.launch {
+                    delay(400)
+                    if (!dispatchSend(prompt) && viewModel.isRequesting) {
+                        // 配置缺失时 dispatchSend 自己会提示，这里只兜「已有请求在跑」
+                        toastOnUi(R.string.ai_chat_wait_current)
+                    }
+                }
             }
         }
     }
