@@ -12,6 +12,7 @@ import com.shimmer.reader.base.adapter.DiffRecyclerAdapter
 import com.shimmer.reader.base.adapter.ItemViewHolder
 import com.shimmer.reader.data.entities.SearchBook
 import com.shimmer.reader.databinding.ItemChangeSourceBinding
+import com.shimmer.reader.help.book.SourceMatch
 import com.shimmer.reader.help.config.AppConfig
 import com.shimmer.reader.lib.dialogs.alert
 import com.shimmer.reader.lib.theme.primaryTextColor
@@ -152,11 +153,19 @@ class ChangeBookSourceAdapter(
             }
 
             // 简介对不上时加一行提示。不改排序、不过滤，只是让用户少踩一次坑。
-            if (callBack.isIntroMismatch(item)) {
-                tvIntroMismatch.visible()
-                tvIntroMismatch.text = context.getString(R.string.change_source_intro_mismatch)
-            } else {
-                tvIntroMismatch.gone()
+            when {
+                callBack.isIntroMismatch(item) -> {
+                    tvIntroMismatch.visible()
+                    tvIntroMismatch.text = context.getString(R.string.change_source_intro_mismatch)
+                }
+                // 书名只是「差个数字」才匹配上的，多半是续作或分卷，标一句免得点错
+                SourceMatch.nameMatchLevel(viewModel.name, item.name) == 1 -> {
+                    tvIntroMismatch.visible()
+                    tvIntroMismatch.text = context.getString(R.string.change_source_name_loose_match)
+                }
+                else -> {
+                    tvIntroMismatch.gone()
+                }
             }
         }
     }
@@ -252,6 +261,10 @@ class ChangeBookSourceAdapter(
                 R.id.menu_compare_intro -> {
                     callBack.compareIntro(searchBook)
                 }
+
+                R.id.menu_ai_repair_source -> {
+                    callBack.repairWithAi(searchBook)
+                }
             }
             true
         }
@@ -273,5 +286,8 @@ class ChangeBookSourceAdapter(
 
         /** 长按菜单「对比简介」：把原书和该源的简介摆在一起看。 */
         fun compareIntro(searchBook: SearchBook)
+
+        /** 长按菜单「AI 修复」：把这个源交给 AI，让它自己抓页面、改规则、调通。 */
+        fun repairWithAi(searchBook: SearchBook)
     }
 }

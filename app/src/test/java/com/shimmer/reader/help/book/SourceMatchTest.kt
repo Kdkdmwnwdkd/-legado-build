@@ -37,6 +37,15 @@ class SourceMatchTest {
     }
 
     @Test
+    fun `同名比只有分卷数字的匹配等级高`() {
+        // 排序靠这个：完全同名的排前面，续作/分卷垫底，不能让它们占住列表顶部
+        assertEquals(2, SourceMatch.nameMatchLevel("斗破苍穹", "斗破苍穹(全本)"))
+        assertEquals(1, SourceMatch.nameMatchLevel("斗破苍穹", "斗破苍穹2"))
+        assertEquals(0, SourceMatch.nameMatchLevel("斗破苍穹", "斗破苍穹之药老传奇"))
+        assertEquals(0, SourceMatch.nameMatchLevel("斗破苍穹", ""))
+    }
+
+    @Test
     fun `续作不算同一本书`() {
         assertFalse(SourceMatch.nameMatches("斗破苍穹", "斗破苍穹之药老传奇"))
         assertFalse(SourceMatch.nameMatches("斗破苍穹", "遮天"))

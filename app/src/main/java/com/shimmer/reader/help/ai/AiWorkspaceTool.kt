@@ -731,6 +731,14 @@ object AiWorkspaceTool {
         if (source.bookSourceUrl.isBlank()) return error("bookSourceUrl is empty")
         if (source.bookSourceName.isBlank()) return error("bookSourceName is empty")
         val oldSource = appDb.bookSourceDao.getBookSource(source.bookSourceUrl)
+        // 能走到应用这一步，说明刚在调试里跑通过。校验时自动打的「搜索失效」分组和
+        // // Error: 注释留着只会让用户以为还没修好，源也会一直停在禁用状态，这里一并清掉。
+        val wasInvalid = oldSource?.getInvalidGroupNames()?.isNotBlank() == true
+        source.removeInvalidGroups()
+        source.removeErrorComment()
+        if (wasInvalid) {
+            source.enabled = true
+        }
         val backupPath = oldSource?.let {
             val file = resolvePath(
                 sessionId,
@@ -748,6 +756,7 @@ object AiWorkspaceTool {
             .put("saved", true)
             .put("bookSourceUrl", source.bookSourceUrl)
             .put("bookSourceName", source.bookSourceName)
+            .put("clearedInvalidGroups", wasInvalid)
             .put("databaseBackupPath", backupPath ?: JSONObject.NULL)
             .toString()
     }

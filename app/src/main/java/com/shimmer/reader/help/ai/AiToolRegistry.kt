@@ -13,7 +13,7 @@ data class AiResolvedTool(
 
 object AiToolRegistry {
 
-    private const val TOOL_SETTINGS_VERSION = 16
+    private const val TOOL_SETTINGS_VERSION = 17
     private val version2AddedDefaultTools = setOf(
         "list_speech_catalogs",
         "assign_character_speech_route",
@@ -85,6 +85,21 @@ object AiToolRegistry {
     private val version15AddedDefaultTools = setOf(
         "workspace_read_lines",
         "workspace_diff_file"
+    )
+
+    /**
+     * 「AI 修复书源」要用的一整套工作区工具。
+     *
+     * 以前这些默认是关的，用户在书源菜单点了修复，AI 手上却没有改文件、应用书源的工具，
+     * 只能嘴上说说。修复流程是现成的，把它们一并打开。
+     */
+    private val version17AddedDefaultTools = setOf(
+        "workspace_import_book_source",
+        "workspace_read_file",
+        "workspace_edit_file",
+        "workspace_replace_text",
+        "workspace_debug_book_source",
+        "workspace_apply_book_source"
     )
 
     val characterCompanionToolNames = setOf(
@@ -423,6 +438,7 @@ object AiToolRegistry {
                 if (AppConfig.aiEnabledToolNamesVersion < 13) addAll(version13AddedDefaultTools)
                 if (AppConfig.aiEnabledToolNamesVersion < 14) addAll(version14AddedDefaultTools)
                 if (AppConfig.aiEnabledToolNamesVersion < 15) addAll(version15AddedDefaultTools)
+                if (AppConfig.aiEnabledToolNamesVersion < 17) addAll(version17AddedDefaultTools)
             }
             val migrated = (stored.ifEmpty { defaultEnabledTools } + additions)
                 .minus(if (AppConfig.aiEnabledToolNamesVersion < 12) version12RemovedDefaultTools else emptySet())

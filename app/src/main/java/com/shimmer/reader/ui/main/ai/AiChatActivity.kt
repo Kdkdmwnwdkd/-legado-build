@@ -21,6 +21,7 @@ import com.shimmer.reader.ui.main.ai.compose.AiChatScreenActions
 import com.shimmer.reader.utils.toastOnUi
 import com.shimmer.reader.utils.viewbindingdelegate.viewBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -31,6 +32,11 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
     fullScreen = false,
     imageBg = false
 ) {
+
+    companion object {
+        /** 带着任务进来：打开会话后自动把这条消息发出去，「让 AI 修书源」就是这么进来的。 */
+        const val EXTRA_INITIAL_PROMPT = "ai_initial_prompt"
+    }
 
     override val binding by viewBinding(ActivityAiChatBinding::inflate)
 
@@ -76,6 +82,13 @@ class AiChatActivity : BaseActivity<ActivityAiChatBinding>(
         }
         lifecycleScope.launch(Dispatchers.IO) {
             AiImageGalleryManager.cleanupExpiredTemporary()
+        }
+        // 一键入口带过来的任务：进门就发，用户只需要等结果
+        intent.getStringExtra(EXTRA_INITIAL_PROMPT)?.takeIf { it.isNotBlank() }?.let { prompt ->
+            lifecycleScope.launch {
+                delay(400)
+                dispatchSend(prompt)
+            }
         }
     }
 

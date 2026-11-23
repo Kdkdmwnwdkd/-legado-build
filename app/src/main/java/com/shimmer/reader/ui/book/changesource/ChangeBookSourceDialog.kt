@@ -25,6 +25,7 @@ import com.shimmer.reader.data.entities.BookChapter
 import com.shimmer.reader.data.entities.BookSource
 import com.shimmer.reader.data.entities.SearchBook
 import com.shimmer.reader.databinding.DialogBookChangeSourceBinding
+import com.shimmer.reader.help.ai.AiSourceRepair
 import com.shimmer.reader.help.book.BookHelp
 import com.shimmer.reader.help.book.IntroMatch
 import com.shimmer.reader.help.book.isWebFile
@@ -35,6 +36,7 @@ import com.shimmer.reader.lib.theme.getPrimaryTextColor
 import com.shimmer.reader.lib.theme.primaryColor
 import com.shimmer.reader.lib.theme.primaryTextColor
 import com.shimmer.reader.lib.theme.uiTypeface
+import com.shimmer.reader.model.Debug
 import com.shimmer.reader.ui.book.read.ReadBookActivity
 import com.shimmer.reader.ui.book.source.edit.BookSourceEditActivity
 import com.shimmer.reader.ui.book.source.manage.BookSourceActivity
@@ -52,10 +54,12 @@ import com.shimmer.reader.utils.toastOnUi
 import com.shimmer.reader.utils.transaction
 import com.shimmer.reader.utils.viewbindingdelegate.viewBinding
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * 换源界面
@@ -457,6 +461,16 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
             )
         ) {
             okButton()
+        }
+    }
+
+    override fun repairWithAi(searchBook: SearchBook) {
+        viewLifecycleOwner.lifecycleScope.launch(IO) {
+            val source = appDb.bookSourceDao.getBookSource(searchBook.origin) ?: return@launch
+            val failure = Debug.debugMessageMap[source.bookSourceUrl]
+            withContext(Main) {
+                AiSourceRepair.launch(requireContext(), source, failure)
+            }
         }
     }
 
