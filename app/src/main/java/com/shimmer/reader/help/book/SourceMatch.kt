@@ -119,20 +119,30 @@ object SourceMatch {
     }
 
     /**
+     * 书名匹配强度：2 = 规范化后完全相同，1 = 只差一到两位数字（分卷），0 = 不算同一本。
+     *
+     * 换源列表按这个强度排序。「斗破苍穹」搜出来一堆「斗破苍穹2」「斗破苍穹3」时，
+     * 同名的那几条必须排在前面，分卷只能垫底——它们确实可能是同一本，但不该占据列表顶部。
+     */
+    fun nameMatchLevel(base: String?, candidate: String?): Int {
+        val a = normalizeName(base)
+        val b = normalizeName(candidate)
+        if (a.isEmpty() || b.isEmpty()) return 0
+        if (a == b) return 2
+        // 分卷：「斗破苍穹」对「斗破苍穹2」
+        val (shorter, longer) = if (a.length <= b.length) a to b else b to a
+        if (shorter.length < 2 || !longer.startsWith(shorter)) return 0
+        val tail = longer.substring(shorter.length)
+        return if (tail.length <= NAME_TAIL_DIGITS && tail.all { it.isDigit() }) 1 else 0
+    }
+
+    /**
      * 是不是同一个书名。
      *
      * 空名一律不匹配——搜索关键词是空的时候原来也是搜不出东西的，保持原样。
      */
     fun nameMatches(base: String?, candidate: String?): Boolean {
-        val a = normalizeName(base)
-        val b = normalizeName(candidate)
-        if (a.isEmpty() || b.isEmpty()) return false
-        if (a == b) return true
-        // 分卷：「斗破苍穹」对「斗破苍穹2」
-        val (shorter, longer) = if (a.length <= b.length) a to b else b to a
-        if (shorter.length < 2 || !longer.startsWith(shorter)) return false
-        val tail = longer.substring(shorter.length)
-        return tail.length <= NAME_TAIL_DIGITS && tail.all { it.isDigit() }
+        return nameMatchLevel(base, candidate) > 0
     }
 
     /** 作者名去掉「作者：」「著」和标点，方便比较。 */

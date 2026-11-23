@@ -18,6 +18,10 @@
         android:title="@string/change_source_compare_intro" />
 
     <item
+        android:id="@+id/menu_ai_repair_source"
+        android:title="@string/ai_repair_source" />
+
+    <item
         android:id="@+id/menu_disable_source"
         android:title="@string/disable_source" />
 

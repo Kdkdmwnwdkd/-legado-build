@@ -48,6 +48,7 @@ import com.shimmer.reader.constant.EventBus
 import com.shimmer.reader.data.AppDatabase
 import com.shimmer.reader.data.appDb
 import com.shimmer.reader.data.entities.BookSourcePart
+import com.shimmer.reader.help.ai.AiSourceRepair
 import com.shimmer.reader.databinding.ActivityBookSourceBinding
 import com.shimmer.reader.help.DirectLinkUpload
 import com.shimmer.reader.help.config.LocalConfig
@@ -125,6 +126,8 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
     private val importRecordKey = "bookSourceRecordKey"
     private var sourceFlowJob: Job? = null
     private var checkMessageRefreshJob: Job? = null
+    /** 校验刚结束时分组列表可能还没从库里读回来，先记下，等 flowGroups 收齐再跳到「失效」。 */
+    private var pendingOpenInvalidGroup = false
     private val groups = linkedSetOf<String>()
     private var groupMenu: SubMenu? = null
     private var sort = BookSourceSort.Default
@@ -743,6 +746,14 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
 
     override fun onResume() {
         super.onResume()
+        // 校验是跳到进度页里跑的，跑完那一刻本页还停在后台。CHECK_SOURCE_DONE 是普通事件，
+        // 后台收不到，回来就只剩一个「校验中」的界面，标记和「失效」分组都要退出重进才有。
+        // 这里靠 Debug.isChecking 已经落回 false 来补收尾。
+        if (isCheckingState.value && !Debug.isChecking) {
+            applyCheckFinished()
+        } else if (Debug.isChecking) {
+            refreshDebugMessages(force = true)
+        }
     }
 
     override fun onPause() {
@@ -763,6 +774,7 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
                     groups.clear()
                     groups.addAll(it)
                     upGroupMenu()
+                    openInvalidGroupWhenReady()
                     delay(500)
                 }
         }
@@ -1003,22 +1015,61 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
             }
         }
         observeEvent<String>(EventBus.CHECK_SOURCE_DONE) { result ->
-            keepScreenOn(false)
-            snackBar?.dismiss()
-            snackBar = null
-            updateCheckingState(false)
-            refreshDebugMessages(force = true)
+            applyCheckFinished()
             // 校验跑完会带一句汇总；中途取消时为空串，什么都不提示
             if (result.isNotBlank()) {
                 Snackbar.make(binding.root, result, Snackbar.LENGTH_LONG).show()
             }
-            groups.forEach { group ->
-                if (group.contains("失效") && searchQueryState.value.isEmpty()) {
-                    updateSearchQuery("失效")
-                    toastOnUi(R.string.toast_invalid_sources_filtered)
-                }
+        }
+    }
+
+    /**
+     * 把书源连同最近一次校验报错交给 AI。
+     *
+     * 它自己抓搜索页、改规则、调试，只有跑通了才会落库；失败会停在会话里说明卡在哪。
+     */
+    private fun repairWithAi(bookSource: BookSourcePart) {
+        lifecycleScope.launch(IO) {
+            val source = appDb.bookSourceDao.getBookSource(bookSource.bookSourceUrl) ?: return@launch
+            withContext(Main) {
+                // 校验消息是 Compose 的状态表，只在主线程读
+                val failure = debugMessagesState[bookSource.bookSourceUrl]
+                AiSourceRepair.launch(this@BookSourceActivity, source, failure)
             }
         }
+    }
+
+    /**
+     * 校验结束后的收尾。
+     *
+     * 事件回来和「从进度页返回时发现已经跑完」两条路都走这里：关掉校验中状态、
+     * 把结果刷进列表、切到「失效」筛选。以前只有事件那条路，后台跑完就没有收尾，
+     * 列表上既看不到标记，也不会跳到失效分组，得退出重进才正常。
+     */
+    private fun applyCheckFinished() {
+        keepScreenOn(false)
+        snackBar?.dismiss()
+        snackBar = null
+        updateCheckingState(false)
+        refreshDebugMessages(force = true)
+        // 分组和启用状态都是校验过程中写进库的，重新拉一遍列表才看得见
+        refreshBookSources()
+        if (searchQueryState.value.isEmpty()) {
+            pendingOpenInvalidGroup = true
+            openInvalidGroupWhenReady()
+        }
+    }
+
+    private fun openInvalidGroupWhenReady() {
+        if (!pendingOpenInvalidGroup || searchQueryState.value.isNotEmpty()) return
+        if (groups.none { it.contains("失效") }) {
+            // 分组已经读齐还是没有失效项，说明这轮全过，不用再等
+            if (groups.isNotEmpty()) pendingOpenInvalidGroup = false
+            return
+        }
+        pendingOpenInvalidGroup = false
+        updateSearchQuery("失效")
+        toastOnUi(R.string.toast_invalid_sources_filtered)
     }
 
     private fun startCheckMessageRefreshJob(firstItem: Int, lastItem: Int) {
@@ -1240,6 +1291,7 @@ class BookSourceActivity : VMBaseActivity<ActivityBookSourceBinding, BookSourceV
             }
             add(AppManagementMenuAction(getString(R.string.search)) { searchBook(bookSource) })
             add(AppManagementMenuAction(getString(R.string.debug)) { debug(bookSource) })
+            add(AppManagementMenuAction(getString(R.string.ai_repair_source)) { repairWithAi(bookSource) })
             add(
                 AppManagementMenuAction(
                     text = getString(R.string.delete),

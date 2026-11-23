@@ -73,6 +73,7 @@ fun CheckSourceProgressScreen(
     onBack: () -> Unit,
     onCancel: () -> Unit,
     onOpenManage: () -> Unit,
+    onRepair: (String) -> Unit = {},
 ) {
     LegadoComposeTheme {
         val palette = rememberAppManagementPalette()
@@ -194,7 +195,8 @@ fun CheckSourceProgressScreen(
                     items(shown, key = { it.origin }) { item ->
                         SourceItemRow(
                             item = item,
-                            palette = palette
+                            palette = palette,
+                            onRepair = { onRepair(item.origin) }
                         )
                     }
                 }
@@ -423,9 +425,13 @@ private fun FilterRow(
 private fun SourceItemRow(
     item: CheckItem,
     palette: AppManagementPalette,
+    onRepair: () -> Unit,
 ) {
+    val canRepair = item.status == CheckItemStatus.FAILED
     LegadoMiuixCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(if (canRepair) Modifier.clickable(onClick = onRepair) else Modifier),
         color = palette.settings.page,
         contentColor = palette.miuix.primaryText,
         cornerRadius = 10.dp,
@@ -462,6 +468,14 @@ private fun SourceItemRow(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(top = 2.dp)
         )
+        if (canRepair) {
+            Text(
+                text = stringResource(R.string.check_source_item_repair_hint),
+                color = palette.miuix.accent,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
     }
 }
 

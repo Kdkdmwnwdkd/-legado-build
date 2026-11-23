@@ -11,14 +11,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.shimmer.reader.base.BaseActivity
+import com.shimmer.reader.data.appDb
+import com.shimmer.reader.help.ai.AiSourceRepair
+import com.shimmer.reader.lib.dialogs.alert
 import com.shimmer.reader.model.CheckSource
 import com.shimmer.reader.model.CheckRunStatus
 import com.shimmer.reader.model.CheckSourceRunStore
 import com.shimmer.reader.ui.book.character.SimpleViewBinding
 import com.shimmer.reader.ui.book.source.manage.compose.CheckSourceProgressScreen
 import com.shimmer.reader.utils.keepScreenOn
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * 书源校验的实时进度与逐条结果。
@@ -48,7 +53,8 @@ class CheckSourceProgressActivity : BaseActivity<ViewBinding>(
                 run = run,
                 onBack = ::finish,
                 onCancel = { CheckSource.stop(this) },
-                onOpenManage = ::openManage
+                onOpenManage = ::openManage,
+                onRepair = ::confirmRepair
             )
         }
         // 校验要跑十几分钟，中途息屏会让后台任务被判成空闲，跑完之前先亮着
@@ -67,5 +73,29 @@ class CheckSourceProgressActivity : BaseActivity<ViewBinding>(
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         })
         finish()
+    }
+
+    /**
+     * 校验失败的那一条可以直接交给 AI 修。
+     *
+     * 报错原文一并带过去，省得 AI 再自己跑一遍校验才知道坏在哪。
+     */
+    private fun confirmRepair(origin: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val source = appDb.bookSourceDao.getBookSource(origin) ?: return@launch
+            val reason = CheckSourceRunStore.state.value.items
+                .firstOrNull { it.origin == origin }?.reason
+            withContext(Dispatchers.Main) {
+                alert(
+                    title = getString(R.string.ai_repair_source),
+                    message = getString(R.string.ai_repair_confirm, source.bookSourceName)
+                ) {
+                    okButton {
+                        AiSourceRepair.launch(this@CheckSourceProgressActivity, source, reason)
+                    }
+                    cancelButton()
+                }
+            }
+        }
     }
 }

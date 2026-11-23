@@ -908,6 +908,9 @@
     <string name="ai_chat_send">发送</string>
     <string name="ai_chat_stop">停止</string>
     <string name="ai_chat_thinking">正在思考…</string>
+    <string name="ai_repair_source">AI 修复</string>
+    <string name="ai_repair_confirm">把这个书源交给 AI 修复？\n\n它会自己抓搜索页、改规则、调试，跑通了才保存；过程中会消耗模型调用额度。</string>
+    <string name="check_source_item_repair_hint">点按交给 AI 修复</string>
     <string name="ai_read_clear_history">清空本书历史</string>
     <string name="ai_read_history_empty">本书暂无问 AI 历史。</string>
     <string name="ai_read_delete_history">删除这条记录</string>
@@ -1347,6 +1350,7 @@
     <string name="checkAuthor">校验作者</string>
     <string name="check_intro">比对简介</string>
     <string name="change_source_intro_mismatch">简介和原书对不上，可能是同名书</string>
+    <string name="change_source_name_loose_match">书名多出数字，可能是续作或分卷</string>
     <string name="change_source_compare_intro">简介对比</string>
     <string name="change_source_compare_intro_body">原书：\n%1$s\n\n该源：\n%2$s</string>
     <string name="change_source_intro_none">暂无简介</string>
