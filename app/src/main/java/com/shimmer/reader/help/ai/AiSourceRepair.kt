@@ -25,6 +25,10 @@ object AiSourceRepair {
      *
      * 重点是让它先看页面再动手，一次只改一处、改完立刻验证——书源规则之间互相牵连，
      * 一口气重写整个 ruleSearch 通常只会把还能用的部分也弄坏。
+     *
+     * 第一句必须写清「先把源导出成工作区文件」：改规则、调试、落库这几个工具吃的都是
+     * 工作区里的**文件路径**，而 get_book_source 只把 JSON 读进上下文、不落盘。
+     * 少了这一步，AI 会拿着内存里的 JSON 找不到能改的地方，绕一圈再回来问。
      */
     fun buildPrompt(source: BookSource, failure: String?): String = buildString {
         appendLine("帮我修一下这个书源，直接动手，不用先问我。")
@@ -36,12 +40,13 @@ object AiSourceRepair {
         }
         appendLine()
         appendLine("按这个顺序做：")
-        appendLine("1. 先 get_book_source 读完整 JSON，看清 searchUrl、ruleSearch 和 checkKeyWord。")
-        appendLine("2. 用 fetch_source_html 抓一次搜索页（关键词用 checkKeyWord，没有就用「我的」），看站点现在返回什么：路径变了、结构变了，还是上了验证或跳转。")
-        appendLine("3. 对照 HTML 找出真正坏掉的那一处，能用 workspace_replace_text 的别整段重写。")
-        appendLine("4. 每改一处就用 workspace_debug_book_source 验证，搜索、详情、目录、正文依次过，哪步不过回去改哪步。")
-        appendLine("5. 全部通过后 workspace_apply_book_source 保存，保存后再 debug 一次确认。")
-        appendLine("6. 站点整个没了（域名失效、要登录、整站变空壳）就停手直说，不要猜选择器，也不要把别的书源的规则套过来。")
+        appendLine("1. 先调 workspace_import_book_source，bookSourceUrl 填上面那个地址，把源导出到工作区，记下返回的 path。后面改规则、调试、落库全部用这个 path 对应的文件。")
+        appendLine("2. 用 workspace_read_file 读这个 JSON，看清 searchUrl、ruleSearch 和 checkKeyWord。")
+        appendLine("3. 用 fetch_source_html 抓一次搜索页（关键词优先用 checkKeyWord，没有就挑书名或作者里最独特的一个词），看站点现在返回什么：路径变了、结构变了，还是上了验证或跳转。")
+        appendLine("4. 对照 HTML 找出真正坏掉的那一处，能用 workspace_replace_text 就别整段重写。")
+        appendLine("5. 每改一处就用 workspace_debug_book_source（path 填那个文件，key 填搜索关键词）验证，搜索、详情、目录、正文依次过，哪步不过回去改哪步。")
+        appendLine("6. 全部通过后 workspace_apply_book_source 保存，保存后再 debug 一次确认。")
+        appendLine("7. 站点整个没了（域名失效、要登录、整站变空壳）就停手直说，不要猜选择器，也不要把别的书源的规则套过来。")
         appendLine()
         append("最后用一两句话说明改了什么、验证结果如何。")
     }

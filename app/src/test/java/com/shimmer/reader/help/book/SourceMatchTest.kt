@@ -79,4 +79,15 @@ class SourceMatchTest {
     fun `书名里的搜索高亮标签会被忽略`() {
         assertEquals("斗破苍穹", SourceMatch.normalizeName("<em>斗破</em>苍穹"))
     }
+
+    @Test
+    fun `规范化缓存不改变判定结果`() {
+        // 缓存只是省掉重复的正则和剥后缀，同一组输入反复比较必须每次都一样
+        repeat(5) {
+            assertEquals(2, SourceMatch.nameMatchLevel("斗破苍穹(全本)", "斗破苍穹"))
+            assertEquals(1, SourceMatch.nameMatchLevel("斗破苍穹", "斗破苍穹2"))
+            assertEquals(0, SourceMatch.nameMatchLevel("斗破苍穹", "斗破苍穹之药老传奇"))
+            assertTrue(SourceMatch.authorMatches("作者：天蚕土豆", "天蚕土豆 著"))
+        }
+    }
 }

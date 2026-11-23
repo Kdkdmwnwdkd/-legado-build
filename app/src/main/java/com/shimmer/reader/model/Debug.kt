@@ -24,9 +24,11 @@ object Debug {
     var callback: Callback? = null
     private var debugSource: String? = null
     private val tasks: CompositeCoroutine = CompositeCoroutine()
-    val debugMessageMap = HashMap<String, String>()
-    private val debugTimeMap = HashMap<String, Long>()
-    private val debugFinalStateMap = HashMap<String, Boolean>()
+    // 校验在后台线程写、列表在主线程按 key 读、AI 修复落库后还要删单条，
+    // 换成并发容器免得读到写了一半的结构（原来的 HashMap 在 put 扩容时尤其危险）
+    val debugMessageMap = java.util.concurrent.ConcurrentHashMap<String, String>()
+    private val debugTimeMap = java.util.concurrent.ConcurrentHashMap<String, Long>()
+    private val debugFinalStateMap = java.util.concurrent.ConcurrentHashMap<String, Boolean>()
     var isChecking: Boolean = false
 
     @SuppressLint("ConstantLocale")
@@ -115,6 +117,19 @@ object Debug {
         debugMessageMap.clear()
         debugTimeMap.clear()
         debugFinalStateMap.clear()
+    }
+
+    /**
+     * 清掉单个源上一次校验留下的标记。
+     *
+     * AI 修好书源落库后，库里的失效分组和错误注释都清了，但这条记录还留在内存里，
+     * 列表上照样挂着红色的「搜索失效」，用户会以为没修好。这里一并抹掉。
+     */
+    @Synchronized
+    fun clearSourceMessage(sourceUrl: String) {
+        debugMessageMap.remove(sourceUrl)
+        debugTimeMap.remove(sourceUrl)
+        debugFinalStateMap.remove(sourceUrl)
     }
 
     fun getRespondTime(sourceUrl: String): Long {
