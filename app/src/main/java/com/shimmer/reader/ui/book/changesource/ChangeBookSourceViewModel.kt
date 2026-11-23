@@ -19,6 +19,7 @@ import com.shimmer.reader.data.entities.SearchBook
 import com.shimmer.reader.exception.NoStackTraceException
 import com.shimmer.reader.help.book.BookHelp
 import com.shimmer.reader.help.book.ContentProcessor
+import com.shimmer.reader.help.book.SourceMatch
 import com.shimmer.reader.help.book.primaryStr
 import com.shimmer.reader.help.book.releaseHtmlData
 import com.shimmer.reader.help.config.AppConfig
@@ -292,10 +293,13 @@ open class ChangeBookSourceViewModel(application: Application) : BaseViewModel(a
         val loadInfo = AppConfig.changeSourceLoadInfo
         val loadToc = AppConfig.changeSourceLoadToc
         val loadWordCount = AppConfig.changeSourceLoadWordCount
+        // 书名可能带着「(全本)」「最新章节」这类站点装饰，直接拿去搜是搜不到的
+        val key = SourceMatch.searchKey(name)
         val resultBooks = WebBook.searchBookAwait(
-            source, name,
+            source, key,
             filter = { fName, fAuthor, _ ->
-                fName == name && (!checkAuthor || fAuthor.contains(author))
+                SourceMatch.nameMatches(name, fName) &&
+                        (!checkAuthor || SourceMatch.authorMatches(author, fAuthor))
             })
         resultBooks.forEach { searchBook ->
             when {
@@ -438,7 +442,7 @@ open class ChangeBookSourceViewModel(application: Application) : BaseViewModel(a
     }
 
     private fun getDbSearchBooks(): List<SearchBook> {
-        return if (screenKey.isEmpty()) {
+        val books = if (screenKey.isEmpty()) {
             if (AppConfig.changeSourceCheckAuthor) {
                 appDb.searchBookDao.changeSourceByGroup(
                     name, author, AppConfig.searchGroup
@@ -458,6 +462,20 @@ open class ChangeBookSourceViewModel(application: Application) : BaseViewModel(a
                     name, "", screenKey, AppConfig.searchGroup
                 )
             }
+        }
+        return books.filterMatched()
+    }
+
+    /**
+     * 缓存里的书名是各站点自己写的，SQL 只能按包含关系粗筛，这里再用同一套规则精筛，
+     * 免得粗筛放进来的「斗破苍穹之药老传奇」混进列表。
+     */
+    private fun List<SearchBook>.filterMatched(): List<SearchBook> {
+        if (name.isBlank()) return this
+        val checkAuthor = AppConfig.changeSourceCheckAuthor
+        return filter {
+            SourceMatch.nameMatches(name, it.name) &&
+                    (!checkAuthor || SourceMatch.authorMatches(author, it.author))
         }
     }
 

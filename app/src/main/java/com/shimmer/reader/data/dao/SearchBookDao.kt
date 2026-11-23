@@ -67,7 +67,8 @@ interface SearchBookDao {
         t1.wordCount, t2.customOrder as originOrder, t1.chapterWordCountText, t1.respondTime, t1.chapterWordCount
         from searchBooks as t1 inner join book_sources as t2
         on t1.origin = t2.bookSourceUrl 
-        where t1.name = :name and t1.author like '%'||:author||'%' 
+        where (t1.name = :name or t1.name like '%'||:name||'%' or :name like '%'||t1.name||'%')
+        and (:author = '' or t1.author = '' or t1.author like '%'||:author||'%' or :author like '%'||t1.author||'%')
         and t2.enabled = 1 and t2.bookSourceGroup like '%'||:sourceGroup||'%'
         and $SAFE_SEARCH_BOOK_ROW_T1
         order by t2.customOrder"""
@@ -80,7 +81,8 @@ interface SearchBookDao {
         t1.wordCount, t2.customOrder as originOrder, t1.chapterWordCountText, t1.respondTime, t1.chapterWordCount
         from searchBooks as t1 inner join book_sources as t2
         on t1.origin = t2.bookSourceUrl 
-        where t1.name = :name and t1.author like '%'||:author||'%'
+        where (t1.name = :name or t1.name like '%'||:name||'%' or :name like '%'||t1.name||'%')
+        and (:author = '' or t1.author = '' or t1.author like '%'||:author||'%' or :author like '%'||t1.author||'%')
         and t2.bookSourceGroup like '%'||:sourceGroup||'%'
         and (originName like '%'||:key||'%' or t1.latestChapterTitle like '%'||:key||'%')
         and t2.enabled = 1
@@ -101,7 +103,9 @@ interface SearchBookDao {
         t1.wordCount, t2.customOrder as originOrder, t1.chapterWordCountText, t1.respondTime, t1.chapterWordCount
         from searchBooks as t1 inner join book_sources as t2
         on t1.origin = t2.bookSourceUrl 
-        where t1.name = :name and t1.author = :author and t1.coverUrl is not null and t1.coverUrl <> '' and t2.enabled = 1
+        where (t1.name = :name or t1.name like '%'||:name||'%' or :name like '%'||t1.name||'%')
+        and (:author = '' or t1.author = '' or t1.author like '%'||:author||'%' or :author like '%'||t1.author||'%')
+        and t1.coverUrl is not null and t1.coverUrl <> '' and t2.enabled = 1
         and $SAFE_SEARCH_BOOK_ROW_T1
         order by t2.customOrder
         """

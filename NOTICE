@@ -17,7 +17,7 @@ Xwite 等，完整名单见 https://github.com/gedoor/legado/graphs/contributors
 ------------
 本仓库自 2026 年 11 月起独立维护，主要在以下方面改动：
 
-- 应用身份：独立应用名「阅读Shimmer」与自制水墨风格图标，与其他分支
+- 应用身份：独立应用名「阅读Shimmer」与自制图标，与其他分支
   互不覆盖，可同时安装。
 - 更新机制：只读取本仓库的 GitHub Release；资产名携带版本号与 versionCode，
   按点分段比较版本；默认走加速镜像。
