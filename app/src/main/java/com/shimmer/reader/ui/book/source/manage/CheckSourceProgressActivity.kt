@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
+import com.shimmer.reader.R
 import com.shimmer.reader.base.BaseActivity
 import com.shimmer.reader.data.appDb
 import com.shimmer.reader.help.ai.AiSourceRepair
