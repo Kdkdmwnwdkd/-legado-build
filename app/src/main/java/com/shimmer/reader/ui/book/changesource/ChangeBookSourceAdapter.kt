@@ -77,7 +77,8 @@ class ChangeBookSourceAdapter(
             ivChecked.drawable?.let { DrawableCompat.setTint(it, primaryTextColor) }
             if (payloads.isEmpty()) {
                 tvOrigin.text = item.originName
-                tvAuthor.text = item.author
+                // 没写作者的源现在也会列出来，空着不好分辨，标一句「未知」
+                tvAuthor.text = item.author.ifBlank { context.getString(R.string.unknown) }
                 tvLast.text = item.getDisplayLastChapterTitle()
                 tvCurrentChapterWordCount.text = item.chapterWordCountText
                 tvRespondTime.text = context.getString(R.string.respondTime, item.respondTime)
