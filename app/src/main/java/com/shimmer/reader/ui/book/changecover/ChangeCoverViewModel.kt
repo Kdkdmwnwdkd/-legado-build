@@ -13,6 +13,7 @@ import com.shimmer.reader.data.entities.Book
 import com.shimmer.reader.data.entities.BookSource
 import com.shimmer.reader.data.entities.BookSourcePart
 import com.shimmer.reader.data.entities.SearchBook
+import com.shimmer.reader.help.book.SourceMatch
 import com.shimmer.reader.help.config.AppConfig
 import com.shimmer.reader.model.BookCover
 import com.shimmer.reader.model.webBook.WebBook
@@ -69,10 +70,15 @@ class ChangeCoverViewModel(application: Application) : BaseViewModel(application
             trySend(defaultCover + searchBooks.sortedBy { it.originOrder })
         }
 
-        appDb.searchBookDao.getEnableHasCover(name, author).let {
-            searchBooks.addAll(it)
-            trySend(defaultCover + searchBooks.toList())
-        }
+        appDb.searchBookDao.getEnableHasCover(name, author)
+            .filter {
+                SourceMatch.nameMatches(name, it.name) &&
+                        SourceMatch.authorMatches(author, it.author)
+            }
+            .let {
+                searchBooks.addAll(it)
+                trySend(defaultCover + searchBooks.toList())
+            }
 
         if (searchBooks.size <= 1) {
             startSearch()
@@ -172,10 +178,11 @@ class ChangeCoverViewModel(application: Application) : BaseViewModel(application
             return
         }
         val searchBook = WebBook.searchBookAwait(
-            source, name,
+            source, SourceMatch.searchKey(name),
             shouldBreak = { it > 0 }).firstOrNull() ?: return
-        if (searchBook.name == name && searchBook.author == author
-            && !searchBook.coverUrl.isNullOrEmpty()
+        if (SourceMatch.nameMatches(name, searchBook.name) &&
+            SourceMatch.authorMatches(author, searchBook.author) &&
+            !searchBook.coverUrl.isNullOrEmpty()
         ) {
             appDb.searchBookDao.insert(searchBook)
             searchSuccess?.invoke(searchBook)

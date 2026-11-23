@@ -9,6 +9,7 @@ import com.shimmer.reader.data.entities.SearchBook
 import com.shimmer.reader.exception.NoStackTraceException
 import com.shimmer.reader.help.book.addType
 import com.shimmer.reader.help.book.removeAllBookType
+import com.shimmer.reader.help.book.SourceMatch
 import com.shimmer.reader.help.coroutine.Coroutine
 import com.shimmer.reader.help.http.StrResponse
 import com.shimmer.reader.help.source.getBookType
@@ -534,8 +535,13 @@ object WebBook {
         return kotlin.runCatching {
             currentCoroutineContext().ensureActive()
             searchBookAwait(
-                bookSource, name,
-                filter = { fName, fAuthor, _ -> fName == name && fAuthor == author },
+                bookSource, SourceMatch.searchKey(name),
+                // 逐字比较会把「书名带(全本)」和「书源不填作者」这两种很常见的情况判死，
+                // 换成同一套换源规则：剥掉站点装饰后书名相同、作者有一边没写就放行
+                filter = { fName, fAuthor, _ ->
+                    SourceMatch.nameMatches(name, fName) &&
+                            SourceMatch.authorMatches(author, fAuthor)
+                },
                 shouldBreak = { it > 0 }
             ).firstOrNull()?.let { searchBook ->
                 currentCoroutineContext().ensureActive()
